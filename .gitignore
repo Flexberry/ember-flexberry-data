@@ -15,3 +15,8 @@
 /libpeerconnection.log
 npm-debug.log
 testem.log
+
+# ide and code editor files
+/.idea
+.tern-port
+.dir-locals.el
