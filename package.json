@@ -1,7 +1,7 @@
 {
   "name": "ember-flexberry-projections",
   "version": "0.0.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Support of database projections when reading Ember Models via Store.",
   "directories": {
     "doc": "doc",
     "test": "tests"
