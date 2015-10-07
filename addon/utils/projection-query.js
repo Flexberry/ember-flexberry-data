@@ -1,5 +1,26 @@
+/**
+ * @module ember-flexberry-projections
+ */
+
+/**
+ * Includes methods to convert {{#crossLink "Projection"}}{{/crossLink}}
+ * to URL query params.
+ *
+ * @class ProjectionQuery
+ * @public
+ */
 export default {
-  // Supports OData v4 only.
+  /**
+   * Converts {{#crossLink "Projection"}}{{/crossLink}}
+   * to URL query params for OData v4.
+   *
+   * @method get
+   * @public
+   *
+   * @param {Projection} projection Model projection to convert.
+   * @param {DS.Store} store The store service.
+   * @return {Object} Object with $select and $expand properties.
+   */
   get: function(projection, store) {
     var tree = getODataQueryTree(projection, store);
     var query = getODataQuery(tree);
