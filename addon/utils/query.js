@@ -3,30 +3,17 @@
  */
 
 /**
- * Includes methods to convert {{#crossLink "Projection"}}{{/crossLink}}
- * to URL query params.
+ * Converts projection to URL query params for OData v4.
  *
- * @class ProjectionQuery
- * @public
+ * @param {Object} projection Model projection to convert.
+ * @param {DS.Store} store The store service.
+ * @return {Object} Object with $select and $expand properties.
  */
-export default {
-  /**
-   * Converts {{#crossLink "Projection"}}{{/crossLink}}
-   * to URL query params for OData v4.
-   *
-   * @method get
-   * @public
-   *
-   * @param {Projection} projection Model projection to convert.
-   * @param {DS.Store} store The store service.
-   * @return {Object} Object with $select and $expand properties.
-   */
-  get: function(projection, store) {
-    var tree = getODataQueryTree(projection, store);
-    var query = getODataQuery(tree);
-    return query;
-  }
-};
+export default function get(projection, store) {
+  var tree = getODataQueryTree(projection, store);
+  var query = getODataQuery(tree);
+  return query;
+}
 
 function getODataQueryTree(projection, store) {
   let serializer = store.serializerFor(projection.modelName);

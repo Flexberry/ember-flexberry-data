@@ -3,9 +3,8 @@ import startApp from '../../helpers/start-app';
 import Ember from 'ember';
 import DS from 'ember-data';
 
-import ProjectionQuery from 'ember-flexberry-projections/utils/projection-query';
-import Proj from 'ember-flexberry-projections/utils/projection-attributes';
-import Projection from 'ember-flexberry-projections/utils/projection';
+import getQuery from 'ember-flexberry-projections/utils/query';
+import Proj from 'ember-flexberry-projections';
 
 let App;
 
@@ -23,7 +22,7 @@ let orderSerializer = DS.RESTSerializer.extend({
   }
 });
 
-module('ProjectionQuery tests', {
+module('query tests', {
   setup: function() {
     App = startApp();
     App.register('serializer:employee', employeeSerializer);
@@ -35,7 +34,7 @@ module('ProjectionQuery tests', {
 });
 
 test('query for projection', function(assert) {
-  let projection = Projection.create('employee', {
+  let projection = Proj.create('employee', {
     firstName: Proj.attr('First Name'),
     lastName: Proj.attr('Last Name'),
     birthDate: Proj.attr('Birth Date'),
@@ -51,7 +50,7 @@ test('query for projection', function(assert) {
   });
 
   let store = App.__container__.lookup('service:store');
-  let query = ProjectionQuery.get(projection, store);
+  let query = getQuery(projection, store);
   assert.equal(query.$select, 'EmployeeID,FirstName,LastName,BirthDate,Employee1,Order,TmpChildren');
   assert.strictEqual(query.$expand, 'Employee1($select=EmployeeID,FirstName),Order($select=OrderID,OrderDate),TmpChildren($select=EmployeeID,LastName)');
 });

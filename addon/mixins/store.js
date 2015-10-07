@@ -1,15 +1,16 @@
 import Ember from 'ember';
-import ProjectionQuery from '../utils/projection-query';
+import getQuery from '../utils/query';
 
 /**
  * @module ember-flexberry-projections
  */
 
 /**
- * {{#crossLink "DS.Store"}}Store{{/crossLink}} mixin to support
- * fetching models using {{#crossLink "Projection"}}projection{{/crossLink}}.
+ * Mixin for {{#crossLink "DS.Store"}}Store{{/crossLink}} to support
+ * fetching models using projection.
  *
- * @class ProjectedStore
+ * @class Store
+ * @namespace Projection
  * @extends Ember.Mixin
  * @public
  */
@@ -125,7 +126,7 @@ export default Ember.Mixin.create({
       let projName = query.projection;
       let typeClass = this.modelFor(modelName);
       let proj = typeClass.projections.get(projName);
-      let projQuery = ProjectionQuery.get(proj, this);
+      let projQuery = getQuery(proj, this);
 
       delete query.projection;
       query = Ember.merge(query, projQuery);
