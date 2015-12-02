@@ -6,6 +6,7 @@
  */
 
 import Store from './mixins/store';
+import Adapter from './mixins/adapter';
 import Model from './models/model';
 import create from './utils/create';
 import {attr, belongsTo, hasMany} from './utils/attributes';
@@ -19,6 +20,7 @@ import {attr, belongsTo, hasMany} from './utils/attributes';
  */
 let Projection = {
   Store: Store,
+  Adapter: Adapter,
   Model: Model,
   create: create,
   attr: attr,
