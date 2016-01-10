@@ -1,4 +1,5 @@
-# Ember-flexberry-projections <br/>[![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-projections.svg?branch=master)](https://travis-ci.org/Flexberry/ember-flexberry-projections)
+# Ember-flexberry-projections
+[![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-projections.svg?branch=master)](https://travis-ci.org/Flexberry/ember-flexberry-projections)
 
 This README outlines the details of collaborating on this Ember addon.
 
