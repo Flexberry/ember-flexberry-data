@@ -1,5 +1,6 @@
 # Ember-flexberry-projections
 [![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-projections.svg?branch=master)](https://travis-ci.org/Flexberry/ember-flexberry-projections)
+[![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-projections.svg?branch=develop)](https://travis-ci.org/Flexberry/ember-flexberry-projections)
 
 This README outlines the details of collaborating on this Ember addon.
 
@@ -16,6 +17,7 @@ This README outlines the details of collaborating on this Ember addon.
 
 ## Running Tests
 
+* `npm test` (Runs `ember try:testall` to test your addon against multiple Ember versions)
 * `ember test`
 * `ember test --server`
 
