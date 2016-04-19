@@ -28,7 +28,7 @@ export default Ember.Mixin.create({
    * @param {String} options.projection Projection name.
    * @return {DS.AdapterPopulatedRecordArray} Records promise.
    */
-  findAll: function(modelName, options) {
+  findAll: function (modelName, options) {
     if (options && options.projection) {
       return this.query(modelName, {
         projection: options.projection
@@ -52,7 +52,7 @@ export default Ember.Mixin.create({
    * @param {String} options.projection Projection name.
    * @return {Promise} Record promise.
    */
-  findRecord: function(modelName, id, options) {
+  findRecord: function (modelName, id, options) {
     if (options && options.projection) {
       // TODO: case of options.reload === false.
       return this.queryRecord(modelName, {
@@ -79,9 +79,9 @@ export default Ember.Mixin.create({
    *                   {{#crossLink "DS.RecordArray"}}RecordArray{{/crossLink}}
    *                   once the server returns.
    */
-  query: function(modelName, query) {
+  query: function (modelName, query) {
     query = this._normalizeQuery(modelName, query);
-    return this._super(modelName, query).then(function(recordArray) {
+    return this._super(modelName, query).then(function (recordArray) {
       return recordArray;
     });
   },
@@ -101,9 +101,9 @@ export default Ember.Mixin.create({
    *                   {{#crossLink "DS.RecordObject"}}RecordObject{{/crossLink}}
    *                   once the server returns.
    */
-  queryRecord: function(modelName, query) {
+  queryRecord: function (modelName, query) {
     query = this._normalizeQuery(modelName, query);
-    return this._super(modelName, query).then(function(record) {
+    return this._super(modelName, query).then(function (record) {
       return record;
     });
   },
@@ -121,7 +121,7 @@ export default Ember.Mixin.create({
    * @return {Object} Modified query with projection parameters.
    *                  Returns original query, if projection not specified.
    */
-  _normalizeQuery: function(modelName, query) {
+  _normalizeQuery: function (modelName, query) {
     if (query && query.projection) {
       let projName = query.projection;
       let typeClass = this.modelFor(modelName);

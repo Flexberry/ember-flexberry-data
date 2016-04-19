@@ -10,30 +10,30 @@ let App;
 
 let employeeSerializer = DS.RESTSerializer.extend({
   primaryKey: 'EmployeeID',
-  keyForAttribute: function(attr) {
+  keyForAttribute: function (attr) {
     return Ember.String.capitalize(attr);
   }
 });
 
 let orderSerializer = DS.RESTSerializer.extend({
   primaryKey: 'OrderID',
-  keyForAttribute: function(attr) {
+  keyForAttribute: function (attr) {
     return Ember.String.capitalize(attr);
   }
 });
 
 module('query tests', {
-  setup: function() {
+  setup: function () {
     App = startApp();
     App.register('serializer:employee', employeeSerializer);
     App.register('serializer:order', orderSerializer);
   },
-  teardown: function() {
+  teardown: function () {
     Ember.run(App, 'destroy');
   }
 });
 
-test('query for projection', function(assert) {
+test('query for projection', function (assert) {
   let projection = Proj.create('employee', {
     firstName: Proj.attr('First Name'),
     lastName: Proj.attr('Last Name'),
@@ -51,6 +51,11 @@ test('query for projection', function(assert) {
 
   let store = App.__container__.lookup('service:store');
   let query = getQuery(projection, store);
-  assert.equal(query.$select, 'EmployeeID,FirstName,LastName,BirthDate,Employee1,Order,TmpChildren');
-  assert.strictEqual(query.$expand, 'Employee1($select=EmployeeID,FirstName),Order($select=OrderID,OrderDate),TmpChildren($select=EmployeeID,LastName)');
+  assert.equal(
+    query.$select,
+    'EmployeeID,FirstName,LastName,BirthDate,Employee1,Order,TmpChildren');
+  assert.strictEqual(
+    query.$expand,
+    'Employee1($select=EmployeeID,FirstName),Order($select=OrderID,OrderDate),' +
+    'TmpChildren($select=EmployeeID,LastName)');
 });
