@@ -17,8 +17,7 @@ import createProj from './create';
  * @return {Object} Projection attribute.
  */
 export function attr(caption, options) {
-  let attribute = createAttr('attr', caption, options);
-  return attribute;
+  return createAttr('attr', caption, options);
 }
 
 /**
