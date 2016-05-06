@@ -1,22 +1,28 @@
 import DS from 'ember-data';
-import { BasePredicate, SimplePredicate } from './query-predicate';
-import OrderByClause from './query-order-by-clause';
+
+import BaseBuilder from './base-builder';
+import { BasePredicate, SimplePredicate } from './predicate';
+import OrderByClause from './order-by-clause';
 
 /**
  * Class of builder for query.
  * Uses method chaining.
  *
  * @module ember-flexberry-projections
- * @class QueryBuilder
+ * @namespace Query
+ * @class Builder
+ * @extends BaseBuilder
  */
-export default class QueryBuilder {
+export default class Builder extends BaseBuilder {
   /**
-   * Class constructor.
-   *
    * @param store {Store} Store for building query.
    * @param modelName {String} The name of the requested entity.
+   * @class Builder
+   * @constructor
    */
   constructor(store, modelName) {
+    super();
+
     if (!store || !(store instanceof DS.Store)) {
       throw new Error('Store is not specified');
     }
@@ -35,18 +41,24 @@ export default class QueryBuilder {
   /**
    * Sets the name of the requested entity.
    *
-   * @param entityName {String} The name of the requested entity.
-   * @returns {QueryBuilder} Returns this instance.
+   * @method from
+   * @param modelName {String} The name of the requested entity.
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
    */
-  from(entityName) {
-    this._modelName = entityName;
+  from(modelName) {
+    this._modelName = modelName;
     return this;
   }
 
   /**
    *
-   * @param args
-   * @returns {QueryBuilder} Returns this instance.
+   * @method where
+   * @param ...args
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
    */
   where(...args) {
     this._predicate = createPredicate(...args);
@@ -55,8 +67,11 @@ export default class QueryBuilder {
 
   /**
    *
+   * @method orderBy
    * @param property {String}
-   * @returns {QueryBuilder} Returns this instance.
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
    */
   orderBy(property) {
     this._orderByClause = new OrderByClause(property);
@@ -65,8 +80,11 @@ export default class QueryBuilder {
 
   /**
    *
+   * @method top
    * @param top {Number}
-   * @returns {QueryBuilder} Returns this instance.
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
    */
   top(top) {
     this._top = +top;
@@ -75,8 +93,11 @@ export default class QueryBuilder {
 
   /**
    *
+   * @method skip
    * @param skip {Number}
-   * @returns {QueryBuilder} Returns this instance.
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
    */
   skip(skip) {
     this._skip = +skip;
@@ -85,7 +106,10 @@ export default class QueryBuilder {
 
   /**
    *
-   * @returns {QueryBuilder} Returns this instance.
+   * @method count
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
    */
   count() {
     this._isCount = true;
@@ -96,8 +120,11 @@ export default class QueryBuilder {
    * Adds properties for expanding.
    * Automatically checks duplications.
    *
+   * @method expand
    * @param properties {String}
-   * @returns {QueryBuilder} Returns this instance.
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
    */
   expand(properties) {
     properties.split(',').forEach(i => this._expand[i.trim()] = true);
@@ -108,8 +135,11 @@ export default class QueryBuilder {
    * Adds attributes for selection.
    * Automatically checks duplications.
    *
+   * @method select
    * @param attributes {String}
-   * @returns {QueryBuilder} Returns this instance.
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
    */
   select(attributes) {
     attributes.split(',').forEach(i => this._select[i.trim()] = true);
@@ -120,8 +150,11 @@ export default class QueryBuilder {
    * Adds attributes for selection from specified projection.
    * Merges attributes with added using `select`.
    *
+   * @method selectByProjection
    * @param projectionName {String} The name of the projection.
-   * @returns {QueryBuilder} Returns this instance.
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
    */
   selectByProjection(projectionName) {
     this._projectionName = projectionName;
@@ -131,7 +164,9 @@ export default class QueryBuilder {
   /**
    * Builds query instance using all provided data.
    *
-   * @returns {Object} Query instance. TODO: Use special class.
+   * @method build
+   * @return {Object} Query instance.
+   * @public
    */
   build() {
     if (!this._modelName) {
@@ -149,8 +184,9 @@ export default class QueryBuilder {
       }
     }
 
+    // TODO: Use special class.
     return {
-      entity: this._modelName, // TODO: rename
+      modelName: this._modelName,
       predicate: this._predicate,
       order: this._orderByClause,
       top: this._top,
@@ -165,8 +201,9 @@ export default class QueryBuilder {
 /**
  * Creates predicate by various parameters.
  *
+ * @method createPredicate
  * @param args Arguments for the predicate.
- * @returns {BasePredicate}
+ * @return {BasePredicate}
  */
 function createPredicate(...args) {
   if (args.length === 1) {
@@ -187,6 +224,7 @@ function createPredicate(...args) {
 /**
  * Converts projection to URL query params for OData v4.
  *
+ * @method getQuery
  * @param {Object} projection Model projection to convert.
  * @param {DS.Store} store The store service.
  * @return {Object} Object with $select and $expand properties.

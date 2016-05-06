@@ -7,7 +7,7 @@ import createProj from '../utils/create';
  *
  * @module ember-flexberry-projections
  * @class Model
- * @namespace Projection
+ * @namespace DS
  * @extends DS.Model
  * @public
  */

@@ -1,7 +1,8 @@
 import { module, test } from 'qunit';
-import FilterOperator from 'ember-flexberry-projections/query-filter-operator';
-import Condition from 'ember-flexberry-projections/query-condition';
-import { SimplePredicate, ComplexPredicate } from 'ember-flexberry-projections/query-predicate';
+
+import FilterOperator from 'ember-flexberry-projections/query/filter-operator';
+import Condition from 'ember-flexberry-projections/query/condition';
+import { SimplePredicate, ComplexPredicate } from 'ember-flexberry-projections/query/predicate';
 
 module('query');
 
@@ -9,7 +10,7 @@ test('simple predicate constructor', function (assert) {
   let p = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
 
   assert.ok(p);
-  assert.ok(p.property === 'Name');
+  assert.ok(p.attributeName === 'Name');
   assert.ok(p.operator === FilterOperator.Eq);
   assert.ok(p.value === 'Vasya');
 });

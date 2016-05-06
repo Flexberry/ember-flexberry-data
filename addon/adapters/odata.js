@@ -2,13 +2,14 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import SnapshotTransform from '../utils/snapshot-transform';
-import ODataQueryAdapter from '../query-odata-adapter';
+import ODataQueryAdapter from '../query/odata-adapter';
 
 /**
  * The OData adapter class.
  * Uses Flexberry Query as a language for requesting server.
  *
  * @module ember-flexberry-projections
+ * @namespace DS
  * @class ODataAdapter
  * @extends DS.RESTAdapter
  * @public
@@ -24,10 +25,11 @@ export default DS.RESTAdapter.extend({
    * Overloaded method from `RESTAdapter` (Ember Data).
    * Called by the sore in order to fetch data from the server.
    *
+   * @method query
    * @param {DS.Store} store
    * @param {DS.Model} type
    * @param {Query} query Flexberry Query object.
-   * @returns {Promise}
+   * @return {Promise}
    */
   query(store, type, query) {
     var url = this.buildURL(type.modelName, null, null, 'query', query);
@@ -46,8 +48,9 @@ export default DS.RESTAdapter.extend({
    * Overloaded method from `build-url-mixin` (Ember Data), that determines the pathname for a given type.
    * Additionally capitalizes the type name (requirement of Flexberry OData Server).
    *
+   * @method pathForType
    * @param {String} modelName
-   * @returns {String} The path for a given type.
+   * @return {String} The path for a given type.
    */
   pathForType(modelName) {
     var camelized = Ember.String.camelize(modelName);
@@ -59,9 +62,10 @@ export default DS.RESTAdapter.extend({
    * Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.
    * Appends id as `(id)` (OData specification) instead of `/id`.
    *
+   * @method _buildURL
    * @param {String} modelName
    * @param {String} id
-   * @returns {String}
+   * @return {String}
    * @private
    */
   _buildURL(modelName, id) {
@@ -108,6 +112,9 @@ export default DS.RESTAdapter.extend({
 
   /**
    * Makes HTTP request for creating, updating or deleting the record.
+   *
+   * @method _sendRecord
+   * @private
    */
   _sendRecord(store, type, snapshot, requestType) {
     // TODO: maybe move it into serializer (serialize or serializeIntoHash)?
@@ -152,6 +159,7 @@ export default DS.RESTAdapter.extend({
   /**
    * Appends id to URL according to the OData specification.
    *
+   * @method _appendIdToURL
    * @param {String} id
    * @param {String} url
    * @private

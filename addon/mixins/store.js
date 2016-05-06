@@ -5,9 +5,9 @@ import Ember from 'ember';
  * fetching models using projection.
  *
  * @module ember-flexberry-projections
+ * @namespace DS
  * @class Store
  * @extends Ember.Mixin
- * @public
  */
 export default Ember.Mixin.create({
   /**

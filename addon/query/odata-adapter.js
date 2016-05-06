@@ -1,13 +1,21 @@
-import BaseAdapter from './query-base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from './query-predicate';
+import BaseAdapter from './base-adapter';
+import { SimplePredicate, ComplexPredicate, StringPredicate } from './predicate';
 
 /**
  * Class of query adapter that translates query object into OData URL.
  *
  * @module ember-flexberry-projections
+ * @namespace Query
  * @class ODataAdapter
+ * @extends Query.BaseAdapter
  */
 export default class ODataAdapter extends BaseAdapter {
+  /**
+   * @param {String} baseUrl
+   * @param {EdmberData.Store} store
+   * @class ODataAdapter
+   * @constructor
+   */
   constructor(baseUrl, store) {
     super();
 
@@ -25,8 +33,10 @@ export default class ODataAdapter extends BaseAdapter {
 
   /**
    *
-   * @param query {QueryBuilder} The query for building OData URL.
-   * @returns {String}
+   * @method getODataUrl
+   * @param {Object} query The query for building OData URL.
+   * @return {String}
+   * @public
    */
   getODataUrl(query) {
     let odataArgs = [];
@@ -44,9 +54,16 @@ export default class ODataAdapter extends BaseAdapter {
     let queryMark = odataArgs.length > 0 ? '?' : '';
     let queryPart = odataArgs.join('&');
 
-    return `${this._baseUrl}/${query.entity}${queryMark}${queryPart}`;
+    return `${this._baseUrl}/${query.modelName}${queryMark}${queryPart}`;
   }
 
+  /**
+   *
+   * @method getOData
+   * @param {Object} query The query for building OData URL.
+   * @return {String}
+   * @public
+   */
   getOData(query) {
     let odataArgs = {};
 
@@ -100,7 +117,7 @@ function buildODataFilters(query, store) {
     return null;
   }
 
-  return convertPredicateToODataFilterClause(predicate, store, query.entity);
+  return convertPredicateToODataFilterClause(predicate, store, query.modelName);
 }
 
 function buildODataOrderBy(query) {
@@ -110,7 +127,7 @@ function buildODataOrderBy(query) {
 
   let result = '';
   for (let i = 0; i < query.order.length; i++) {
-    let property = query.order.property(i);
+    let property = query.order.attribute(i);
     let sep = i ? ',' : '';
     let direction = property.direction ? ` ${property.direction}` : '';
     result += `${sep}${property.name}${direction}`;
@@ -122,22 +139,23 @@ function buildODataOrderBy(query) {
 /**
  * Converts specified predicate into OData filter part.
  *
+ * @method convertPredicateToODataFilterClause
  * @param predicate {BasePredicate} Predicate to convert.
  * @param store
- * @returns {String} OData filter part.
+ * @return {String} OData filter part.
  */
 function convertPredicateToODataFilterClause(predicate, store, modelName) {
   if (predicate instanceof SimplePredicate) {
     let type;
     store.modelFor(modelName).eachAttribute(function(name, meta) {
-      if (name === predicate.property) {
+      if (name === predicate.attributeName) {
         type = meta.type;
       }
     });
 
     let value = type === 'string' ? `'${predicate.value}'` : predicate.value;
 
-    return `${predicate.property} ${predicate.operator} ${value}`;
+    return `${predicate.attributeName} ${predicate.operator} ${value}`;
   }
 
   if (predicate instanceof StringPredicate) {

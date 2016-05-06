@@ -1,10 +1,11 @@
 import { module, test } from 'qunit';
-import QueryBuilder from 'ember-flexberry-projections/query-builder';
-import FilterOperator from 'ember-flexberry-projections/query-filter-operator';
-import Condition from 'ember-flexberry-projections/query-condition';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from 'ember-flexberry-projections/query-predicate';
-import ODataAdapter from 'ember-flexberry-projections/query-odata-adapter';
-import startApp from '../helpers/start-app';
+
+import QueryBuilder from 'ember-flexberry-projections/query/builder';
+import FilterOperator from 'ember-flexberry-projections/query/filter-operator';
+import Condition from 'ember-flexberry-projections/query/condition';
+import { SimplePredicate, ComplexPredicate, StringPredicate } from 'ember-flexberry-projections/query/predicate';
+import ODataAdapter from 'ember-flexberry-projections/query/odata-adapter';
+import startApp from '../../helpers/start-app';
 
 const baseUrl = 'http://services.odata.org/Northwind/Northwind.svc';
 const app = startApp();

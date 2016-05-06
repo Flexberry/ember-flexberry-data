@@ -1,16 +1,13 @@
 import Ember from 'ember';
 
 /**
- */
-
-/**
  * Mixin for {{#crossLink "DS.Adapter"}}Adapter{{/crossLink}} to support
  * fetching models using projection.
  *
  * @module ember-flexberry-projections
+ * @namespace DS
  * @class Adapter
  * @extends Ember.Mixin
- * @public
  */
 export default Ember.Mixin.create({
   /**

@@ -15,6 +15,7 @@ import { attr, belongsTo, hasMany } from './utils/attributes';
  * This namespace contains classes and methods for working with projections.
  *
  * @class Projection
+ * @namespace DS
  * @static
  * @public
  */
