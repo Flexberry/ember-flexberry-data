@@ -6,6 +6,21 @@ import Condition from './condition';
 /**
  * Class of query language adapter that translates query object into JS function which
  * filters native JS array of objects by specified logic.
+ *
+ * ```js
+ * const data = [
+ *   { Name: 'A', Surname: 'X', Age: 10 },
+ *   { Name: 'B', Surname: 'Y', Age: 11 },
+ *   { Name: 'B', Surname: 'Z', Age: 12 }
+ * ];
+ *
+ * let adapter = new JSAdapter();
+ * let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Eq, 'B');
+ * let filter = adapter.buildFunc(builder.build());
+ * 
+ * let result = filter(data); // Y and Z
+ * ```
+ *
  * All filters uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).
  *
  * @module ember-flexberry-projections
@@ -17,8 +32,9 @@ export default class JSAdapter extends BaseAdapter {
   /**
    * Builds JS function for filtering JS array of objects by specified logic from query.
    *
+   * @method buildFunc
    * @param query Query language instance.
-   * @returns {Function}
+   * @returns {Function} Function for filtering JS array of objects.
    */
   buildFunc(query) {
     let filter = query.predicate ? buildFilter(query.predicate) : (data) => data;
