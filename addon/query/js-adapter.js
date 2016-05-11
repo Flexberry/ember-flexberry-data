@@ -17,7 +17,7 @@ import Condition from './condition';
  * let adapter = new JSAdapter();
  * let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Eq, 'B');
  * let filter = adapter.buildFunc(builder.build());
- * 
+ *
  * let result = filter(data); // Y and Z
  * ```
  *
