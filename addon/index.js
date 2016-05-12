@@ -9,16 +9,17 @@ import Store from './mixins/store';
 import Adapter from './mixins/adapter';
 import Model from './models/model';
 import create from './utils/create';
-import {attr, belongsTo, hasMany} from './utils/attributes';
+import { attr, belongsTo, hasMany } from './utils/attributes';
 
 /**
  * This namespace contains classes and methods for working with projections.
  *
  * @class Projection
+ * @namespace DS
  * @static
  * @public
  */
-let Projection = {
+export default {
   Store: Store,
   Adapter: Adapter,
   Model: Model,
@@ -27,5 +28,3 @@ let Projection = {
   belongsTo: belongsTo,
   hasMany: hasMany
 };
-
-export default Projection;

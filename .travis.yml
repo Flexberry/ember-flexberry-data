@@ -20,12 +20,13 @@ matrix:
   allow_failures:
     - env: EMBER_TRY_SCENARIO=ember-canary
 
-before_install:
-  - export PATH=/usr/local/phantomjs-2.0.0/bin:$PATH
-  - "npm config set spin false"
-  - "npm install -g npm@^2"
+before_script:
+  # Configuring NPM
+  - npm config set spin false
+  - npm install -g npm@^2
 
 install:
+  - npm install -g phantomjs-prebuilt
   - npm install -g bower
   - npm install
   - bower install
