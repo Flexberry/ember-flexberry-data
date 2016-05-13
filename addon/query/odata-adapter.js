@@ -146,7 +146,7 @@ function buildODataOrderBy(query) {
  */
 function convertPredicateToODataFilterClause(predicate, store, modelName) {
   if (predicate instanceof SimplePredicate) {
-    let type;
+    let type = '?';
     store.modelFor(modelName).eachAttribute(function(name, meta) {
       if (name === predicate.attributeName) {
         type = meta.type;
@@ -154,12 +154,11 @@ function convertPredicateToODataFilterClause(predicate, store, modelName) {
     });
 
     let value = type === 'string' ? `'${predicate.value}'` : predicate.value;
-
     return `${predicate.attributeName} ${predicate.operator} ${value}`;
   }
 
   if (predicate instanceof StringPredicate) {
-    return `contains('${predicate.attributeName}','${predicate.containsValue}')`;
+    return `contains(${predicate.attributeName},'${predicate.containsValue}')`;
   }
 
   if (predicate instanceof ComplexPredicate) {
