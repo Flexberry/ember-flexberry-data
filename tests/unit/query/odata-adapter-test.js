@@ -34,7 +34,7 @@ test('adapter odata string predicate', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where(new StringPredicate('Name').contains('Vasya'));
   let url = adapter.getODataFullUrl(builder.build());
 
-  assert.equal(url, `${baseUrl}/Customers?$filter=contains(Name,'Vasya')`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=contains(name,'Vasya')`);
 });
 
 test('adapter odata string predicate inside complex', function (assert) {
@@ -44,7 +44,7 @@ test('adapter odata string predicate inside complex', function (assert) {
   let adapter = new ODataAdapter(baseUrl, store);
   let url = adapter.getODataFullUrl(builder.build());
 
-  assert.equal(url, `${baseUrl}/Customers?$filter=contains(Name,'Vasya') and firstName eq 'Vasya'`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=contains(name,'Vasya') and firstName eq 'Vasya'`);
 });
 
 test('adapter odata complex predicate', function (assert) {
