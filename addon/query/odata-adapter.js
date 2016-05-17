@@ -1,3 +1,5 @@
+import Ember from 'ember';
+
 import BaseAdapter from './base-adapter';
 import { SimplePredicate, ComplexPredicate, StringPredicate } from './predicate';
 
@@ -32,39 +34,43 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   /**
+   * Determines the pathname for a given type.
+   * Additionally capitalizes the type name (requirement of Flexberry OData Server).
    *
-   * @method getODataUrl
-   * @param {Object} query The query for building OData URL.
-   * @return {String}
-   * @public
+   * @method pathForType
+   * @param {String} modelName
+   * @return {String} The path for a given type.
    */
-  getODataUrl(query) {
-    let odataArgs = [];
-
-    // TODO: do not use order,expand with count
-    for (let k in builders) {
-      if (builders.hasOwnProperty(k)) {
-        let v = builders[k](query, this._store);
-        if (v) {
-          odataArgs.push(`${k}=${v}`);
-        }
-      }
-    }
-
-    let queryMark = odataArgs.length > 0 ? '?' : '';
-    let queryPart = odataArgs.join('&');
-
-    return `${this._baseUrl}/${query.modelName}${queryMark}${queryPart}`;
+  pathForType(modelName) {
+    var camelized = Ember.String.camelize(modelName);
+    var capitalized = Ember.String.capitalize(camelized);
+    return Ember.String.pluralize(capitalized);
   }
 
   /**
+   * Returns base part of URL for querying OData feed (without query part).
    *
-   * @method getOData
+   * @method getODataFullUrl
    * @param {Object} query The query for building OData URL.
    * @return {String}
    * @public
    */
-  getOData(query) {
+  getODataBaseUrl(query) {
+    let type = this.pathForType(query.modelName);
+    let id = query.id ? `(${query.id})` : '';
+
+    return `${this._baseUrl}/${type}${id}`;
+  }
+
+  /**
+   * Returns query data for querying OData feed (for query part).
+   *
+   * @method getODataQuery
+   * @param {Object} query The query for building OData URL.
+   * @return {Object}
+   * @public
+   */
+  getODataQuery(query) {
     let odataArgs = {};
 
     // TODO: do not use order,expand with count
@@ -78,6 +84,29 @@ export default class ODataAdapter extends BaseAdapter {
     }
 
     return odataArgs;
+  }
+
+  /**
+   * Returns full URL for querying OData feed (base part and query part).
+   *
+   * @method getODataFullUrl
+   * @param {Object} query The query for building OData URL.
+   * @return {String}
+   * @public
+   */
+  getODataFullUrl(query) {
+    let odataArgs = this.getODataQuery(query);
+    let queryArgs = [];
+    Object.keys(odataArgs).forEach(k => {
+      let v = odataArgs[k];
+      if (v) {
+        queryArgs.push(`${k}=${v}`);
+      }
+    });
+    let queryMark = queryArgs.length > 0 ? '?' : '';
+    let queryPart = queryArgs.join('&');
+
+    return this.getODataBaseUrl(query) + queryMark + queryPart;
   }
 }
 

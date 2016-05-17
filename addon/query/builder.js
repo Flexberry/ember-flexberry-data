@@ -30,12 +30,27 @@ export default class Builder extends BaseBuilder {
     this._store = store;
     this._modelName = modelName;
 
+    this._id = null;
     this._projectionName = null;
     this._predicate = null;
     this._orderByClause = null;
     this._isCount = false;
     this._expand = {};
     this._select = [];
+  }
+
+  /**
+   * Sets the id of the requested entity.
+   *
+   * @method byId
+   * @param id {String|Number} The id of the requested entity.
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
+   */
+  byId(id) {
+    this._id = id;
+    return this;
   }
 
   /**
@@ -186,6 +201,7 @@ export default class Builder extends BaseBuilder {
 
     // TODO: Use special class.
     return {
+      id: this._id,
       modelName: this._modelName,
       predicate: this._predicate,
       order: this._orderByClause,
