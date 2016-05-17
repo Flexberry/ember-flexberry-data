@@ -187,7 +187,9 @@ function convertPredicateToODataFilterClause(predicate, store, modelName) {
   }
 
   if (predicate instanceof StringPredicate) {
-    return `contains(${predicate.attributeName},'${predicate.containsValue}')`;
+    let serializer = store.serializerFor(modelName);
+    let normalizedAttrName = serializer.keyForAttribute(predicate.attributeName);
+    return `contains(${normalizedAttrName},'${predicate.containsValue}')`;
   }
 
   if (predicate instanceof ComplexPredicate) {
