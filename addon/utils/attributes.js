@@ -2,7 +2,7 @@ import Ember from 'ember';
 import createProj from './create';
 
 /**
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  */
 
 /**

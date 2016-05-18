@@ -8,7 +8,7 @@ import OrderByClause from './order-by-clause';
  * Class of builder for query.
  * Uses method chaining.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Query
  * @class Builder
  * @extends BaseBuilder

@@ -1,5 +1,5 @@
 import { module, test } from 'qunit';
-import Proj from 'ember-flexberry-projections';
+import Proj from 'ember-flexberry-data';
 
 module('index tests');
 

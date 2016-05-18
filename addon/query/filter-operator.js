@@ -1,7 +1,7 @@
 /**
  * Enumeration of operators for filtering data for {{#crossLink "Query.SimplePredicate"}}{{/crossLink}}.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Query
  * @class FilterOperator
  */

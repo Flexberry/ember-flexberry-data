@@ -8,7 +8,7 @@ import ODataQueryAdapter from '../query/odata-adapter';
  * The OData adapter class.
  * Uses Flexberry Query as a language for requesting server.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace DS
  * @class ODataAdapter
  * @extends DS.RESTAdapter

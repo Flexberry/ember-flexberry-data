@@ -1,6 +1,6 @@
 import { module, test } from 'qunit';
 
-import { StringPredicate } from 'ember-flexberry-projections/query/predicate';
+import { StringPredicate } from 'ember-flexberry-data/query/predicate';
 
 module('query');
 

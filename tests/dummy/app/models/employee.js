@@ -1,5 +1,5 @@
 import attr from 'ember-data/attr';
-import Proj from 'ember-flexberry-projections';
+import Proj from 'ember-flexberry-data';
 
 let Employee = Proj.Model.extend({
   'First Name': attr('string'),

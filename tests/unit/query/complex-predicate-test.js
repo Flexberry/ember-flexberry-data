@@ -1,8 +1,8 @@
 import { module, test } from 'qunit';
 
-import FilterOperator from 'ember-flexberry-projections/query/filter-operator';
-import Condition from 'ember-flexberry-projections/query/condition';
-import { SimplePredicate, ComplexPredicate } from 'ember-flexberry-projections/query/predicate';
+import FilterOperator from 'ember-flexberry-data/query/filter-operator';
+import Condition from 'ember-flexberry-data/query/condition';
+import { SimplePredicate, ComplexPredicate } from 'ember-flexberry-data/query/predicate';
 
 module('query');
 

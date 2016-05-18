@@ -6,7 +6,7 @@ import BaseSerializer from './base';
 /**
  * Serializer class for OData.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Serializer
  * @class OData
  */

@@ -1,7 +1,7 @@
 /**
  * Base class of query builder.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Query
  * @class BaseBuilder
  */

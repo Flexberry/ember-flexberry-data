@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import { module, test } from 'qunit';
 
-import QueryBuilder from 'ember-flexberry-projections/query/builder';
+import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 import startApp from '../../helpers/start-app';
 

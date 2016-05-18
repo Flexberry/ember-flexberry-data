@@ -4,7 +4,7 @@ import DS from 'ember-data';
 /**
  * Base serializer class.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Serializer
  * @class Base
  */

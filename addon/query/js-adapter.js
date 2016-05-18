@@ -23,7 +23,7 @@ import Condition from './condition';
  *
  * All filters uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Query
  * @class JSAdapter
  * @extends Query.BaseAdapter

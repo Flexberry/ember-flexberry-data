@@ -1,8 +1,8 @@
 /**
  * Ember Addon that adds support of projections in models.
  *
- * @module ember-flexberry-projections
- * @main ember-flexberry-projections
+ * @module ember-flexberry-data
+ * @main ember-flexberry-data
  */
 
 import Store from './mixins/store';

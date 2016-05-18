@@ -1,10 +1,10 @@
 import { module, test } from 'qunit';
 
-import QueryBuilder from 'ember-flexberry-projections/query/builder';
-import JSAdapter from 'ember-flexberry-projections/query/js-adapter';
-import FilterOperator from 'ember-flexberry-projections/query/filter-operator';
-import Condition from 'ember-flexberry-projections/query/condition';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from 'ember-flexberry-projections/query/predicate';
+import QueryBuilder from 'ember-flexberry-data/query/builder';
+import JSAdapter from 'ember-flexberry-data/query/js-adapter';
+import FilterOperator from 'ember-flexberry-data/query/filter-operator';
+import Condition from 'ember-flexberry-data/query/condition';
+import { SimplePredicate, ComplexPredicate, StringPredicate } from 'ember-flexberry-data/query/predicate';
 
 import startApp from '../../helpers/start-app';
 

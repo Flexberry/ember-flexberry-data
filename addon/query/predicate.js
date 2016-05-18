@@ -4,7 +4,7 @@ import Condition from './condition';
 /**
  * The base class of logical predicate.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Query
  * @class BasePredicate
  */

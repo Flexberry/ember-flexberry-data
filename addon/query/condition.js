@@ -1,7 +1,7 @@
 /**
  * Enumeration of logical conditions for {{#crossLink "Query.ComplexPredicate"}}{{/crossLink}}.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Query
  * @class Condition
  */

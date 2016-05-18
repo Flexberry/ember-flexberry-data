@@ -1,5 +1,5 @@
 /**
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  */
 
 /**

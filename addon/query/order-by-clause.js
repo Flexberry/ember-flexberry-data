@@ -1,7 +1,7 @@
 /**
  * Class of order-by part of the query.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Query
  * @class OrderByClause
  */

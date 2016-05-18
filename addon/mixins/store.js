@@ -6,7 +6,7 @@ import QueryBuilder from '../query/builder';
  * Mixin for {{#crossLink "DS.Store"}}Store{{/crossLink}} to support
  * fetching models using projection.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace DS
  * @class Store
  * @extends Ember.Mixin

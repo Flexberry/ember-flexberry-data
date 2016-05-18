@@ -1,8 +1,6 @@
-# Ember-flexberry-projections
-[![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-projections.svg?branch=master)](https://travis-ci.org/Flexberry/ember-flexberry-projections)
-[![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-projections.svg?branch=develop)](https://travis-ci.org/Flexberry/ember-flexberry-projections)
-
-This README outlines the details of collaborating on this Ember addon.
+# Ember Flexberry Data
+[![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-data.svg?branch=master)](https://travis-ci.org/Flexberry/ember-flexberry-data)
+[![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-data.svg?branch=develop)](https://travis-ci.org/Flexberry/ember-flexberry-data)
 
 ## Installation
 
@@ -25,4 +23,3 @@ This README outlines the details of collaborating on this Ember addon.
 
 * `ember build`
 
-For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).

@@ -6,7 +6,7 @@ import { SimplePredicate, ComplexPredicate, StringPredicate } from './predicate'
 /**
  * Class of query adapter that translates query object into OData URL.
  *
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  * @namespace Query
  * @class ODataAdapter
  * @extends Query.BaseAdapter
