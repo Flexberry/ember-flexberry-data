@@ -1,9 +1,9 @@
 import { module, test } from 'qunit';
-import Proj from 'ember-flexberry-projections';
+import Proj from 'ember-flexberry-data';
 
 module('index tests');
 
-test('index exports', function(assert) {
+test('index exports', function (assert) {
   assert.ok(Proj.Store);
   assert.ok(Proj.Adapter);
   assert.ok(Proj.Model);

@@ -3,14 +3,11 @@ import DS from 'ember-data';
 import createProj from '../utils/create';
 
 /**
- * @module ember-flexberry-projections
- */
-
-/**
  * Model that supports projections.
  *
+ * @module ember-flexberry-data
  * @class Model
- * @namespace Projection
+ * @namespace DS
  * @extends DS.Model
  * @public
  */
@@ -22,10 +19,10 @@ Model.reopenClass({
    * Defined projections for current model type.
    *
    * @property projections
-   * @public
-   * @static
    * @type Ember.Object
    * @default null
+   * @public
+   * @static
    */
   projections: null,
 
@@ -33,15 +30,14 @@ Model.reopenClass({
    * Defines projection for specified model type.
    *
    * @method defineProjection
-   * @public
-   * @static
-   *
    * @param {String} projectionName Projection name, eg 'EmployeeE'.
    * @param {String} modelName The name of the model type.
    * @param {Object} attributes Projection attributes.
    * @return {Object} Created projection.
+   * @public
+   * @static
    */
-  defineProjection: function(projectionName, modelName, attributes) {
+  defineProjection: function (projectionName, modelName, attributes) {
     let proj = createProj(modelName, attributes);
 
     if (!this.projections) {

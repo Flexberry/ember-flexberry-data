@@ -1,22 +1,19 @@
 import Ember from 'ember';
-import getQuery from '../utils/query';
 
-/**
- * @module ember-flexberry-projections
- */
+import QueryBuilder from '../query/builder';
 
 /**
  * Mixin for {{#crossLink "DS.Store"}}Store{{/crossLink}} to support
  * fetching models using projection.
  *
+ * @module ember-flexberry-data
+ * @namespace DS
  * @class Store
- * @namespace Projection
  * @extends Ember.Mixin
- * @public
  */
 export default Ember.Mixin.create({
   /**
-   * Finds the records for the given model type.
+   * Finds all records for the given model type.
    *
    * See {{#crossLink "DS.Store/findAll:method"}}{{/crossLink}} for details.
    *
@@ -28,14 +25,18 @@ export default Ember.Mixin.create({
    * @param {String} options.projection Projection name.
    * @return {DS.AdapterPopulatedRecordArray} Records promise.
    */
-  findAll: function(modelName, options) {
+  findAll(modelName, options) {
+    Ember.Logger.debug(`Flexberry Store::findAll ${modelName}`);
+
+    let builder = new QueryBuilder(this, modelName);
+
     if (options && options.projection) {
-      return this.query(modelName, {
-        projection: options.projection
-      });
+      Ember.Logger.debug(`Flexberry Store::findAll using projection '${options.projection}'`);
+
+      builder.selectByProjection(options.projection);
     }
 
-    return this._super.apply(this, arguments);
+    return this.query(modelName, builder.build());
   },
 
   /**
@@ -52,86 +53,43 @@ export default Ember.Mixin.create({
    * @param {String} options.projection Projection name.
    * @return {Promise} Record promise.
    */
-  findRecord: function(modelName, id, options) {
+  findRecord(modelName, id, options) {
+    Ember.Logger.debug(`Flexberry Store::findRecord ${modelName}(${id})`);
+
+    let builder = new QueryBuilder(this, modelName).byId(id);
+
     if (options && options.projection) {
-      // TODO: case of options.reload === false.
-      return this.queryRecord(modelName, {
-        id: id,
-        projection: options.projection
-      });
+      Ember.Logger.debug(`Flexberry Store::findRecord using projection '${options.projection}'`);
+
+      builder.selectByProjection(options.projection);
     }
+
+    return this.queryRecord(modelName, builder.build());
+  },
+
+  /**
+   *
+   * @method query
+   * @param {String} modelName
+   * @param {any} query an opaque query to be used by the adapter
+   * @return {Promise} promise
+   */
+  query(modelName, query) {
+    Ember.Logger.debug(`Flexberry Store::query ${modelName}`, query);
 
     return this._super.apply(this, arguments);
   },
 
   /**
-   * This method delegates a query to the adapter.
-   *
-   * See {{#crossLink "DS.Store/query:method"}}{{/crossLink}} for details.
-   *
-   * @method query
-   * @public
-   *
-   * @param {String} modelName The name of the model type.
-   * @param {Object} query An opaque query to be used by the adapter.
-   * @param {String} [query.projection] Projection name.
-   * @return {Promise} A promise, which is resolved with a
-   *                   {{#crossLink "DS.RecordArray"}}RecordArray{{/crossLink}}
-   *                   once the server returns.
-   */
-  query: function(modelName, query) {
-    query = this._normalizeQuery(modelName, query);
-    return this._super(modelName, query).then(function(recordArray) {
-      return recordArray;
-    });
-  },
-
-  /**
-   * This method delegates a query to the adapter.
-   *
-   * See {{#crossLink "DS.Store/queryRecord:method"}}{{/crossLink}} for details.
    *
    * @method queryRecord
-   * @public
-   *
-   * @param {String} modelName The name of the model type.
-   * @param {Object} query An opaque query to be used by the adapter.
-   * @param {String} [query.projection] Projection name.
-   * @return {Promise} A promise, which is resolved with a
-   *                   {{#crossLink "DS.RecordObject"}}RecordObject{{/crossLink}}
-   *                   once the server returns.
+   * @param {String} modelName
+   * @param {any} query an opaque query to be used by the adapter
+   * @return {Promise} promise
    */
-  queryRecord: function(modelName, query) {
-    query = this._normalizeQuery(modelName, query);
-    return this._super(modelName, query).then(function(record) {
-      return record;
-    });
-  },
+  queryRecord(modelName, query) {
+    Ember.Logger.debug(`Flexberry Store::queryRecord ${modelName}`, query);
 
-  /**
-   * Retrieves projection from query, converts it to query params and
-   * merges with query.
-   *
-   * @method _normalizeQuery
-   * @private
-   *
-   * @param {String} modelName The name of the model type.
-   * @param {Object} [query] Query parameters.
-   * @param {String} query.projection Projection name.
-   * @return {Object} Modified query with projection parameters.
-   *                  Returns original query, if projection not specified.
-   */
-  _normalizeQuery: function(modelName, query) {
-    if (query && query.projection) {
-      let projName = query.projection;
-      let typeClass = this.modelFor(modelName);
-      let proj = typeClass.projections.get(projName);
-      let projQuery = getQuery(proj, this);
-
-      delete query.projection;
-      query = Ember.merge(query, projQuery);
-    }
-
-    return query;
+    return this._super.apply(this, arguments);
   }
 });

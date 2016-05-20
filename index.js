@@ -2,5 +2,5 @@
 'use strict';
 
 module.exports = {
-  name: 'ember-flexberry-projections'
+  name: 'ember-flexberry-data'
 };

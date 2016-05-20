@@ -1,17 +1,13 @@
 import Ember from 'ember';
 
 /**
- * @module ember-flexberry-projections
- */
-
-/**
  * Mixin for {{#crossLink "DS.Adapter"}}Adapter{{/crossLink}} to support
  * fetching models using projection.
  *
+ * @module ember-flexberry-data
+ * @namespace DS
  * @class Adapter
- * @namespace Projection
  * @extends Ember.Mixin
- * @public
  */
 export default Ember.Mixin.create({
   /**
@@ -30,7 +26,7 @@ export default Ember.Mixin.create({
    * @param {String} modelName Record type.
    * @return {String} url URL for query a record.
    */
-  urlForQueryRecord: function(query, modelName) {
+  urlForQueryRecord: function (query, modelName) {
     let id = query.id;
     delete query.id;
     return this._buildURL(modelName, id);

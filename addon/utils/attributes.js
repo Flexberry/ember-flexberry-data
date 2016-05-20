@@ -2,14 +2,14 @@ import Ember from 'ember';
 import createProj from './create';
 
 /**
- * @module ember-flexberry-projections
+ * @module ember-flexberry-data
  */
 
 /**
  * Define plain attribute in projection.
  *
  * @method attr
- * @for Projection
+ * @for DS.Projection
  * @public
  *
  * @param {String} caption A user-friendly caption for attribute.
@@ -17,15 +17,14 @@ import createProj from './create';
  * @return {Object} Projection attribute.
  */
 export function attr(caption, options) {
-  let attribute = createAttr('attr', caption, options);
-  return attribute;
+  return createAttr('attr', caption, options);
 }
 
 /**
  * Define belongsTo relationship attribute in projection.
  *
  * @method belongsTo
- * @for Projection
+ * @for DS.Projection
  * @public
  *
  * @param {String} modelName The name of the model type.
@@ -45,7 +44,7 @@ export function belongsTo(modelName, caption, attributes, options) {
  * Define hasMany relationship attribute in projection.
  *
  * @method hasMany
- * @for Projection
+ * @for DS.Projection
  * @public
  *
  * @param {String} modelName The name of the model type.
