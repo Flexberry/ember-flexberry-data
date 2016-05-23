@@ -103,6 +103,65 @@ export default DS.RESTAdapter.extend({
   },
   /* jshint unused:true */
 
+  /**
+   * Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.
+   * Appends id as `(id)` (OData specification) instead of `/id`.
+   *
+   * @method _buildURL
+   * @param {String} modelName
+   * @param {String} id
+   * @return {String}
+   * @private
+   */
+  _buildURL(modelName, id) {
+    var url = [];
+    var host = Ember.get(this, 'host');
+    var prefix = this.urlPrefix();
+    var path;
+
+    if (modelName) {
+      path = this.pathForType(modelName);
+      if (path) {
+        url.push(path);
+      }
+    }
+
+    if (prefix) {
+      url.unshift(prefix);
+    }
+
+    url = url.join('/');
+    if (!host && url && url.charAt(0) !== '/') {
+      url = '/' + url;
+    }
+
+    if (id != null) {
+      // Append id as `(id)` (OData specification) instead of `/id`.
+      url = this._appendIdToURL(id, url);
+    }
+
+    return url;
+  },
+
+  /**
+   * Appends id to URL according to the OData specification.
+   *
+   * @method _appendIdToURL
+   * @param {String} id
+   * @param {String} url
+   * @private
+   */
+  _appendIdToURL(id, url) {
+    let encId = encodeURIComponent(id);
+    let idType = Ember.get(this, 'idType');
+    if (idType !== 'number') {
+      encId = `'${encId}'`;
+    }
+
+    url += '(' + encId + ')';
+    return url;
+  },
+
   createRecord(store, type, snapshot) {
     return this._sendRecord(store, type, snapshot, 'createRecord');
   },
