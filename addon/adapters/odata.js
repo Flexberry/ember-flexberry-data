@@ -104,6 +104,20 @@ export default DS.RESTAdapter.extend({
   /* jshint unused:true */
 
   /**
+   * Overloaded method from `build-url-mixin` (Ember Data), that determines the pathname for a given type.
+   * Additionally capitalizes the type name (requirement of Flexberry OData Server).
+   *
+   * @method pathForType
+   * @param {String} modelName
+   * @return {String} The path for a given type.
+   */
+  pathForType(modelName) {
+    var camelized = Ember.String.camelize(modelName);
+    var capitalized = Ember.String.capitalize(camelized);
+    return Ember.String.pluralize(capitalized);
+  },
+
+  /**
    * Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.
    * Appends id as `(id)` (OData specification) instead of `/id`.
    *
