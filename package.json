@@ -1,6 +1,6 @@
 {
   "name": "ember-flexberry-data",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Support of database projections when reading Ember Models via Store.",
   "license": "MIT",
   "author": {
@@ -9,8 +9,8 @@
     "url": "http://flexberry.net/"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/Flexberry/ember-flexberry-data.git"
+    "type": "git",
+    "url": "https://github.com/Flexberry/ember-flexberry-data.git"
   },
   "directories": {
     "doc": "doc",
