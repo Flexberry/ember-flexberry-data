@@ -53,7 +53,7 @@ export default class JSAdapter extends BaseAdapter {
  * @param query Query instance.
  * @returns {Function}
  */
-function buildTopSkip(query) {
+export function buildTopSkip(query) {
   if (!query.top && !query.skip) {
     return data => data;
   }
@@ -82,7 +82,7 @@ function buildTopSkip(query) {
  * @param query Query instance.
  * @returns {Function}
  */
-function buildOrder(query) {
+export function buildOrder(query) {
   if (!query.order) {
     return data => data;
   }
@@ -130,7 +130,7 @@ function buildOrder(query) {
  * @param query Query instance.
  * @returns {Function}
  */
-function buildProjection(query) {
+export function buildProjection(query) {
   if (!query.select || query.select.length === 0) {
     return data => data;
   }
@@ -153,7 +153,7 @@ function buildProjection(query) {
  * @param predicate Predicate for array of objects.
  * @returns {Function}
  */
-function buildFilter(predicate) {
+export function buildFilter(predicate) {
   if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
     return getSimpleFilterFunction(predicate);
   }
@@ -202,7 +202,7 @@ function getSimpleFilterFunction(predicate) {
  * @param {Query.SimplePredicate|Query.ComplexPredicate} predicate Predicate for an attribute.
  * @returns {Function} Function for filtering single attribute.
  */
-function getAttributeFilterFunction(predicate) {
+export function getAttributeFilterFunction(predicate) {
   if (predicate instanceof SimplePredicate) {
     switch (predicate.operator) {
       case FilterOperator.Eq:
@@ -231,6 +231,8 @@ function getAttributeFilterFunction(predicate) {
   if (predicate instanceof StringPredicate) {
     return function (i) { return i[predicate.attributeName].indexOf(predicate.containsValue) > -1; };
   }
+
+  throw new Error(`Unsupported predicate '${predicate}'.`);
 }
 
 /**

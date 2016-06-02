@@ -15,9 +15,9 @@ module('query');
 
 test('adapter js without predicate', (assert) => {
   const data = [
-    { Name: 'A', Surname: 'X', Age: 10 },
-    { Name: 'A', Surname: 'Y', Age: 11 },
-    { Name: 'B', Surname: 'Z', Age: 15 }
+    { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
+    { Id: 2, Name: 'A', Surname: 'Y', Age: 11 },
+    { Id: 3, Name: 'B', Surname: 'Z', Age: 15 }
   ];
 
   let adapter = new JSAdapter();
@@ -27,6 +27,9 @@ test('adapter js without predicate', (assert) => {
   let result = filter(data);
   assert.ok(result);
   assert.equal(3, result.length);
+  assert.equal(1, result[0].Id);
+  assert.equal(2, result[1].Id);
+  assert.equal(3, result[2].Id);
 });
 
 test('adapter js simple predicate eq', (assert) => {

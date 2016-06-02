@@ -21,12 +21,52 @@ test('adapter odata id', function (assert) {
   assert.equal(url, baseUrl + '/Customers(42)');
 });
 
-test('adapter odata simple predicate', function (assert) {
+test('adapter odata simple predicate eq', function (assert) {
   let adapter = new ODataAdapter(baseUrl, store);
-  let builder = new QueryBuilder(store, 'customer').where('firstName', 'eq', 'Vasya');
+  let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Eq, 'Vasya');
   let url = adapter.getODataFullUrl(builder.build());
 
-  assert.equal(url, `${baseUrl}/Customers?$filter=firstName eq 'Vasya'`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=first-name eq 'Vasya'`);
+});
+
+test('adapter odata simple predicate neq', function (assert) {
+  let adapter = new ODataAdapter(baseUrl, store);
+  let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Neq, 'Vasya');
+  let url = adapter.getODataFullUrl(builder.build());
+
+  assert.equal(url, `${baseUrl}/Customers?$filter=first-name ne 'Vasya'`);
+});
+
+test('adapter odata simple predicate ge', function (assert) {
+  let adapter = new ODataAdapter(baseUrl, store);
+  let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Ge, 'Vasya');
+  let url = adapter.getODataFullUrl(builder.build());
+
+  assert.equal(url, `${baseUrl}/Customers?$filter=first-name gt 'Vasya'`);
+});
+
+test('adapter odata simple predicate geq', function (assert) {
+  let adapter = new ODataAdapter(baseUrl, store);
+  let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Geq, 'Vasya');
+  let url = adapter.getODataFullUrl(builder.build());
+
+  assert.equal(url, `${baseUrl}/Customers?$filter=first-name ge 'Vasya'`);
+});
+
+test('adapter odata simple predicate le', function (assert) {
+  let adapter = new ODataAdapter(baseUrl, store);
+  let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Le, 'Vasya');
+  let url = adapter.getODataFullUrl(builder.build());
+
+  assert.equal(url, `${baseUrl}/Customers?$filter=first-name lt 'Vasya'`);
+});
+
+test('adapter odata simple predicate leq', function (assert) {
+  let adapter = new ODataAdapter(baseUrl, store);
+  let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Leq, 'Vasya');
+  let url = adapter.getODataFullUrl(builder.build());
+
+  assert.equal(url, `${baseUrl}/Customers?$filter=first-name le 'Vasya'`);
 });
 
 test('adapter odata string predicate', function (assert) {
@@ -44,7 +84,7 @@ test('adapter odata string predicate inside complex', function (assert) {
   let adapter = new ODataAdapter(baseUrl, store);
   let url = adapter.getODataFullUrl(builder.build());
 
-  assert.equal(url, `${baseUrl}/Customers?$filter=contains(name,'Vasya') and firstName eq 'Vasya'`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=contains(name,'Vasya') and first-name eq 'Vasya'`);
 });
 
 test('adapter odata complex predicate', function (assert) {
@@ -57,7 +97,7 @@ test('adapter odata complex predicate', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where(cp1);
   let url = adapter.getODataFullUrl(builder.build());
 
-  assert.equal(url, `${baseUrl}/Customers?$filter=firstName eq 'Vasya' or lastName eq 'Ivanov' or age eq 10`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=first-name eq 'Vasya' or last-name eq 'Ivanov' or age eq 10`);
 });
 
 test('adapter odata order', function (assert) {
