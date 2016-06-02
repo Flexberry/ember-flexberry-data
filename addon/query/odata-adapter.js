@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 import BaseAdapter from './base-adapter';
 import { SimplePredicate, ComplexPredicate, StringPredicate } from './predicate';
+import FilterOperator from './filter-operator';
 
 /**
  * Class of query adapter that translates query object into OData URL.
@@ -186,12 +187,15 @@ function convertPredicateToODataFilterClause(predicate, store, modelName) {
       throw new Error(`Unknown type for '${predicate.attributeName}' attribute.`);
     }
 
+    let attribute = store.serializerFor(modelName).keyForAttribute(predicate.attributeName);
     let value = type === 'string' ? `'${predicate.value}'` : predicate.value;
-    return `${store.serializerFor(modelName).keyForAttribute(predicate.attributeName)} ${predicate.operator} ${value}`;
+    let operator = getODataFilterOperator(predicate.operator);
+    return `${attribute} ${operator} ${value}`;
   }
 
   if (predicate instanceof StringPredicate) {
-    return `contains(${store.serializerFor(modelName).keyForAttribute(predicate.attributeName)},'${predicate.containsValue}')`;
+    let attribute = store.serializerFor(modelName).keyForAttribute(predicate.attributeName);
+    return `contains(${attribute},'${predicate.containsValue}')`;
   }
 
   if (predicate instanceof ComplexPredicate) {
@@ -201,4 +205,35 @@ function convertPredicateToODataFilterClause(predicate, store, modelName) {
   }
 
   throw new Error(`Unknown predicate '${predicate}'`);
+}
+
+/**
+ * Converts filter operator to OData representation.
+ *
+ * @param {Query.FilterOperator} operator Operator to convert.
+ * @returns {String} Converted operator.
+ */
+function getODataFilterOperator(operator) {
+  switch (operator) {
+    case FilterOperator.Eq:
+      return 'eq';
+
+    case FilterOperator.Neq:
+      return 'ne';
+
+    case FilterOperator.Le:
+      return 'lt';
+
+    case FilterOperator.Leq:
+      return 'le';
+
+    case FilterOperator.Ge:
+      return 'gt';
+
+    case FilterOperator.Geq:
+      return 'ge';
+
+    default:
+      throw new Error(`Unsupported filter operator '${operator}'.`);
+  }
 }
