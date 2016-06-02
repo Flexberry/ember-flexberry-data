@@ -26,7 +26,7 @@ test('adapter odata simple predicate', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', 'eq', 'Vasya');
   let url = adapter.getODataFullUrl(builder.build());
 
-  assert.equal(url, `${baseUrl}/Customers?$filter=firstName eq 'Vasya'`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=first-name eq 'Vasya'`);
 });
 
 test('adapter odata string predicate', function (assert) {
@@ -44,7 +44,7 @@ test('adapter odata string predicate inside complex', function (assert) {
   let adapter = new ODataAdapter(baseUrl, store);
   let url = adapter.getODataFullUrl(builder.build());
 
-  assert.equal(url, `${baseUrl}/Customers?$filter=contains(name,'Vasya') and firstName eq 'Vasya'`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=contains(name,'Vasya') and first-name eq 'Vasya'`);
 });
 
 test('adapter odata complex predicate', function (assert) {
@@ -57,7 +57,7 @@ test('adapter odata complex predicate', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where(cp1);
   let url = adapter.getODataFullUrl(builder.build());
 
-  assert.equal(url, `${baseUrl}/Customers?$filter=firstName eq 'Vasya' or lastName eq 'Ivanov' or age eq 10`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=first-name eq 'Vasya' or last-name eq 'Ivanov' or age eq 10`);
 });
 
 test('adapter odata order', function (assert) {

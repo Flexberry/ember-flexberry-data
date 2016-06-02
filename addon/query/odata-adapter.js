@@ -174,9 +174,6 @@ function buildODataOrderBy(query) {
  * @return {String} OData filter part.
  */
 function convertPredicateToODataFilterClause(predicate, store, modelName) {
-  let serializer = store.serializerFor(modelName);
-  let normalizedAttrName = serializer.keyForAttribute(predicate.attributeName);
-
   if (predicate instanceof SimplePredicate) {
     let type;
     store.modelFor(modelName).eachAttribute(function(name, meta) {
@@ -190,11 +187,11 @@ function convertPredicateToODataFilterClause(predicate, store, modelName) {
     }
 
     let value = type === 'string' ? `'${predicate.value}'` : predicate.value;
-    return `${normalizedAttrName} ${predicate.operator} ${value}`;
+    return `${store.serializerFor(modelName).keyForAttribute(predicate.attributeName)} ${predicate.operator} ${value}`;
   }
 
   if (predicate instanceof StringPredicate) {
-    return `contains(${normalizedAttrName},'${predicate.containsValue}')`;
+    return `contains(${store.serializerFor(modelName).keyForAttribute(predicate.attributeName)},'${predicate.containsValue}')`;
   }
 
   if (predicate instanceof ComplexPredicate) {
