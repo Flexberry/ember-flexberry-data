@@ -1,7 +1,7 @@
 # Ember Flexberry Data
-[![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-data.svg?branch=master)](https://travis-ci.org/Flexberry/ember-flexberry-data)
-[![Build Status](https://travis-ci.org/Flexberry/ember-flexberry-data.svg?branch=develop)](https://travis-ci.org/Flexberry/ember-flexberry-data)
-[![NPM Version](https://badge.fury.io/js/ember-flexberry.svg)](https://badge.fury.io/js/ember-flexberry)
+[![Build Status Master](https://travis-ci.org/Flexberry/ember-flexberry-data.svg?branch=master)](https://travis-ci.org/Flexberry/ember-flexberry-data)
+[![Build Status Develop](https://travis-ci.org/Flexberry/ember-flexberry-data.svg?branch=develop)](https://travis-ci.org/Flexberry/ember-flexberry-data)
+[![NPM Version](https://badge.fury.io/js/ember-flexberry-data.svg)](https://badge.fury.io/js/ember-flexberry-data)
 
 ## Installation
 
