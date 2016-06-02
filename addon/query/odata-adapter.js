@@ -176,22 +176,26 @@ function buildODataOrderBy(query) {
  */
 function convertPredicateToODataFilterClause(predicate, store, modelName) {
   if (predicate instanceof SimplePredicate) {
-    let type = '?';
+    let type;
     store.modelFor(modelName).eachAttribute(function(name, meta) {
       if (name === predicate.attributeName) {
         type = meta.type;
       }
     });
 
+    if (!type) {
+      throw new Error(`Unknown type for '${predicate.attributeName}' attribute.`);
+    }
+
+    let attribute = store.serializerFor(modelName).keyForAttribute(predicate.attributeName);
     let value = type === 'string' ? `'${predicate.value}'` : predicate.value;
     let operator = getODataFilterOperator(predicate.operator);
-    return `${predicate.attributeName} ${operator} ${value}`;
+    return `${attribute} ${operator} ${value}`;
   }
 
   if (predicate instanceof StringPredicate) {
-    let serializer = store.serializerFor(modelName);
-    let normalizedAttrName = serializer.keyForAttribute(predicate.attributeName);
-    return `contains(${normalizedAttrName},'${predicate.containsValue}')`;
+    let attribute = store.serializerFor(modelName).keyForAttribute(predicate.attributeName);
+    return `contains(${attribute},'${predicate.containsValue}')`;
   }
 
   if (predicate instanceof ComplexPredicate) {
