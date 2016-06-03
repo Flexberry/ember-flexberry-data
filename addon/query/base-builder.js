@@ -1,3 +1,4 @@
+// jscs:disable
 /**
  * Base class of query builder.
  *
