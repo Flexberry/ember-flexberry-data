@@ -39,5 +39,9 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
     } else {
       json[payloadKey] = Ember.String.pluralize(Ember.String.capitalize(Ember.String.camelize(relationship.type))) + '(' + belongsToId + ')';
     }
+
+    if (relationship.options.polymorphic) {
+      this.serializePolymorphicType(snapshot, json, relationship);
+    }
   }
 });
