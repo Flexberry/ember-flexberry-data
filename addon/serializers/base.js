@@ -134,13 +134,12 @@ export default DS.RESTSerializer.extend({
     @param {Object} relationship
    */
   serializePolymorphicType(snapshot, json, relationship) {
-    let belongsToId = snapshot.belongsTo(relationship.key, { id: true });
-    let polymorphicType = snapshot.belongsTo(relationship.key).modelName;
+    let belongsTo = snapshot.belongsTo(relationship.key);
     let payloadKey = this.keyForRelationship(relationship.key, relationship.kind, 'serialize');
-    if (Ember.isNone(belongsToId)) {
-      json[payloadKey] = null;
+    if (belongsTo) {
+      json[payloadKey] = Ember.String.pluralize(this.modelNameFromRelationshipType(belongsTo.modelName)) + '(' + belongsTo.id + ')';
     } else {
-      json[payloadKey] = Ember.String.pluralize(this.modelNameFromRelationshipType(polymorphicType)) + '(' + belongsToId + ')';
+      json[payloadKey] = null;
     }
   },
 
