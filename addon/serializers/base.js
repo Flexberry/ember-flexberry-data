@@ -98,6 +98,16 @@ export default DS.RESTSerializer.extend({
   /* jshint unused:true */
 
   /**
+    Return model name for relationship.
+
+    @method modelNameFromRelationshipType
+    @param {String} relationshipType Type of relationship (`relationship.type`).
+   */
+  modelNameFromRelationshipType(relationshipType) {
+    return Ember.String.capitalize(Ember.String.camelize(relationshipType));
+  },
+
+  /**
    * Serialization method to serialize record into hash.
    *
    * @param hash Target hash.
@@ -112,6 +122,26 @@ export default DS.RESTSerializer.extend({
 
     // {...} instead of {"application": {...}}
     Ember.merge(hash, this.serialize(record, options));
+  },
+
+  /**
+    You can use this method to customize how polymorphic objects are serialized.
+    [More info](http://emberjs.com/api/data/classes/DS.RESTSerializer.html#method_serializePolymorphicType).
+
+    @method serializePolymorphicType
+    @param {DS.Snapshot} snapshot
+    @param {Object} json
+    @param {Object} relationship
+   */
+  serializePolymorphicType(snapshot, json, relationship) {
+    let belongsToId = snapshot.belongsTo(relationship.key, { id: true });
+    let polymorphicType = snapshot.belongsTo(relationship.key).modelName;
+    let payloadKey = this.keyForRelationship(relationship.key, relationship.kind, 'serialize');
+    if (Ember.isNone(belongsToId)) {
+      json[payloadKey] = null;
+    } else {
+      json[payloadKey] = Ember.String.pluralize(this.modelNameFromRelationshipType(polymorphicType)) + '(' + belongsToId + ')';
+    }
   },
 
   /**
