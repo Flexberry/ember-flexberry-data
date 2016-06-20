@@ -150,7 +150,7 @@ function buildODataFilters(query, store) {
   return convertPredicateToODataFilterClause(predicate, store, query.modelName);
 }
 
-function buildODataOrderBy(query) {
+function buildODataOrderBy(query, store) {
   if (!query.order) {
     return null;
   }
@@ -161,6 +161,23 @@ function buildODataOrderBy(query) {
     let sep = i ? ',' : '';
     let direction = property.direction ? ` ${property.direction}` : '';
     result += `${sep}${property.name}${direction}`;
+  }
+
+  for (let i = 0; i < query.expand.length; i++) {
+    let order = '';
+    let master = query.expand[i].split('(')[0];
+    for (let j = 0; j < query.order.masterLength(master); j++) {
+      let sep = j ? ',' : '';
+      let property = query.order.masterAttribute(master, j);
+      let direction = property.direction ? ` ${property.direction}` : '';
+      let name = store.serializerFor(query.modelName).keyForAttribute(property.name);
+      order += `${sep}${name}${direction}`;
+    }
+
+    if (order) {
+      query.expand[i] = query.expand[i].slice(0, -1) + ';$orderby=' + order + ')';
+    }
+
   }
 
   return result;
