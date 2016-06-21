@@ -293,6 +293,24 @@ export class DetailPredicate extends BasePredicate {
 
     return this;
   }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the predicate.
+   * @public
+   */
+  toString() {
+    let func = 'IncompleteDeteailPredicate';
+    if (this._all) {
+      func = 'all';
+    } else if (this._any) {
+      func = 'any';
+    }
+
+    return `${func}${this._predicate ? this._predicate.toString() : '<null>'}`;
+  }
 }
 
 /**
