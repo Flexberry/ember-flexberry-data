@@ -102,10 +102,10 @@ test('adapter odata complex predicate', function (assert) {
 
 test('adapter odata order', function (assert) {
   let adapter = new ODataAdapter(baseUrl, store);
-  let builder = new QueryBuilder(store, 'customer').orderBy('firstName asc, Value desc, Third');
+  let builder = new QueryBuilder(store, 'customer').orderBy('firstName asc, Value desc, Third,address.city asc');
   let url = adapter.getODataFullUrl(builder.build());
 
-  assert.equal(url, baseUrl + '/Customers?$orderby=firstName asc,Value desc,Third');
+  assert.equal(url, baseUrl + '/Customers?$orderby=first-name asc,value desc,third,address/city asc');
 });
 
 test('adapter odata skip', function (assert) {
