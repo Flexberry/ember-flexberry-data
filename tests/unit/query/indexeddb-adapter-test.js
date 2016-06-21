@@ -4,7 +4,7 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import IndexedDbAdapter from 'ember-flexberry-data/query/indexeddb-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
 
 import startApp from '../../helpers/start-app';
@@ -152,6 +152,82 @@ test('adapter indexeddb string predicate contains', (assert) => {
     assert.equal(2, result.length);
     assert.equal(1, result[0].Id);
     assert.equal(3, result[1].Id);
+  });
+});
+
+test('adapter indexeddb detail predicate all with simple predicate', (assert) => {
+  let data = [
+    { Id: 1, Tags: [{ Name: 'Tag1' }] },
+    { Id: 2 },
+    { Id: 3 }
+  ];
+
+  let dp = new DetailPredicate('Tags').all(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
+  let builder = new QueryBuilder(store, modelName).where(dp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result);
+    assert.equal(1, result.length);
+    assert.equal(1, result[0].Id);
+  });
+});
+
+test('adapter indexeddb detail predicate any with simple predicate', (assert) => {
+  let data = [
+    { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
+    { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
+    { Id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
+  ];
+
+  let dp = new DetailPredicate('Tags').any(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
+  let builder = new QueryBuilder(store, modelName).where(dp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result);
+    assert.equal(2, result.length);
+    assert.equal(1, result[0].Id);
+    assert.equal(3, result[1].Id);
+  });
+});
+
+test('adapter indexeddb detail predicate all with complex predicate', (assert) => {
+  let data = [
+    { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
+    { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
+    { Id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
+  ];
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag1');
+  let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag3');
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+  let dp = new DetailPredicate('Tags').all(cp1);
+  let builder = new QueryBuilder(store, modelName).where(dp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result);
+    assert.equal(result.length, 1);
+    assert.equal(result[0].Id, 1);
+  });
+});
+
+test('adapter indexeddb detail predicate any with complex predicate', (assert) => {
+  let data = [
+    { Id: 1, Tags: [{ Name: 'Tag4' }, { Name: 'Tag3' }] },
+    { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag1' }] },
+    { Id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag0' }] }
+  ];
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag1');
+  let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag2');
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+  let dp = new DetailPredicate('Tags').any(cp1);
+  let builder = new QueryBuilder(store, modelName).where(dp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result);
+    assert.equal(result.length, 2);
+    assert.equal(result[0].Id, 2);
+    assert.equal(result[1].Id, 3);
   });
 });
 
