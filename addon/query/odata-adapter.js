@@ -156,28 +156,14 @@ function buildODataOrderBy(query, store) {
   }
 
   let result = '';
+  let serializer = store.serializerFor(query.modelName);
   for (let i = 0; i < query.order.length; i++) {
     let property = query.order.attribute(i);
     let sep = i ? ',' : '';
+    let name = serializer.keyForAttribute(property.name);
+    let master = property.master ? `${serializer.keyForAttribute(property.master)}/` : '';
     let direction = property.direction ? ` ${property.direction}` : '';
-    result += `${sep}${property.name}${direction}`;
-  }
-
-  for (let i = 0; i < query.expand.length; i++) {
-    let order = '';
-    let master = query.expand[i].split('(')[0];
-    for (let j = 0; j < query.order.masterLength(master); j++) {
-      let sep = j ? ',' : '';
-      let property = query.order.masterAttribute(master, j);
-      let direction = property.direction ? ` ${property.direction}` : '';
-      let name = store.serializerFor(query.modelName).keyForAttribute(property.name);
-      order += `${sep}${name}${direction}`;
-    }
-
-    if (order) {
-      query.expand[i] = query.expand[i].slice(0, -1) + ';$orderby=' + order + ')';
-    }
-
+    result += `${sep}${master}${name}${direction}`;
   }
 
   return result;
