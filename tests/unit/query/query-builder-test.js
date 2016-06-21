@@ -29,7 +29,7 @@ module('query', {
   }
 });
 
-test('query builder constructor', function (assert) {
+test('query builder | constructor', function (assert) {
   let store = App.__container__.lookup('service:store');
   assert.ok(new QueryBuilder(store, 'Customer'));
   assert.ok(new QueryBuilder(store).from('Customer'));
@@ -37,7 +37,7 @@ test('query builder constructor', function (assert) {
   assert.ok(new QueryBuilder(store, 'Customer').where('Name', 'eq', 'Vasya'));
 });
 
-test('query builder projection', function (assert) {
+test('query builder | projection', function (assert) {
   // Arrange.
   let store = App.__container__.lookup('service:store');
   let builder = new QueryBuilder(store, 'Employee');

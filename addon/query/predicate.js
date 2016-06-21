@@ -162,6 +162,10 @@ export class StringPredicate extends BasePredicate {
   constructor(attributeName) {
     super();
 
+    if (!attributeName) {
+      throw new Error('Attribute name is required for StringPredicate constructor.');
+    }
+
     this._attributeName = attributeName;
     this._containsValue = null;
   }
@@ -216,6 +220,10 @@ export class DetailPredicate extends BasePredicate {
   constructor(detailName) {
     super();
 
+    if (!detailName) {
+      throw new Error('Detail name is required for DetailPredicate constructor.');
+    }
+
     this._detailName = detailName;
     this._predicate = null;
     this._all = false;
@@ -262,16 +270,14 @@ export class DetailPredicate extends BasePredicate {
    * Adds predicate for all details.
    *
    * @method all
-   * @param predicate Predicate for all details.
+   * @param ...args Predicate for all details.
    * @returns {Query.DetailPredicate} Returns this instance.
    * @public
    */
-  all(predicate) {
-    validatePredicate(predicate);
-
+  all(...args) {
+    this._predicate = createPredicate(...args);
     this._all = true;
     this._any = false;
-    this._predicate = predicate;
 
     return this;
   }
@@ -280,16 +286,14 @@ export class DetailPredicate extends BasePredicate {
    * Adds predicate for any detail.
    *
    * @method any
-   * @param predicate Predicate for any detail.
+   * @param ...args Predicate for any detail.
    * @returns {Query.DetailPredicate} Returns this instance.
    * @public
    */
-  any(predicate) {
-    validatePredicate(predicate);
-
+  any(...args) {
+    this._predicate = createPredicate(...args);
     this._any = true;
     this._all = false;
-    this._predicate = predicate;
 
     return this;
   }
@@ -350,4 +354,27 @@ function validatePredicate(predicate) {
   if (!predicate || !(predicate instanceof BasePredicate)) {
     throw new Error(`Wrong predicate ${predicate}`);
   }
+}
+
+/**
+ * Creates predicate by various parameters.
+ *
+ * @method createPredicate
+ * @param args Arguments for the predicate.
+ * @return {BasePredicate}
+ */
+export function createPredicate(...args) {
+  if (args.length === 1) {
+    if (args[0] && args[0] instanceof BasePredicate) {
+      return args[0];
+    } else {
+      throw new Error(`Specified argument is not a predicate`);
+    }
+  }
+
+  if (args.length === 3) {
+    return new SimplePredicate(args[0], args[1], args[2]);
+  }
+
+  throw new Error(`Couldn not create predicate from arguments`);
 }

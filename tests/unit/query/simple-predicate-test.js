@@ -6,33 +6,33 @@ import { SimplePredicate, ComplexPredicate } from 'ember-flexberry-data/query/pr
 
 module('query');
 
-test('simple predicate constructor', function (assert) {
+test('predicate | simple | constructor', function (assert) {
   let p = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
 
   assert.ok(p);
-  assert.ok(p.attributeName === 'Name');
-  assert.ok(p.operator === FilterOperator.Eq);
-  assert.ok(p.value === 'Vasya');
+  assert.equal(p.attributeName, 'Name');
+  assert.equal(p.operator, FilterOperator.Eq);
+  assert.equal(p.value, 'Vasya');
 });
 
-test('simple predicate or', function (assert) {
+test('predicate | simple | or', function (assert) {
   let p1 = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
   let p2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Ivanov');
   let result = p1.or(p2);
 
   assert.ok(result);
   assert.ok(result instanceof ComplexPredicate);
-  assert.ok(result.condition === Condition.Or);
-  assert.ok(result.predicates.length === 2);
+  assert.equal(result.condition, Condition.Or);
+  assert.equal(result.predicates.length, 2);
 });
 
-test('simple predicate and', function (assert) {
+test('predicate | simple | and', function (assert) {
   let p1 = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
   let p2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Ivanov');
   let result = p1.and(p2);
 
   assert.ok(result);
   assert.ok(result instanceof ComplexPredicate);
-  assert.ok(result.condition === Condition.And);
-  assert.ok(result.predicates.length === 2);
+  assert.equal(result.condition, Condition.And);
+  assert.equal(result.predicates.length, 2);
 });

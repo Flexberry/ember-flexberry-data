@@ -14,7 +14,7 @@ const adapter = new JSAdapter();
 
 module('query');
 
-test('adapter js without predicate', (assert) => {
+test('adapter | js | without predicate', (assert) => {
   const data = [
     { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
     { Id: 2, Name: 'A', Surname: 'Y', Age: 11 },
@@ -26,13 +26,13 @@ test('adapter js without predicate', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(3, result.length);
-  assert.equal(1, result[0].Id);
-  assert.equal(2, result[1].Id);
-  assert.equal(3, result[2].Id);
+  assert.equal(result.length, 3);
+  assert.equal(result[0].Id, 1);
+  assert.equal(result[1].Id, 2);
+  assert.equal(result[2].Id, 3);
 });
 
-test('adapter js simple predicate eq', (assert) => {
+test('adapter | js | simple predicate | eq', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
     { Name: 'B', Surname: 'Y', Age: 11 },
@@ -44,12 +44,12 @@ test('adapter js simple predicate eq', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal('Y', result[0].Surname);
-  assert.equal('Z', result[1].Surname);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'Y');
+  assert.equal(result[1].Surname, 'Z');
 });
 
-test('adapter js simple predicate neq', (assert) => {
+test('adapter | js | simple predicate | neq', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
     { Name: 'B', Surname: 'Y', Age: 11 },
@@ -61,12 +61,12 @@ test('adapter js simple predicate neq', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal('X', result[0].Surname);
-  assert.equal('Z', result[1].Surname);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'X');
+  assert.equal(result[1].Surname, 'Z');
 });
 
-test('adapter js simple predicate le', (assert) => {
+test('adapter | js | simple predicate | le', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
     { Name: 'B', Surname: 'Y', Age: 11 },
@@ -78,12 +78,12 @@ test('adapter js simple predicate le', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal('X', result[0].Surname);
-  assert.equal('Y', result[1].Surname);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'X');
+  assert.equal(result[1].Surname, 'Y');
 });
 
-test('adapter js simple predicate leq', (assert) => {
+test('adapter | js | simple predicate | leq', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
     { Name: 'B', Surname: 'Y', Age: 11 },
@@ -95,12 +95,12 @@ test('adapter js simple predicate leq', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal('X', result[0].Surname);
-  assert.equal('Y', result[1].Surname);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'X');
+  assert.equal(result[1].Surname, 'Y');
 });
 
-test('adapter js simple predicate ge', (assert) => {
+test('adapter | js | simple predicate | ge', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
     { Name: 'B', Surname: 'Y', Age: 11 },
@@ -112,12 +112,12 @@ test('adapter js simple predicate ge', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal('Y', result[0].Surname);
-  assert.equal('Z', result[1].Surname);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'Y');
+  assert.equal(result[1].Surname, 'Z');
 });
 
-test('adapter js simple predicate geq', (assert) => {
+test('adapter | js | simple predicate | geq', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
     { Name: 'B', Surname: 'Y', Age: 11 },
@@ -129,12 +129,12 @@ test('adapter js simple predicate geq', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal('Y', result[0].Surname);
-  assert.equal('Z', result[1].Surname);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'Y');
+  assert.equal(result[1].Surname, 'Z');
 });
 
-test('adapter js string predicate contains', (assert) => {
+test('adapter | js | string predicate | contains', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10, Country: 'Argentina' },
     { Name: 'B', Surname: 'Y', Age: 11, Country: 'Paragwaj' },
@@ -147,12 +147,12 @@ test('adapter js string predicate contains', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal('X', result[0].Surname);
-  assert.equal('Z', result[1].Surname);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'X');
+  assert.equal(result[1].Surname, 'Z');
 });
 
-test('adapter js detail predicate all with simple predicate', (assert) => {
+test('adapter | js | detail predicate | all | with simple predicate', (assert) => {
   const data = [
     { Id: 1, Tags: [{ Name: 'Tag1' }] },
     { Id: 2 },
@@ -166,11 +166,11 @@ test('adapter js detail predicate all with simple predicate', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(1, result.length);
-  assert.equal(1, result[0].Id);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Id, 1);
 });
 
-test('adapter js detail predicate any with simple predicate', (assert) => {
+test('adapter | js | detail predicate | any | with simple predicate', (assert) => {
   const data = [
     { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
     { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
@@ -184,12 +184,12 @@ test('adapter js detail predicate any with simple predicate', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal(1, result[0].Id);
-  assert.equal(3, result[1].Id);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Id, 1);
+  assert.equal(result[1].Id, 3);
 });
 
-test('adapter js detail predicate all with complex predicate', (assert) => {
+test('adapter | js | detail predicate | all | with complex predicate', (assert) => {
   const data = [
     { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
     { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
@@ -210,7 +210,7 @@ test('adapter js detail predicate all with complex predicate', (assert) => {
   assert.equal(result[0].Id, 1);
 });
 
-test('adapter js detail predicate any with complex predicate', (assert) => {
+test('adapter | js | detail predicate | any | with complex predicate', (assert) => {
   const data = [
     { Id: 1, Tags: [{ Name: 'Tag4' }, { Name: 'Tag3' }] },
     { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag1' }] },
@@ -232,7 +232,7 @@ test('adapter js detail predicate any with complex predicate', (assert) => {
   assert.equal(result[1].Id, 3);
 });
 
-test('adapter js complex predicate and', (assert) => {
+test('adapter | js | complex predicate | and', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
     { Name: 'A', Surname: 'Y', Age: 10 },
@@ -248,12 +248,12 @@ test('adapter js complex predicate and', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal('X', result[0].Surname);
-  assert.equal('Y', result[1].Surname);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'X');
+  assert.equal(result[1].Surname, 'Y');
 });
 
-test('adapter js complex predicate or', (assert) => {
+test('adapter | js | complex predicate | or', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
     { Name: 'B', Surname: 'Y', Age: 11 },
@@ -269,12 +269,12 @@ test('adapter js complex predicate or', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(2, result.length);
-  assert.equal('X', result[0].Surname);
-  assert.equal('Z', result[1].Surname);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'X');
+  assert.equal(result[1].Surname, 'Z');
 });
 
-test('adapter js select', (assert) => {
+test('adapter | js | select', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
     { Name: 'A', Surname: 'Y', Age: 11 },
@@ -286,13 +286,13 @@ test('adapter js select', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(3, result.length);
+  assert.equal(result.length, 3);
   assert.ok(result[0].Name);
   assert.ok(result[0].Age);
   assert.notOk(result[0].Surname);
 });
 
-test('adapter js order', (assert) => {
+test('adapter | js | order', (assert) => {
   const data = [
     { Name: 'A', Price: 200, Age: 10 },
     { Name: 'B', Price: 100, Age: 10 },
@@ -304,13 +304,13 @@ test('adapter js order', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(3, result.length);
-  assert.equal('C', result[0].Name);
-  assert.equal('B', result[1].Name);
-  assert.equal('A', result[2].Name);
+  assert.equal(result.length, 3);
+  assert.equal(result[0].Name, 'C');
+  assert.equal(result[1].Name, 'B');
+  assert.equal(result[2].Name, 'A');
 });
 
-test('adapter js skip-top', (assert) => {
+test('adapter | js | skip-top', (assert) => {
   const data = [
     { Name: 'A', Price: 200, Age: 10 },
     { Name: 'B', Price: 100, Age: 10 },
@@ -322,6 +322,6 @@ test('adapter js skip-top', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(1, result.length);
-  assert.equal('B', result[0].Name);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Name, 'B');
 });
