@@ -4,12 +4,13 @@ import QueryBuilder from 'ember-flexberry-data/query/builder';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from 'ember-flexberry-data/query/predicate';
 
 import startApp from '../../helpers/start-app';
 
 const app = startApp();
 const store = app.__container__.lookup('service:store');
+const adapter = new JSAdapter();
 
 module('query');
 
@@ -20,7 +21,6 @@ test('adapter js without predicate', (assert) => {
     { Id: 3, Name: 'B', Surname: 'Z', Age: 15 }
   ];
 
-  let adapter = new JSAdapter();
   let builder = new QueryBuilder(store, 'AnyUnknownModel');
   let filter = adapter.buildFunc(builder.build());
 
@@ -39,7 +39,6 @@ test('adapter js simple predicate eq', (assert) => {
     { Name: 'B', Surname: 'Z', Age: 12 }
   ];
 
-  let adapter = new JSAdapter();
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Eq, 'B');
   let filter = adapter.buildFunc(builder.build());
 
@@ -57,7 +56,6 @@ test('adapter js simple predicate neq', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let adapter = new JSAdapter();
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Neq, 'B');
   let filter = adapter.buildFunc(builder.build());
 
@@ -75,7 +73,6 @@ test('adapter js simple predicate le', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let adapter = new JSAdapter();
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Age', FilterOperator.Le, 12);
   let filter = adapter.buildFunc(builder.build());
 
@@ -93,7 +90,6 @@ test('adapter js simple predicate leq', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let adapter = new JSAdapter();
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Age', FilterOperator.Leq, 11);
   let filter = adapter.buildFunc(builder.build());
 
@@ -111,7 +107,6 @@ test('adapter js simple predicate ge', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let adapter = new JSAdapter();
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Age', FilterOperator.Ge, 10);
   let filter = adapter.buildFunc(builder.build());
 
@@ -129,7 +124,6 @@ test('adapter js simple predicate geq', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let adapter = new JSAdapter();
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Age', FilterOperator.Geq, 11);
   let filter = adapter.buildFunc(builder.build());
 
@@ -149,7 +143,6 @@ test('adapter js string predicate contains', (assert) => {
 
   let sp1 = new StringPredicate('Country').contains('i');
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where(sp1);
-  let adapter = new JSAdapter();
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -157,6 +150,86 @@ test('adapter js string predicate contains', (assert) => {
   assert.equal(2, result.length);
   assert.equal('X', result[0].Surname);
   assert.equal('Z', result[1].Surname);
+});
+
+test('adapter js detail predicate all with simple predicate', (assert) => {
+  const data = [
+    { Id: 1, Tags: [{ Name: 'Tag1' }] },
+    { Id: 2 },
+    { Id: 3 }
+  ];
+
+  let dp = new DetailPredicate('Tags').all(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(1, result.length);
+  assert.equal(1, result[0].Id);
+});
+
+test('adapter js detail predicate any with simple predicate', (assert) => {
+  const data = [
+    { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
+    { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
+    { Id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
+  ];
+
+  let dp = new DetailPredicate('Tags').any(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(2, result.length);
+  assert.equal(1, result[0].Id);
+  assert.equal(3, result[1].Id);
+});
+
+test('adapter js detail predicate all with complex predicate', (assert) => {
+  const data = [
+    { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
+    { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
+    { Id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
+  ];
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag1');
+  let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag3');
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+  let dp = new DetailPredicate('Tags').all(cp1);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Id, 1);
+});
+
+test('adapter js detail predicate any with complex predicate', (assert) => {
+  const data = [
+    { Id: 1, Tags: [{ Name: 'Tag4' }, { Name: 'Tag3' }] },
+    { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag1' }] },
+    { Id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag0' }] }
+  ];
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag1');
+  let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag2');
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+  let dp = new DetailPredicate('Tags').any(cp1);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Id, 2);
+  assert.equal(result[1].Id, 3);
 });
 
 test('adapter js complex predicate and', (assert) => {
@@ -171,7 +244,6 @@ test('adapter js complex predicate and', (assert) => {
   let cp1 = new ComplexPredicate(Condition.And, sp1, sp2);
 
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where(cp1);
-  let adapter = new JSAdapter();
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -193,7 +265,6 @@ test('adapter js complex predicate or', (assert) => {
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
 
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where(cp1);
-  let adapter = new JSAdapter();
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -211,7 +282,6 @@ test('adapter js select', (assert) => {
   ];
 
   let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Age,Name');
-  let adapter = new JSAdapter();
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -230,7 +300,6 @@ test('adapter js order', (assert) => {
   ];
 
   let builder = new QueryBuilder(store, 'AnyUnknownModel').orderBy('Age desc, Price asc');
-  let adapter = new JSAdapter();
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -249,7 +318,6 @@ test('adapter js skip-top', (assert) => {
   ];
 
   let builder = new QueryBuilder(store, 'AnyUnknownModel').skip(1).top(1);
-  let adapter = new JSAdapter();
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);

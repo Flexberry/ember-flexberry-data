@@ -102,11 +102,7 @@ export class ComplexPredicate extends BasePredicate {
       throw new Error(`Complex predicate requires at least two nested predicates`);
     }
 
-    predicates.forEach(i => {
-      if (!i || !(i instanceof BasePredicate)) {
-        throw new Error(`Wrong predicate ${i}`);
-      }
-    });
+    predicates.forEach(validatePredicate);
 
     this._condition = Condition.tryCreate(condition);
     this._predicates = predicates;
@@ -207,6 +203,117 @@ export class StringPredicate extends BasePredicate {
 }
 
 /**
+ * The predicate class for details.
+ *
+ * @namespace Query
+ * @class DetailPredicate
+ * @extends BasePredicate
+ *
+ * @param {String} detailName The name of detail for predicate.
+ * @constructor
+ */
+export class DetailPredicate extends BasePredicate {
+  constructor(detailName) {
+    super();
+
+    this._detailName = detailName;
+    this._predicate = null;
+    this._all = false;
+    this._any = false;
+  }
+
+  /**
+   * The name of detail for predicate.
+   *
+   * @returns {String}
+   */
+  get detailName() {
+    return this._detailName;
+  }
+
+  /**
+   * The predicate for details.
+   *
+   * @returns {Query.BasePredicate|null}
+   */
+  get predicate() {
+    return this._predicate;
+  }
+
+  /**
+   * Is need to use predicate for all details.
+   *
+   * @returns {Boolean}
+   */
+  get isAll() {
+    return this._all;
+  }
+
+  /**
+   * Is need to use predicate for any detail.
+   *
+   * @returns {Boolean}
+   */
+  get isAny() {
+    return this._any;
+  }
+
+  /**
+   * Adds predicate for all details.
+   *
+   * @method all
+   * @param predicate Predicate for all details.
+   * @returns {Query.DetailPredicate} Returns this instance.
+   * @public
+   */
+  all(predicate) {
+    validatePredicate(predicate);
+
+    this._all = true;
+    this._any = false;
+    this._predicate = predicate;
+
+    return this;
+  }
+
+  /**
+   * Adds predicate for any detail.
+   *
+   * @method any
+   * @param predicate Predicate for any detail.
+   * @returns {Query.DetailPredicate} Returns this instance.
+   * @public
+   */
+  any(predicate) {
+    validatePredicate(predicate);
+
+    this._any = true;
+    this._all = false;
+    this._predicate = predicate;
+
+    return this;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the predicate.
+   * @public
+   */
+  toString() {
+    let func = 'IncompleteDeteailPredicate';
+    if (this._all) {
+      func = 'all';
+    } else if (this._any) {
+      func = 'any';
+    }
+
+    return `${func}${this._predicate ? this._predicate.toString() : '<null>'}`;
+  }
+}
+
+/**
  * Combines specified predicates using `and` logic condition.
  *
  * @for BasePredicate
@@ -233,3 +340,14 @@ BasePredicate.prototype.or = function (...predicates) {
   predicates.unshift(this);
   return new ComplexPredicate(Condition.Or, ...predicates);
 };
+
+/**
+ * Throws error if specified arguemnt is not a predicate.
+ *
+ * @param {Object} predicate Object for validate.
+ */
+function validatePredicate(predicate) {
+  if (!predicate || !(predicate instanceof BasePredicate)) {
+    throw new Error(`Wrong predicate ${predicate}`);
+  }
+}

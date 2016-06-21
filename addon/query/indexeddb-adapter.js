@@ -2,7 +2,7 @@ import Ember from 'ember';
 import Dexie from 'npm:dexie';
 
 import FilterOperator from './filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
 import Condition from './condition';
 import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip } from './js-adapter';
@@ -97,7 +97,7 @@ function updateWhereClause(table, query) {
     }
   }
 
-  if (predicate instanceof StringPredicate) {
+  if (predicate instanceof StringPredicate || predicate instanceof DetailPredicate) {
     return table.filter(getAttributeFilterFunction(predicate));
   }
 
