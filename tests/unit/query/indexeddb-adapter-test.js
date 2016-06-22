@@ -273,6 +273,31 @@ test('adapter | indexeddb | complex predicate | or', (assert) => {
   });
 });
 
+test('adapter | indexeddb | complex predicate | with nested complex predicate', function (assert) {
+  // Arrange.
+  let data = [
+    { Id: 1,  Name: 'A', Surname: 'X', Age: 10 },
+    { Id: 2,  Name: 'B', Surname: 'Y', Age: 11 },
+    { Id: 3,  Name: 'C', Surname: 'Z', Age: 12 }
+  ];
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
+  let sp2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Z');
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+
+  let sp3 = new SimplePredicate('Age', FilterOperator.Eq, 12);
+  let cp2 = new ComplexPredicate(Condition.And, cp1, sp3);
+
+  // Act && Assert.
+  let builder = new QueryBuilder(store, modelName).where(cp2);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result);
+    assert.equal(result.length, 1);
+    assert.equal(result[0].Surname, 'Z');
+  });
+});
+
 test('adapter | indexeddb | select', (assert) => {
   let data = [
     { Id: 1, Name: 'A', Surname: 'X', Age: 10 },

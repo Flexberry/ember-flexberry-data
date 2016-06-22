@@ -274,6 +274,32 @@ test('adapter | js | complex predicate | or', (assert) => {
   assert.equal(result[1].Surname, 'Z');
 });
 
+test('adapter | js | complex predicate | with nested complex predicate', function (assert) {
+  // Arrange.
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'C', Surname: 'Z', Age: 12 }
+  ];
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
+  let sp2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Z');
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+
+  let sp3 = new SimplePredicate('Age', FilterOperator.Eq, 12);
+  let cp2 = new ComplexPredicate(Condition.And, cp1, sp3);
+
+  // Act.
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(cp2);
+  let filter = adapter.buildFunc(builder.build());
+
+  // Assert.
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Surname, 'Z');
+});
+
 test('adapter | js | select', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },

@@ -192,6 +192,23 @@ test('adapter | odata | complex predicate', function (assert) {
   assert.equal(url, `${baseUrl}/Customers?$filter=first-name eq 'Vasya' or last-name eq 'Ivanov' or age eq 10`);
 });
 
+test('adapter | odata | complex predicate | with nested complex predicate', function (assert) {
+  // Arrange.
+  let sp1 = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
+  let sp2 = new SimplePredicate('lastName', FilterOperator.Eq, 'Ivanov');
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+
+  let sp3 = new SimplePredicate('age', FilterOperator.Eq, 10);
+  let cp2 = new ComplexPredicate(Condition.And, cp1, sp3);
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(cp2);
+  let url = adapter.getODataFullUrl(builder.build());
+
+  // Assert.
+  assert.equal(url, `${baseUrl}/Customers?$filter=(first-name eq 'Vasya' or last-name eq 'Ivanov') and age eq 10`);
+});
+
 test('adapter | odata | order', function (assert) {
   // Arrange && Act.
   let builder = new QueryBuilder(store, 'customer').orderBy('firstName asc, Value desc, Third');

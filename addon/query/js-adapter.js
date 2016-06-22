@@ -150,26 +150,27 @@ export function buildProjection(query) {
 /**
  * Builds function for filtering array of objects using predicate.
  *
- * @param predicate Predicate for array of objects.
+ * @param predicate Predicate for filtering array of objects.
  * @returns {Function}
  */
-export function buildFilter(predicate) {
+function buildFilter(predicate) {
   let b1 = predicate instanceof SimplePredicate;
   let b2 = predicate instanceof StringPredicate;
   let b3 = predicate instanceof DetailPredicate;
 
   if (b1 || b2 || b3) {
-    return getSimpleFilterFunction(predicate);
+    let filterFunction = getAttributeFilterFunction(predicate);
+    return getFilterFunctionAnd([filterFunction]);
   }
 
   if (predicate instanceof ComplexPredicate) {
     let filterFunctions = predicate.predicates.map(getAttributeFilterFunction);
     switch (predicate.condition) {
       case Condition.And:
-        return getComplexFilterFunctionAnd(filterFunctions);
+        return getFilterFunctionAnd(filterFunctions);
 
       case Condition.Or:
-        return getComplexFilterFunctionOr(filterFunctions);
+        return getFilterFunctionOr(filterFunctions);
 
       default:
         throw new Error(`Unsupported condition '${predicate.condition}'.`);
@@ -180,52 +181,31 @@ export function buildFilter(predicate) {
 }
 
 /**
- * Returns function for filtering array of objects using simple or string predicate.
- * Result function filters array of objects and returns those, for which
- * an attribute filter function returned `true`.
+ * Returns function for checkign single object using predicate.
  *
- * @param {Query.SimplePredicate|Query.ComplexPredicate} predicate Predicate for array of objects.
- * @returns {Function}
- */
-function getSimpleFilterFunction(predicate) {
-  let attributeFilter = getAttributeFilterFunction(predicate);
-  return function (data) {
-    let result = [];
-    data.forEach(i => {
-      if (attributeFilter(i)) {
-        result.push(i);
-      }
-    });
-    return result;
-  };
-}
-
-/**
- * Returns function for filtering single attribute of an object using predicate.
- *
- * @param {Query.SimplePredicate|Query.ComplexPredicate} predicate Predicate for an attribute.
- * @returns {Function} Function for filtering single attribute.
+ * @param {Query.BasePredicate} predicate Predicate for an attribute.
+ * @returns {Function} Function for checkign single object.
  */
 export function getAttributeFilterFunction(predicate) {
   if (predicate instanceof SimplePredicate) {
     switch (predicate.operator) {
       case FilterOperator.Eq:
-        return function (i) { return i[predicate.attributeName] === predicate.value; };
+        return (i) => i[predicate.attributeName] === predicate.value;
 
       case FilterOperator.Neq:
-        return function (i) { return i[predicate.attributeName] !== predicate.value; };
+        return (i) => i[predicate.attributeName] !== predicate.value;
 
       case FilterOperator.Le:
-        return function (i) { return i[predicate.attributeName] < predicate.value; };
+        return (i) => i[predicate.attributeName] < predicate.value;
 
       case FilterOperator.Leq:
-        return function (i) { return i[predicate.attributeName] <= predicate.value; };
+        return (i) => i[predicate.attributeName] <= predicate.value;
 
       case FilterOperator.Ge:
-        return function (i) { return i[predicate.attributeName] > predicate.value; };
+        return (i) => i[predicate.attributeName] > predicate.value;
 
       case FilterOperator.Geq:
-        return function (i) { return i[predicate.attributeName] >= predicate.value; };
+        return (i) => i[predicate.attributeName] >= predicate.value;
 
       default:
         throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
@@ -233,7 +213,7 @@ export function getAttributeFilterFunction(predicate) {
   }
 
   if (predicate instanceof StringPredicate) {
-    return function (i) { return i[predicate.attributeName].indexOf(predicate.containsValue) > -1; };
+    return (i) => i[predicate.attributeName].indexOf(predicate.containsValue) > -1;
   }
 
   if (predicate instanceof DetailPredicate) {
@@ -261,6 +241,40 @@ export function getAttributeFilterFunction(predicate) {
     }
   }
 
+  if (predicate instanceof ComplexPredicate) {
+    let filterFunctions = predicate.predicates.map(getAttributeFilterFunction);
+    switch (predicate.condition) {
+      case Condition.And:
+        return function (i) {
+          let check = true;
+          for (let funcIndex = 0; funcIndex < filterFunctions.length; funcIndex++) {
+            check &= filterFunctions[funcIndex](i);
+            if (!check) {
+              break;
+            }
+          }
+
+          return check;
+        };
+
+      case Condition.Or:
+        return function (i) {
+          let check = false;
+          for (let funcIndex = 0; funcIndex < filterFunctions.length; funcIndex++) {
+            check |= filterFunctions[funcIndex](i);
+            if (check) {
+              break;
+            }
+          }
+
+          return check;
+        };
+
+      default:
+        throw new Error(`Unsupported condition '${predicate.condition}'.`);
+    }
+  }
+
   throw new Error(`Unsupported predicate '${predicate}'.`);
 }
 
@@ -273,7 +287,7 @@ export function getAttributeFilterFunction(predicate) {
  * @param {Function[]} filterFunctions Array of attribute filter functions.
  * @returns {Function} Complex filter function for `or` condition.
  */
-function getComplexFilterFunctionAnd(filterFunctions) {
+function getFilterFunctionAnd(filterFunctions) {
   return function (data) {
     let result = [];
     for (let itemIndex = 0; itemIndex < data.length; itemIndex++) {
@@ -303,7 +317,7 @@ function getComplexFilterFunctionAnd(filterFunctions) {
  * @param {Function[]} filterFunctions Array of attribute filter functions.
  * @returns {Function} Complex filter function for `or` condition.
  */
-function getComplexFilterFunctionOr(filterFunctions) {
+function getFilterFunctionOr(filterFunctions) {
   return function (data) {
     let result = [];
     for (let itemIndex = 0; itemIndex < data.length; itemIndex++) {

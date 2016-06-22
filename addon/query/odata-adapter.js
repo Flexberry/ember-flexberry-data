@@ -147,7 +147,7 @@ function buildODataFilters(query, store) {
     return null;
   }
 
-  return convertPredicateToODataFilterClause(predicate, store, query.modelName);
+  return convertPredicateToODataFilterClause(predicate, store, query.modelName, '', 0);
 }
 
 function buildODataOrderBy(query) {
@@ -169,13 +169,13 @@ function buildODataOrderBy(query) {
 /**
  * Converts specified predicate into OData filter part.
  *
- * @method convertPredicateToODataFilterClause
  * @param predicate {BasePredicate} Predicate to convert.
  * @param store
- * @param prefix Prefix for detail attributes.
+ * @param {String} prefix Prefix for detail attributes.
+ * @param {Number} level Nesting level for recursion with comples predicates.
  * @return {String} OData filter part.
  */
-function convertPredicateToODataFilterClause(predicate, store, modelName, prefix) {
+function convertPredicateToODataFilterClause(predicate, store, modelName, prefix, level) {
   if (predicate instanceof SimplePredicate) {
     let type;
     store.modelFor(modelName).eachAttribute(function(name, meta) {
@@ -217,15 +217,18 @@ function convertPredicateToODataFilterClause(predicate, store, modelName, prefix
       throw new Error(`OData supports only 'any' or 'or' operations for details`);
     }
 
-    let detailPredicate = convertPredicateToODataFilterClause(predicate.predicate, store, modelName, 'f');
+    let detailPredicate = convertPredicateToODataFilterClause(predicate.predicate, store, modelName, prefix + 'f', level);
 
     return `${predicate.detailName}/${func}(${detailPredicate})`;
   }
 
   if (predicate instanceof ComplexPredicate) {
     let separator = ` ${predicate.condition} `;
-    return predicate.predicates
-      .map(i => convertPredicateToODataFilterClause(i, store, modelName, prefix)).join(separator);
+    let result = predicate.predicates
+      .map(i => convertPredicateToODataFilterClause(i, store, modelName, prefix, level + 1)).join(separator);
+    let lp = level > 0 ? '(' : '';
+    let rp = level > 0 ? ')' : '';
+    return lp + result + rp;
   }
 
   throw new Error(`Unknown predicate '${predicate}'`);
