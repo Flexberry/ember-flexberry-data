@@ -1,7 +1,7 @@
 import DS from 'ember-data';
 
 import BaseBuilder from './base-builder';
-import { BasePredicate, SimplePredicate } from './predicate';
+import { createPredicate } from './predicate';
 import OrderByClause from './order-by-clause';
 
 /**
@@ -212,29 +212,6 @@ export default class Builder extends BaseBuilder {
       select: Object.keys(this._select)
     };
   }
-}
-
-/**
- * Creates predicate by various parameters.
- *
- * @method createPredicate
- * @param args Arguments for the predicate.
- * @return {BasePredicate}
- */
-function createPredicate(...args) {
-  if (args.length === 1) {
-    if (args[0] && args[0] instanceof BasePredicate) {
-      return args[0];
-    } else {
-      throw new Error(`Specified argument is not a predicate`);
-    }
-  }
-
-  if (args.length === 3) {
-    return new SimplePredicate(args[0], args[1], args[2]);
-  }
-
-  throw new Error(`Couldn not create predicate from arguments`);
 }
 
 /**

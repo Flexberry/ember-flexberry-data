@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 
 /**
@@ -175,9 +175,10 @@ function buildODataOrderBy(query, store) {
  * @method convertPredicateToODataFilterClause
  * @param predicate {BasePredicate} Predicate to convert.
  * @param store
+ * @param prefix Prefix for detail attributes.
  * @return {String} OData filter part.
  */
-function convertPredicateToODataFilterClause(predicate, store, modelName) {
+function convertPredicateToODataFilterClause(predicate, store, modelName, prefix) {
   if (predicate instanceof SimplePredicate) {
     let type;
     store.modelFor(modelName).eachAttribute(function(name, meta) {
@@ -191,6 +192,10 @@ function convertPredicateToODataFilterClause(predicate, store, modelName) {
     }
 
     let attribute = store.serializerFor(modelName).keyForAttribute(predicate.attributeName);
+    if (prefix) {
+      attribute = `${prefix}:${prefix}/${attribute}`;
+    }
+
     let value = type === 'string' ? `'${predicate.value}'` : predicate.value;
     let operator = getODataFilterOperator(predicate.operator);
     return `${attribute} ${operator} ${value}`;
@@ -198,13 +203,32 @@ function convertPredicateToODataFilterClause(predicate, store, modelName) {
 
   if (predicate instanceof StringPredicate) {
     let attribute = store.serializerFor(modelName).keyForAttribute(predicate.attributeName);
+    if (prefix) {
+      attribute = `${prefix}:${prefix}/${attribute}`;
+    }
+
     return `contains(${attribute},'${predicate.containsValue}')`;
+  }
+
+  if (predicate instanceof DetailPredicate) {
+    let func = '';
+    if (predicate.isAll) {
+      func = 'all';
+    } else if (predicate.isAny) {
+      func = 'any';
+    } else {
+      throw new Error(`OData supports only 'any' or 'or' operations for details`);
+    }
+
+    let detailPredicate = convertPredicateToODataFilterClause(predicate.predicate, store, modelName, 'f');
+
+    return `${predicate.detailName}/${func}(${detailPredicate})`;
   }
 
   if (predicate instanceof ComplexPredicate) {
     let separator = ` ${predicate.condition} `;
     return predicate.predicates
-      .map(i => convertPredicateToODataFilterClause(i, store, modelName)).join(separator);
+      .map(i => convertPredicateToODataFilterClause(i, store, modelName, prefix)).join(separator);
   }
 
   throw new Error(`Unknown predicate '${predicate}'`);

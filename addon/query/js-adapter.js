@@ -1,5 +1,5 @@
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
 
@@ -154,7 +154,11 @@ export function buildProjection(query) {
  * @returns {Function}
  */
 export function buildFilter(predicate) {
-  if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+  let b1 = predicate instanceof SimplePredicate;
+  let b2 = predicate instanceof StringPredicate;
+  let b3 = predicate instanceof DetailPredicate;
+
+  if (b1 || b2 || b3) {
     return getSimpleFilterFunction(predicate);
   }
 
@@ -230,6 +234,31 @@ export function getAttributeFilterFunction(predicate) {
 
   if (predicate instanceof StringPredicate) {
     return function (i) { return i[predicate.attributeName].indexOf(predicate.containsValue) > -1; };
+  }
+
+  if (predicate instanceof DetailPredicate) {
+    let detailFilter = buildFilter(predicate.predicate);
+    if (predicate.isAll) {
+      return function (i) {
+        if (!i[predicate.detailName]) {
+          return false;
+        }
+
+        let result = detailFilter(i[predicate.detailName]);
+        return result.length === i[predicate.detailName].length;
+      };
+    } else if (predicate.isAny) {
+      return function (i) {
+        if (!i[predicate.detailName]) {
+          return false;
+        }
+
+        let result = detailFilter(i[predicate.detailName]);
+        return result.length > 0;
+      };
+    } else {
+      throw new Error(`Unsupported detail operation.`);
+    }
   }
 
   throw new Error(`Unsupported predicate '${predicate}'.`);

@@ -102,11 +102,7 @@ export class ComplexPredicate extends BasePredicate {
       throw new Error(`Complex predicate requires at least two nested predicates`);
     }
 
-    predicates.forEach(i => {
-      if (!i || !(i instanceof BasePredicate)) {
-        throw new Error(`Wrong predicate ${i}`);
-      }
-    });
+    predicates.forEach(validatePredicate);
 
     this._condition = Condition.tryCreate(condition);
     this._predicates = predicates;
@@ -166,6 +162,10 @@ export class StringPredicate extends BasePredicate {
   constructor(attributeName) {
     super();
 
+    if (!attributeName) {
+      throw new Error('Attribute name is required for StringPredicate constructor.');
+    }
+
     this._attributeName = attributeName;
     this._containsValue = null;
   }
@@ -207,6 +207,117 @@ export class StringPredicate extends BasePredicate {
 }
 
 /**
+ * The predicate class for details.
+ *
+ * @namespace Query
+ * @class DetailPredicate
+ * @extends BasePredicate
+ *
+ * @param {String} detailName The name of detail for predicate.
+ * @constructor
+ */
+export class DetailPredicate extends BasePredicate {
+  constructor(detailName) {
+    super();
+
+    if (!detailName) {
+      throw new Error('Detail name is required for DetailPredicate constructor.');
+    }
+
+    this._detailName = detailName;
+    this._predicate = null;
+    this._all = false;
+    this._any = false;
+  }
+
+  /**
+   * The name of detail for predicate.
+   *
+   * @returns {String}
+   */
+  get detailName() {
+    return this._detailName;
+  }
+
+  /**
+   * The predicate for details.
+   *
+   * @returns {Query.BasePredicate|null}
+   */
+  get predicate() {
+    return this._predicate;
+  }
+
+  /**
+   * Is need to use predicate for all details.
+   *
+   * @returns {Boolean}
+   */
+  get isAll() {
+    return this._all;
+  }
+
+  /**
+   * Is need to use predicate for any detail.
+   *
+   * @returns {Boolean}
+   */
+  get isAny() {
+    return this._any;
+  }
+
+  /**
+   * Adds predicate for all details.
+   *
+   * @method all
+   * @param ...args Predicate for all details.
+   * @returns {Query.DetailPredicate} Returns this instance.
+   * @public
+   */
+  all(...args) {
+    this._predicate = createPredicate(...args);
+    this._all = true;
+    this._any = false;
+
+    return this;
+  }
+
+  /**
+   * Adds predicate for any detail.
+   *
+   * @method any
+   * @param ...args Predicate for any detail.
+   * @returns {Query.DetailPredicate} Returns this instance.
+   * @public
+   */
+  any(...args) {
+    this._predicate = createPredicate(...args);
+    this._any = true;
+    this._all = false;
+
+    return this;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the predicate.
+   * @public
+   */
+  toString() {
+    let func = 'IncompleteDeteailPredicate';
+    if (this._all) {
+      func = 'all';
+    } else if (this._any) {
+      func = 'any';
+    }
+
+    return `${func}${this._predicate ? this._predicate.toString() : '<null>'}`;
+  }
+}
+
+/**
  * Combines specified predicates using `and` logic condition.
  *
  * @for BasePredicate
@@ -233,3 +344,37 @@ BasePredicate.prototype.or = function (...predicates) {
   predicates.unshift(this);
   return new ComplexPredicate(Condition.Or, ...predicates);
 };
+
+/**
+ * Throws error if specified arguemnt is not a predicate.
+ *
+ * @param {Object} predicate Object for validate.
+ */
+function validatePredicate(predicate) {
+  if (!predicate || !(predicate instanceof BasePredicate)) {
+    throw new Error(`Wrong predicate ${predicate}`);
+  }
+}
+
+/**
+ * Creates predicate by various parameters.
+ *
+ * @method createPredicate
+ * @param args Arguments for the predicate.
+ * @return {BasePredicate}
+ */
+export function createPredicate(...args) {
+  if (args.length === 1) {
+    if (args[0] && args[0] instanceof BasePredicate) {
+      return args[0];
+    } else {
+      throw new Error(`Specified argument is not a predicate`);
+    }
+  }
+
+  if (args.length === 3) {
+    return new SimplePredicate(args[0], args[1], args[2]);
+  }
+
+  throw new Error(`Couldn not create predicate from arguments`);
+}
