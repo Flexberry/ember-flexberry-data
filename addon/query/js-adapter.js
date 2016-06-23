@@ -191,22 +191,22 @@ export function getAttributeFilterFunction(predicate) {
   if (predicate instanceof SimplePredicate) {
     switch (predicate.operator) {
       case FilterOperator.Eq:
-        return (i) => getValue(i, predicate.attributeName) === predicate.value;
+        return (i) => getValue(i, predicate.attributePath) === predicate.value;
 
       case FilterOperator.Neq:
-        return (i) => getValue(i, predicate.attributeName) !== predicate.value;
+        return (i) => getValue(i, predicate.attributePath) !== predicate.value;
 
       case FilterOperator.Le:
-        return (i) => getValue(i, predicate.attributeName) < predicate.value;
+        return (i) => getValue(i, predicate.attributePath) < predicate.value;
 
       case FilterOperator.Leq:
-        return (i) => getValue(i, predicate.attributeName) <= predicate.value;
+        return (i) => getValue(i, predicate.attributePath) <= predicate.value;
 
       case FilterOperator.Ge:
-        return (i) => getValue(i, predicate.attributeName) > predicate.value;
+        return (i) => getValue(i, predicate.attributePath) > predicate.value;
 
       case FilterOperator.Geq:
-        return (i) => getValue(i, predicate.attributeName) >= predicate.value;
+        return (i) => getValue(i, predicate.attributePath) >= predicate.value;
 
       default:
         throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
@@ -214,14 +214,14 @@ export function getAttributeFilterFunction(predicate) {
   }
 
   if (predicate instanceof StringPredicate) {
-    return (i) => getValue(i, predicate.attributeName).indexOf(predicate.containsValue) > -1;
+    return (i) => getValue(i, predicate.attributePath).indexOf(predicate.containsValue) > -1;
   }
 
   if (predicate instanceof DetailPredicate) {
     let detailFilter = buildFilter(predicate.predicate);
     if (predicate.isAll) {
       return function (i) {
-        let detail = getValue(i, predicate.detailName);
+        let detail = getValue(i, predicate.detailPath);
         if (!detail) {
           return false;
         }
@@ -231,7 +231,7 @@ export function getAttributeFilterFunction(predicate) {
       };
     } else if (predicate.isAny) {
       return function (i) {
-        let detail = getValue(i, predicate.detailName);
+        let detail = getValue(i, predicate.detailPath);
         if (!detail) {
           return false;
         }

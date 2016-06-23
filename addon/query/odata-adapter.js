@@ -177,12 +177,12 @@ export default class ODataAdapter extends BaseAdapter {
    */
   _convertPredicateToODataFilterClause(predicate, modelName, prefix, level) {
     if (predicate instanceof SimplePredicate) {
-      let type = this._info.getType(modelName, predicate.attributeName);
+      let type = this._info.getType(modelName, predicate.attributePath);
       if (!type) {
-        throw new Error(`Unknown type for '${predicate.attributeName}' attribute of '${modelName}' model.`);
+        throw new Error(`Unknown type for '${predicate.attributePath}' attribute of '${modelName}' model.`);
       }
 
-      let attribute = this._getODataAttributeName(modelName, predicate.attributeName);
+      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
       if (prefix) {
         attribute = `${prefix}:${prefix}/${attribute}`;
       }
@@ -193,7 +193,7 @@ export default class ODataAdapter extends BaseAdapter {
     }
 
     if (predicate instanceof StringPredicate) {
-      let attribute = this._getODataAttributeName(modelName, predicate.attributeName);
+      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
       if (prefix) {
         attribute = `${prefix}:${prefix}/${attribute}`;
       }
@@ -213,7 +213,7 @@ export default class ODataAdapter extends BaseAdapter {
 
       let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, modelName, prefix + 'f', level);
 
-      return `${predicate.detailName}/${func}(${detailPredicate})`;
+      return `${predicate.detailPath}/${func}(${detailPredicate})`;
     }
 
     if (predicate instanceof ComplexPredicate) {
