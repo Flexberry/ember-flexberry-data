@@ -23,6 +23,15 @@ test('adapter | odata | id', function (assert) {
   assert.equal(url, baseUrl + '/Customers(42)');
 });
 
+test('adapter | odata | simple predicate | master field', function (assert) {
+  // Arrange && Act.
+  let builder = new QueryBuilder(store, 'customer').where('manager.First Name', FilterOperator.Eq, 'Vasya');
+  let url = adapter.getODataFullUrl(builder.build());
+
+  // Assert.
+  assert.equal(url, `${baseUrl}/Customers?$filter=manager/first-name eq 'Vasya'`);
+});
+
 test('adapter | odata | simple predicate | eq', function (assert) {
   // Arrange && Act.
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Eq, 'Vasya');
