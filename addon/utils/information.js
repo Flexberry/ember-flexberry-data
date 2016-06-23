@@ -11,7 +11,7 @@ import DS from 'ember-data';
  * @param {DS.Store} store Store for loading metadata.
  * @constructor
  */
-export default class {
+class Information {
   constructor(store) {
     if (!store || !(store instanceof DS.Store)) {
       throw new Error('Store is required.');
@@ -69,7 +69,7 @@ export default class {
 
   _forEachAttribute(modelName, attributePath, callback) {
     let model = this._loadModel(modelName);
-    let fields = processMasterField(attributePath);
+    let fields = Information.parseAttributePath(attributePath);
 
     for (let i = 0; i < fields.length; i++) {
       if (fields.length - 1 === i) {
@@ -118,7 +118,7 @@ export default class {
 
   _getMeta(modelName, attributePath) {
     let model = this._loadModel(modelName);
-    let fields = processMasterField(attributePath);
+    let fields = Information.parseAttributePath(attributePath);
 
     for (let i = 0; i < fields.length; i++) {
       if (fields.length - 1 === i) {
@@ -153,7 +153,15 @@ export default class {
   }
 }
 
-function processMasterField(field) {
-  let parts = field.split('.');
-  return parts;
-}
+/**
+ Parses the specified attribute paths and returns list of separate attributes.
+
+ @method parseAttributePath
+ @param {String} attributePath The path to the attribute.
+ @returns {Array} List of separate attributes.
+ @public
+ @static
+ */
+Information.parseAttributePath = (attributePath) => attributePath.split('.');
+
+export default Information;
