@@ -13,7 +13,7 @@ test('predicate | detail | constructor', function (assert) {
   let p = new DetailPredicate('DetailName');
 
   assert.ok(p);
-  assert.equal(p.detailName, 'DetailName');
+  assert.equal(p.detailPath, 'DetailName');
   assert.notOk(p.predicate);
   assert.notOk(p.isAll);
   assert.notOk(p.isAny);
@@ -39,7 +39,7 @@ test('predicate | detail | all | with arguments', function (assert) {
 
   assert.ok(p);
   assert.ok(p.predicate instanceof SimplePredicate);
-  assert.ok(p.predicate.attributeName, 'Field');
+  assert.ok(p.predicate.attributePath, 'Field');
   assert.ok(p.predicate.operator, FilterOperator.Eq);
   assert.ok(p.predicate.value, 'Value');
   assert.ok(p.isAll);
@@ -66,7 +66,7 @@ test('predicate | detail | any | with arguments', function (assert) {
 
   assert.ok(p);
   assert.ok(p.predicate instanceof SimplePredicate);
-  assert.ok(p.predicate.attributeName, 'Field');
+  assert.ok(p.predicate.attributePath, 'Field');
   assert.ok(p.predicate.operator, FilterOperator.Eq);
   assert.ok(p.predicate.value, 'Value');
   assert.ok(p.isAny);

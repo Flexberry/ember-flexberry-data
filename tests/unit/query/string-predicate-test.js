@@ -12,5 +12,5 @@ test('predicate | string | constructor', function (assert) {
   let p = new StringPredicate('Name');
 
   assert.ok(p);
-  assert.equal(p.attributeName, 'Name');
+  assert.equal(p.attributePath, 'Name');
 });

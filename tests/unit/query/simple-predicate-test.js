@@ -10,7 +10,7 @@ test('predicate | simple | constructor', function (assert) {
   let p = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
 
   assert.ok(p);
-  assert.equal(p.attributeName, 'Name');
+  assert.equal(p.attributePath, 'Name');
   assert.equal(p.operator, FilterOperator.Eq);
   assert.equal(p.value, 'Vasya');
 });

@@ -20,29 +20,29 @@ export class BasePredicate {
  * @class SimplePredicate
  * @extends BasePredicate
  *
- * @param attributeName {String} The name of the attribute for filtering.
+ * @param attributePath {String} The path to the attribute for filtering.
  * @param operator {Query.FilterOperator|String} The filter operator.
  * @param value {String|Number} The value for filtering.
  * @constructor
  */
 export class SimplePredicate extends BasePredicate {
-  constructor(attributeName, operator, value) {
+  constructor(attributePath, operator, value) {
     super();
 
-    this._attributeName = attributeName;
+    this._attributePath = attributePath;
     this._operator = FilterOperator.tryCreate(operator);
     this._value = value;
   }
 
   /**
-   * The name of the attribute for filtering.
+   * The path to the attribute for filtering.
    *
-   * @property attributeName
+   * @property attributePath
    * @type String
    * @public
    */
-  get attributeName() {
-    return this._attributeName;
+  get attributePath() {
+    return this._attributePath;
   }
 
   /**
@@ -75,7 +75,7 @@ export class SimplePredicate extends BasePredicate {
    * @public
    */
   toString() {
-    return `(${this._attributeName} ${this._operator} ${this._value})`;
+    return `(${this._attributePath} ${this._operator} ${this._value})`;
   }
 }
 
@@ -155,30 +155,30 @@ export class ComplexPredicate extends BasePredicate {
  * @class StringPredicate
  * @extends BasePredicate
  *
- * @param {String} attributeName The name of attribute for predicate.
+ * @param {String} attributePath The path to the attribute for predicate.
  * @constructor
  */
 export class StringPredicate extends BasePredicate {
-  constructor(attributeName) {
+  constructor(attributePath) {
     super();
 
-    if (!attributeName) {
-      throw new Error('Attribute name is required for StringPredicate constructor.');
+    if (!attributePath) {
+      throw new Error('Attribute path is required for StringPredicate constructor.');
     }
 
-    this._attributeName = attributeName;
+    this._attributePath = attributePath;
     this._containsValue = null;
   }
 
   /**
-   * The name of attribute for predicate.
+   * The path to the attribute for predicate.
    *
-   * @property attributeName
+   * @property attributePath
    * @type {String}
    * @public
    */
-  get attributeName() {
-    return this._attributeName;
+  get attributePath() {
+    return this._attributePath;
   }
 
   /**
@@ -213,30 +213,30 @@ export class StringPredicate extends BasePredicate {
  * @class DetailPredicate
  * @extends BasePredicate
  *
- * @param {String} detailName The name of detail for predicate.
+ * @param {String} detailPath The path to the detail for predicate.
  * @constructor
  */
 export class DetailPredicate extends BasePredicate {
-  constructor(detailName) {
+  constructor(detailPath) {
     super();
 
-    if (!detailName) {
-      throw new Error('Detail name is required for DetailPredicate constructor.');
+    if (!detailPath) {
+      throw new Error('Detail path is required for DetailPredicate constructor.');
     }
 
-    this._detailName = detailName;
+    this._detailPath = detailPath;
     this._predicate = null;
     this._all = false;
     this._any = false;
   }
 
   /**
-   * The name of detail for predicate.
+   * The path to the detail for predicate.
    *
    * @returns {String}
    */
-  get detailName() {
-    return this._detailName;
+  get detailPath() {
+    return this._detailPath;
   }
 
   /**
