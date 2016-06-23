@@ -49,6 +49,22 @@ test('adapter | js | simple predicate | eq', (assert) => {
   assert.equal(result[1].Surname, 'Z');
 });
 
+test('adapter | js | simple predicate | eq | master field', function (assert) {
+  const data = [
+    { Id: 1, Manager: { Name: 'X' } },
+    { Id: 2 },
+    { Id: 3, Manager: { Name: 'Y' } }
+  ];
+
+  let builder = new QueryBuilder(store, 'customer').where('Manager.Name', FilterOperator.Eq, 'Y');
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Id, 3);
+});
+
 test('adapter | js | simple predicate | neq', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
@@ -136,9 +152,9 @@ test('adapter | js | simple predicate | geq', (assert) => {
 
 test('adapter | js | string predicate | contains', (assert) => {
   const data = [
-    { Name: 'A', Surname: 'X', Age: 10, Country: 'Argentina' },
-    { Name: 'B', Surname: 'Y', Age: 11, Country: 'Paragwaj' },
-    { Name: 'C', Surname: 'Z', Age: 12, Country: 'Russia' }
+    { Id: 1, Country: 'Argentina' },
+    { Id: 2, Country: 'Paragwaj' },
+    { Id: 3, Country: 'Russia' }
   ];
 
   let sp1 = new StringPredicate('Country').contains('i');
@@ -148,11 +164,29 @@ test('adapter | js | string predicate | contains', (assert) => {
   let result = filter(data);
   assert.ok(result);
   assert.equal(result.length, 2);
-  assert.equal(result[0].Surname, 'X');
-  assert.equal(result[1].Surname, 'Z');
+  assert.equal(result[0].Id, 1);
+  assert.equal(result[1].Id, 3);
 });
 
-test('adapter | js | detail predicate | all | with simple predicate', (assert) => {
+test('adapter | js | string predicate | contains | master field', (assert) => {
+  const data = [
+    { Id: 1, Country: { Name: 'Argentina' } },
+    { Id: 2, Country: { Name: 'Paragwaj' } },
+    { Id: 3, Country: { Name: 'Russia' } }
+  ];
+
+  let sp1 = new StringPredicate('Country.Name').contains('i');
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(sp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Id, 1);
+  assert.equal(result[1].Id, 3);
+});
+
+test('adapter | js | detail predicate | all | simple predicate', (assert) => {
   const data = [
     { Id: 1, Tags: [{ Name: 'Tag1' }] },
     { Id: 2 },
@@ -170,7 +204,25 @@ test('adapter | js | detail predicate | all | with simple predicate', (assert) =
   assert.equal(result[0].Id, 1);
 });
 
-test('adapter | js | detail predicate | any | with simple predicate', (assert) => {
+test('adapter | js | detail predicate | all | simple predicate | master field', (assert) => {
+  const data = [
+    { Id: 1 },
+    { Id: 2, Tags: [{ Creator: { Name: 'X' } }] },
+    { Id: 3 }
+  ];
+
+  let dp = new DetailPredicate('Tags').all(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Id, 2);
+});
+
+test('adapter | js | detail predicate | any | simple predicate', (assert) => {
   const data = [
     { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
     { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
@@ -189,7 +241,26 @@ test('adapter | js | detail predicate | any | with simple predicate', (assert) =
   assert.equal(result[1].Id, 3);
 });
 
-test('adapter | js | detail predicate | all | with complex predicate', (assert) => {
+test('adapter | js | detail predicate | any | simple predicate | master field', (assert) => {
+  const data = [
+    { Id: 1, Tags: [{ Creator: { Name: 'X' } }, { Creator: { Name: 'Y' } }] },
+    { Id: 2, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'Z' } }] },
+    { Id: 3, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] }
+  ];
+
+  let dp = new DetailPredicate('Tags').any(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Id, 1);
+  assert.equal(result[1].Id, 3);
+});
+
+test('adapter | js | detail predicate | all | complex predicate', (assert) => {
   const data = [
     { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
     { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
@@ -210,7 +281,28 @@ test('adapter | js | detail predicate | all | with complex predicate', (assert) 
   assert.equal(result[0].Id, 1);
 });
 
-test('adapter | js | detail predicate | any | with complex predicate', (assert) => {
+test('adapter | js | detail predicate | all | complex predicate | master field', (assert) => {
+  const data = [
+    { Id: 1, Tags: [{ Creator: { Name: 'X' } }, { Creator: { Name: 'Z' } }] },
+    { Id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'Y' } }] },
+    { Id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'X' } }] }
+  ];
+
+  let sp1 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X');
+  let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Z');
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+  let dp = new DetailPredicate('Tags').all(cp1);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Id, 1);
+});
+
+test('adapter | js | detail predicate | any | complex predicate', (assert) => {
   const data = [
     { Id: 1, Tags: [{ Name: 'Tag4' }, { Name: 'Tag3' }] },
     { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag1' }] },
@@ -219,6 +311,28 @@ test('adapter | js | detail predicate | any | with complex predicate', (assert) 
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag1');
   let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag2');
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+  let dp = new DetailPredicate('Tags').any(cp1);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Id, 2);
+  assert.equal(result[1].Id, 3);
+});
+
+test('adapter | js | detail predicate | any | complex predicate | master field', (assert) => {
+  const data = [
+    { Id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
+    { Id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
+    { Id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] }
+  ];
+
+  let sp1 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X');
+  let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Y');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').any(cp1);
   let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);

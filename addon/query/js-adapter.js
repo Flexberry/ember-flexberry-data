@@ -2,6 +2,7 @@ import BaseAdapter from './base-adapter';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
+import Information from '../utils/information';
 
 /**
  * Class of query language adapter that translates query object into JS function which
@@ -190,22 +191,22 @@ export function getAttributeFilterFunction(predicate) {
   if (predicate instanceof SimplePredicate) {
     switch (predicate.operator) {
       case FilterOperator.Eq:
-        return (i) => i[predicate.attributeName] === predicate.value;
+        return (i) => getValue(i, predicate.attributePath) === predicate.value;
 
       case FilterOperator.Neq:
-        return (i) => i[predicate.attributeName] !== predicate.value;
+        return (i) => getValue(i, predicate.attributePath) !== predicate.value;
 
       case FilterOperator.Le:
-        return (i) => i[predicate.attributeName] < predicate.value;
+        return (i) => getValue(i, predicate.attributePath) < predicate.value;
 
       case FilterOperator.Leq:
-        return (i) => i[predicate.attributeName] <= predicate.value;
+        return (i) => getValue(i, predicate.attributePath) <= predicate.value;
 
       case FilterOperator.Ge:
-        return (i) => i[predicate.attributeName] > predicate.value;
+        return (i) => getValue(i, predicate.attributePath) > predicate.value;
 
       case FilterOperator.Geq:
-        return (i) => i[predicate.attributeName] >= predicate.value;
+        return (i) => getValue(i, predicate.attributePath) >= predicate.value;
 
       default:
         throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
@@ -213,27 +214,29 @@ export function getAttributeFilterFunction(predicate) {
   }
 
   if (predicate instanceof StringPredicate) {
-    return (i) => i[predicate.attributeName].indexOf(predicate.containsValue) > -1;
+    return (i) => getValue(i, predicate.attributePath).indexOf(predicate.containsValue) > -1;
   }
 
   if (predicate instanceof DetailPredicate) {
     let detailFilter = buildFilter(predicate.predicate);
     if (predicate.isAll) {
       return function (i) {
-        if (!i[predicate.detailName]) {
+        let detail = getValue(i, predicate.detailPath);
+        if (!detail) {
           return false;
         }
 
-        let result = detailFilter(i[predicate.detailName]);
-        return result.length === i[predicate.detailName].length;
+        let result = detailFilter(detail);
+        return result.length === detail.length;
       };
     } else if (predicate.isAny) {
       return function (i) {
-        if (!i[predicate.detailName]) {
+        let detail = getValue(i, predicate.detailPath);
+        if (!detail) {
           return false;
         }
 
-        let result = detailFilter(i[predicate.detailName]);
+        let result = detailFilter(detail);
         return result.length > 0;
       };
     } else {
@@ -276,6 +279,26 @@ export function getAttributeFilterFunction(predicate) {
   }
 
   throw new Error(`Unsupported predicate '${predicate}'.`);
+}
+
+/**
+ Loads value from object by specified attribute path.
+
+ @param {Object} item Object for load value.
+ @param {String} attributePath The path to the attribute.
+ @returns {*|undefined} Value of attribute or `undefined`.
+ */
+function getValue(item, attributePath) {
+  let attributes = Information.parseAttributePath(attributePath);
+  let search = item;
+  for (let i = 0; i < attributes.length; i++) {
+    search = search[attributes[i]];
+    if (!search) {
+      return undefined;
+    }
+  }
+
+  return search;
 }
 
 /**
