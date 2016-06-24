@@ -49,6 +49,22 @@ test('adapter | js | simple predicate | eq', (assert) => {
   assert.equal(result[1].Surname, 'Z');
 });
 
+test('adapter | js | simple predicate | eq | null', (assert) => {
+  const data = [
+    { Id: 1, Surname: 'X' },
+    { Id: 2, Surname: null },
+    { Id: 3, Surname: 'Z' }
+  ];
+
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Surname', FilterOperator.Eq, null);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Id, 2);
+});
+
 test('adapter | js | simple predicate | eq | master field', function (assert) {
   const data = [
     { Id: 1, Manager: { Name: 'X' } },

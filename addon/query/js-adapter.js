@@ -294,7 +294,8 @@ function getValue(item, attributePath) {
   for (let i = 0; i < attributes.length; i++) {
     search = search[attributes[i]];
     if (!search) {
-      return undefined;
+      // Don't return constant null / undefined - we need to distinguish them.
+      return search;
     }
   }
 

@@ -177,19 +177,7 @@ export default class ODataAdapter extends BaseAdapter {
    */
   _convertPredicateToODataFilterClause(predicate, modelName, prefix, level) {
     if (predicate instanceof SimplePredicate) {
-      let type = this._info.getType(modelName, predicate.attributePath);
-      if (!type) {
-        throw new Error(`Unknown type for '${predicate.attributePath}' attribute of '${modelName}' model.`);
-      }
-
-      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
-      if (prefix) {
-        attribute = `${prefix}:${prefix}/${attribute}`;
-      }
-
-      let value = type === 'string' ? `'${predicate.value}'` : predicate.value;
-      let operator = this._getODataFilterOperator(predicate.operator);
-      return `${attribute} ${operator} ${value}`;
+      return this._buildODataSimplePredicate(predicate, modelName, prefix);
     }
 
     if (predicate instanceof StringPredicate) {
@@ -266,5 +254,27 @@ export default class ODataAdapter extends BaseAdapter {
     }
 
     return result;
+  }
+
+  _buildODataSimplePredicate(predicate, modelName, prefix) {
+    let type = this._info.getType(modelName, predicate.attributePath);
+    if (!type) {
+      throw new Error(`Unknown type for '${predicate.attributePath}' attribute of '${modelName}' model.`);
+    }
+
+    let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+    if (prefix) {
+      attribute = `${prefix}:${prefix}/${attribute}`;
+    }
+
+    let value;
+    if (predicate.value === null) {
+      value = 'null';
+    } else {
+      value = type === 'string' ? `'${predicate.value}'` : predicate.value;
+    }
+
+    let operator = this._getODataFilterOperator(predicate.operator);
+    return `${attribute} ${operator} ${value}`;
   }
 }
