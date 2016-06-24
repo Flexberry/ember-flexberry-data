@@ -220,7 +220,7 @@ test('adapter | odata | complex predicate | with nested complex predicate', func
 
 test('adapter | odata | order', function (assert) {
   // Arrange && Act.
-  let builder = new QueryBuilder(store, 'customer').orderBy('firstName asc,manager.firstName desc');
+  let builder = new QueryBuilder(store, 'customer').orderBy('firstName asc,manager.First Name desc');
   let url = adapter.getODataFullUrl(builder.build());
 
   // Assert.

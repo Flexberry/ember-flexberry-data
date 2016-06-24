@@ -16,8 +16,8 @@ export default class OrderByClause {
     clause.split(',').forEach((i) => {
       let s = i.trim().split(' ');
       this._clause.push({
-        name: s[0],
-        direction: s[1]
+        name: s.slice(0, s.length -1).join(' '),
+        direction: s[s.length - 1],
       });
     });
   }
