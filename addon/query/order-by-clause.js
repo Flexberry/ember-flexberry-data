@@ -15,10 +15,14 @@ export default class OrderByClause {
     this._clause = [];
     clause.split(',').forEach((i) => {
       let s = i.trim().split(' ');
-      this._clause.push({
-        name: s.slice(0, s.length - 1).join(' '),
-        direction: s[s.length - 1],
-      });
+      let name, direction = s[s.length - 1];
+      if (direction === 'asc' || direction === 'desc') {
+        name = s.slice(0, s.length - 1).join(' ');
+      } else {
+        name = s.slice(0, s.length).join(' ');
+        direction = '';
+      }
+      this._clause.push({ name, direction });
     });
   }
 
