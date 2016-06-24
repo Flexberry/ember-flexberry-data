@@ -161,7 +161,8 @@ export default class ODataAdapter extends BaseAdapter {
       let property = query.order.attribute(i);
       let sep = i ? ',' : '';
       let direction = property.direction ? ` ${property.direction}` : '';
-      result += `${sep}${property.name}${direction}`;
+      let attribute = this._getODataAttributeName(query.modelName, property.name);
+      result += `${sep}${attribute}${direction}`;
     }
 
     return result;

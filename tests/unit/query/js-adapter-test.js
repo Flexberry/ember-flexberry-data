@@ -450,6 +450,24 @@ test('adapter | js | order', (assert) => {
   assert.equal(result[2].Name, 'A');
 });
 
+test('adapter | js | order | master field', (assert) => {
+  const data = [
+    { Name: 'A', Price: 200, Master: { Age: 10 } },
+    { Name: 'B', Price: 100, Master: { Age: 10 } },
+    { Name: 'C', Price: 900, Master: { Age: 15 } }
+  ];
+
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').orderBy('Master.Age desc, Price asc');
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+  assert.equal(result[0].Name, 'C');
+  assert.equal(result[1].Name, 'B');
+  assert.equal(result[2].Name, 'A');
+});
+
 test('adapter | js | skip-top', (assert) => {
   const data = [
     { Name: 'A', Price: 200, Age: 10 },

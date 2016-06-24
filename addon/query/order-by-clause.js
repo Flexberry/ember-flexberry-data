@@ -15,11 +15,9 @@ export default class OrderByClause {
     this._clause = [];
     clause.split(',').forEach((i) => {
       let s = i.trim().split(' ');
-      let n = s[0].trim().split('.');
       this._clause.push({
-        name: n.length > 1 ? n[1] : s[0],
-        master: n.length > 1 ? n[0] : false,
-        direction: s[1],
+        name: s[0],
+        direction: s[1]
       });
     });
   }

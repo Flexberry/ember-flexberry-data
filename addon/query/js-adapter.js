@@ -89,9 +89,11 @@ export function buildOrder(query) {
   }
 
   let desc = (a, b, p) => {
-    if (a[p] > b[p]) {
+    let av = getValue(a, p);
+    let bv = getValue(b, p);
+    if (av > bv) {
       return -1;
-    } else if (a[p] < b[p]) {
+    } else if (av < bv) {
       return 1;
     } else {
       return 0;
@@ -99,9 +101,11 @@ export function buildOrder(query) {
   };
 
   let asc = (a, b, p) => {
-    if (a[p] < b[p]) {
+    let av = getValue(a, p);
+    let bv = getValue(b, p);
+    if (av < bv) {
       return -1;
-    } else if (a[p] > b[p]) {
+    } else if (av > bv) {
       return 1;
     } else {
       return 0;
