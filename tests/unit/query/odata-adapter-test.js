@@ -23,15 +23,6 @@ test('adapter | odata | id', function (assert) {
   assert.equal(url, baseUrl + '/Customers(42)');
 });
 
-test('adapter | odata | simple predicate | master field', function (assert) {
-  // Arrange && Act.
-  let builder = new QueryBuilder(store, 'customer').where('manager.First Name', FilterOperator.Eq, 'Vasya');
-  let url = adapter.getODataFullUrl(builder.build());
-
-  // Assert.
-  assert.equal(url, `${baseUrl}/Customers?$filter=manager/first-name eq 'Vasya'`);
-});
-
 test('adapter | odata | simple predicate | eq', function (assert) {
   // Arrange && Act.
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Eq, 'Vasya');
@@ -39,6 +30,24 @@ test('adapter | odata | simple predicate | eq', function (assert) {
 
   // Assert.
   assert.equal(url, `${baseUrl}/Customers?$filter=first-name eq 'Vasya'`);
+});
+
+test('adapter | odata | simple predicate | eq | master field', function (assert) {
+  // Arrange && Act.
+  let builder = new QueryBuilder(store, 'customer').where('manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
+  let url = adapter.getODataFullUrl(builder.build());
+
+  // Assert.
+  assert.equal(url, `${baseUrl}/Customers?$filter=manager/__PrimaryKey eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+});
+
+test('adapter | odata | simple predicate | eq | master field', function (assert) {
+  // Arrange && Act.
+  let builder = new QueryBuilder(store, 'customer').where('manager.First Name', FilterOperator.Eq, 'Vasya');
+  let url = adapter.getODataFullUrl(builder.build());
+
+  // Assert.
+  assert.equal(url, `${baseUrl}/Customers?$filter=manager/first-name eq 'Vasya'`);
 });
 
 test('adapter | odata | simple predicate | neq', function (assert) {
@@ -88,16 +97,16 @@ test('adapter | odata | simple predicate | leq', function (assert) {
 
 test('adapter | odata | string predicate', function (assert) {
   // Arrange && Act.
-  let builder = new QueryBuilder(store, 'customer').where(new StringPredicate('Name').contains('Vasya'));
+  let builder = new QueryBuilder(store, 'customer').where(new StringPredicate('firstName').contains('a'));
   let url = adapter.getODataFullUrl(builder.build());
 
   // Assert.
-  assert.equal(url, `${baseUrl}/Customers?$filter=contains(name,'Vasya')`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=contains(first-name,'a')`);
 });
 
 test('adapter | odata | string predicate | inside complex', function (assert) {
   // Arrange.
-  let stp = new StringPredicate('Name').contains('Vasya');
+  let stp = new StringPredicate('firstName').contains('a');
   let sp = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
 
   // Act.
@@ -105,7 +114,7 @@ test('adapter | odata | string predicate | inside complex', function (assert) {
   let url = adapter.getODataFullUrl(builder.build());
 
   // Assert.
-  assert.equal(url, `${baseUrl}/Customers?$filter=contains(name,'Vasya') and first-name eq 'Vasya'`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=contains(first-name,'a') and first-name eq 'Vasya'`);
 });
 
 test('adapter | odata | detail predicate | all | with simple predicate', function (assert) {
@@ -134,26 +143,26 @@ test('adapter | odata | detail predicate | any | with simple predicate', functio
 
 test('adapter | odata | detail predicate | all | with string predicate', function (assert) {
   // Arrange.
-  let dp = new DetailPredicate('DetailName').all(new StringPredicate('Name').contains('Vasya'));
+  let dp = new DetailPredicate('DetailName').all(new StringPredicate('firstName').contains('Vasya'));
 
   // Act.
   let builder = new QueryBuilder(store, 'customer').where(dp);
   let url = adapter.getODataFullUrl(builder.build());
 
   // Assert.
-  assert.equal(url, `${baseUrl}/Customers?$filter=DetailName/all(contains(f:f/name,'Vasya'))`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=DetailName/all(contains(f:f/first-name,'Vasya'))`);
 });
 
 test('adapter | odata | detail predicate | any | with string predicate', function (assert) {
   // Arrange.
-  let dp = new DetailPredicate('DetailName').any(new StringPredicate('Name').contains('Vasya'));
+  let dp = new DetailPredicate('DetailName').any(new StringPredicate('firstName').contains('Vasya'));
 
   // Act.
   let builder = new QueryBuilder(store, 'customer').where(dp);
   let url = adapter.getODataFullUrl(builder.build());
 
   // Assert.
-  assert.equal(url, `${baseUrl}/Customers?$filter=DetailName/any(contains(f:f/name,'Vasya'))`);
+  assert.equal(url, `${baseUrl}/Customers?$filter=DetailName/any(contains(f:f/first-name,'Vasya'))`);
 });
 
 test('adapter | odata | detail predicate | all | with complex predicate', function (assert) {
