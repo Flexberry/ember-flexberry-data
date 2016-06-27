@@ -73,6 +73,12 @@ function updateWhereClause(table, query) {
 
   let predicate = query.predicate;
   if (predicate instanceof SimplePredicate) {
+    if (predicate.value === null) {
+      // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
+      // https://github.com/dfahlander/Dexie.js/issues/153
+      return table.filter(getAttributeFilterFunction(predicate));
+    }
+
     switch (predicate.operator) {
       case FilterOperator.Eq:
         return table.where(predicate.attributePath).equals(predicate.value);
