@@ -445,9 +445,9 @@ test('adapter | indexeddb | select', (assert) => {
 
 test('adapter | indexeddb | order', (assert) => {
   let data = [
-    { Id: 1, Name: 'A', Price: 200, Age: 10 },
-    { Id: 2, Name: 'B', Price: 100, Age: 10 },
-    { Id: 3, Name: 'C', Price: 900, Age: 15 }
+    { Id: 1, Price: 200, Age: 10 },
+    { Id: 2, Price: 100, Age: 10 },
+    { Id: 3, Price: 900, Age: 15 }
   ];
 
   let builder = new QueryBuilder(store, modelName).orderBy('Age desc, Price asc');
@@ -455,9 +455,27 @@ test('adapter | indexeddb | order', (assert) => {
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
     assert.equal(result.length, 3);
-    assert.equal(result[0].Name, 'C');
-    assert.equal(result[1].Name, 'B');
-    assert.equal(result[2].Name, 'A');
+    assert.equal(result[0].Id, 3);
+    assert.equal(result[1].Id, 2);
+    assert.equal(result[2].Id, 1);
+  });
+});
+
+test('adapter | indexeddb | order | master field', (assert) => {
+  let data = [
+    { Id: 1, Price: 200, Creator: { Age: 10 } },
+    { Id: 2, Price: 100, Creator: { Age: 10 } },
+    { Id: 3, Price: 900, Creator: { Age: 15 } }
+  ];
+
+  let builder = new QueryBuilder(store, modelName).orderBy('Creator.Age desc, Price asc');
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result);
+    assert.equal(result.length, 3);
+    assert.equal(result[0].Id, 3);
+    assert.equal(result[1].Id, 2);
+    assert.equal(result[2].Id, 1);
   });
 });
 

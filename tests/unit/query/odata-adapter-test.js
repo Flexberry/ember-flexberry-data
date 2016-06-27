@@ -220,10 +220,10 @@ test('adapter | odata | complex predicate | with nested complex predicate', func
 
 test('adapter | odata | order', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').orderBy('firstName asc, Value desc, Third');
+  let builder = new QueryBuilder(store, 'customer').orderBy('firstName,lastName asc,age desc,manager.First Name,manager.Last Name asc,manager.Birth Date desc');
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers?$orderby=firstName asc,Value desc,Third');
+  runTest(assert, builder, '/Customers?$orderby=first-name,last-name asc,age desc,manager/first-name,manager/last-name asc,manager/birth-date desc');
 });
 
 test('adapter | odata | skip', function (assert) {
