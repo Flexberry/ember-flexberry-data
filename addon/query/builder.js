@@ -89,6 +89,10 @@ export default class Builder extends BaseBuilder {
    * @chainable
    */
   orderBy(property) {
+    if (!property) {
+      throw new Error('You trying sort by a empty string.');
+    }
+
     this._orderByClause = new OrderByClause(property);
     return this;
   }
