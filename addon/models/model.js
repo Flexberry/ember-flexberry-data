@@ -38,7 +38,7 @@ Model.reopenClass({
    * @static
    */
   defineProjection: function (projectionName, modelName, attributes) {
-    let proj = createProj(modelName, attributes);
+    let proj = createProj(projectionName, modelName, attributes);
 
     if (!this.projections) {
       this.reopenClass({

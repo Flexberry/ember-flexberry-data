@@ -13,9 +13,10 @@
  * @param {Object} attributes Projection attributes.
  * @return {Object} Model projection.
  */
-export default function create(modelName, attributes) {
+export default function create(projectionName, modelName, attributes) {
   return {
-    modelName: modelName,
+    projectionName,
+    modelName,
     attributes: attributes || {}
   };
 }
