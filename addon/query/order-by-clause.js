@@ -13,28 +13,38 @@ export default class OrderByClause {
    */
   constructor(clause) {
     this._clause = [];
-    clause.split(',').forEach(i => {
+    clause.split(',').forEach((i) => {
       let s = i.trim().split(' ');
-      this._clause.push({
-        name: s[0],
-        direction: s[1]
-      });
+      let name;
+      let direction = s[s.length - 1];
+      if (direction === 'asc' || direction === 'desc') {
+        name = s.slice(0, s.length - 1).join(' ');
+      } else {
+        name = s.slice(0, s.length).join(' ');
+        direction = '';
+      }
+
+      this._clause.push({ name, direction });
     });
   }
 
   /**
-   * @attribute length
-   * @type {Number}
-   * @public
+    Count elements for sorting.
+
+    @attribute length
+    @type {Number}
+    @public
    */
   get length() {
     return this._clause.length;
   }
 
   /**
-   * @method property
-   * @param {Number} index
-   * @return {Object}
+    Returns object with parameters for sorting.
+
+    @method attribute
+    @param {Number} index Index element in array.
+    @return {Object} Object with parameters for sorting.
    */
   attribute(index) {
     return this._clause[index];

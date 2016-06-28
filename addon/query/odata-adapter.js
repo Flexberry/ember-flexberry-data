@@ -1,8 +1,10 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import FilterOperator from './filter-operator';
+import Information from '../utils/information';
 
 /**
  * Class of query adapter that translates query object into OData URL.
@@ -26,12 +28,13 @@ export default class ODataAdapter extends BaseAdapter {
       throw new Error('Base URL for OData feed is required');
     }
 
-    if (!store) {
+    if (!store || !(store instanceof DS.Store)) {
       throw new Error('Store is required');
     }
 
     this._baseUrl = baseUrl;
     this._store = store;
+    this._info = new Information(store);
   }
 
   /**
@@ -72,12 +75,21 @@ export default class ODataAdapter extends BaseAdapter {
    * @public
    */
   getODataQuery(query) {
-    let odataArgs = {};
+    let builders = {
+      $filter: this._buildODataFilters(query),
+      $orderby: this._buildODataOrderBy(query),
+      $skip: this._buildODataSkip(query),
+      $top: this._buildODataTop(query),
+      $count: this._buildODataCount(query),
+      $expand: this._buildODataExpand(query),
+      $select: this._buildODataSelect(query)
+    };
 
     // TODO: do not use order,expand with count
+    let odataArgs = {};
     for (let k in builders) {
       if (builders.hasOwnProperty(k)) {
-        let v = builders[k](query, this._store);
+        let v = builders[k];
         if (v !== null && v !== '') {
           odataArgs[k] = v;
         }
@@ -109,131 +121,161 @@ export default class ODataAdapter extends BaseAdapter {
 
     return this.getODataBaseUrl(query) + queryMark + queryPart;
   }
-}
 
-var builders = {
-  $filter: buildODataFilters,
-  $orderby: buildODataOrderBy,
-  $skip: buildODataSkip,
-  $top: buildODataTop,
-  $count: buildODataCount,
-  $expand: buildODataExpand,
-  $select: buildODataSelect
-};
-
-function buildODataSelect(query) {
-  return query.select.join(',');
-}
-
-function buildODataExpand(query) {
-  return query.expand.join(',');
-}
-
-function buildODataCount(query) {
-  return query.count ? true : null;
-}
-
-function buildODataSkip(query) {
-  return query.skip;
-}
-
-function buildODataTop(query) {
-  return query.top;
-}
-
-function buildODataFilters(query, store) {
-  let predicate = query.predicate;
-  if (!predicate) {
-    return null;
+  _buildODataSelect(query) {
+    return query.select.join(',');
   }
 
-  return convertPredicateToODataFilterClause(predicate, store, query.modelName);
-}
-
-function buildODataOrderBy(query) {
-  if (!query.order) {
-    return null;
+  _buildODataExpand(query) {
+    return query.expand.join(',');
   }
 
-  let result = '';
-  for (let i = 0; i < query.order.length; i++) {
-    let property = query.order.attribute(i);
-    let sep = i ? ',' : '';
-    let direction = property.direction ? ` ${property.direction}` : '';
-    result += `${sep}${property.name}${direction}`;
+  _buildODataCount(query) {
+    return query.count ? true : null;
   }
 
-  return result;
-}
+  _buildODataSkip(query) {
+    return query.skip;
+  }
 
-/**
- * Converts specified predicate into OData filter part.
- *
- * @method convertPredicateToODataFilterClause
- * @param predicate {BasePredicate} Predicate to convert.
- * @param store
- * @return {String} OData filter part.
- */
-function convertPredicateToODataFilterClause(predicate, store, modelName) {
-  if (predicate instanceof SimplePredicate) {
-    let type;
-    store.modelFor(modelName).eachAttribute(function(name, meta) {
-      if (name === predicate.attributeName) {
-        type = meta.type;
-      }
-    });
+  _buildODataTop(query) {
+    return query.top;
+  }
 
-    if (!type) {
-      throw new Error(`Unknown type for '${predicate.attributeName}' attribute.`);
+  _buildODataFilters(query) {
+    let predicate = query.predicate;
+    if (!predicate) {
+      return null;
     }
 
-    let attribute = store.serializerFor(modelName).keyForAttribute(predicate.attributeName);
-    let value = type === 'string' ? `'${predicate.value}'` : predicate.value;
-    let operator = getODataFilterOperator(predicate.operator);
+    return this._convertPredicateToODataFilterClause(predicate, query.modelName, '', 0);
+  }
+
+  _buildODataOrderBy(query) {
+    if (!query.order) {
+      return null;
+    }
+
+    let result = '';
+    for (let i = 0; i < query.order.length; i++) {
+      let property = query.order.attribute(i);
+      let sep = i ? ',' : '';
+      let direction = property.direction ? ` ${property.direction}` : '';
+      let attribute = this._getODataAttributeName(query.modelName, property.name);
+      result += `${sep}${attribute}${direction}`;
+    }
+
+    return result;
+  }
+
+  /**
+   * Converts specified predicate into OData filter part.
+   *
+   * @param predicate {BasePredicate} Predicate to convert.
+   * @param {String} prefix Prefix for detail attributes.
+   * @param {Number} level Nesting level for recursion with comples predicates.
+   * @return {String} OData filter part.
+   */
+  _convertPredicateToODataFilterClause(predicate, modelName, prefix, level) {
+    if (predicate instanceof SimplePredicate) {
+      return this._buildODataSimplePredicate(predicate, modelName, prefix);
+    }
+
+    if (predicate instanceof StringPredicate) {
+      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+      if (prefix) {
+        attribute = `${prefix}:${prefix}/${attribute}`;
+      }
+
+      return `contains(${attribute},'${predicate.containsValue}')`;
+    }
+
+    if (predicate instanceof DetailPredicate) {
+      let func = '';
+      if (predicate.isAll) {
+        func = 'all';
+      } else if (predicate.isAny) {
+        func = 'any';
+      } else {
+        throw new Error(`OData supports only 'any' or 'or' operations for details`);
+      }
+
+      let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, modelName, prefix + 'f', level);
+
+      return `${predicate.detailPath}/${func}(${detailPredicate})`;
+    }
+
+    if (predicate instanceof ComplexPredicate) {
+      let separator = ` ${predicate.condition} `;
+      let result = predicate.predicates
+        .map(i => this._convertPredicateToODataFilterClause(i, modelName, prefix, level + 1)).join(separator);
+      let lp = level > 0 ? '(' : '';
+      let rp = level > 0 ? ')' : '';
+      return lp + result + rp;
+    }
+
+    throw new Error(`Unknown predicate '${predicate}'`);
+  }
+
+  /**
+   * Converts filter operator to OData representation.
+   *
+   * @param {Query.FilterOperator} operator Operator to convert.
+   * @returns {String} Converted operator.
+   */
+  _getODataFilterOperator(operator) {
+    switch (operator) {
+      case FilterOperator.Eq:
+        return 'eq';
+
+      case FilterOperator.Neq:
+        return 'ne';
+
+      case FilterOperator.Le:
+        return 'lt';
+
+      case FilterOperator.Leq:
+        return 'le';
+
+      case FilterOperator.Ge:
+        return 'gt';
+
+      case FilterOperator.Geq:
+        return 'ge';
+
+      default:
+        throw new Error(`Unsupported filter operator '${operator}'.`);
+    }
+  }
+
+  _getODataAttributeName(modelName, attributePath) {
+    let result = this._store.serializerFor(modelName).keyForAttribute(attributePath).replace(/\./g, '/');
+    if (this._info.isMaster(modelName, attributePath)) {
+      result += '/__PrimaryKey'; // TODO: magic
+    }
+
+    return result;
+  }
+
+  _buildODataSimplePredicate(predicate, modelName, prefix) {
+    let type = this._info.getType(modelName, predicate.attributePath);
+    if (!type) {
+      throw new Error(`Unknown type for '${predicate.attributePath}' attribute of '${modelName}' model.`);
+    }
+
+    let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+    if (prefix) {
+      attribute = `${prefix}:${prefix}/${attribute}`;
+    }
+
+    let value;
+    if (predicate.value === null) {
+      value = 'null';
+    } else {
+      value = type === 'string' ? `'${predicate.value}'` : predicate.value;
+    }
+
+    let operator = this._getODataFilterOperator(predicate.operator);
     return `${attribute} ${operator} ${value}`;
-  }
-
-  if (predicate instanceof StringPredicate) {
-    let attribute = store.serializerFor(modelName).keyForAttribute(predicate.attributeName);
-    return `contains(${attribute},'${predicate.containsValue}')`;
-  }
-
-  if (predicate instanceof ComplexPredicate) {
-    let separator = ` ${predicate.condition} `;
-    return predicate.predicates
-      .map(i => convertPredicateToODataFilterClause(i, store, modelName)).join(separator);
-  }
-
-  throw new Error(`Unknown predicate '${predicate}'`);
-}
-
-/**
- * Converts filter operator to OData representation.
- *
- * @param {Query.FilterOperator} operator Operator to convert.
- * @returns {String} Converted operator.
- */
-function getODataFilterOperator(operator) {
-  switch (operator) {
-    case FilterOperator.Eq:
-      return 'eq';
-
-    case FilterOperator.Neq:
-      return 'ne';
-
-    case FilterOperator.Le:
-      return 'lt';
-
-    case FilterOperator.Leq:
-      return 'le';
-
-    case FilterOperator.Ge:
-      return 'gt';
-
-    case FilterOperator.Geq:
-      return 'ge';
-
-    default:
-      throw new Error(`Unsupported filter operator '${operator}'.`);
   }
 }

@@ -1,10 +1,12 @@
+import DS from 'ember-data';
 import attr from 'ember-data/attr';
 import Proj from 'ember-flexberry-data';
 
 let Employee = Proj.Model.extend({
   'First Name': attr('string'),
   'Last Name': attr('string'),
-  'Birth Date': attr('date')
+  'Birth Date': attr('date'),
+  manager: DS.belongsTo('employee')
 });
 
 Employee.defineProjection('EmployeeTestProjection', 'employee', {

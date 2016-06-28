@@ -4,9 +4,13 @@ import { StringPredicate } from 'ember-flexberry-data/query/predicate';
 
 module('query');
 
-test('string predicate constructor', function (assert) {
+test('predicate | string | constructor', function (assert) {
+  assert.throws(() => new StringPredicate(), Error);
+  assert.throws(() => new StringPredicate(''), Error);
+  assert.throws(() => new StringPredicate(null), Error);
+
   let p = new StringPredicate('Name');
 
   assert.ok(p);
-  assert.ok(p.attributeName === 'Name');
+  assert.equal(p.attributePath, 'Name');
 });
