@@ -9,14 +9,14 @@
  * @for DS.Projection
  * @public
  *
- * @param {String} projectionName The name of the projection type.
  * @param {String} modelName The name of the model type.
  * @param {Object} attributes Projection attributes.
+ * @param {String} projectionName The name of the projection type.
  * @return {Object} Model projection.
  */
-export default function create(projectionName, modelName, attributes) {
+export default function create(modelName, attributes, projectionName) {
   return {
-    projectionName,
+    projectionName: projectionName || undefined,
     modelName,
     attributes: attributes || {}
   };
