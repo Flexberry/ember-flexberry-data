@@ -9,6 +9,7 @@
  * @for DS.Projection
  * @public
  *
+ * @param {String} projectionName The name of the projection type.
  * @param {String} modelName The name of the model type.
  * @param {Object} attributes Projection attributes.
  * @return {Object} Model projection.
