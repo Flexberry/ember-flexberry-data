@@ -43,7 +43,7 @@ test('adapter | odata | simple predicate | eq | master field', function (assert)
   let builder = new QueryBuilder(store, 'customer').where('manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=Manager/__PrimaryKey eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+  runTest(assert, builder, `/Customers?$filter=Manager/CustomerID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
 });
 
 test('adapter | odata | simple predicate | eq | master field', function (assert) {

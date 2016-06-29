@@ -249,9 +249,11 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _getODataAttributeName(modelName, attributePath) {
-    let result = this._store.serializerFor(modelName).keyForAttribute(attributePath).replace(/\./g, '/');
+    let serializer = this._store.serializerFor(modelName);
+    let result = serializer.keyForAttribute(attributePath).replace(/\./g, '/');
+
     if (this._info.isMaster(modelName, attributePath)) {
-      result += '/__PrimaryKey'; // TODO: magic
+      result +=  '/' + serializer.primaryKey;
     }
 
     return result;
