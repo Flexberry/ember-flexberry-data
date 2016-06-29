@@ -213,7 +213,8 @@ export default class Builder extends BaseBuilder {
       skip: this._skip,
       count: this._isCount,
       expand: Object.keys(this._expand),
-      select: Object.keys(this._select)
+      select: Object.keys(this._select),
+      projectionName: this._projectionName
     };
   }
 }
