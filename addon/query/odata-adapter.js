@@ -249,14 +249,21 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _getODataAttributeName(modelName, attributePath) {
-    let serializer = this._store.serializerFor(modelName);
-    let result = serializer.keyForAttribute(attributePath).replace(/\./g, '/');
+    let lastModel = modelName;
+    return attributePath.split('.').map((item, i, array) => {
+      let attr = [];
+      attr.push(this._store.serializerFor(lastModel).keyForAttribute(item));
+      if (this._info.isMaster(lastModel, item)) {
+        lastModel = this._info.getType(lastModel, item);
+        attr.push(this._store.serializerFor(lastModel).primaryKey);
+      }
 
-    if (this._info.isMaster(modelName, attributePath)) {
-      result +=  '/' + serializer.primaryKey;
-    }
+      if (i + 1 === array.length) {
+        return attr.join('/');
+      }
 
-    return result;
+      return attr.shift();
+    }).join('/');
   }
 
   _buildODataSimplePredicate(predicate, modelName, prefix) {

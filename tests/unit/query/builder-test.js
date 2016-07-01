@@ -48,6 +48,7 @@ test('query builder | projection', function (assert) {
 
   // Assert.
   assert.ok(result);
+  assert.equal(result.projectionName, 'EmployeeTestProjection');
   assert.equal(
     result.select,
     'EmployeeID,FirstName,LastName,BirthDate,Employee1,Order,TmpChildren');

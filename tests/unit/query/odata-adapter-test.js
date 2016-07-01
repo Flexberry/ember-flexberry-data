@@ -38,12 +38,20 @@ test('adapter | odata | simple predicate | eq | null', function (assert) {
   runTest(assert, builder, `/Customers?$filter=FirstName eq null`);
 });
 
-test('adapter | odata | simple predicate | eq | master field', function (assert) {
+test('adapter | odata | simple predicate | eq | master pk', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where('manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=Manager/CustomerID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+  runTest(assert, builder, `/Customers?$filter=Manager/EmployeeID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+});
+
+test('adapter | odata | simple predicate | eq | master master pk', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'customer').where('manager.manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
+
+  // Act && Assert.
+  runTest(assert, builder, `/Customers?$filter=Manager/Manager/EmployeeID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
 });
 
 test('adapter | odata | simple predicate | eq | master field | with cast', function (assert) {
@@ -51,7 +59,7 @@ test('adapter | odata | simple predicate | eq | master field | with cast', funct
   let builder = new QueryBuilder(store, 'customer').where('manager', FilterOperator.Eq, 'cast(3bcc4730-9cc1-4237-a843-c4b1de881d7c,Edm.Guid)');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=Manager/CustomerID eq cast(3bcc4730-9cc1-4237-a843-c4b1de881d7c,Edm.Guid)`);
+  runTest(assert, builder, `/Customers?$filter=Manager/EmployeeID eq cast(3bcc4730-9cc1-4237-a843-c4b1de881d7c,Edm.Guid)`);
 });
 
 test('adapter | odata | simple predicate | eq | master field', function (assert) {

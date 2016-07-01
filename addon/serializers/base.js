@@ -142,6 +142,22 @@ export default DS.RESTSerializer.extend({
   },
 
   /**
+    You can use this method to customize how a polymorphic relationship should be extracted.
+    [More info](http://emberjs.com/api/data/classes/DS.RESTSerializer.html#method_extractPolymorphicRelationship).
+
+    @method extractPolymorphicRelationship
+    @param {String} relationshipType
+    @param {Object} relationshipHash
+   */
+  extractPolymorphicRelationship(relationshipType, relationshipHash) {
+    if (!relationshipHash.hasOwnProperty('type')) {
+      relationshipHash.type = relationshipType;
+    }
+
+    return relationshipHash;
+  },
+
+  /**
    * Moves metadata from one object to another.
    *
    * @param dest Destination object.

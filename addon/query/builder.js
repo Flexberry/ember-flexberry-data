@@ -89,6 +89,10 @@ export default class Builder extends BaseBuilder {
    * @chainable
    */
   orderBy(property) {
+    if (!property) {
+      throw new Error('You trying sort by a empty string.');
+    }
+
     this._orderByClause = new OrderByClause(property);
     return this;
   }
@@ -209,7 +213,8 @@ export default class Builder extends BaseBuilder {
       skip: this._skip,
       count: this._isCount,
       expand: Object.keys(this._expand),
-      select: Object.keys(this._select)
+      select: Object.keys(this._select),
+      projectionName: this._projectionName
     };
   }
 }
