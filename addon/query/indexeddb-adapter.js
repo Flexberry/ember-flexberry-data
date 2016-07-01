@@ -2,7 +2,7 @@ import Ember from 'ember';
 import Dexie from 'npm:dexie';
 
 import FilterOperator from './filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
 import Condition from './condition';
 import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip } from './js-adapter';
@@ -73,31 +73,37 @@ function updateWhereClause(table, query) {
 
   let predicate = query.predicate;
   if (predicate instanceof SimplePredicate) {
+    if (predicate.value === null) {
+      // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
+      // https://github.com/dfahlander/Dexie.js/issues/153
+      return table.filter(getAttributeFilterFunction(predicate));
+    }
+
     switch (predicate.operator) {
       case FilterOperator.Eq:
-        return table.where(predicate.attributeName).equals(predicate.value);
+        return table.where(predicate.attributePath).equals(predicate.value);
 
       case FilterOperator.Neq:
-        return table.where(predicate.attributeName).notEqual(predicate.value);
+        return table.where(predicate.attributePath).notEqual(predicate.value);
 
       case FilterOperator.Le:
-        return table.where(predicate.attributeName).below(predicate.value);
+        return table.where(predicate.attributePath).below(predicate.value);
 
       case FilterOperator.Leq:
-        return table.where(predicate.attributeName).belowOrEqual(predicate.value);
+        return table.where(predicate.attributePath).belowOrEqual(predicate.value);
 
       case FilterOperator.Ge:
-        return table.where(predicate.attributeName).above(predicate.value);
+        return table.where(predicate.attributePath).above(predicate.value);
 
       case FilterOperator.Geq:
-        return table.where(predicate.attributeName).aboveOrEqual(predicate.value);
+        return table.where(predicate.attributePath).aboveOrEqual(predicate.value);
 
       default:
         throw new Error('Unknown operator');
     }
   }
 
-  if (predicate instanceof StringPredicate) {
+  if (predicate instanceof StringPredicate || predicate instanceof DetailPredicate) {
     return table.filter(getAttributeFilterFunction(predicate));
   }
 

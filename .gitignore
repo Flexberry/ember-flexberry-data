@@ -20,3 +20,6 @@ testem.log
 /.idea
 .tern-port
 .dir-locals.el
+typings/ember/ember.d.ts
+jsconfig.json
+.vscodeignore
