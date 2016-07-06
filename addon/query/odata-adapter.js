@@ -267,11 +267,6 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataSimplePredicate(predicate, modelName, prefix) {
-    let type = this._info.getType(modelName, predicate.attributePath);
-    if (!type) {
-      throw new Error(`Unknown type for '${predicate.attributePath}' attribute of '${modelName}' model.`);
-    }
-
     let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
     if (prefix) {
       attribute = `${prefix}:${prefix}/${attribute}`;
@@ -281,7 +276,20 @@ export default class ODataAdapter extends BaseAdapter {
     if (predicate.value === null) {
       value = 'null';
     } else {
-      value = type === 'string' ? `'${predicate.value}'` : predicate.value;
+      let meta = this._info.getMeta(modelName, predicate.attributePath);
+      if (meta.isKey) {
+        if (meta.keyType === 'guid') {
+          value = predicate.value;
+        } else {
+          throw new Error(`Unsupported key type '${meta.keyType}'.`);
+        }
+      } else {
+        if (meta.type === 'string') {
+          value = `'${predicate.value}'`;
+        } else {
+          value = predicate.value;
+        }
+      }
     }
 
     let operator = this._getODataFilterOperator(predicate.operator);

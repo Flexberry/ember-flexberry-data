@@ -1,6 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Support special 'id' attribute at query language:
+  ```javascript 
+  new SimplePredicate('manager', 'eq', key) === new SimplePredicate('manager.id', 'eq', key)
+  ```
 
 ## [0.2.0] - 01.07.2016
 ### Added

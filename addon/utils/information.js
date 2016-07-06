@@ -32,7 +32,7 @@ class Information {
   isExist(modelName, attributePath) {
     try {
       // TODO: won't work with cache
-      this._getMeta(modelName, attributePath);
+      this.getMeta(modelName, attributePath);
       return true;
     } catch (e) {
       return false;
@@ -49,7 +49,7 @@ class Information {
    @public
    */
   isMaster(modelName, attributePath) {
-    let meta = this._getMeta(modelName, attributePath);
+    let meta = this.getMeta(modelName, attributePath);
     return meta.isMaster;
   }
 
@@ -63,7 +63,7 @@ class Information {
    @public
    */
   getType(modelName, attributePath) {
-    let meta = this._getMeta(modelName, attributePath);
+    let meta = this.getMeta(modelName, attributePath);
     return meta.type;
   }
 
@@ -116,22 +116,27 @@ class Information {
     return model;
   }
 
-  _getMeta(modelName, attributePath) {
+  getMeta(modelName, attributePath) {
     let model = this._loadModel(modelName);
     let fields = Information.parseAttributePath(attributePath);
 
     for (let i = 0; i < fields.length; i++) {
+      // console.log(fields[i]);
       if (fields.length - 1 === i) {
         let attributes = Ember.get(model, 'attributes');
         let attribute = attributes.get(fields[i]);
         if (attribute) {
-          return { isMaster: false, type: attribute.type };
+          return { isMaster: false, isKey: false, type: attribute.type };
         }
 
         let relationships = Ember.get(model, 'relationshipsByName');
         let relationship = relationships.get(fields[i]);
         if (relationship) {
-          return { isMaster: true, type: relationship.type };
+          return { isMaster: true, isKey: true, type: relationship.type, keyType: 'guid' }; // TODO: other key types
+        }
+
+        if (fields[i] === 'id') {
+          return { isMaster: false, isKey: true, type: 'string', keyType: 'guid' }; // TODO: other key types
         }
 
         throw new Error(`Field '${attributePath}' not found at model '${modelName}'.`);
