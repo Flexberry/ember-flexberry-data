@@ -276,18 +276,18 @@ test('adapter | odata | count', function (assert) {
 
 test('adapter | odata | expand', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').expand('Prop1,Prop2').expand('Prop3,Prop2');
+  let builder = new QueryBuilder(store, 'customer').expand('firstName,lastName').expand(' age ,  lastName ');
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers?$expand=Prop1,Prop2,Prop3');
+  runTest(assert, builder, '/Customers?$expand=FirstName,LastName,Age');
 });
 
 test('adapter | odata | select', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').select('Prop1,Prop2').select('Prop3,Prop2');
+  let builder = new QueryBuilder(store, 'customer').select('firstName,lastName').select(' age,  lastName ');
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers?$select=Prop1,Prop2,Prop3');
+  runTest(assert, builder, '/Customers?$select=FirstName,LastName,Age');
 });
 
 function runTest(assert, builder, expectedUrl) {

@@ -123,11 +123,11 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataSelect(query) {
-    return query.select.join(',');
+    return query.select.map((i) => this._getODataAttributeName(query.modelName, i)).join(',');
   }
 
   _buildODataExpand(query) {
-    return query.expand.join(',');
+    return query.expand.map((i) => this._getODataAttributeName(query.modelName, i)).join(',');
   }
 
   _buildODataCount(query) {
