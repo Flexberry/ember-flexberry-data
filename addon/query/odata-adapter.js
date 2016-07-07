@@ -249,29 +249,35 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _getODataAttributeName(modelName, attributePath) {
+    let attr = [];
     let lastModel = modelName;
-    return attributePath.split('.').map((item, i, array) => {
-      let attr = [];
-      attr.push(this._store.serializerFor(lastModel).keyForAttribute(item));
-      if (this._info.isMaster(lastModel, item)) {
-        lastModel = this._info.getType(lastModel, item);
-        attr.push(this._store.serializerFor(lastModel).primaryKey);
+    let fields = Information.parseAttributePath(attributePath);
+    for (let i = 0; i < fields.length; i++) {
+      let meta = this._info.getMeta(lastModel, fields[i]);
+      if (meta.isMaster) {
+        lastModel = meta.type;
       }
 
-      if (i + 1 === array.length) {
-        return attr.join('/');
-      }
+      let serializer = this._store.serializerFor(lastModel);
 
-      return attr.shift();
-    }).join('/');
+      if (i + 1 === fields.length) {
+        if (meta.isMaster) {
+          attr.push(serializer.keyForAttribute(fields[i]));
+          attr.push(serializer.primaryKey);
+        } else if (meta.isKey) {
+          attr.push(serializer.primaryKey);
+        } else {
+          attr.push(serializer.keyForAttribute(fields[i]));
+        }
+      } else {
+        attr.push(serializer.keyForAttribute(fields[i]));
+      }
+    }
+
+    return attr.join('/');
   }
 
   _buildODataSimplePredicate(predicate, modelName, prefix) {
-    let type = this._info.getType(modelName, predicate.attributePath);
-    if (!type) {
-      throw new Error(`Unknown type for '${predicate.attributePath}' attribute of '${modelName}' model.`);
-    }
-
     let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
     if (prefix) {
       attribute = `${prefix}:${prefix}/${attribute}`;
@@ -281,7 +287,20 @@ export default class ODataAdapter extends BaseAdapter {
     if (predicate.value === null) {
       value = 'null';
     } else {
-      value = type === 'string' ? `'${predicate.value}'` : predicate.value;
+      let meta = this._info.getMeta(modelName, predicate.attributePath);
+      if (meta.isKey) {
+        if (meta.keyType === 'guid') {
+          value = predicate.value;
+        } else {
+          throw new Error(`Unsupported key type '${meta.keyType}'.`);
+        }
+      } else {
+        if (meta.type === 'string') {
+          value = `'${predicate.value}'`;
+        } else {
+          value = predicate.value;
+        }
+      }
     }
 
     let operator = this._getODataFilterOperator(predicate.operator);

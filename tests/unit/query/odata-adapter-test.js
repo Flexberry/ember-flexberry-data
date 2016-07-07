@@ -62,6 +62,14 @@ test('adapter | odata | simple predicate | eq | master field | with cast', funct
   runTest(assert, builder, `/Customers?$filter=Manager/EmployeeID eq cast(3bcc4730-9cc1-4237-a843-c4b1de881d7c,Edm.Guid)`);
 });
 
+test('adapter | odata | simple predicate | eq | master id', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'customer').where('manager.id', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
+
+  // Act && Assert.
+  runTest(assert, builder, `/Customers?$filter=Manager/EmployeeID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+});
+
 test('adapter | odata | simple predicate | eq | master field', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where('manager.First Name', FilterOperator.Eq, 'Vasya');
