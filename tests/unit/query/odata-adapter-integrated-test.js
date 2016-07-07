@@ -32,13 +32,34 @@ if (config.APP.testODataService) {
     });
   });
 
-  test('adapter | integrated odata | create', (assert) => {
-    assert.expect(0);
+  test('adapter | integrated odata | create and query by id', (assert) => {
+    assert.expect(4);
     let done = assert.async();
+
     Ember.run(() => {
-      store.createRecord('ember-flexberry-dummy-localization', {
+      let record = store.createRecord('ember-flexberry-dummy-localization', {
         name: 'Test'
-      }).save().then(done);
+      });
+
+      record
+        .save()
+        .then((createdRecord) => {
+          let id = createdRecord.get('id');
+          assert.ok(id);
+
+          // Reload created record by identifier.
+          let builder = new QueryBuilder(store, 'ember-flexberry-dummy-localization').select('name').byId(id);
+          return store.query('ember-flexberry-dummy-localization', builder.build());
+        }, (e) => console.log(e.message))
+        .then((result) => {
+          assert.ok(result);
+
+          let firstRecord = result.get('firstObject');
+          assert.ok(firstRecord);
+          assert.equal(firstRecord.get('name'), 'Test');
+          console.log(firstRecord.get('name'));
+        }, (e) => console.log(e.message))
+        .finally(done);
     });
   });
 }
