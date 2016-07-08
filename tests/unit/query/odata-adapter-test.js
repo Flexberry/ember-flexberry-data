@@ -19,7 +19,7 @@ test('adapter | odata | id', function (assert) {
   let builder = new QueryBuilder(store, 'customer').byId(42);
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers(42)');
+  runTest(assert, builder, '/Customers?$filter=CustomerID eq 42');
 });
 
 test('adapter | odata | simple predicate | eq', function (assert) {

@@ -48,9 +48,9 @@ if (config.APP.testODataService) {
           assert.ok(id);
 
           // Reload created record by identifier.
-          let builder = new QueryBuilder(store, 'ember-flexberry-dummy-localization').select('name').byId(id);
+          let builder = new QueryBuilder(store, 'ember-flexberry-dummy-localization').byId(id);
           return store.query('ember-flexberry-dummy-localization', builder.build());
-        }, (e) => console.log(e.message))
+        }, (e) => console.log(e, e.message))
         .then((result) => {
           assert.ok(result);
 
@@ -58,7 +58,7 @@ if (config.APP.testODataService) {
           assert.ok(firstRecord);
           assert.equal(firstRecord.get('name'), 'Test');
           console.log(firstRecord.get('name'));
-        }, (e) => console.log(e.message))
+        }, (e) => console.log(e, e.message))
         .finally(done);
     });
   });

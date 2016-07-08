@@ -61,9 +61,8 @@ export default class ODataAdapter extends BaseAdapter {
    */
   getODataBaseUrl(query) {
     let type = this.pathForType(query.modelName);
-    let id = query.id ? `(${query.id})` : '';
 
-    return `${this._baseUrl}/${type}${id}`;
+    return `${this._baseUrl}/${type}`;
   }
 
   /**
@@ -143,7 +142,20 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataFilters(query) {
-    let predicate = query.predicate;
+    let predicate  = query.predicate;
+
+    // Loading data using `CollectionName(Id)` syntax is not supported
+    // by default logic of `DS.JSONSerializer` with our store mixin (it
+    // supposes arrays when uses `query` method).
+    // Specified `id` should be used simply as a filter.
+    if (query.id) {
+      if (!predicate) {
+        predicate = new SimplePredicate('id', FilterOperator.Eq, query.id);
+      } else {
+        predicate = predicate.and(new SimplePredicate('id', FilterOperator.Eq, query.id));
+      }
+    }
+
     if (!predicate) {
       return null;
     }
