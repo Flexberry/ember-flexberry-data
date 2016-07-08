@@ -19,7 +19,7 @@ test('adapter | odata | id', function (assert) {
   let builder = new QueryBuilder(store, 'customer').byId(42);
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers(42)');
+  runTest(assert, builder, '/Customers?$filter=CustomerID eq 42');
 });
 
 test('adapter | odata | simple predicate | eq', function (assert) {
@@ -27,7 +27,7 @@ test('adapter | odata | simple predicate | eq', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Eq, 'Vasya');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=first-name eq 'Vasya'`);
+  runTest(assert, builder, `/Customers?$filter=FirstName eq 'Vasya'`);
 });
 
 test('adapter | odata | simple predicate | eq | null', function (assert) {
@@ -35,15 +35,31 @@ test('adapter | odata | simple predicate | eq | null', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Eq, null);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=first-name eq null`);
+  runTest(assert, builder, `/Customers?$filter=FirstName eq null`);
 });
 
-test('adapter | odata | simple predicate | eq | master field', function (assert) {
+test('adapter | odata | simple predicate | eq | master pk', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where('manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=manager/id eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+  runTest(assert, builder, `/Customers?$filter=Manager/EmployeeID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+});
+
+test('adapter | odata | simple predicate | eq | master master pk', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'customer').where('manager.manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
+
+  // Act && Assert.
+  runTest(assert, builder, `/Customers?$filter=Manager/Manager/EmployeeID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+});
+
+test('adapter | odata | simple predicate | eq | master field | with cast', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'customer').where('manager', FilterOperator.Eq, 'cast(3bcc4730-9cc1-4237-a843-c4b1de881d7c,Edm.Guid)');
+
+  // Act && Assert.
+  runTest(assert, builder, `/Customers?$filter=Manager/EmployeeID eq cast(3bcc4730-9cc1-4237-a843-c4b1de881d7c,Edm.Guid)`);
 });
 
 test('adapter | odata | simple predicate | eq | master id', function (assert) {
@@ -51,7 +67,7 @@ test('adapter | odata | simple predicate | eq | master id', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('manager.id', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=manager/id eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+  runTest(assert, builder, `/Customers?$filter=Manager/EmployeeID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
 });
 
 test('adapter | odata | simple predicate | eq | master field', function (assert) {
@@ -59,7 +75,7 @@ test('adapter | odata | simple predicate | eq | master field', function (assert)
   let builder = new QueryBuilder(store, 'customer').where('manager.First Name', FilterOperator.Eq, 'Vasya');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=manager/first-name eq 'Vasya'`);
+  runTest(assert, builder, `/Customers?$filter=Manager/First Name eq 'Vasya'`);
 });
 
 test('adapter | odata | simple predicate | neq', function (assert) {
@@ -67,7 +83,7 @@ test('adapter | odata | simple predicate | neq', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Neq, 'Vasya');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=first-name ne 'Vasya'`);
+  runTest(assert, builder, `/Customers?$filter=FirstName ne 'Vasya'`);
 });
 
 test('adapter | odata | simple predicate | neq | null', function (assert) {
@@ -75,7 +91,7 @@ test('adapter | odata | simple predicate | neq | null', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Neq, null);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=first-name ne null`);
+  runTest(assert, builder, `/Customers?$filter=FirstName ne null`);
 });
 
 test('adapter | odata | simple predicate | ge', function (assert) {
@@ -83,7 +99,7 @@ test('adapter | odata | simple predicate | ge', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Ge, 'Vasya');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=first-name gt 'Vasya'`);
+  runTest(assert, builder, `/Customers?$filter=FirstName gt 'Vasya'`);
 });
 
 test('adapter | odata | simple predicate | geq', function (assert) {
@@ -91,7 +107,7 @@ test('adapter | odata | simple predicate | geq', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Geq, 'Vasya');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=first-name ge 'Vasya'`);
+  runTest(assert, builder, `/Customers?$filter=FirstName ge 'Vasya'`);
 });
 
 test('adapter | odata | simple predicate | le', function (assert) {
@@ -99,7 +115,7 @@ test('adapter | odata | simple predicate | le', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Le, 'Vasya');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=first-name lt 'Vasya'`);
+  runTest(assert, builder, `/Customers?$filter=FirstName lt 'Vasya'`);
 });
 
 test('adapter | odata | simple predicate | leq', function (assert) {
@@ -107,7 +123,7 @@ test('adapter | odata | simple predicate | leq', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Leq, 'Vasya');
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=first-name le 'Vasya'`);
+  runTest(assert, builder, `/Customers?$filter=FirstName le 'Vasya'`);
 });
 
 test('adapter | odata | string predicate', function (assert) {
@@ -115,7 +131,7 @@ test('adapter | odata | string predicate', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where(new StringPredicate('firstName').contains('a'));
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=contains(first-name,'a')`);
+  runTest(assert, builder, `/Customers?$filter=contains(FirstName,'a')`);
 });
 
 test('adapter | odata | string predicate | inside complex', function (assert) {
@@ -127,7 +143,7 @@ test('adapter | odata | string predicate | inside complex', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where(stp.and(sp));
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=contains(first-name,'a') and first-name eq 'Vasya'`);
+  runTest(assert, builder, `/Customers?$filter=contains(FirstName,'a') and FirstName eq 'Vasya'`);
 });
 
 test('adapter | odata | detail predicate | all | with simple predicate', function (assert) {
@@ -138,7 +154,7 @@ test('adapter | odata | detail predicate | all | with simple predicate', functio
   let builder = new QueryBuilder(store, 'customer').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/all(f:f/first-name eq 'Vasya')`);
+  runTest(assert, builder, `/Customers?$filter=DetailName/all(f:f/FirstName eq 'Vasya')`);
 });
 
 test('adapter | odata | detail predicate | any | with simple predicate', function (assert) {
@@ -149,7 +165,7 @@ test('adapter | odata | detail predicate | any | with simple predicate', functio
   let builder = new QueryBuilder(store, 'customer').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/any(f:f/first-name eq 'Vasya')`);
+  runTest(assert, builder, `/Customers?$filter=DetailName/any(f:f/FirstName eq 'Vasya')`);
 });
 
 test('adapter | odata | detail predicate | all | with string predicate', function (assert) {
@@ -160,7 +176,7 @@ test('adapter | odata | detail predicate | all | with string predicate', functio
   let builder = new QueryBuilder(store, 'customer').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/all(contains(f:f/first-name,'Vasya'))`);
+  runTest(assert, builder, `/Customers?$filter=DetailName/all(contains(f:f/FirstName,'Vasya'))`);
 });
 
 test('adapter | odata | detail predicate | any | with string predicate', function (assert) {
@@ -169,7 +185,7 @@ test('adapter | odata | detail predicate | any | with string predicate', functio
   let builder = new QueryBuilder(store, 'customer').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/any(contains(f:f/first-name,'Vasya'))`);
+  runTest(assert, builder, `/Customers?$filter=DetailName/any(contains(f:f/FirstName,'Vasya'))`);
 });
 
 test('adapter | odata | detail predicate | all | with complex predicate', function (assert) {
@@ -182,7 +198,7 @@ test('adapter | odata | detail predicate | all | with complex predicate', functi
   let builder = new QueryBuilder(store, 'customer').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/all(f:f/first-name eq 'Vasya' or f:f/last-name eq 'Ivanov')`);
+  runTest(assert, builder, `/Customers?$filter=DetailName/all(f:f/FirstName eq 'Vasya' or f:f/LastName eq 'Ivanov')`);
 });
 
 test('adapter | odata | detail predicate | any | with complex predicate', function (assert) {
@@ -195,7 +211,7 @@ test('adapter | odata | detail predicate | any | with complex predicate', functi
   let builder = new QueryBuilder(store, 'customer').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/all(f:f/first-name eq 'Vasya' and f:f/last-name eq 'Ivanov')`);
+  runTest(assert, builder, `/Customers?$filter=DetailName/all(f:f/FirstName eq 'Vasya' and f:f/LastName eq 'Ivanov')`);
 });
 
 test('adapter | odata | complex predicate', function (assert) {
@@ -208,7 +224,7 @@ test('adapter | odata | complex predicate', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where(cp1);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=first-name eq 'Vasya' or last-name eq 'Ivanov' or age eq 10`);
+  runTest(assert, builder, `/Customers?$filter=FirstName eq 'Vasya' or LastName eq 'Ivanov' or Age eq 10`);
 });
 
 test('adapter | odata | complex predicate | with nested complex predicate', function (assert) {
@@ -223,7 +239,7 @@ test('adapter | odata | complex predicate | with nested complex predicate', func
   let builder = new QueryBuilder(store, 'customer').where(cp2);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=(first-name eq 'Vasya' or last-name eq 'Ivanov') and age eq 10`);
+  runTest(assert, builder, `/Customers?$filter=(FirstName eq 'Vasya' or LastName eq 'Ivanov') and Age eq 10`);
 });
 
 test('adapter | odata | order', function (assert) {
@@ -231,7 +247,7 @@ test('adapter | odata | order', function (assert) {
   let builder = new QueryBuilder(store, 'customer').orderBy('firstName,lastName asc,age desc,manager.First Name,manager.Last Name asc,manager.Birth Date desc');
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers?$orderby=first-name,last-name asc,age desc,manager/first-name,manager/last-name asc,manager/birth-date desc');
+  runTest(assert, builder, '/Customers?$orderby=FirstName,LastName asc,Age desc,Manager/First Name,Manager/Last Name asc,Manager/Birth Date desc');
 });
 
 test('adapter | odata | skip', function (assert) {
@@ -260,18 +276,18 @@ test('adapter | odata | count', function (assert) {
 
 test('adapter | odata | expand', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').expand('Prop1,Prop2').expand('Prop3,Prop2');
+  let builder = new QueryBuilder(store, 'customer').expand('firstName,lastName').expand(' age ,  lastName ');
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers?$expand=Prop1,Prop2,Prop3');
+  runTest(assert, builder, '/Customers?$expand=FirstName,LastName,Age');
 });
 
 test('adapter | odata | select', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').select('Prop1,Prop2').select('Prop3,Prop2');
+  let builder = new QueryBuilder(store, 'customer').select('firstName,lastName').select(' age,  lastName ');
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers?$select=Prop1,Prop2,Prop3');
+  runTest(assert, builder, '/Customers?$select=FirstName,LastName,Age');
 });
 
 function runTest(assert, builder, expectedUrl) {

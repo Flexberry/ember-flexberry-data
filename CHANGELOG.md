@@ -7,6 +7,8 @@
   ```javascript 
   new SimplePredicate('manager', 'eq', key) === new SimplePredicate('manager.id', 'eq', key)
   ```
+### Fixed
+- Using `QueryBuilder.byId` method for OData query language adapter.
 
 ## [0.2.0] - 01.07.2016
 ### Added
