@@ -11,15 +11,35 @@ import Model from './models/model';
 import create from './utils/create';
 import { attr, belongsTo, hasMany } from './utils/attributes';
 
+import OfflineModel from './models/offline-model';
+import OfflineModelMixin from './mixins/offline-model';
+import BaseStore from './stores/base-store';
+import LocalSerializer from './serializers/local-serializer';
+import LocalAdapter from './adapters/local-adapter';
+import OfflineGlobalsService from './services/offline-globals';
+import Syncer from './syncer';
+
+/**
+ * This namespace contains classes and methods to support work in offline mode.
+ */
+let Offline = {
+  Store: BaseStore,
+  Model: OfflineModel,
+  ModelMixin: OfflineModelMixin,
+  Adapter: LocalAdapter,
+  Serializer: LocalSerializer,
+  GlobalsService: OfflineGlobalsService,
+  Syncer: Syncer
+};
+
 /**
  * This namespace contains classes and methods for working with projections.
  *
  * @class Projection
- * @namespace DS
  * @static
  * @public
  */
-export default {
+let Projection = {
   Store: Store,
   Adapter: Adapter,
   Model: Model,
@@ -28,3 +48,5 @@ export default {
   belongsTo: belongsTo,
   hasMany: hasMany
 };
+
+export { Offline, Projection };

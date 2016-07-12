@@ -5,7 +5,7 @@ import Ember from 'ember';
  * fetching models using projection.
  *
  * @module ember-flexberry-data
- * @namespace DS
+ * @namespace Projection
  * @class Adapter
  * @extends Ember.Mixin
  */

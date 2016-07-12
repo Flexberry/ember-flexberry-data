@@ -7,7 +7,7 @@ import QueryBuilder from '../query/builder';
  * fetching models using projection.
  *
  * @module ember-flexberry-data
- * @namespace DS
+ * @namespace Projection
  * @class Store
  * @extends Ember.Mixin
  */
