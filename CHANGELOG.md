@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Added
+- Support `polymorphic` options for `belongsTo` relationships.
 - Support special 'id' attribute at query language:
 
   ```javascript 
