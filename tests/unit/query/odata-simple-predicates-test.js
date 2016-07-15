@@ -150,7 +150,7 @@ function initTestData(store) {
     }).save(),
 
     store.createRecord('ember-flexberry-dummy-application-user', {
-      name: 'Vasya',
+      name: 'Oleg',
       eMail: '2@mail.ru',
       karma: 5
     }).save(),

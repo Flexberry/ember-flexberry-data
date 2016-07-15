@@ -33,23 +33,7 @@ if (config.APP.testODataService) {
     let done = assert.async();
 
     Ember.run( () => { 
-      Ember.RSVP.Promise.all([
-        store.createRecord('ember-flexberry-dummy-application-user', {
-        name: 'Vasya',
-        eMail: '1@mail.ru',
-        }).save(),
-
-        store.createRecord('ember-flexberry-dummy-application-user', {
-        name: 'Vasya',
-        eMail: '2@mail.ru',
-        }).save(),
-
-        store.createRecord('ember-flexberry-dummy-application-user', {
-        name: 'Kolya',
-        eMail: '3@mail.ru',
-        }).save()
-      ])
-      .then( (values) => {
+      initTestData(store).then( (values) => {
         assert.equal(values.length, 3, 'Init data: ok');
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
           .where(new StringPredicate('name').contains('as'));
@@ -81,9 +65,26 @@ if (config.APP.testODataService) {
             assert.ok(data.get('length') === 0,
               `Contains mustn't return any records: ok`); 
             });
-      })
-
-      .finally(done);
+      }).finally(done);
     });
   });
+}
+
+function initTestData(store) {
+  return Ember.RSVP.Promise.all([
+    store.createRecord('ember-flexberry-dummy-application-user', {
+    name: 'Vasya',
+    eMail: '1@mail.ru',
+    }).save(),
+
+    store.createRecord('ember-flexberry-dummy-application-user', {
+    name: 'Vasya',
+    eMail: '2@mail.ru',
+    }).save(),
+
+    store.createRecord('ember-flexberry-dummy-application-user', {
+    name: 'Kolya',
+    eMail: '3@mail.ru',
+    }).save()
+  ]);
 }
