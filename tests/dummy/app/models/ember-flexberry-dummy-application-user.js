@@ -1,5 +1,5 @@
 import DS from 'ember-data';
-import BaseModel from 'ember-flexberry/models/base';
+import BaseModel from 'ember-flexberry-data/models/model';
 import Proj from 'ember-flexberry-data';
 
 var Model = BaseModel.extend({
@@ -13,7 +13,7 @@ var Model = BaseModel.extend({
   facebook: DS.attr('string'),
   twitter: DS.attr('string'),
   birthday: DS.attr('date'),
-  gender: DS.attr('ember-flexberry-dummy-gender'),
+  //gender: DS.attr('ember-flexberry-dummy-gender'),
   vip: DS.attr('boolean'),
   karma: DS.attr('number'),
 
