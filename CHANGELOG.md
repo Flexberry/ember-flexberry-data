@@ -26,6 +26,9 @@
 ### Fixed
 - Using `QueryBuilder.byId` method for OData query language adapter.
 
+### Known issues
+- Using properties for relationships in projections may cause errors when apply `selectByProjection` method of query language for reading models.
+
 ## [0.2.0] - 01.07.2016
 ### Added
 - Predicates for details with any / all functionality.
