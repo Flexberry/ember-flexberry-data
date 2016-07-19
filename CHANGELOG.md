@@ -1,11 +1,13 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.3.0] - 19.07.2016
 ### Added
 - Support `polymorphic` options for `belongsTo` relationships.
 - Support special 'id' attribute at query language:
 
-  ```javascript 
+  ```javascript
   new SimplePredicate('manager', 'eq', key) === new SimplePredicate('manager.id', 'eq', key)
   ```
 - Classes to support work in offline mode. See `Offline` namespace in [api documentation](http://flexberry.github.io/Documentation/master/modules/ember-flexberry-data.html).
@@ -51,4 +53,4 @@ The first release of ember-flexberry-data!
 ### Added
 - Implementation of _projections_ - predefined named set of model attributes.
 - Implementation of abstract query language and adapters for OData and JSON.
-- Implementations of `DS.Store` and `DS.Adapter` with support of _projections_. 
+- Implementations of `DS.Store` and `DS.Adapter` with support of _projections_.
