@@ -54,23 +54,19 @@ You will need the following things properly installed on your computer.
 
 #### Releasing
 
-* Merge current release branch with master branch
+* Merge develop branch with master branch
   * `git checkout master`
-  * `git merge --no-ff <release-branch>`
+  * `git merge --no-ff develop`
   * `git push`
 * `ember release` (for more information visit [ember-cli-release](https://github.com/lytics/ember-cli-release))
   * To increment patch version run without specifying options.
   * To increment minor version run with `--minor` option.
   * To increment major version run with `--major` option.
 * Merge master branch that contains additional commit for changing addon version with develop branch
-  * `git checkout <release-branch>`
+  * `git checkout develop`
   * `git merge --no-ff master`
   * `git push`
-  * `git checkout develop`
-  * `git merge --no-ff <release-branch>`
-  * `git push`
 * `npm publish ./` (for more information visit [How to publish packages to NPM](https://gist.github.com/coolaj86/1318304))
-* Delete current release branch on GitHub 
 
 #### Documenting
 
