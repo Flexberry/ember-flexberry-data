@@ -11,7 +11,7 @@ import Information from '../utils/information';
  *
  * @module ember-flexberry-data
  * @namespace Query
- * @class ODataAdapter
+ * @class OdataAdapter
  * @extends Query.BaseAdapter
  */
 export default class ODataAdapter extends BaseAdapter {
@@ -61,9 +61,8 @@ export default class ODataAdapter extends BaseAdapter {
    */
   getODataBaseUrl(query) {
     let type = this.pathForType(query.modelName);
-    let id = query.id ? `(${query.id})` : '';
 
-    return `${this._baseUrl}/${type}${id}`;
+    return `${this._baseUrl}/${type}`;
   }
 
   /**
@@ -123,11 +122,11 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataSelect(query) {
-    return query.select.join(',');
+    return query.select.map((i) => this._getODataAttributeName(query.modelName, i)).join(',');
   }
 
   _buildODataExpand(query) {
-    return query.expand.join(',');
+    return query.expand.map((i) => this._getODataAttributeName(query.modelName, i)).join(',');
   }
 
   _buildODataCount(query) {
@@ -143,7 +142,20 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataFilters(query) {
-    let predicate = query.predicate;
+    let predicate  = query.predicate;
+
+    // Loading data using `CollectionName(Id)` syntax is not supported
+    // by default logic of `DS.JSONSerializer` with our store mixin (it
+    // supposes arrays when uses `query` method).
+    // Specified `id` should be used simply as a filter.
+    if (query.id) {
+      if (!predicate) {
+        predicate = new SimplePredicate('id', FilterOperator.Eq, query.id);
+      } else {
+        predicate = predicate.and(new SimplePredicate('id', FilterOperator.Eq, query.id));
+      }
+    }
+
     if (!predicate) {
       return null;
     }
@@ -249,29 +261,35 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _getODataAttributeName(modelName, attributePath) {
+    let attr = [];
     let lastModel = modelName;
-    return attributePath.split('.').map((item, i, array) => {
-      let attr = [];
-      attr.push(this._store.serializerFor(lastModel).keyForAttribute(item));
-      if (this._info.isMaster(lastModel, item)) {
-        lastModel = this._info.getType(lastModel, item);
-        attr.push(this._store.serializerFor(lastModel).primaryKey);
+    let fields = Information.parseAttributePath(attributePath);
+    for (let i = 0; i < fields.length; i++) {
+      let meta = this._info.getMeta(lastModel, fields[i]);
+      if (meta.isMaster) {
+        lastModel = meta.type;
       }
 
-      if (i + 1 === array.length) {
-        return attr.join('/');
-      }
+      let serializer = this._store.serializerFor(lastModel);
 
-      return attr.shift();
-    }).join('/');
+      if (i + 1 === fields.length) {
+        if (meta.isMaster) {
+          attr.push(serializer.keyForAttribute(fields[i]));
+          attr.push(serializer.primaryKey);
+        } else if (meta.isKey) {
+          attr.push(serializer.primaryKey);
+        } else {
+          attr.push(serializer.keyForAttribute(fields[i]));
+        }
+      } else {
+        attr.push(serializer.keyForAttribute(fields[i]));
+      }
+    }
+
+    return attr.join('/');
   }
 
   _buildODataSimplePredicate(predicate, modelName, prefix) {
-    let type = this._info.getType(modelName, predicate.attributePath);
-    if (!type) {
-      throw new Error(`Unknown type for '${predicate.attributePath}' attribute of '${modelName}' model.`);
-    }
-
     let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
     if (prefix) {
       attribute = `${prefix}:${prefix}/${attribute}`;
@@ -281,7 +299,20 @@ export default class ODataAdapter extends BaseAdapter {
     if (predicate.value === null) {
       value = 'null';
     } else {
-      value = type === 'string' ? `'${predicate.value}'` : predicate.value;
+      let meta = this._info.getMeta(modelName, predicate.attributePath);
+      if (meta.isKey) {
+        if (meta.keyType === 'guid') {
+          value = predicate.value;
+        } else {
+          throw new Error(`Unsupported key type '${meta.keyType}'.`);
+        }
+      } else {
+        if (meta.type === 'string') {
+          value = `'${predicate.value}'`;
+        } else {
+          value = predicate.value;
+        }
+      }
     }
 
     let operator = this._getODataFilterOperator(predicate.operator);
