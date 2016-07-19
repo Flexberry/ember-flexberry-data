@@ -11,7 +11,7 @@
 - Classes to support work in offline mode. See `Offline` namespace in [api documentation](http://flexberry.github.io/Documentation/master/modules/ember-flexberry-data.html).
 
 ### Changed
-- The addon is no longer exports `Projection` namespace. Instead with following extra changes:
+- The addon is no longer exports `Projection` namespace with following extra changes:
     - `Projection`, `Offline`, `Adapter`, `Serializer`, `Query`, `Utils` namespaces are exporting now.
     - `Projection.Store` mixin renamed to `Projection.StoreMixin`.
     - `Projection.Adapter` mixin renamed to `Projection.AdapterMixin`.
