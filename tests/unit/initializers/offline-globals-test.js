@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import OfflineGlobalsInitializer from 'dummy/initializers/offline-globals';
+import OfflineGlobalsInitializer from 'ember-flexberry-data/initializers/offline-globals';
 import { module, test } from 'qunit';
 
 let application;

@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import SyncerInitializer from 'dummy/initializers/syncer';
+import SyncerInitializer from 'ember-flexberry-data/initializers/syncer';
 import { module, test } from 'qunit';
 
 let application;

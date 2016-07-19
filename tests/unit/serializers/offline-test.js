@@ -1,8 +1,8 @@
 import { moduleForModel, test } from 'ember-qunit';
 
-moduleForModel('model', 'Unit | Serializer | local serializer', {
+moduleForModel('model', 'Unit | Serializer | offline', {
   // Specify the other units that are required for this test.
-  needs: ['serializer:local-serializer']
+  needs: ['serializer:offline']
 });
 
 // Replace this with your real tests.

@@ -1,4 +1,4 @@
-import generateUniqueId from 'dummy/utils/generate-unique-id';
+import generateUniqueId from 'ember-flexberry-data/utils/generate-unique-id';
 import { module, test } from 'qunit';
 
 module('Unit | Utility | generate unique id');

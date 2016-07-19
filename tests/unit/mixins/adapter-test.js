@@ -1,12 +1,12 @@
 import Ember from 'ember';
-import OfflineModelMixin from 'ember-flexberry-data/mixins/offline-model';
+import AdapterMixin from 'ember-flexberry-data/mixins/adapter';
 import { module, test } from 'qunit';
 
 import startApp from '../../helpers/start-app';
 
 let App;
 
-module('Unit | Mixin | offline model', {
+module('Unit | Mixin | adapter', {
   setup: function () {
     App = startApp();
   },
@@ -17,7 +17,7 @@ module('Unit | Mixin | offline model', {
 
 // Replace this with your real tests.
 test('it works', function(assert) {
-  let OfflineModelObject = Ember.Object.extend(App.__container__.ownerInjection(), OfflineModelMixin);
-  let subject = OfflineModelObject.create();
+  let AdapterObject = Ember.Object.extend(App.__container__.ownerInjection(), AdapterMixin);
+  let subject = AdapterObject.create();
   assert.ok(subject);
 });

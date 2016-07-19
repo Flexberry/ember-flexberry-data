@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import LocalStoreInitializer from 'dummy/initializers/local-store';
+import LocalStoreInitializer from 'ember-flexberry-data/initializers/local-store';
 import { module, test } from 'qunit';
 
 let application;

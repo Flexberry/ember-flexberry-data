@@ -1,4 +1,4 @@
-import isObject from 'dummy/utils/is-object';
+import isObject from 'ember-flexberry-data/utils/is-object';
 import { module, test } from 'qunit';
 
 module('Unit | Utility | is object');

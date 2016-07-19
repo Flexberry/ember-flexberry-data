@@ -2,7 +2,7 @@ import { module, test } from 'qunit';
 import startApp from '../../helpers/start-app';
 import Ember from 'ember';
 import DS from 'ember-data';
-import isModelInstance from 'dummy/utils/is-model-instance';
+import isModelInstance from 'ember-flexberry-data/utils/is-model-instance';
 
 let App;
 
