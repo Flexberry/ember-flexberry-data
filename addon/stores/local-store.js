@@ -1,18 +1,22 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import LocalAdapter from '../adapters/local-adapter';
+import OfflineAdapter from '../adapters/offline';
 
 /**
- * @module ember-flexberry-data
- */
+  @module ember-flexberry-data
+*/
 
 /**
- * Store that used in offline mode.
- */
+  Store that used in offline mode by default.
+  @class LocalStore
+  @namespace Offline
+  @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
+  @private
+*/
 export default DS.Store.extend({
   init: function() {
     let owner = Ember.getOwner(this);
-    let adapter = LocalAdapter.create(owner.ownerInjection(), {
+    let adapter = OfflineAdapter.create(owner.ownerInjection(), {
       caching: 'none',
       namespace: 'ember-flexberry-offline:store',
     });

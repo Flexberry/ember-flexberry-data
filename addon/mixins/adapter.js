@@ -6,7 +6,7 @@ import Ember from 'ember';
  *
  * @module ember-flexberry-data
  * @namespace Projection
- * @class Adapter
+ * @class AdapterMixin
  * @extends Ember.Mixin
  */
 export default Ember.Mixin.create({

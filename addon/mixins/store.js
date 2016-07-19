@@ -8,7 +8,7 @@ import QueryBuilder from '../query/builder';
  *
  * @module ember-flexberry-data
  * @namespace Projection
- * @class Store
+ * @class StoreMixin
  * @extends Ember.Mixin
  */
 export default Ember.Mixin.create({

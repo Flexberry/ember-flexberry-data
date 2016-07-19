@@ -4,18 +4,16 @@
 
 import Ember from 'ember';
 import DS from 'ember-data';
-import { attr } from '../utils/attributes';
 
 /**
   Mixin for Ember models.
   Adds metadata properties that can be used to resolve synchronization conflicts.
-  All metadata properties will be added to all projections (also for relationships)
-  if used when this mixin use in model class definition.
   Creation and changing date and time of record will be filled with current date and time on model saving.
   It's recommended to use this mixin when model class extends subclass of [DS.Model](http://emberjs.com/api/data/classes/DS.Model.html) or
   includes other mixins, i.e. it's not inherited directly from [DS.Model](http://emberjs.com/api/data/classes/DS.Model.html).
-  If model class inherited directly from [DS.Model](http://emberjs.com/api/data/classes/DS.Model.html) it's recommended to
-  extend it from {{#crossLink "Offline.Model"}}{{/crossLink}} class.
+  Also it can be used explicitly when it is not necessary to use projections for particular model in application.
+  If model class inherited directly from [DS.Model](http://emberjs.com/api/data/classes/DS.Model.html) and it's planned to use projections,
+  then it's recommended to extend model class from {{#crossLink "Offline.Model"}}{{/crossLink}}.
 
   @class ModelMixin
   @namespace Offline
@@ -82,36 +80,6 @@ export default Ember.Mixin.create({
   */
   init() {
     this._super(...arguments);
-    let originDefineProjection = this.constructor.defineProjection;
-    let defineProjection = function(projectionName, modelName, attributes) {
-      function addSycPropertiesToProjection(proj, attrs) {
-        attrs.createTime = attr('Creation Time', { hidden: true });
-        attrs.creator = attr('Creator', { hidden: true });
-        attrs.editTime = attr('Edit Time', { hidden: true });
-        attrs.editor = attr('Editor', { hidden: true });
-        attrs.syncDownTime = attr('SyncDown Time', { hidden: true });
-        attrs.readOnly = attr('Read Only', { hidden: true });
-        proj.attributes = attrs;
-
-        /* Add meta properties to all relationships in projection so they can
-		       be serialized and deserialized in embedded records.*/
-        for (let key in attrs) {
-          if (attrs.hasOwnProperty(key) && !Ember.isNone(key.kind) &&
-             (key.kind === 'belongsTo' || key.kind === 'hasMany')) {
-            addSycPropertiesToProjection(key, key.attributes);
-          }
-        }
-      }
-
-      if (originDefineProjection) {
-        let proj = originDefineProjection(projectionName, modelName, attributes);
-        let attrs = proj.attributes;
-        addSycPropertiesToProjection(proj, attrs);
-        this.projections.set(projectionName, proj);
-      }
-    };
-
-    this.constructor.defineProjection = defineProjection;
 
     let syncer = Ember.getOwner(this).lookup('syncer:main');
     this.set('syncer', syncer);
