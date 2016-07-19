@@ -7,10 +7,10 @@ import LFSerializer from 'ember-localforage-adapter/serializers/localforage';
 import isObject from '../utils/is-object';
 
 /**
-  Base serializer for {{#crossLink "LocalStore"}}{{/crossLink}}.
+  Base serializer for {{#crossLink "Offline.LocalStore"}}{{/crossLink}}.
 
-  @class Serializer
-  @namespace Offline
+  @namespace Serializer
+  @class Offline
   @extends <a href="https://github.com/Flexberry/ember-localforage-adapter/blob/master/addon/serializers/localforage.js">LocalforageSerializer</a>
 */
 export default LFSerializer.extend({

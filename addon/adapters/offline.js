@@ -6,10 +6,10 @@ import LFAdapter from 'ember-localforage-adapter/adapters/localforage';
 import generateUniqueId from '../utils/generate-unique-id';
 
 /**
-  Default adapter for {{#crossLink "LocalStore"}}{{/crossLink}}.
+  Default adapter for {{#crossLink "Offline.LocalStore"}}{{/crossLink}}.
 
-  @class Adapter
-  @namespace Offline
+  @class Offline
+  @namespace Adapter
   @extends <a href="https://github.com/Flexberry/ember-localforage-adapter/blob/master/addon/adapters/localforage.js">LocalforageAdapter</a>
 */
 var LocalAdapter = LFAdapter.extend({
