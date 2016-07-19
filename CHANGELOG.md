@@ -8,6 +8,19 @@
   ```javascript 
   new SimplePredicate('manager', 'eq', key) === new SimplePredicate('manager.id', 'eq', key)
   ```
+- Classes to support work in offline mode. See `Offline` namespace in [api documentation](http://flexberry.github.io/Documentation/master/modules/ember-flexberry-data.html).
+
+### Changed
+- The addon is no longer exports `Projection` namespace with following extra changes:
+    - `Projection`, `Offline`, `Adapter`, `Serializer`, `Query`, `Utils` namespaces are exporting now.
+    - `Projection.Store` mixin renamed to `Projection.StoreMixin`.
+    - `Projection.Adapter` mixin renamed to `Projection.AdapterMixin`.
+    - All adapters were included into `Adapter` napespace.
+    - All serializers were included into `Serializer` napespace.
+    - All client query language classes were included into `Query` napespace.
+    - `Information` class was included into `Utils` napespace.
+  For more information please see [api documentation](http://flexberry.github.io/Documentation/master/modules/ember-flexberry-data.html).
+
 ### Fixed
 - Using `QueryBuilder.byId` method for OData query language adapter.
 

@@ -2,9 +2,11 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import { module, test } from 'qunit';
 
-import QueryBuilder from 'ember-flexberry-data/query/builder';
+import { Query } from 'ember-flexberry-data';
 
 import startApp from '../../helpers/start-app';
+
+const { Builder } = Query;
 
 let App;
 
@@ -31,16 +33,16 @@ module('query', {
 
 test('query builder | constructor', function (assert) {
   let store = App.__container__.lookup('service:store');
-  assert.ok(new QueryBuilder(store, 'Customer'));
-  assert.ok(new QueryBuilder(store).from('Customer'));
+  assert.ok(new Builder(store, 'Customer'));
+  assert.ok(new Builder(store).from('Customer'));
 
-  assert.ok(new QueryBuilder(store, 'Customer').where('Name', 'eq', 'Vasya'));
+  assert.ok(new Builder(store, 'Customer').where('Name', 'eq', 'Vasya'));
 });
 
 test('query builder | projection', function (assert) {
   // Arrange.
   let store = App.__container__.lookup('service:store');
-  let builder = new QueryBuilder(store, 'Employee');
+  let builder = new Builder(store, 'Employee');
 
   // Act.
   builder.selectByProjection('EmployeeTestProjection');

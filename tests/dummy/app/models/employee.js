@@ -1,8 +1,8 @@
 import DS from 'ember-data';
 import attr from 'ember-data/attr';
-import Proj from 'ember-flexberry-data';
+import { Projection } from 'ember-flexberry-data';
 
-let Employee = Proj.Model.extend({
+let Employee = Projection.Model.extend({
   'First Name': attr('string'),
   'Last Name': attr('string'),
   'Birth Date': attr('date'),
@@ -10,17 +10,17 @@ let Employee = Proj.Model.extend({
 });
 
 Employee.defineProjection('EmployeeTestProjection', 'employee', {
-  firstName: Proj.attr('First Name'),
-  lastName: Proj.attr('Last Name'),
-  birthDate: Proj.attr('Birth Date'),
-  employee1: Proj.belongsTo('employee', 'Reports To', {
-    firstName: Proj.attr('Reports To - First Name')
+  firstName: Projection.attr('First Name'),
+  lastName: Projection.attr('Last Name'),
+  birthDate: Projection.attr('Birth Date'),
+  employee1: Projection.belongsTo('employee', 'Reports To', {
+    firstName: Projection.attr('Reports To - First Name')
   }),
-  order: Proj.belongsTo('order', 'Order', {
-    orderDate: Proj.attr('Order Date')
+  order: Projection.belongsTo('order', 'Order', {
+    orderDate: Projection.attr('Order Date')
   }),
-  tmpChildren: Proj.hasMany('employee', 'Tmp Children', {
-    lastName: Proj.attr('Tmp Children - Last Name')
+  tmpChildren: Projection.hasMany('employee', 'Tmp Children', {
+    lastName: Projection.attr('Tmp Children - Last Name')
   })
 });
 
