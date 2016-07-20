@@ -62,11 +62,11 @@ You will need the following things properly installed on your computer.
   * To increment patch version run without specifying options.
   * To increment minor version run with `--minor` option.
   * To increment major version run with `--major` option.
+* `npm publish ./` (for more information visit [How to publish packages to NPM](https://gist.github.com/coolaj86/1318304))
 * Merge master branch that contains additional commit for changing addon version with develop branch
   * `git checkout develop`
   * `git merge --no-ff master`
   * `git push`
-* `npm publish ./` (for more information visit [How to publish packages to NPM](https://gist.github.com/coolaj86/1318304))
 
 #### Documenting
 
