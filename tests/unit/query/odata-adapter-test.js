@@ -171,14 +171,13 @@ test('adapter | odata | detail predicate | any | with simple predicate', functio
 test('adapter | odata | detail predicate | all | with string predicate', function (assert) {
   // Arrange.
   let dp = new DetailPredicate('userVotes')
-  	.all(new StringPredicate('applicationUser.name').contains('Oleg'));
-
+   .all(new StringPredicate('applicationUser.name').contains('Oleg'));
+              
   // Act.
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
-  	.where(dp);
-
+    .where(dp);
   // Act && Assert.
-  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=userVotes/all(contains(f:f/applicationUser.name,'Oleg'))`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=userVotes/all(contains(f:f/Name,'Oleg'))`);
 });
 
 test('adapter | odata | detail predicate | any | with string predicate', function (assert) {
