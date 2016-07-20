@@ -94,7 +94,6 @@ if (config.APP.testODataService) {
               text: 'Comment 4',
               suggestion: sug
             }).save()
-
           ])
                       
           // Creating votes.

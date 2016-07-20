@@ -170,18 +170,15 @@ test('adapter | odata | detail predicate | any | with simple predicate', functio
 
 test('adapter | odata | detail predicate | all | with string predicate', function (assert) {
   // Arrange.
-                let dp = new DetailPredicate('userVotes')
-                .all(new StringPredicate('applicationUser.name').contains('Oleg'));
-              let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
-                .where(dp);
-
-  //let dp = new DetailPredicate('DetailName').all(new StringPredicate('firstName').contains('Vasya'));
+  let dp = new DetailPredicate('userVotes')
+  	.all(new StringPredicate('applicationUser.name').contains('Oleg'));
 
   // Act.
-  //let builder = new QueryBuilder(store, 'customer').where(dp);
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
+  	.where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/all(contains(f:f/FirstName,'Vasya'))`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=userVotes/all(contains(f:f/applicationUser.name,'Oleg'))`);
 });
 
 test('adapter | odata | detail predicate | any | with string predicate', function (assert) {
