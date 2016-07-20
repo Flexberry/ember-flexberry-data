@@ -3,8 +3,7 @@ import { module, test } from 'qunit';
 
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import ODataAdapter from 'ember-flexberry-data/adapters/odata';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } 
-  from 'ember-flexberry-data/query/predicate';
+import { StringPredicate } from 'ember-flexberry-data/query/predicate';
 
 
 import startApp from '../../helpers/start-app';
@@ -26,46 +25,48 @@ if (config.APP.testODataService) {
     }
   });
 
-  module('OData reading');
+  module('OData');
   
-  test('odata | reading | string predicates', assert => {
+  test('reading | string predicates', assert => {
     // Contains.  
     let done = assert.async();
 
     Ember.run( () => { 
-      initTestData(store).then( (values) => {
-        assert.equal(values.length, 3, 'Init data: ok');
+      initTestData(store)
+      .then( (values) => {
+        assert.equal(values.length, 3, 'Init data');
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
           .where(new StringPredicate('name').contains('as'));
         
         store.query('ember-flexberry-dummy-application-user', builder.build())
-          .then(( data) => {
-            assert.ok(
-                data.every( (item) => item.get('name') === 'Vasya') && 
-                data.get('length') === 2,
-              'Contains with correct data: ok'); 
-            });
+        .then( (data) => {
+          assert.ok(
+              data.every( (item) => item.get('name') === 'Vasya') && 
+              data.get('length') === 2,
+            'Contains with correct data'); 
+        });
       })
       .then( () => {
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
           .where(new StringPredicate('name').contains(null));
         
         store.query('ember-flexberry-dummy-application-user', builder.build())
-          .then(( data) => {
-            assert.ok(data.get('length') === 0,
-              'Contains without data: ok'); 
-            });
+        .then( (data) => {
+          assert.ok(data.get('length') === 0,
+            'Contains without data'); 
+        });
       })
       .then( () => {
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
           .where(new StringPredicate('name').contains('Ge'));
         
         store.query('ember-flexberry-dummy-application-user', builder.build())
-          .then(( data) => {
-            assert.ok(data.get('length') === 0,
-              `Contains mustn't return any records: ok`); 
-            });
-      }).finally(done);
+        .then( (data) => {
+          assert.ok(data.get('length') === 0,
+            `Contains mustn't return any records`); 
+        });
+      }, (e) => console.log(e, e.message))
+      .finally(done);
     });
   });
 }

@@ -4,8 +4,7 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import ODataAdapter from 'ember-flexberry-data/adapters/odata';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } 
-  from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
 
 
 import startApp from '../../helpers/start-app';
@@ -28,9 +27,9 @@ if (config.APP.testODataService) {
   });
 
 
-  module('OData reading');
+  module('OData');
 
-  test('odata | init data | reading | simple predicates | operators', assert => {
+  test('reading | simple predicates | operators', assert => {
     let done = assert.async();
 
     let builderStrOp = null;
@@ -40,7 +39,7 @@ if (config.APP.testODataService) {
     Ember.run( () => {
       initTestData(store).then( (values) => {
         console.log(values);
-        assert.equal(values.length, 4, 'Init data: ok');
+        assert.equal(values.length, 4, 'Init data');
 
         // Eq.
         builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
@@ -54,8 +53,8 @@ if (config.APP.testODataService) {
               data.get('length') === 2,
             message);
 
-        runTest(store, builderStrOp, callback, 'Eq with operator: ok');
-        runTest(store, builderConstOp, callback, 'Eq with simple predicate: ok');
+        runTest(store, builderStrOp, callback, 'Eq with operator');
+        runTest(store, builderConstOp, callback, 'Eq with simple predicate');
 
                   
         // Neq.   
@@ -70,8 +69,8 @@ if (config.APP.testODataService) {
               data.get('length') === 2,
             message);
 
-        runTest(store, builderStrOp, callback, 'Neq with operator: ok');
-        runTest(store, builderConstOp, callback, 'Neq with simple predicate: ok');
+        runTest(store, builderStrOp, callback, 'Neq with operator');
+        runTest(store, builderConstOp, callback, 'Neq with simple predicate');
 
 
         // Ge.
@@ -86,8 +85,8 @@ if (config.APP.testODataService) {
               data.get('length') === 3,
             message);
 
-        runTest(store, builderStrOp, callback, 'Ge with operator: ok');
-        runTest(store, builderConstOp, callback, 'Ge with simple predicate: ok');
+        runTest(store, builderStrOp, callback, 'Ge with operator');
+        runTest(store, builderConstOp, callback, 'Ge with simple predicate');
 
 
         // Geq.
@@ -102,8 +101,8 @@ if (config.APP.testODataService) {
               data.get('length') === 3,
             message);
 
-        runTest(store, builderStrOp, callback, 'Geq with operator: ok');  
-        runTest(store, builderConstOp, callback, 'Geq with simple predicate: ok');  
+        runTest(store, builderStrOp, callback, 'Geq with operator');  
+        runTest(store, builderConstOp, callback, 'Geq with simple predicate');  
 
 
         // Le.
@@ -118,8 +117,8 @@ if (config.APP.testODataService) {
               data.get('length') === 3,
             message);
 
-        runTest(store, builderStrOp, callback, 'Le with operator: ok');  
-        runTest(store, builderConstOp, callback, 'Le with simple predicate: ok');  
+        runTest(store, builderStrOp, callback, 'Le with operator');  
+        runTest(store, builderConstOp, callback, 'Le with simple predicate');  
 
 
         // Leq.
@@ -134,9 +133,10 @@ if (config.APP.testODataService) {
               data.get('length') === 3,
             message);
 
-        runTest(store, builderStrOp, callback, 'Leq with operator: ok'); 
-        runTest(store, builderConstOp, callback, 'Leq with simple predicate: ok');  
-      }).finally(done);
+        runTest(store, builderStrOp, callback, 'Leq with operator'); 
+        runTest(store, builderConstOp, callback, 'Leq with simple predicate');  
+      }, (e) => console.log(e, e.message))
+      .finally(done);
     });
   });
 }
