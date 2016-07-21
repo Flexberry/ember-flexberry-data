@@ -25,12 +25,26 @@ test('information | isMaster | exceptions', function (assert) {
 });
 
 test('information | isMaster | own attribute', function (assert) {
-  assert.ok(information.isMaster('customer', 'manager'));
-  assert.notOk(information.isMaster('customer', 'firstName'));
-  assert.notOk(information.isMaster('customer', 'id'));
+  assert.notOk(
+    information.isMaster('ember-flexberry-dummy-comment', 'id'),
+    'Special attribute `id` is not a master.');
+
+  assert.notOk(
+    information.isMaster('ember-flexberry-dummy-comment', 'text'),
+    'Own attribute `text` is not a master.');
+
+  assert.ok(
+    information.isMaster('ember-flexberry-dummy-comment', 'author'),
+    'Relationship `belongsTo` is a master.'
+  );
+
+  assert.notOk(
+    information.isMaster('ember-flexberry-dummy-comment', 'userVotes'),
+    'Relationship `hasMany` is not a master.'
+  );
 });
 
-test('information | isMaster | relationship', function (assert) {
+test('information | isMaster | nested', function (assert) {
   assert.notOk(information.isMaster('customer', 'manager.First Name'));
   assert.ok(information.isMaster('customer', 'manager.manager'));
   assert.ok(information.isMaster('customer', 'manager.manager.manager'));
@@ -45,13 +59,13 @@ test('information | getType | exceptions', function (assert) {
   assert.throws(() => information.getType('customer', 'manager.manager.unknownfield'), Error);
 });
 
-test('information | getType | own', function (assert) {
+test('information | getType | own attribute', function (assert) {
+  assert.equal(information.getType('customer', 'id'), 'string');
   assert.equal(information.getType('customer', 'manager'), 'employee');
   assert.equal(information.getType('customer', 'firstName'), 'string');
-  assert.equal(information.getType('customer', 'id'), 'string');
 });
 
-test('information | getType | relationships', function (assert) {
+test('information | getType | nested', function (assert) {
   assert.equal(information.getType('customer', 'manager.First Name'), 'string');
   assert.equal(information.getType('customer', 'manager.manager'), 'employee');
   assert.equal(information.getType('customer', 'manager.manager.manager'), 'employee');
