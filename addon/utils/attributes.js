@@ -9,7 +9,7 @@ import createProj from './create';
  * Define plain attribute in projection.
  *
  * @method attr
- * @for DS.Projection
+ * @for Projection
  * @public
  *
  * @param {String} caption A user-friendly caption for attribute.
@@ -24,7 +24,7 @@ export function attr(caption, options) {
  * Define belongsTo relationship attribute in projection.
  *
  * @method belongsTo
- * @for DS.Projection
+ * @for Projection
  * @public
  *
  * @param {String} modelName The name of the model type.
@@ -44,7 +44,7 @@ export function belongsTo(modelName, caption, attributes, options) {
  * Define hasMany relationship attribute in projection.
  *
  * @method hasMany
- * @for DS.Projection
+ * @for Projection
  * @public
  *
  * @param {String} modelName The name of the model type.

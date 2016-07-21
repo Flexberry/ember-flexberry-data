@@ -11,7 +11,7 @@ import Information from '../utils/information';
  *
  * @module ember-flexberry-data
  * @namespace Query
- * @class ODataAdapter
+ * @class OdataAdapter
  * @extends Query.BaseAdapter
  */
 export default class ODataAdapter extends BaseAdapter {
@@ -212,9 +212,11 @@ export default class ODataAdapter extends BaseAdapter {
         throw new Error(`OData supports only 'any' or 'or' operations for details`);
       }
 
-      let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, modelName, prefix + 'f', level);
+      let meta = this._info.getMeta(modelName, predicate.detailPath);
+      let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, meta.type, prefix + 'f', level);
+      let detailPath = this._getODataAttributeName(modelName, predicate.detailPath);
 
-      return `${predicate.detailPath}/${func}(${detailPredicate})`;
+      return `${detailPath}/${func}(${detailPredicate})`;
     }
 
     if (predicate instanceof ComplexPredicate) {

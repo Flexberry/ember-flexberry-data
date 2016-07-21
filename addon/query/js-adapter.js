@@ -26,7 +26,7 @@ import Information from '../utils/information';
  *
  * @module ember-flexberry-data
  * @namespace Query
- * @class JSAdapter
+ * @class JsAdapter
  * @extends Query.BaseAdapter
  */
 export default class JSAdapter extends BaseAdapter {

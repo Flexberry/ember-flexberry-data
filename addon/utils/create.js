@@ -6,7 +6,7 @@
  * Creates model projection.
  *
  * @method create
- * @for DS.Projection
+ * @for Projection
  * @public
  *
  * @param {String} modelName The name of the model type.

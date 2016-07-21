@@ -45,12 +45,26 @@ class Information {
    @method isMaster
    @param {String} modelName The name of the model.
    @param {String} attributePath The path to the attribute.
-   @returns {Boolean} True if the specified attribute path is master field.
+   @returns {Boolean} True if the specified attribute path is a master field.
    @public
    */
   isMaster(modelName, attributePath) {
     let meta = this.getMeta(modelName, attributePath);
     return meta.isMaster;
+  }
+
+  /**
+   Checks if the specified attribute path is a detail field.
+
+   @method isDetail
+   @param {String} modelName The name of the model.
+   @param {String} attributePath The path to the attribute.
+   @returns {Boolean} True if the specified attribute path is a detail field.
+   @public
+   */
+  isDetail(modelName, attributePath) {
+    let meta = this.getMeta(modelName, attributePath);
+    return meta.isDetail;
   }
 
   /**
@@ -65,46 +79,6 @@ class Information {
   getType(modelName, attributePath) {
     let meta = this.getMeta(modelName, attributePath);
     return meta.type;
-  }
-
-  _forEachAttribute(modelName, attributePath, callback) {
-    let model = this._loadModel(modelName);
-    let fields = Information.parseAttributePath(attributePath);
-
-    for (let i = 0; i < fields.length; i++) {
-      if (fields.length - 1 === i) {
-        let attributes = Ember.get(model, 'attributes');
-        let attribute = attributes.get(fields[i]);
-        if (attribute) {
-          callback(i, fields.length, fields[i], model, 'attribute');
-        }
-
-        let relationships = Ember.get(model, 'relationshipsByName');
-        let relationship = relationships.get(fields[i]);
-        if (relationship) {
-          callback(i, fields.length, fields[i], model, 'relationship');
-        }
-
-        throw new Error(`Field '${attributePath}' not found at model '${modelName}'.`);
-      } else {
-        let relationships = Ember.get(model, 'relationshipsByName');
-        let relationship = relationships.get(fields[i]);
-        if (relationship) {
-          callback(i, fields.length, fields[i], model, 'relationship');
-
-          model = this._store.modelFor(relationship.type);
-          if (!model) {
-            throw new Error(`Undefined model '${modelName}'.`);
-          }
-
-          continue;
-        } else {
-          throw new Error(`Field '${attributePath}' not found at model '${modelName}'.`);
-        }
-      }
-    }
-
-    return fields.join('.');
   }
 
   _loadModel(modelName) {
@@ -126,17 +100,31 @@ class Information {
         let attributes = Ember.get(model, 'attributes');
         let attribute = attributes.get(fields[i]);
         if (attribute) {
-          return { isMaster: false, isKey: false, type: attribute.type };
+          return { isMaster: false, isDetail: false, isKey: false, type: attribute.type };
         }
 
         let relationships = Ember.get(model, 'relationshipsByName');
         let relationship = relationships.get(fields[i]);
         if (relationship) {
-          return { isMaster: true, isKey: true, type: relationship.type, keyType: 'guid' }; // TODO: other key types
+          let isMaster = relationship.kind === 'belongsTo';
+          let isDetail = relationship.kind === 'hasMany';
+          return {
+            isMaster: isMaster,
+            isDetail: isDetail,
+            isKey: isMaster,
+            type: relationship.type,
+            keyType: 'guid' // TODO: other key types
+          };
         }
 
         if (fields[i] === 'id') {
-          return { isMaster: false, isKey: true, type: 'string', keyType: 'guid' }; // TODO: other key types
+          return {
+            isMaster: false,
+            isDetail: false,
+            isKey: true,
+            type: 'string',
+            keyType: 'guid' // TODO: other key types
+          };
         }
 
         throw new Error(`Field '${attributePath}' not found at model '${modelName}'.`);
