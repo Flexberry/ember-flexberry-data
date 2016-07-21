@@ -78,6 +78,14 @@ test('adapter | odata | simple predicate | eq | master field', function (assert)
   runTest(assert, builder, `/Customers?$filter=Manager/First Name eq 'Vasya'`);
 });
 
+test('adapter | odata | simple predicate | eq | boolean', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user').where('activated', FilterOperator.Eq, true);
+
+  // Act && Assert.
+  runTest(assert, builder, `/EmberFlexberryDummyApplicationUsers?$filter=Activated eq true`);
+});
+
 test('adapter | odata | simple predicate | neq', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Neq, 'Vasya');
