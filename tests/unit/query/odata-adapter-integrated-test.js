@@ -57,7 +57,6 @@ if (config.APP.testODataService) {
           let firstRecord = result.get('firstObject');
           assert.ok(firstRecord);
           assert.equal(firstRecord.get('name'), 'Test');
-          console.log(firstRecord.get('name'));
         }, (e) => console.log(e, e.message))
         .finally(done);
     });

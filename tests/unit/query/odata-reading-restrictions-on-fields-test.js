@@ -3,9 +3,7 @@ import { module, test } from 'qunit';
 
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import ODataAdapter from 'ember-flexberry-data/adapters/odata';
-import { DetailPredicate, StringPredicate, SimplePredicate } from 'ember-flexberry-data/query/predicate';
-
-
+import { DetailPredicate, StringPredicate } from 'ember-flexberry-data/query/predicate';
 
 import startApp from '../../helpers/start-app';
 import config from '../../../../dummy/config/environment';
@@ -13,7 +11,6 @@ import config from '../../../../dummy/config/environment';
 if (config.APP.testODataService) {
   const randKey = Math.floor(Math.random() * 999);
   const baseUrl = 'http://localhost:6500/odatatmp/ember' + randKey;
-  //'http://rtc-web:8081/odatatmp/ember' + randKey;
   const app = startApp();
   const store = app.__container__.lookup('service:store');
 
@@ -28,10 +25,11 @@ if (config.APP.testODataService) {
 
   module('OData');
 
-  test ('reading | by master PK', assert => {
+  test ('reading | restrictions on fields', assert => {
+    assert.expect(6);
     let done = assert.async();
 
-    Ember.run( () => {
+    Ember.run(() => {
 
       // Attrs for creating suggestion.
       Ember.RSVP.Promise.all([
@@ -61,93 +59,91 @@ if (config.APP.testODataService) {
       ])
 
       // Сreating suggestion.
-      .then( (sugAttrsValues) => {
+      .then((sugAttrsValues) => {
         store.createRecord('ember-flexberry-dummy-suggestion', {
-          type: sugAttrsValues.find( item => item.get('name') === 'Type 1'),
-          author: sugAttrsValues.find( item => item.get('name') === 'Vasya'),
-          editor1: sugAttrsValues.find( item => item.get('name') === 'Kolya')
+          type: sugAttrsValues.find(item => item.get('name') === 'Type 1'),
+          author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
+          editor1: sugAttrsValues.find(item => item.get('name') === 'Kolya')
         }).save()
 
         // Creating comments.
-        .then( (sug) => {
+        .then((sug) => {
           Ember.RSVP.Promise.all([
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find( item => item.get('name') === 'Vasya'),
+              author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
               text: 'Comment 1',
               suggestion: sug,
             }).save(),
 
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find( item => item.get('name') === 'Vasya'),
+              author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
               text: 'Comment 2',
               suggestion: sug
             }).save(),
 
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find( item => item.get('name') === 'Kolya'),
+              author: sugAttrsValues.find(item => item.get('name') === 'Kolya'),
               text: 'Comment 3',
               suggestion: sug
             }).save(),
 
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find( item => item.get('name') === 'Kolya'),
+              author: sugAttrsValues.find(item => item.get('name') === 'Kolya'),
               text: 'Comment 4',
               suggestion: sug
             }).save()
           ])
                       
           // Creating votes.
-          .then( (comments) => {
+          .then((comments) => {
             Ember.RSVP.Promise.all([
               store.createRecord('ember-flexberry-dummy-comment-vote', {
-                applicationUser: sugAttrsValues.find( item => item.get('name') === 'Oleg'),
-                comment: comments.find( item => item.get('text') === 'Comment 1')
+                applicationUser: sugAttrsValues.find(item => item.get('name') === 'Oleg'),
+                comment: comments.find(item => item.get('text') === 'Comment 1')
               }).save(),
               store.createRecord('ember-flexberry-dummy-comment-vote', {
-                applicationUser: sugAttrsValues.find( item => item.get('name') === 'Andrey'),
-                comment: comments.find( item => item.get('text') === 'Comment 1')
+                applicationUser: sugAttrsValues.find(item => item.get('name') === 'Andrey'),
+                comment: comments.find(item => item.get('text') === 'Comment 1')
               }).save(),
               store.createRecord('ember-flexberry-dummy-comment-vote', {
-                applicationUser: sugAttrsValues.find( item => item.get('name') === 'Andrey'),
-                comment: comments.find( item => item.get('text') === 'Comment 1')
+                applicationUser: sugAttrsValues.find(item => item.get('name') === 'Andrey'),
+                comment: comments.find(item => item.get('text') === 'Comment 1')
               }).save(),
               store.createRecord('ember-flexberry-dummy-comment-vote', {
-                applicationUser: sugAttrsValues.find( item => item.get('name') === 'Oleg'),
-                comment: comments.find( item => item.get('text') === 'Comment 2')
+                applicationUser: sugAttrsValues.find(item => item.get('name') === 'Oleg'),
+                comment: comments.find(item => item.get('text') === 'Comment 2')
               }).save(),
               store.createRecord('ember-flexberry-dummy-comment-vote', {
-                applicationUser: sugAttrsValues.find( item => item.get('name') === 'Kolya'),
-                comment: comments.find( item => item.get('text') === 'Comment 2')
+                applicationUser: sugAttrsValues.find(item => item.get('name') === 'Kolya'),
+                comment: comments.find(item => item.get('text') === 'Comment 2')
               }).save(),
               store.createRecord('ember-flexberry-dummy-comment-vote', {
-                applicationUser: sugAttrsValues.find( item => item.get('name') === 'Oleg'),
-                comment: comments.find( item => item.get('text') === 'Comment 3')
+                applicationUser: sugAttrsValues.find(item => item.get('name') === 'Oleg'),
+                comment: comments.find(item => item.get('text') === 'Comment 3')
               }).save()
 
             ])
             // Tests.
 
             // Reading by master field.
-            .then( () => {
-              assert.equal(sugAttrsValues.length, 5, 'Init data');
-              let id = sugAttrsValues.find( item => item.get('name') === 'Vasya').get('id');
+            .then(() => {
+              //assert.equal(sugAttrsValues.length, 5, 'Init data');
+              let id = sugAttrsValues.find(item => item.get('name') === 'Vasya').get('id');
               let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
                 .where('author.id', '==', id);
                 //selectByProjection('CommentD');
 
               store.query('ember-flexberry-dummy-application-user', builder.build())
-              .then( (data) => {
-              	assert.ok(
-                  data.get('length') === 2,
-                  //data.every( item => item.get('author.name') === 'Vasya'),
-                  'Reading by master field'
-                );
+              .then((data) => {
+              	assert.equal(data.get('length'), 2, 'Reading by master field length');
+                assert.ok(data.every( item => item.get('author.name') === 'Vasya'),
+                  'Reading by master field data');
               });
             }) 
 
 
             // Reading with master restrictions.
-            .then( () => {
+            .then(() => {
               let commentId = comments.find( 
                   item => item.get('text') === 'Comment 3' && 
                   item.get('author.name') === 'Kolya' 
@@ -159,16 +155,15 @@ if (config.APP.testODataService) {
                 .where(sp1.and(sp2));
 
               store.query('ember-flexberry-dummy-application-user', builder.build())
-              .then( (data) => {
-                assert.ok(
-                  data.get('firstObject').get('id') === commentId, 
-                  'Restrictions on master fields'
-                );              
+              .then((data) => {
+                assert.equal(data.get('length'), 1, 'Restrictions on master fields length');
+                assert.ok( data.get('firstObject').get('id') === commentId,
+                  'Restrictions on master fields data');              
               });
             }) 
 
             // Reading with detail restrictions.
-            .then( () => {
+            .then(() => {
               let dp = new DetailPredicate('userVotes')
                 .all(new StringPredicate('applicationUser.name').contains('Oleg'));
               let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
@@ -176,12 +171,10 @@ if (config.APP.testODataService) {
 
               store.query('ember-flexberry-dummy-comment', builder.build())
               //Error: "Field 'applicationUser' not found at model 'ember-flexberry-dummy-comment' "
-              .then( (data) => {
-                assert.ok(
-                  data.get('length') === 3, 
-                  //data.every( item => item.get('author.name') === 'Vasya')
-                  'Restrictions on details fields'
-                );
+              .then((data) => {
+                assert.equal(data.get('length'), 3, 'Restrictions on details fields length');
+                assert.ok(data.every( item => item.get('author.name') === 'Vasya'),
+                  'Restrictions on details fields data');
               });
             }) 
             .catch(e => console.log(e, e.message))
