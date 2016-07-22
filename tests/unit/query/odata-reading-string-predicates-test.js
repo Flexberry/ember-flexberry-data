@@ -10,7 +10,7 @@ import config from '../../../../dummy/config/environment';
 
 if (config.APP.testODataService) {
   const randKey = Math.floor(Math.random() * 999);
-  const baseUrl = 'http://localhost:6500/odatatmp/ember' + randKey;
+  const baseUrl = 'http://rtc-web:8081/odatatmp/ember' + randKey;
   const app = startApp();
   const store = app.__container__.lookup('service:store');
 
@@ -72,18 +72,18 @@ if (config.APP.testODataService) {
 function initTestData(store) {
   return Ember.RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
-    name: 'Vasya',
-    eMail: '1@mail.ru',
+      name: 'Vasya',
+      eMail: '1@mail.ru',
     }).save(),
 
     store.createRecord('ember-flexberry-dummy-application-user', {
-    name: 'Vasya',
-    eMail: '2@mail.ru',
+      name: 'Vasya',
+      eMail: '2@mail.ru',
     }).save(),
 
     store.createRecord('ember-flexberry-dummy-application-user', {
-    name: 'Kolya',
-    eMail: '3@mail.ru',
+      name: 'Kolya',
+      eMail: '3@mail.ru',
     }).save()
   ]);
 }

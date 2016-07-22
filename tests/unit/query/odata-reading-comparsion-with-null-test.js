@@ -9,7 +9,7 @@ import config from '../../../../dummy/config/environment';
 
 if (config.APP.testODataService) {
   const randKey = Math.floor(Math.random() * 999);
-  const baseUrl = 'http://localhost:6500/odatatmp/ember' + randKey;
+  const baseUrl = 'http://rtc-web:8081/odatatmp/ember' + randKey;
   const app = startApp();
   const store = app.__container__.lookup('service:store');
 
@@ -86,7 +86,6 @@ if (config.APP.testODataService) {
 
           // Eq null for own field.
           .then(() => {
-            //assert.equal(sugAttrsValues.length + comments.length, 7, 'Init data');
             let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
               .where('phone1', '==', null);
             store.query('ember-flexberry-dummy-application-user', builder.build())

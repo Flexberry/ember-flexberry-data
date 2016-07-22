@@ -11,7 +11,7 @@ import config from '../../../../dummy/config/environment';
 
 if (config.APP.testODataService) {
   const randKey = Math.floor(Math.random() * 999);
-  const baseUrl = 'http://localhost:6500/odatatmp/ember' + randKey;
+  const baseUrl = 'http://rtc-web:8081/odatatmp/ember' + randKey;
   const app = startApp();
   const store = app.__container__.lookup('service:store');
 

@@ -10,7 +10,7 @@ import config from '../../../../dummy/config/environment';
 
 if (config.APP.testODataService) {
   const randKey = Math.floor(Math.random() * 999);
-  const baseUrl = 'http://localhost:6500/odatatmp/ember' + randKey;
+  const baseUrl = 'http://rtc-web:8081/odatatmp/ember' + randKey;
   const app = startApp();
   const store = app.__container__.lookup('service:store');
 
@@ -115,7 +115,7 @@ if (config.APP.testODataService) {
               }).save(),
               store.createRecord('ember-flexberry-dummy-comment-vote', {
                 applicationUser: sugAttrsValues.find(item => item.get('name') === 'Kolya'),
-                comment: comments.find(item => item.get('text') === 'Comment 2')
+                comment: comments.find(item => item.get('text') === 'Comment 3')
               }).save(),
               store.createRecord('ember-flexberry-dummy-comment-vote', {
                 applicationUser: sugAttrsValues.find(item => item.get('name') === 'Oleg'),
@@ -123,21 +123,20 @@ if (config.APP.testODataService) {
               }).save()
 
             ])
+
             // Tests.
 
             // Reading by master field.
             .then(() => {
-              //assert.equal(sugAttrsValues.length, 5, 'Init data');
               let id = sugAttrsValues.find(item => item.get('name') === 'Vasya').get('id');
               let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
                 .where('author.id', '==', id);
-                //selectByProjection('CommentD');
 
-              store.query('ember-flexberry-dummy-application-user', builder.build())
+              store.query('ember-flexberry-dummy-comment', builder.build())
               .then((data) => {
               	assert.equal(data.get('length'), 2, 'Reading by master field length');
                 assert.ok(data.every( item => item.get('author.name') === 'Vasya'),
-                  'Reading by master field data');
+                'Reading by master field data');
               });
             }) 
 
@@ -146,7 +145,7 @@ if (config.APP.testODataService) {
             .then(() => {
               let commentId = comments.find( 
                   item => item.get('text') === 'Comment 3' && 
-                  item.get('author.name') === 'Kolya' 
+                  item.get('author.name') === 'Kolya'
                 ).get('id');
 
               let sp1 = new StringPredicate('author.name').contains('Kolya'); 
@@ -154,27 +153,26 @@ if (config.APP.testODataService) {
               let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
                 .where(sp1.and(sp2));
 
-              store.query('ember-flexberry-dummy-application-user', builder.build())
+              store.query('ember-flexberry-dummy-comment', builder.build())
               .then((data) => {
                 assert.equal(data.get('length'), 1, 'Restrictions on master fields length');
-                assert.ok( data.get('firstObject').get('id') === commentId,
-                  'Restrictions on master fields data');              
+                assert.ok(data.get('firstObject').get('id') === commentId,
+                'Restrictions on master fields data');              
               });
             }) 
 
             // Reading with detail restrictions.
             .then(() => {
               let dp = new DetailPredicate('userVotes')
-                .all(new StringPredicate('applicationUser.name').contains('Oleg'));
+                .any(new StringPredicate('applicationUser.name').contains('Oleg'));
               let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
                 .where(dp);
 
               store.query('ember-flexberry-dummy-comment', builder.build())
-              //Error: "Field 'applicationUser' not found at model 'ember-flexberry-dummy-comment' "
               .then((data) => {
                 assert.equal(data.get('length'), 3, 'Restrictions on details fields length');
                 assert.ok(data.every( item => item.get('author.name') === 'Vasya'),
-                  'Restrictions on details fields data');
+                'Restrictions on details fields data');
               });
             }) 
             .catch(e => console.log(e, e.message))
