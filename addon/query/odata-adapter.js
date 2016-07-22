@@ -80,8 +80,8 @@ export default class ODataAdapter extends BaseAdapter {
       $skip: this._buildODataSkip(query),
       $top: this._buildODataTop(query),
       $count: this._buildODataCount(query),
-      $expand: this._buildODataExpand(query),
-      $select: this._buildODataSelect(query)
+      $select: this._buildODataSelect(query),
+      $expand: this._buildODataExpand(query)
     };
 
     // TODO: do not use order,expand with count
@@ -122,11 +122,45 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataSelect(query) {
-    return query.select.map((i) => this._getODataAttributeName(query.modelName, i)).join(',');
+    return query.select.map((i) => this._getODataAttributeName(query.modelName, i, true)).join(',');
   }
 
   _buildODataExpand(query) {
-    return query.expand.map((i) => this._getODataAttributeName(query.modelName, i)).join(',');
+    let _this = this;
+    let f = function (select, expand, modelName) {
+      let oDataSelect = select
+        .map(i => _this._getODataAttributeName(modelName, i, true))
+        .join(',');
+
+      let oDataExpand = Object.keys(expand)
+        .map(i => {
+          let data = expand[i];
+          let { oDataSelect, oDataExpand } = f(data.select, data.expand, _this._info.getMeta(modelName, i).type);
+
+          let m = [];
+          let b = false;
+
+          if (oDataSelect) {
+            m.push(`$select=${oDataSelect}`);
+            b = true;
+          }
+
+          if (oDataExpand) {
+            m.push(`$expand=${oDataExpand}`);
+            b = true;
+          }
+
+          let p1 = b ? '(' : '';
+          let p2 = b ? ')' : '';
+          let attribute = _this._getODataAttributeName(modelName, i, true);
+          return `${attribute}${p1}${m.join(';')}${p2}`;
+        })
+        .join(',');
+
+      return { oDataSelect, oDataExpand };
+    };
+
+    return f(query.select, query.expand, query.modelName).oDataExpand;
   }
 
   _buildODataCount(query) {
@@ -262,7 +296,7 @@ export default class ODataAdapter extends BaseAdapter {
     }
   }
 
-  _getODataAttributeName(modelName, attributePath) {
+  _getODataAttributeName(modelName, attributePath, noIdConversion) {
     let attr = [];
     let lastModel = modelName;
     let fields = Information.parseAttributePath(attributePath);
@@ -277,7 +311,9 @@ export default class ODataAdapter extends BaseAdapter {
       if (i + 1 === fields.length) {
         if (meta.isMaster) {
           attr.push(serializer.keyForAttribute(fields[i]));
-          attr.push(serializer.primaryKey);
+          if (!noIdConversion) {
+            attr.push(serializer.primaryKey);
+          }
         } else if (meta.isKey) {
           attr.push(serializer.primaryKey);
         } else {
