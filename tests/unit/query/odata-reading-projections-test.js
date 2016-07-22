@@ -64,8 +64,7 @@ if (config.APP.testODataService) {
                   store.query('ember-flexberry-dummy-comment', builder.build())
                     .then((data) => {
                       assert.equal(data.get('length'), 1, 'Eq null for master field length');
-                      assert.ok(data.get('firstObject').get('name') === 'Andrey', 
-                      'Eq null for master field');
+                      assert.ok(data.get('firstObject').get('name') === 'Andrey', 'Eq null for master field');
                     });
                 })
 
