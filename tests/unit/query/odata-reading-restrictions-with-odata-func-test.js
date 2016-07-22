@@ -29,48 +29,48 @@ if (config.APP.testODataService) {
     let done = assert.async();
 
     Ember.run(() => {
-      let curDate = new Date(),
-        tomorrowDate = new Date(),
-        yesterdayDate = new Date();
+      let curDate = new Date();
+      let tomorrowDate = new Date();
+      let yesterdayDate = new Date();
       tomorrowDate.setDate(tomorrowDate.getDate() + 1);
       yesterdayDate.setDate(yesterdayDate.getDate() - 1);
 
-        Ember.RSVP.Promise.all([
+      Ember.RSVP.Promise.all([
 
-          store.createRecord('ember-flexberry-dummy-application-user', {
-              name: 'User 1',
-              eMail: '1',
-              birthday: tomorrowDate
-          }).save(),
+        store.createRecord('ember-flexberry-dummy-application-user', {
+          name: 'User 1',
+          eMail: '1',
+          birthday: tomorrowDate
+        }).save(),
 
-          store.createRecord('ember-flexberry-dummy-application-user', {
-              name: 'User 2',
-              eMail: '2',
-              birthday: yesterdayDate
-          }).save()
-        ])
+        store.createRecord('ember-flexberry-dummy-application-user', {
+          name: 'User 2',
+          eMail: '2',
+          birthday: yesterdayDate
+        }).save()
+      ])
 
-          // User has a birthday tommorow.
-          .then(() => {
-            let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-              .where('birthday', '>', 'now()');
-            runTest(store, builder, (data) => {
-              assert.ok(data.get('firstObject.name') === 'User 1', 'User with a tomorrow b-day data');
-              assert.equal(data.get('length'), 1, 'User with a tomorrow b-day length');
-            });
-          })
+        // User has a birthday tommorow.
+        .then(() => {
+          let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+            .where('birthday', '>', 'now()');
+          runTest(store, builder, (data) => {
+            assert.ok(data.get('firstObject.name') === 'User 1', '> now() data');
+            assert.equal(data.get('length'), 1, '> now() length');
+          });
+        })
 
-          // User had a birthday yesterday.
-          .then(() => {
-            let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-              .where('birthday', '<', 'now()');
-            runTest(store, builder, (data) => {
-              assert.ok(data.get('firstObject.name') === 'User 2', 'User with a yesteray b-day data');
-              assert.equal(data.get('length'), 1, 'User with a yesteray b-day length');
-            });
-          })
-          .catch(e => console.log(e, e.message))
-          .finally(done);
+        // User had a birthday yesterday.
+        .then(() => {
+          let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+            .where('birthday', '<', 'now()');
+          runTest(store, builder, (data) => {
+            assert.ok(data.get('firstObject.name') === 'User 2', '< now() data');
+            assert.equal(data.get('length'), 1, '< now() length');
+          });
+        })
+        .catch(e => console.log(e, e.message))
+        .finally(done);
     });
   });
 }

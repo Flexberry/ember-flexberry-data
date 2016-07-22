@@ -25,7 +25,7 @@ if (config.APP.testODataService) {
 
   module('OData');
 
-  test ('reading | restrictions | on fields', (assert) => {
+  test('reading | restrictions | on fields', (assert) => {
     assert.ok(true, 'Start test');
     let done = assert.async();
 
@@ -141,11 +141,11 @@ if (config.APP.testODataService) {
 
             // Reading with master restrictions.
             .then(() => {
-              let commentId = comments.find(item => item.get('text') === 'Comment 3' && 
+              let commentId = comments.find(item => item.get('text') === 'Comment 3' &&
                 item.get('author.name') === 'Kolya').get('id');
 
               let sp1 = new StringPredicate('author.name').contains('Kolya');
-              let sp2 = new StringPredicate('text').contains('Comment 3'); 
+              let sp2 = new StringPredicate('text').contains('Comment 3');
               let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
                 .where(sp1.and(sp2));
 
@@ -178,4 +178,4 @@ if (config.APP.testODataService) {
       });
     });
   });
-} 
+}

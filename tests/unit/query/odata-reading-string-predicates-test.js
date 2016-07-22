@@ -57,10 +57,10 @@ if (config.APP.testODataService) {
       .then(() => {
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new StringPredicate('name').contains('Ge'));
-        
+
         store.query('ember-flexberry-dummy-application-user', builder.build())
         .then((data) => {
-          assert.equal(data.get('length'), 0, `Contains mustn't return any records`); 
+          assert.equal(data.get('length'), 0, `Contains mustn't return any records`);
         });
       })
       .catch(e => console.log(e, e.message))

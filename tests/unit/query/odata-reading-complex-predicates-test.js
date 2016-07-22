@@ -67,8 +67,8 @@ if (config.APP.testODataService) {
         })
         .catch(e => console.log(e, e.message))
         .finally(done);
-      });
     });
+  });
 }
 
 function initTestData(store) {
@@ -92,7 +92,7 @@ function initTestData(store) {
     }).save(),
 
     store.createRecord('ember-flexberry-dummy-application-user', {
-      name: 'Andrey', 
+      name: 'Andrey',
       eMail: '4@mail.ru',
       karma: 6
     }).save()
