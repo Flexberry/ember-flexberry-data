@@ -116,10 +116,6 @@ if (config.APP.testODataService) {
               store.createRecord('ember-flexberry-dummy-comment-vote', {
                 applicationUser: sugAttrsValues.find(item => item.get('name') === 'Kolya'),
                 comment: comments.find(item => item.get('text') === 'Comment 3')
-              }).save(),
-              store.createRecord('ember-flexberry-dummy-comment-vote', {
-                applicationUser: sugAttrsValues.find(item => item.get('name') === 'Oleg'),
-                comment: comments.find(item => item.get('text') === 'Comment 3')
               }).save()
             ])
 
@@ -166,7 +162,7 @@ if (config.APP.testODataService) {
 
               store.query('ember-flexberry-dummy-comment', builder.build())
               .then((data) => {
-                assert.equal(data.get('length'), 3, 'Restrictions on details fields length');
+                assert.equal(data.get('length'), 2, 'Restrictions on details fields length');
                 assert.ok(data.every(item => item.get('author.name') === 'Vasya'),
                   'Restrictions on details fields data');
               });

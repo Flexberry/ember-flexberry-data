@@ -42,7 +42,7 @@ if (config.APP.testODataService) {
             .where(CP);
           store.query('ember-flexberry-dummy-application-user', builder.build())
             .then((data) => {
-              assert.equal(data.get('length'), 2, '`Predicate "or" length`');
+              assert.equal(data.get('length'), 2, `Predicate "or" length`);
               assert.ok(data.any(item => item.get('name') === 'Vasya') &&
                 data.any(item => item.get('karma') === 6),
               `Predicate "or" data`);

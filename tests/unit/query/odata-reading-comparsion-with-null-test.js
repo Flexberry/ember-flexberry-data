@@ -115,9 +115,9 @@ if (config.APP.testODataService) {
               .where('author.phone1', '==', null);
             store.query('ember-flexberry-dummy-comment', builder.build())
             .then((data) => {
-              assert.eual(data.get('length'), 1, 'Eq null for master field length');
-              assert.ok(data.get('firstObject').get('name') === 'Andrey',
-                'Eq null for master field');
+              assert.equal(data.get('length'), 1, 'Eq null for master field length');
+              assert.ok(data.get('firstObject.author.name') === 'Andrey',
+                'Eq null for master field data');
             });
           })
 
@@ -127,9 +127,11 @@ if (config.APP.testODataService) {
               .where('author.phone1', '!=', null);
             store.query('ember-flexberry-dummy-comment', builder.build())
             .then((data) => {
-              assert.equal(data.get('length'), 1, 'Neq null for master field length');
-              assert.ok(data.get('firstObject').get('name') === 'Andrey',
-                'Neq null for master field length');
+              assert.equal(data.get('length'), 2, 'Neq null for master field length');
+              assert.ok(
+                data.any(item => item.get('author.name') === 'Vasya') &&
+                data.any(item => item.get('author.name') === 'Kolya'),
+                'Neq null for master field data');
             });
           })
           .catch(e => console.log(e, e.message))
