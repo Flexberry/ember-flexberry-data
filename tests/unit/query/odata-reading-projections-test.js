@@ -79,7 +79,7 @@ if (config.APP.testODataService) {
                   store.query('ember-flexberry-dummy-comment', builder.build())
                     .then((data) => {
                       assert.equal(data.get('length'), 2, 'Reading by master field length');
-                      assert.ok(data.every( item => item.get('author.name') === 'Vasya'),
+                      assert.ok(data.every(item => item.get('author.name') === 'Vasya'),
                       'Reading by master field data');
                     });
                 })
@@ -87,6 +87,6 @@ if (config.APP.testODataService) {
                 .finally(done);
             });
         });
-    });         
+    });
   });
 }
