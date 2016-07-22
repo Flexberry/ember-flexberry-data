@@ -24,8 +24,8 @@ if (config.APP.testODataService) {
 
   module('OData');
 
-  test('123', assert => {
-          assert.ok(true);
+  test('reading | projections', (assert) => {
+    assert.ok(true);
     let done = assert.async();
 
     Ember.run(() => {
@@ -40,6 +40,7 @@ if (config.APP.testODataService) {
           name: 'Type 1',
         }).save()
       ])
+
         // Сreating suggestion.
         .then((sugAttrsValues) => {
           store.createRecord('ember-flexberry-dummy-suggestion', {
@@ -47,27 +48,25 @@ if (config.APP.testODataService) {
             author: sugAttrsValues.find(item => item.get('name') === 'Andrey'),
             editor1: sugAttrsValues.find(item => item.get('name') === 'Andrey')
           }).save()
+
             // Creating comments.
             .then((sug) => {
-              Ember.RSVP.Promise.all([
-                store.createRecord('ember-flexberry-dummy-comment', {
-                  author: sugAttrsValues.find(item => item.get('name') === 'Andrey'),
-                  text: 'Comment',
-                  suggestion: sug
-                }).save()
-
-              ])
+              store.createRecord('ember-flexberry-dummy-comment', {
+                author: sugAttrsValues.find(item => item.get('name') === 'Andrey'),
+                text: 'Comment',
+                suggestion: sug
+              }).save()
 
                 // Eq null for master field.
                 .then(() => {
-                let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
+                  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
                     .where('author.phone1', '==', null);
-                store.query('ember-flexberry-dummy-comment', builder.build())
-                  .then((data) => {
+                  store.query('ember-flexberry-dummy-comment', builder.build())
+                    .then((data) => {
                       assert.equal(data.get('length'), 1, 'Eq null for master field length');
                       assert.ok(data.get('firstObject').get('name') === 'Andrey', 
                       'Eq null for master field');
-                  });
+                    });
                 })
 
                 // Reading by master field.
@@ -78,12 +77,14 @@ if (config.APP.testODataService) {
                     .selectByProjection('CommentE');
 
                   store.query('ember-flexberry-dummy-comment', builder.build())
-                  .then((data) => {
-                    assert.equal(data.get('length'), 2, 'Reading by master field length');
-                    assert.ok(data.every( item => item.get('author.name') === 'Vasya'),
+                    .then((data) => {
+                      assert.equal(data.get('length'), 2, 'Reading by master field length');
+                      assert.ok(data.every( item => item.get('author.name') === 'Vasya'),
                       'Reading by master field data');
-                  });
-                }); 
+                    });
+                })
+                .catch(e => console.log(e.message))
+                .finally(done);
             });
         });
     });         
