@@ -3,6 +3,10 @@
 ## [Unreleased]
 ### Fixed
 - Error in building OData query for details.
+- Error in building OData query for projections.
+
+### Removed
+- Method `QueryBuilder.expand` removed.
 
 ## [0.3.0] - 19.07.2016
 ### Added

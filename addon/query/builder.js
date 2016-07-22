@@ -36,7 +36,7 @@ export default class Builder extends BaseBuilder {
     this._orderByClause = null;
     this._isCount = false;
     this._expand = {};
-    this._select = [];
+    this._select = {};
   }
 
   /**
@@ -136,21 +136,6 @@ export default class Builder extends BaseBuilder {
   }
 
   /**
-   * Adds properties for expanding.
-   * Automatically checks duplications.
-   *
-   * @method expand
-   * @param properties {String}
-   * @return {Query.Builder} Returns this instance.
-   * @public
-   * @chainable
-   */
-  expand(properties) {
-    properties.split(',').forEach(i => this._expand[i.trim()] = true);
-    return this;
-  }
-
-  /**
    * Adds attributes for selection.
    * Automatically checks duplications.
    *
@@ -193,14 +178,13 @@ export default class Builder extends BaseBuilder {
     }
 
     if (this._projectionName) {
-      let typeClass = this._store.modelFor(this._modelName);
-      let proj = typeClass.projections.get(this._projectionName);
-      let query = getQuery(proj, this._store);
+      let model = this._store.modelFor(this._modelName);
+      let proj = model.projections.get(this._projectionName);
+      let tree = this._getQueryTree(proj, this._store);
 
-      this.select(query.$select);
-      if (query.$expand) {
-        query.$expand.forEach(i => this._expand[i.trim()] = true);
-      }
+      // Merge, don't replace.
+      tree.select.forEach(i => this._select[i] = true);
+      Object.keys(tree.expand).forEach(i => this._expand[i] = tree.expand[i]);
     }
 
     // TODO: Use special class.
@@ -212,110 +196,39 @@ export default class Builder extends BaseBuilder {
       top: this._top,
       skip: this._skip,
       count: this._isCount,
-      expand: Object.keys(this._expand),
+      expand: this._expand,
       select: Object.keys(this._select),
       projectionName: this._projectionName
     };
   }
-}
 
-/**
- * Converts projection to URL query params for OData v4.
- *
- * @method getQuery
- * @param {Object} projection Model projection to convert.
- * @param {DS.Store} store The store service.
- * @return {Object} Object with $select and $expand properties.
- */
-function getQuery(projection, store) {
-  var tree = getODataQueryTree(projection, store);
-  return getODataQuery(tree);
-}
+  _getQueryTree(projection, store) {
+    let tree = {
+      select: ['id'],
+      expand: {}
+    };
 
-function getODataQueryTree(projection, store) {
-  let serializer = store.serializerFor(projection.modelName);
-  let tree = {
-    select: [serializer.primaryKey],
-    expand: {}
-  };
+    let attributes = projection.attributes;
+    for (let attrName in attributes) {
+      if (attributes.hasOwnProperty(attrName)) {
+        let attr = attributes[attrName];
+        switch (attr.kind) {
+          case 'attr':
+            tree.select.push(attrName);
+            break;
 
-  let attributes = projection.attributes;
-  for (let attrName in attributes) {
-    if (attributes.hasOwnProperty(attrName)) {
-      let attr = attributes[attrName];
-      let normalizedAttrName = serializer.keyForAttribute(attrName);
-      switch (attr.kind) {
-        case 'attr':
-          tree.select.push(normalizedAttrName);
-          break;
+          case 'hasMany':
+          case 'belongsTo':
+            tree.select.push(attrName);
+            tree.expand[attrName] = this._getQueryTree(attr, store);
+            break;
 
-        case 'hasMany':
-        case 'belongsTo':
-          tree.select.push(normalizedAttrName);
-          tree.expand[normalizedAttrName] = getODataQueryTree(attr, store);
-          break;
-
-        default:
-          throw new Error(`Unknown kind of projection attribute: ${attr.kind}`);
+          default:
+            throw new Error(`Unknown kind of projection attribute: ${attr.kind}`);
+        }
       }
     }
-  }
 
-  return tree;
-}
-
-function getODataQuery(queryTree) {
-  var query = {};
-
-  var select = getODataSelectQuery(queryTree);
-  if (select) {
-    query.$select = select;
-  }
-
-  var expand = getODataExpandQuery(queryTree);
-  if (expand) {
-    query.$expand = expand;
-  }
-
-  return query;
-}
-
-function getODataExpandQuery(queryTree) {
-  var expandProperties = Object.keys(queryTree.expand);
-  if (!expandProperties.length) {
-    return null;
-  }
-
-  var query = [];
-  expandProperties.forEach(function (propertyName) {
-    var subTree = queryTree.expand[propertyName];
-    var expr = propertyName;
-    var select = getODataSelectQuery(subTree);
-    var expand = getODataExpandQuery(subTree);
-
-    if (select || expand) {
-      expr += '(';
-      if (select) {
-        expr += '$select=' + select;
-      }
-
-      if (expand) {
-        expr += ';' + '$expand=' + expand;
-      }
-
-      expr += ')';
-    }
-
-    query.push(expr);
-  });
-
-  return query;
-}
-
-function getODataSelectQuery(queryTree) {
-  if (queryTree.select.length) {
-    return queryTree.select.join(',');
-  } else {
-    return null;
+    return tree;
   }
 }
