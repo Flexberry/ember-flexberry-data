@@ -230,7 +230,7 @@ export default class ODataAdapter extends BaseAdapter {
     if (predicate instanceof StringPredicate) {
       let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
       if (prefix) {
-        attribute = `${prefix}:${prefix}/${attribute}`;
+        attribute = `${prefix}/${attribute}`;
       }
 
       return `contains(${attribute},'${predicate.containsValue}')`;
@@ -246,11 +246,12 @@ export default class ODataAdapter extends BaseAdapter {
         throw new Error(`OData supports only 'any' or 'or' operations for details`);
       }
 
+      let additionalPrefix = 'f';
       let meta = this._info.getMeta(modelName, predicate.detailPath);
-      let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, meta.type, prefix + 'f', level);
+      let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, meta.type, prefix + additionalPrefix, level);
       let detailPath = this._getODataAttributeName(modelName, predicate.detailPath);
 
-      return `${detailPath}/${func}(${detailPredicate})`;
+      return `${detailPath}/${func}(${additionalPrefix}:${detailPredicate})`;
     }
 
     if (predicate instanceof ComplexPredicate) {
@@ -330,7 +331,7 @@ export default class ODataAdapter extends BaseAdapter {
   _buildODataSimplePredicate(predicate, modelName, prefix) {
     let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
     if (prefix) {
-      attribute = `${prefix}:${prefix}/${attribute}`;
+      attribute = `${prefix}/${attribute}`;
     }
 
     let value;

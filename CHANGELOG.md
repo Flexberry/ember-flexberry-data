@@ -5,6 +5,10 @@
 - Error in building OData query for details.
 - Missing classes in `Query` namespace that should be exported.
 - Error in building OData query for projections.
+- Error in building OData query for details.
+
+### Added
+- As you can see, we started to use integrated tests with OData...
 
 ### Removed
 - Method `QueryBuilder.expand` removed.
