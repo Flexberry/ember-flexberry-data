@@ -24,34 +24,34 @@ if (config.APP.testODataService) {
   });
 
   module('OData');
-  
+
   test('reading | string predicates', assert => {
-    assert.ok(true);
+    assert.ok(true, 'Start test');
     let done = assert.async();
 
-    Ember.run(() => { 
+    Ember.run(() => {
       initTestData(store)
 
-      // Contains.  
+      // Contains.
       .then(() => {
         //assert.equal(values.length, 3, 'Init data');
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new StringPredicate('name').contains('as'));
-        
+
         store.query('ember-flexberry-dummy-application-user', builder.build())
         .then((data) => {
-          assert.ok(data.every(item => item.get('name') === 'Vasya'), 
+          assert.ok(data.every(item => item.get('name') === 'Vasya'),
             'Contains with correct data data');
-          assert.equal(data.get('length'), 2, 'Contains with correct data length'); 
+          assert.equal(data.get('length'), 2, 'Contains with correct data length');
         });
       })
       .then(() => {
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new StringPredicate('name').contains(null));
-        
+
         store.query('ember-flexberry-dummy-application-user', builder.build())
         .then((data) => {
-          assert.equal(data.get('length'), 0, 'Contains without data'); 
+          assert.equal(data.get('length'), 0, 'Contains without data');
         });
       })
       .then(() => {

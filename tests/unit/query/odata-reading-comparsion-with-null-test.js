@@ -25,7 +25,7 @@ if (config.APP.testODataService) {
   module('OData');
 
   test('reading | comparsion with null', assert => {
-    assert.ok(true);
+    assert.ok(true, 'Start test');
     let done = assert.async();
 
     Ember.run(() => {
@@ -91,8 +91,8 @@ if (config.APP.testODataService) {
             store.query('ember-flexberry-dummy-application-user', builder.build())
             .then((data) => {
               assert.equal(data.get('length'), 1, 'Eq null for own field length');
-              assert.ok(data.any(item => item.get('name') === 'Andrey'), 
-              'Eq null for own field data');
+              assert.ok(data.any(item => item.get('name') === 'Andrey'),
+                'Eq null for own field data');
             });
           })
 
@@ -104,7 +104,8 @@ if (config.APP.testODataService) {
             .then((data) => {
               assert.equal(data.get('length'), 2, 'Neq null for own field length');
               assert.ok(data.any(item => item.get('name') === 'Vasya') &&
-              data.any(item => item.get('name') === 'Kolya'), 'Neq null for own field data');
+              data.any(item => item.get('name') === 'Kolya'),
+                'Neq null for own field data');
             });
           })
 
@@ -115,8 +116,8 @@ if (config.APP.testODataService) {
             store.query('ember-flexberry-dummy-comment', builder.build())
             .then((data) => {
               assert.eual(data.get('length'), 1, 'Eq null for master field length');
-              assert.ok(data.get('firstObject').get('name') === 'Andrey', 
-              'Eq null for master field');
+              assert.ok(data.get('firstObject').get('name') === 'Andrey',
+                'Eq null for master field');
             });
           })
 
@@ -127,8 +128,8 @@ if (config.APP.testODataService) {
             store.query('ember-flexberry-dummy-comment', builder.build())
             .then((data) => {
               assert.equal(data.get('length'), 1, 'Neq null for master field length');
-              assert.ok(data.get('firstObject').get('name') === 'Andrey', 
-              'Neq null for master field length');
+              assert.ok(data.get('firstObject').get('name') === 'Andrey',
+                'Neq null for master field length');
             });
           })
           .catch(e => console.log(e, e.message))

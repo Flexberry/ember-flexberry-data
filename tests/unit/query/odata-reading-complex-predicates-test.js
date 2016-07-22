@@ -26,7 +26,7 @@ if (config.APP.testODataService) {
   module('OData');
 
   test('reading | complex predicates', assert => {
-    assert.ok(true);
+    assert.ok(true, 'Start test');
     let done = assert.async();
 
     Ember.run(() => {
@@ -43,8 +43,8 @@ if (config.APP.testODataService) {
           store.query('ember-flexberry-dummy-application-user', builder.build())
             .then((data) => {
               assert.equal(data.get('length'), 2, '`Predicate "or" length`');
-              assert.ok(data.any(item => item.get('name') === 'Vasya') && 
-              data.any(item => item.get('karma') === 6), 
+              assert.ok(data.any(item => item.get('name') === 'Vasya') &&
+                data.any(item => item.get('karma') === 6),
               `Predicate "or" data`);
             });
         })
@@ -60,14 +60,15 @@ if (config.APP.testODataService) {
           store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
             assert.equal(data.get('length'), 1, `Predicate "and" length`);
-            assert.ok(data.every(item => item.get('name') === 'Oleg' && item.get('karma') === 7),
+            assert.ok(data.every(item => item.get('name') === 'Oleg' &&
+              item.get('karma') === 7),
             `Predicate "and" data`);
           });
         })
         .catch(e => console.log(e, e.message))
         .finally(done);
       });
-  });
+    });
 }
 
 function initTestData(store) {
@@ -90,7 +91,7 @@ function initTestData(store) {
       karma: 7
     }).save(),
 
-    store.createRecord('ember-flexberry-dummy-application-user', {    
+    store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Andrey', 
       eMail: '4@mail.ru',
       karma: 6
