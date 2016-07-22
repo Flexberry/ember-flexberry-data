@@ -5,6 +5,7 @@
 - Error in building OData query for details.
 - Error in building OData query for projections.
 - Error in building OData query for details.
+- Method `store.findRecord` now correctly returns single object.
 
 ### Added
 - As you can see, we started to use integrated tests with OData...
