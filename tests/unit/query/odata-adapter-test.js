@@ -184,7 +184,7 @@ test('adapter | odata | detail predicate | all | with string predicate', functio
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(contains(f:f/ApplicationUser/Name,'Oleg'))`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(f:contains(f/ApplicationUser/Name,'Oleg'))`);
 });
 
 test('adapter | odata | detail predicate | any | with string predicate', function (assert) {
@@ -195,7 +195,7 @@ test('adapter | odata | detail predicate | any | with string predicate', functio
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/any(contains(f:f/ApplicationUser/Name,'Vasya'))`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/any(f:contains(f/ApplicationUser/Name,'Vasya'))`);
 });
 
 test('adapter | odata | detail predicate | all | with complex predicate', function (assert) {
@@ -208,7 +208,7 @@ test('adapter | odata | detail predicate | all | with complex predicate', functi
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya' or f:f/ApplicationUser/EMail eq 'a@b.c')`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya' or f/ApplicationUser/EMail eq 'a@b.c')`);
 });
 
 test('adapter | odata | detail predicate | any | with complex predicate', function (assert) {
@@ -221,7 +221,7 @@ test('adapter | odata | detail predicate | any | with complex predicate', functi
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya' and f:f/ApplicationUser/EMail eq 'a@b.c')`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya' and f/ApplicationUser/EMail eq 'a@b.c')`);
 });
 
 test('adapter | odata | complex predicate', function (assert) {
