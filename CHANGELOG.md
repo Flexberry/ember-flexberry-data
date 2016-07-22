@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Error in building OData query for details.
 
 ## [0.3.0] - 19.07.2016
 ### Added
