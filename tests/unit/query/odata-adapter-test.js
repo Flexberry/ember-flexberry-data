@@ -284,20 +284,32 @@ test('adapter | odata | count', function (assert) {
   runTest(assert, builder, '/Customers?$count=true');
 });
 
-test('adapter | odata | expand', function (assert) {
-  // Arrange.
-  let builder = new QueryBuilder(store, 'customer').expand('firstName,lastName').expand(' age ,  lastName ');
-
-  // Act && Assert.
-  runTest(assert, builder, '/Customers?$expand=FirstName,LastName,Age');
-});
-
 test('adapter | odata | select', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').select('firstName,lastName').select(' age,  lastName ');
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
+    .select(' text,  votes')
+    .select(' moderated ');
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers?$select=FirstName,LastName,Age');
+  runTest(assert, builder, '/EmberFlexberryDummyComments?$select=Text,Votes,Moderated');
+});
+
+test('adapter | odata | select by projection', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').selectByProjection('CommentE');
+
+  // Act && Assert.
+  runTest(
+    assert,
+    builder,
+    '/EmberFlexberryDummyComments?' +
+      '$select=__PrimaryKey,Suggestion,Text,Votes,Moderated,Author,UserVotes' +
+      '&' +
+      '$expand=' +
+        'Suggestion($select=__PrimaryKey,Address),' +
+        'Author($select=__PrimaryKey,Name),' +
+        'UserVotes($select=__PrimaryKey,VoteType,ApplicationUser;$expand=ApplicationUser($select=__PrimaryKey,Name))'
+    );
 });
 
 function runTest(assert, builder, expectedUrl) {

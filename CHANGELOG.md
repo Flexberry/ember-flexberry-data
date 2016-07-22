@@ -4,6 +4,10 @@
 ### Fixed
 - Error in building OData query for details.
 - Missing classes in `Query` namespace that should be exported.
+- Error in building OData query for projections.
+
+### Removed
+- Method `QueryBuilder.expand` removed.
 
 ## [0.3.0] - 19.07.2016
 ### Added

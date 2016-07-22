@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import DS from 'ember-data';
 import { module, test } from 'qunit';
 
 import { Query } from 'ember-flexberry-data';
@@ -7,54 +6,63 @@ import { Query } from 'ember-flexberry-data';
 import startApp from '../../helpers/start-app';
 
 const { Builder } = Query;
-
-let App;
+let app;
+let store;
 
 module('query', {
   setup: function () {
-    App = startApp();
-    App.register('serializer:employee', DS.RESTSerializer.extend({
-      primaryKey: 'EmployeeID',
-      keyForAttribute: function (attr) {
-        return Ember.String.capitalize(attr);
-      }
-    }));
-    App.register('serializer:order', DS.RESTSerializer.extend({
-      primaryKey: 'OrderID',
-      keyForAttribute: function (attr) {
-        return Ember.String.capitalize(attr);
-      }
-    }));
+    app = startApp();
+    store = app.__container__.lookup('service:store');
   },
   teardown: function () {
-    Ember.run(App, 'destroy');
+    Ember.run(app, 'destroy');
   }
 });
 
-test('query builder | constructor', function (assert) {
-  let store = App.__container__.lookup('service:store');
+test('query builder | constructor', assert => {
   assert.ok(new Builder(store, 'Customer'));
   assert.ok(new Builder(store).from('Customer'));
 
   assert.ok(new Builder(store, 'Customer').where('Name', 'eq', 'Vasya'));
 });
 
-test('query builder | projection', function (assert) {
+test('query builder | select by projection', assert => {
   // Arrange.
-  let store = App.__container__.lookup('service:store');
-  let builder = new Builder(store, 'Employee');
+  let builder = new Builder(store, 'ember-flexberry-dummy-comment').selectByProjection('CommentE');
 
   // Act.
-  builder.selectByProjection('EmployeeTestProjection');
   let result = builder.build();
 
   // Assert.
   assert.ok(result);
-  assert.equal(result.projectionName, 'EmployeeTestProjection');
-  assert.equal(
-    result.select,
-    'EmployeeID,FirstName,LastName,BirthDate,Employee1,Order,TmpChildren');
-  assert.strictEqual(result.expand[0], 'Employee1($select=EmployeeID,FirstName)');
-  assert.strictEqual(result.expand[1], 'Order($select=OrderID,OrderDate)');
-  assert.strictEqual(result.expand[2], 'TmpChildren($select=EmployeeID,LastName)');
+  assert.equal(result.projectionName, 'CommentE');
+
+  assert.ok(result.select);
+  assert.ok(result.select.length, 7);
+  assert.equal(result.select[0], 'id');
+  assert.equal(result.select[1], 'suggestion');
+  assert.equal(result.select[2], 'text');
+  assert.equal(result.select[3], 'votes');
+  assert.equal(result.select[4], 'moderated');
+  assert.equal(result.select[5], 'author');
+  assert.equal(result.select[6], 'userVotes');
+
+  assert.ok(result.expand);
+
+  assert.ok(result.expand.suggestion);
+  assert.ok(result.expand.suggestion.select);
+  assert.ok(result.expand.suggestion.expand);
+  assert.equal(result.expand.suggestion.select[0], 'id');
+  assert.equal(result.expand.suggestion.select[1], 'address');
+
+  assert.ok(result.expand.author);
+  assert.ok(result.expand.author.select);
+  assert.ok(result.expand.author.expand);
+  assert.equal(result.expand.author.select[0], 'id');
+  assert.equal(result.expand.author.select[1], 'name');
+
+  assert.ok(result.expand.userVotes);
+  assert.ok(result.expand.userVotes.select);
+  assert.ok(result.expand.userVotes.expand);
+  assert.equal(result.expand.userVotes.select[0], 'id');
 });
