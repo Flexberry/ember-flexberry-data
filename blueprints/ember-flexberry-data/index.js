@@ -1,4 +1,4 @@
-/*jshint node:true*/
+/* globals module */
 module.exports = {
   description: 'Adds necessary packages to application',
 
