@@ -25,7 +25,7 @@ if (config.APP.testODataService) {
 
   module('OData');
 
-  test('reading | complex predicates', assert => {
+  test('reading | predicates | complex predicates', (assert) => {
     assert.ok(true, 'Start test');
     let done = assert.async();
 
@@ -42,10 +42,10 @@ if (config.APP.testODataService) {
             .where(CP);
           store.query('ember-flexberry-dummy-application-user', builder.build())
             .then((data) => {
-              assert.equal(data.get('length'), 2, `Predicate "or" length`);
+              assert.equal(data.get('length'), 2, `Predicate "or" | Length`);
               assert.ok(data.any(item => item.get('name') === 'Vasya') &&
                 data.any(item => item.get('karma') === 6),
-              `Predicate "or" data`);
+                `Predicate "or" | Data`);
             });
         })
 
@@ -59,10 +59,10 @@ if (config.APP.testODataService) {
             .where(CP);
           store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
-            assert.equal(data.get('length'), 1, `Predicate "and" length`);
+            assert.equal(data.get('length'), 1, `Predicate "and" | Length`);
             assert.ok(data.every(item => item.get('name') === 'Oleg' &&
               item.get('karma') === 7),
-            `Predicate "and" data`);
+            `Predicate "and" | Data`);
           });
         })
         .catch(e => console.log(e, e.message))

@@ -129,9 +129,9 @@ if (config.APP.testODataService) {
 
               store.query('ember-flexberry-dummy-comment', builder.build())
               .then((data) => {
-                assert.equal(data.get('length'), 2, 'Reading by master field length');
+                assert.equal(data.get('length'), 2, 'Reading by master field | Length');
                 assert.ok(data.every(item => item.get('author.name') === 'Vasya'),
-                  'Reading by master field data');
+                  'Reading by master field | Data');
               });
             })
 
@@ -147,9 +147,9 @@ if (config.APP.testODataService) {
 
               store.query('ember-flexberry-dummy-comment', builder.build())
               .then((data) => {
-                assert.equal(data.get('length'), 1, 'Restrictions on master fields length');
+                assert.equal(data.get('length'), 1, 'Restrictions on master fields | Length');
                 assert.ok(data.get('firstObject').get('id') === commentId,
-                  'Restrictions on master fields data');
+                  'Restrictions on master fields | Data');
               });
             })
 
@@ -162,9 +162,9 @@ if (config.APP.testODataService) {
 
               store.query('ember-flexberry-dummy-comment', builder.build())
               .then((data) => {
-                assert.equal(data.get('length'), 2, 'Restrictions on details fields length');
+                assert.equal(data.get('length'), 2, 'Restrictions on details fields | Length');
                 assert.ok(data.every(item => item.get('author.name') === 'Vasya'),
-                  'Restrictions on details fields data');
+                  'Restrictions on details fields | Data');
               });
             })
             .catch(e => console.log(e, e.message))

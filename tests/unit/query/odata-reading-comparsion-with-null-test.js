@@ -24,7 +24,7 @@ if (config.APP.testODataService) {
 
   module('OData');
 
-  test('reading | comparsion with null', assert => {
+  test('reading | comparsion with null', (assert) => {
     assert.ok(true, 'Start test');
     let done = assert.async();
 
@@ -90,9 +90,9 @@ if (config.APP.testODataService) {
               .where('phone1', '==', null);
             store.query('ember-flexberry-dummy-application-user', builder.build())
             .then((data) => {
-              assert.equal(data.get('length'), 1, 'Eq null for own field length');
+              assert.equal(data.get('length'), 1, 'Eq null for own field | Length');
               assert.ok(data.any(item => item.get('name') === 'Andrey'),
-                'Eq null for own field data');
+                'Eq null for own field | Data');
             });
           })
 
@@ -102,10 +102,10 @@ if (config.APP.testODataService) {
               .where('phone1', '!=', null);
             store.query('ember-flexberry-dummy-application-user', builder.build())
             .then((data) => {
-              assert.equal(data.get('length'), 2, 'Neq null for own field length');
+              assert.equal(data.get('length'), 2, 'Neq null for own field | Length');
               assert.ok(data.any(item => item.get('name') === 'Vasya') &&
-              data.any(item => item.get('name') === 'Kolya'),
-                'Neq null for own field data');
+                data.any(item => item.get('name') === 'Kolya'),
+                'Neq null for own field | Data');
             });
           })
 
@@ -115,9 +115,9 @@ if (config.APP.testODataService) {
               .where('author.phone1', '==', null);
             store.query('ember-flexberry-dummy-comment', builder.build())
             .then((data) => {
-              assert.equal(data.get('length'), 1, 'Eq null for master field length');
+              assert.equal(data.get('length'), 1, 'Eq null for master field | Length');
               assert.ok(data.get('firstObject.author.name') === 'Andrey',
-                'Eq null for master field data');
+                'Eq null for master field | Data');
             });
           })
 
@@ -127,11 +127,11 @@ if (config.APP.testODataService) {
               .where('author.phone1', '!=', null);
             store.query('ember-flexberry-dummy-comment', builder.build())
             .then((data) => {
-              assert.equal(data.get('length'), 2, 'Neq null for master field length');
+              assert.equal(data.get('length'), 2, 'Neq null for master field | Length');
               assert.ok(
                 data.any(item => item.get('author.name') === 'Vasya') &&
                 data.any(item => item.get('author.name') === 'Kolya'),
-                'Neq null for master field data');
+                  'Neq null for master field | Data');
             });
           })
           .catch(e => console.log(e, e.message))

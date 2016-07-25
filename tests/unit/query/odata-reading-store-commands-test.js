@@ -24,57 +24,73 @@ if (config.APP.testODataService) {
 
   module('OData');
 
-  test('reading | builder functions', (assert) => {
+  test('reading | store commands', (assert) => {
     assert.ok(true, 'Start test');
     let done = assert.async();
 
     Ember.run(() => {
       Ember.RSVP.Promise.all([
         store.createRecord('ember-flexberry-dummy-application-user', {
-          name: 'Vasya',
-          eMail: '1@mail.ru',
-          karma: 5
+          name: 'User 1',
+          eMail: '1@mail.ru'
         }).save(),
 
         store.createRecord('ember-flexberry-dummy-application-user', {
-          name: 'Vasya',
-          eMail: '2@mail.ru',
-          karma: 3
+          name: 'User 2',
+          eMail: '2@mail.ru'
         }).save(),
 
         store.createRecord('ember-flexberry-dummy-application-user', {
-          name: 'Oleg',
-          eMail: '3@mail.ru',
-          karma: 4
+          name: 'User 2',
+          eMail: '2.5@mail.ru'
+        }).save(),
+
+        store.createRecord('ember-flexberry-dummy-application-user', {
+          name: 'User 3',
+          eMail: '3@mail.ru'
         }).save()
       ])
 
-      // from.
-        .then(() => {
-          let builder = new QueryBuilder(store)
-            .from('ember-flexberry-dummy-application-user')
-            .where('name', '==', 'Vasya');
-          store.query('ember-flexberry-dummy-application-user', builder.build())
+        // findRecord.
+        .then((people) => {
+          let id = people[0].get('id');
+          store.findRecord('ember-flexberry-dummy-application-user', id)
             .then((data) => {
-              assert.ok(data.every(item => item.get('name') === 'Vasya') &&
-                data.get('length') === 2, 'from');
+              assert.equal(data.get('name'), 'User 1', 'findRecord');
             });
         })
 
-        // orderBy.
+        // findAll.
+        .then(() => {
+          store.findAll('ember-flexberry-dummy-application-user')
+            .then((data) => {
+              assert.equal(data.get('length'), 4, 'findAll');
+            });
+        })
+
+        // queryRecord.
         .then(() => {
           let builder = new QueryBuilder(store)
             .from('ember-flexberry-dummy-application-user')
-            .orderBy('karma');
+            .where('name', '==', 'User 2');
+          store.queryRecord('ember-flexberry-dummy-application-user', builder.build())
+            .then((data) => {
+              assert.equal(data.get('name'), 'User 2', 'queryRecord')
+            });
+          })
+
+        // query.
+        .then(() => {
+          let builder = new QueryBuilder(store)
+            .from('ember-flexberry-dummy-application-user')
+            .where('name', '==', 'User 2');
           store.query('ember-flexberry-dummy-application-user', builder.build())
             .then((data) => {
-              let isDataCorrect = true;
-              for (let i  =0; i  <data.get('length') - 1 && isDataCorrect; i++) {
-                if(data.objectAt(i).get('karma') > data.objectAt(i + 1).get('karma')) { isDataCorrect = false; }
-              }
-              assert.ok(isDataCorrect, 'orderBy');
+              assert.ok(data.every(item => item.get('name') === 'User 2'), 'query | Data');
+              assert.equal(data.get('length'), 2, 'query | Length');
             });
         })
+        .catch(e => console.log(e, e.message))
         .finally(done);
     });
   });

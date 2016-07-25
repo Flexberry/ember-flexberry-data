@@ -55,8 +55,8 @@ if (config.APP.testODataService) {
           let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
             .where('birthday', '>', 'now()');
           runTest(store, builder, (data) => {
-            assert.ok(data.get('firstObject.name') === 'User 1', '> now() data');
-            assert.equal(data.get('length'), 1, '> now() length');
+            assert.ok(data.get('firstObject.name') === 'User 1', '> now() | Data');
+            assert.equal(data.get('length'), 1, '> now() | Length');
           });
         })
 
@@ -65,8 +65,8 @@ if (config.APP.testODataService) {
           let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
             .where('birthday', '<', 'now()');
           runTest(store, builder, (data) => {
-            assert.ok(data.get('firstObject.name') === 'User 2', '< now() data');
-            assert.equal(data.get('length'), 1, '< now() length');
+            assert.ok(data.get('firstObject.name') === 'User 2', '< now() | Data');
+            assert.equal(data.get('length'), 1, '< now() | Length');
           });
         })
         .catch(e => console.log(e, e.message))

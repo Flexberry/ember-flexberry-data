@@ -26,7 +26,7 @@ if (config.APP.testODataService) {
 
   module('OData');
 
-  test('reading | simple predicates | operators', assert => {
+  test('reading | predicates | simple predicates | operators', (assert) => {
     assert.ok(true, 'Start test');
     let done = assert.async();
 
@@ -37,7 +37,6 @@ if (config.APP.testODataService) {
     Ember.run(() => {
       initTestData(store)
       .then(() => {
-        //assert.equal(values.length, 4, 'Init data');
 
         // Eq.
         builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
@@ -51,10 +50,10 @@ if (config.APP.testODataService) {
         };
 
         runTest(store, builderStrOp, callback, [
-          'Eq with operator data', 'Eq with operator length'
+          'Eq with operator | Data', 'Eq with operator | Length'
           ]);
         runTest(store, builderConstOp, callback, [
-          'Eq with simple predicate data', 'Eq with simple predicate length'
+          'Eq with simple predicate | Data', 'Eq with simple predicate | Length'
           ]);
 
         // Neq.
@@ -69,10 +68,10 @@ if (config.APP.testODataService) {
         };
 
         runTest(store, builderStrOp, callback, [
-          'Neq with operator data', 'Neq with operator length'
+          'Neq with operator | Data', 'Neq with operator | Length'
           ]);
         runTest(store, builderConstOp, callback, [
-          'Neq with simple predicate data', 'Neq with simple predicate length'
+          'Neq with simple predicate | Data', 'Neq with simple predicate | Length'
           ]);
 
         // Ge.
@@ -87,10 +86,10 @@ if (config.APP.testODataService) {
         };
 
         runTest(store, builderStrOp, callback, [
-          'Ge with operator data', 'Ge with operator length'
+          'Ge with operator | Data', 'Ge with operator | Length'
           ]);
         runTest(store, builderConstOp, callback, [
-          'Ge with simple predicate data', 'Ge with simple predicate length'
+          'Ge with simple predicate | Data', 'Ge with simple predicate | Length'
           ]);
 
         // Geq.
@@ -105,10 +104,10 @@ if (config.APP.testODataService) {
         };
 
         runTest(store, builderStrOp, callback, [
-          'Geq with operator data', 'Geq with operator data length'
+          'Geq with operator | Data', 'Geq with operator | Length'
           ]);
         runTest(store, builderConstOp, callback, [
-          'Geq with simple predicate data', 'Geq with simple predicate length'
+          'Geq with simple predicate | Data', 'Geq with simple predicate | Length'
           ]);
 
         // Le.
@@ -123,7 +122,7 @@ if (config.APP.testODataService) {
         };
 
         runTest(store, builderStrOp, callback, [
-          'Le with operator data', 'Le with operator length'
+          'Le with operator | Data', 'Le with operator | Length'
           ]);
         runTest(store, builderConstOp, callback, [
           'Le with simple predicate data', 'Le with simple predicate length'
@@ -141,10 +140,10 @@ if (config.APP.testODataService) {
         };
 
         runTest(store, builderStrOp, callback, [
-          'Leq with operator data', 'Leq with operator length'
+          'Leq with operator | Data', 'Leq with operator | Length'
           ]);
         runTest(store, builderConstOp, callback, [
-          'Leq with simple predicate data', 'Leq with simple predicate length'
+          'Leq with simple predicate | Data', 'Leq with simple predicate | Length'
           ]);
       })
       .catch(e => console.log(e, e.message))
