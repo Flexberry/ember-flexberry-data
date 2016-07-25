@@ -27,7 +27,9 @@
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.2",
     "broccoli-jscs": "1.2.2",
+    "dexie": "^1.3.6",
     "ember-ajax": "0.7.1",
+    "ember-browserify": "1.1.9",
     "ember-cli": "2.4.3",
     "ember-cli-app-version": "^1.0.0",
     "ember-cli-dependency-checker": "^1.2.0",
@@ -41,7 +43,8 @@
     "ember-data": "~2.4.3",
     "ember-disable-prototype-extensions": "^1.1.0",
     "ember-export-application-global": "^1.0.5",
-    "ember-load-initializers": "^0.5.1",    
+    "ember-load-initializers": "^0.5.1",
+    "ember-localforage-adapter": "git+https://github.com/Flexberry/ember-localforage-adapter.git",
     "ember-resolver": "^2.0.3",
     "ember-try": "^0.2.2",
     "loader.js": "^4.0.1"
@@ -51,9 +54,6 @@
     "flexberry"
   ],
   "dependencies": {
-    "dexie": "^1.3.6",
-    "ember-browserify": "1.1.9",
-    "ember-localforage-adapter": "git+https://github.com/Flexberry/ember-localforage-adapter.git",
     "ember-cli-babel": "^5.1.6"
   },
   "ember-addon": {
