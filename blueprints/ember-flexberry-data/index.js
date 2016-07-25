@@ -20,6 +20,10 @@ module.exports = {
           { name: 'ember-browserify', target: '1.1.9' }
         ]
       });
+    }).then(function () {
+      return _this.addPackagesToProject([
+        { name: 'dexie', target: '1.3.6' }
+      ]);
     });
   },
 
