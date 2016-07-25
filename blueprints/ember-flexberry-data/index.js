@@ -16,7 +16,8 @@ module.exports = {
     ]).then(function() {
       return _this.addAddonsToProject({
         packages: [
-          'https://github.com/Flexberry/ember-localforage-adapter.git'
+          'https://github.com/Flexberry/ember-localforage-adapter.git',
+          { name: 'ember-browserify', target: '1.1.9' }
         ]
       });
     });
