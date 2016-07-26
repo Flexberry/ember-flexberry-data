@@ -25,21 +25,21 @@ if (config.APP.testODataService) {
   module('OData');
 
   test('reading | builder functions', (assert) => {
-    assert.expect(7);
+    assert.expect(9);
     let done = assert.async();
 
     Ember.run(() => {
       initTestData(store)
 
-      // from.
+        // from.
         .then(() => {
           let builder = new QueryBuilder(store)
             .from('ember-flexberry-dummy-application-user')
             .where('name', '==', 'Vasya');
           return runTest(store, builder, (data) => {
-              assert.ok(data.every(item => item.get('name') === 'Vasya') &&
-                data.get('length') === 2, 'from');
-            });
+            assert.ok(data.every(item => item.get('name') === 'Vasya') &&
+              data.get('length') === 2, 'from');
+          });
         })
 
         // orderBy.
@@ -48,13 +48,14 @@ if (config.APP.testODataService) {
             .from('ember-flexberry-dummy-application-user')
             .orderBy('karma');
           return runTest(store, builder, (data) => {
-              let isDataCorrect = true;
-              for (let i = 0; i < data.get('length') - 1 && isDataCorrect; i++) {
-                if(data.objectAt(i).get('karma') > data.objectAt(i + 1).get('karma')) { isDataCorrect = false; }
-              }
-              assert.ok(isDataCorrect, 'orderBy | Data');
-              assert.equal(data.get('length'), 3, 'orderBy | Length');
-            });
+            let isDataCorrect = true;
+            for (let i = 0; i < data.get('length') - 1 && isDataCorrect; i++) {
+              if (data.objectAt(i).get('karma') > data.objectAt(i + 1).get('karma')) { isDataCorrect = false; }
+            }
+
+            assert.ok(isDataCorrect, 'orderBy | Data');
+            assert.equal(data.get('length'), 3, 'orderBy | Length');
+          });
         })
 
         // top.
@@ -64,8 +65,8 @@ if (config.APP.testODataService) {
             .orderBy('karma')
             .top(2);
           return runTest(store, builder, (data) => {
-              assert.equal(data.get('length'), 2, 'top');
-            });
+            assert.equal(data.get('length'), 2, 'top');
+          });
         })
 
         // skip.
@@ -75,9 +76,9 @@ if (config.APP.testODataService) {
             .orderBy('karma')
             .skip(1);
           return runTest(store, builder, (data) => {
-              assert.equal(data.get('firstObject.karma'), 4, 'skip | Data');
-              assert.equal(data.get('length'), 2, 'skip | Length');
-            });
+            assert.equal(data.get('firstObject.karma'), 4, 'skip | Data');
+            assert.equal(data.get('length'), 2, 'skip | Length');
+          });
         })
 
         // count.
@@ -93,14 +94,41 @@ if (config.APP.testODataService) {
         .then(() => {
           let builder = new QueryBuilder(store)
             .from('ember-flexberry-dummy-application-user')
-            .select('id, name');
+            .select('id, name, karma');
+  
+          store.unloadAll('ember-flexberry-dummy-application-user');
+
           return runTest(store, builder, (data) => {
-              let isDataCorrect = true;
-              for (let i = 0; i < data.get('length'); i++) {
-                let curRecord = data.objectAt(i);
-                console.log(Ember.keys(curRecord.toJSON()));
-              }
-            });
+            let isDataCorrect = true;
+            for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
+              let curRecord = data.objectAt(i);
+              let recordAttrs =  Object.keys(curRecord.get('data'));
+              isDataCorrect = recordAttrs.join() === "name,karma";
+            }
+            
+            assert.ok(isDataCorrect, 'select');
+          });
+        })
+
+        // selectByProjection
+        .then(() => {
+          let builder = new QueryBuilder(store)
+            .from('ember-flexberry-dummy-application-user')
+            .selectByProjection('ApplicationUserL');
+
+          store.unloadAll('ember-flexberry-dummy-application-user');
+
+          return runTest(store, builder, (data) => {
+            let isDataCorrect = true;
+            for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
+              let curRecord = data.objectAt(i);
+              let recordAttrs =  Object.keys(curRecord.get('data'));
+              isDataCorrect = recordAttrs.join() === "name,eMail,activated,birthday,karma";
+            }
+            
+            assert.ok(isDataCorrect, 'selectByProjection');
+          });
+
         })
         .catch(e => console.log(e, e.message))
         .finally(done);
@@ -125,9 +153,11 @@ function initTestData(store) {
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Oleg',
       eMail: '3@mail.ru',
+      activated: true,
+      birthday: new Date('05.09.1996'),
       karma: 4
     }).save()
-  ])
+  ]);
 }
 
 function runTest(store, builder, callback) {

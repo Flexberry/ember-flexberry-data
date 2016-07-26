@@ -91,7 +91,6 @@ if (config.APP.testODataService) {
           );
         })
 
-
         // Geq.
         .then(() => {
           builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
@@ -144,9 +143,9 @@ if (config.APP.testODataService) {
               assert.equal(data.get('length'), 3, messages[1]);
             }
           );
-      })
-      .catch(e => console.log(e, e.message))
-      .finally(done);
+        })
+        .catch(e => console.log(e, e.message))
+        .finally(done);
     });
   });
 }
@@ -180,11 +179,11 @@ function initTestData(store) {
 }
 
 function runTest(store, builders, messages, callback) {
-    return store.query('ember-flexberry-dummy-application-user', builders[0].build())
-      .then((data1) => {
-        callback(data1, messages[0]);
-        return store.query('ember-flexberry-dummy-application-user', builders[1].build())
-          .then((data2) => callback(data2, messages[1]));
-      });
+  return store.query('ember-flexberry-dummy-application-user', builders[0].build())
+    .then((data1) => {
+      callback(data1, messages[0]);
+      return store.query('ember-flexberry-dummy-application-user', builders[1].build())
+        .then((data2) => callback(data2, messages[1]));
+    });
 }
 

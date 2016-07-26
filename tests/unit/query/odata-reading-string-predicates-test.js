@@ -39,10 +39,10 @@ if (config.APP.testODataService) {
 
         return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
-              assert.ok(data.every(item => item.get('name') === 'Vasya'),
-                'Contains with correct data | Data');
-              assert.equal(data.get('length'), 2, 'Contains with correct data | Length');
-            });
+            assert.ok(data.every(item => item.get('name') === 'Vasya'),
+              'Contains with correct data | Data');
+            assert.equal(data.get('length'), 2, 'Contains with correct data | Length');
+          });
       })
 
       .then(() => {

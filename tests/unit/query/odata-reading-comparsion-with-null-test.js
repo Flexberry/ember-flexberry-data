@@ -54,7 +54,7 @@ if (config.APP.testODataService) {
                 data.any(item => item.get('name') === 'Vasya') &&
                 data.any(item => item.get('name') === 'Kolya'),
                 'Neq null for own field | Data');
-          });
+            });
         })
 
         // Eq null for master field.
@@ -84,7 +84,7 @@ if (config.APP.testODataService) {
         })
         .catch(e => console.log(e, e.message))
         .finally(done);
-      });
+    });
   });
 }
 
@@ -141,8 +141,7 @@ function initTestData(store) {
               text: 'Comment 3',
               suggestion: sug
             }).save()
-
-          ])
+          ]);
         });
     });
 }

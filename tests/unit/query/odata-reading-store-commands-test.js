@@ -30,12 +30,12 @@ if (config.APP.testODataService) {
 
     Ember.run(() => {
       initTestData(store)
-      
+
         // findRecord.
         .then((people) => {
           let id = people[0].get('id');
           return store.findRecord('ember-flexberry-dummy-application-user', id)
-            .then((data) => 
+            .then((data) =>
               assert.equal(data.get('name'), 'User 1', 'findRecord')
             );
         })
@@ -43,7 +43,7 @@ if (config.APP.testODataService) {
         // findAll.
         .then(() => {
           return store.findAll('ember-flexberry-dummy-application-user')
-            .then((data) => 
+            .then((data) =>
               assert.equal(data.get('length'), 4, 'findAll')
             );
         })
@@ -67,7 +67,7 @@ if (config.APP.testODataService) {
             .from('ember-flexberry-dummy-application-user')
             .where('name', '==', 'User 2');
           return store.queryRecord('ember-flexberry-dummy-application-user', builder.build())
-            .then((record) => 
+            .then((record) =>
               assert.equal(record.get('name'), 'User 2', 'queryRecord')
             );
         })
@@ -98,5 +98,5 @@ function initTestData(store) {
       name: 'User 3',
       eMail: '3@mail.ru'
     }).save()
-  ])
+  ]);
 }

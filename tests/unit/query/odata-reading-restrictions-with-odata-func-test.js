@@ -57,10 +57,10 @@ if (config.APP.testODataService) {
 }
 
 function initTestData(store) {
-    let tomorrowDate = new Date();
-    let yesterdayDate = new Date();
-    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  let tomorrowDate = new Date();
+  let yesterdayDate = new Date();
+  tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
 
   return Ember.RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
@@ -74,7 +74,7 @@ function initTestData(store) {
       eMail: '2',
       birthday: yesterdayDate
     }).save()
-  ])
+  ]);
 }
 
 function runTest(store, builder, callback) {

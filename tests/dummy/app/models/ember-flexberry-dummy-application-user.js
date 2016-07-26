@@ -12,6 +12,7 @@ var Model = Projection.Model.extend({
   facebook: DS.attr('string'),
   twitter: DS.attr('string'),
   birthday: DS.attr('date'),
+  
   //gender: DS.attr('ember-flexberry-dummy-gender'),
   vip: DS.attr('boolean'),
   karma: DS.attr('number'),
@@ -43,7 +44,8 @@ Model.defineProjection('ApplicationUserE', 'ember-flexberry-dummy-application-us
   facebook: Projection.attr('Facebook'),
   twitter: Projection.attr('Twitter'),
   birthday: Projection.attr('Birthday'),
-  gender: Projection.attr('Gender'),
+
+  //gender: Projection.attr('Gender'),
   vip: Projection.attr('Vip'),
   karma: Projection.attr('Karma')
 });
@@ -54,7 +56,8 @@ Model.defineProjection('ApplicationUserL', 'ember-flexberry-dummy-application-us
   eMail: Projection.attr('E-mail'),
   activated: Projection.attr('Activated'),
   birthday: Projection.attr('Birthday'),
-  gender: Projection.attr('Gender'),
+
+  //gender: Projection.attr('Gender'),
   karma: Projection.attr('Karma')
 });
 
