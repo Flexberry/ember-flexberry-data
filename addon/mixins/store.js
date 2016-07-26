@@ -13,6 +13,32 @@ import QueryBuilder from '../query/builder';
  */
 export default Ember.Mixin.create({
   /**
+   *
+   * @method query
+   * @param {String} modelName
+   * @param {any} query an opaque query to be used by the adapter
+   * @return {Promise} promise
+   */
+  query(modelName, query) {
+    Ember.Logger.debug(`Flexberry Store::query ${modelName}`, query);
+
+    return this._super.apply(this, arguments);
+  },
+
+  /**
+   *
+   * @method queryRecord
+   * @param {String} modelName
+   * @param {any} query an opaque query to be used by the adapter
+   * @return {Promise} promise
+   */
+  queryRecord(modelName, query) {
+    Ember.Logger.debug(`Flexberry Store::queryRecord ${modelName}`, query);
+
+    return this.query(modelName, query).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
+  },
+
+  /**
    * Finds all records for the given model type.
    *
    * See {{#crossLink "DS.Store/findAll:method"}}{{/crossLink}} for details.
@@ -64,32 +90,6 @@ export default Ember.Mixin.create({
       builder.selectByProjection(options.projection);
     }
 
-    return this.queryRecord(modelName, builder.build());
-  },
-
-  /**
-   *
-   * @method query
-   * @param {String} modelName
-   * @param {any} query an opaque query to be used by the adapter
-   * @return {Promise} promise
-   */
-  query(modelName, query) {
-    Ember.Logger.debug(`Flexberry Store::query ${modelName}`, query);
-
-    return this._super.apply(this, arguments);
-  },
-
-  /**
-   *
-   * @method queryRecord
-   * @param {String} modelName
-   * @param {any} query an opaque query to be used by the adapter
-   * @return {Promise} promise
-   */
-  queryRecord(modelName, query) {
-    Ember.Logger.debug(`Flexberry Store::queryRecord ${modelName}`, query);
-
-    return this._super.apply(this, arguments);
+    return this.query(modelName, builder.build()).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
   }
 });
