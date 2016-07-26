@@ -8,8 +8,8 @@ import startApp from '../../helpers/start-app';
 import config from '../../../../dummy/config/environment';
 
 if (config.APP.testODataService) {
-  const randKey = Math.floor(Math.random() * 999);
-  const baseUrl = 'http://localhost:6500/odatatmp/ember' + randKey;
+  const randKey = Math.floor(Math.random() * 9999);
+  const baseUrl = 'http://rtc-web:8081/odatatmp/ember' + randKey;
   const app = startApp();
   const store = app.__container__.lookup('service:store');
 
@@ -29,26 +29,7 @@ if (config.APP.testODataService) {
     let done = assert.async();
 
     Ember.run(() => {
-      let curDate = new Date();
-      let tomorrowDate = new Date();
-      let yesterdayDate = new Date();
-      tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-      yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-
-      Ember.RSVP.Promise.all([
-
-        store.createRecord('ember-flexberry-dummy-application-user', {
-          name: 'User 1',
-          eMail: '1',
-          birthday: tomorrowDate
-        }).save(),
-
-        store.createRecord('ember-flexberry-dummy-application-user', {
-          name: 'User 2',
-          eMail: '2',
-          birthday: yesterdayDate
-        }).save()
-      ])
+      initTestData(store)
 
         // User has a birthday tommorow.
         .then(() => {
@@ -73,6 +54,27 @@ if (config.APP.testODataService) {
         .finally(done);
     });
   });
+}
+
+function initTestData(store) {
+    let tomorrowDate = new Date();
+    let yesterdayDate = new Date();
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+
+  return Ember.RSVP.Promise.all([
+    store.createRecord('ember-flexberry-dummy-application-user', {
+      name: 'User 1',
+      eMail: '1',
+      birthday: tomorrowDate
+    }).save(),
+
+    store.createRecord('ember-flexberry-dummy-application-user', {
+      name: 'User 2',
+      eMail: '2',
+      birthday: yesterdayDate
+    }).save()
+  ])
 }
 
 function runTest(store, builder, callback) {

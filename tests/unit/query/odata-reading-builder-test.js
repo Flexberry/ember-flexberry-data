@@ -8,7 +8,7 @@ import startApp from '../../helpers/start-app';
 import config from '../../../../dummy/config/environment';
 
 if (config.APP.testODataService) {
-  const randKey = Math.floor(Math.random() * 999);
+  const randKey = Math.floor(Math.random() * 9999);
   const baseUrl = 'http://rtc-web:8081/odatatmp/ember' + randKey;
   const app = startApp();
   const store = app.__container__.lookup('service:store');
@@ -29,25 +29,7 @@ if (config.APP.testODataService) {
     let done = assert.async();
 
     Ember.run(() => {
-      Ember.RSVP.Promise.all([
-        store.createRecord('ember-flexberry-dummy-application-user', {
-          name: 'Vasya',
-          eMail: '1@mail.ru',
-          karma: 5
-        }).save(),
-
-        store.createRecord('ember-flexberry-dummy-application-user', {
-          name: 'Vasya',
-          eMail: '2@mail.ru',
-          karma: 3
-        }).save(),
-
-        store.createRecord('ember-flexberry-dummy-application-user', {
-          name: 'Oleg',
-          eMail: '3@mail.ru',
-          karma: 4
-        }).save()
-      ])
+      initTestData(store)
 
       // from.
         .then(() => {
@@ -124,6 +106,28 @@ if (config.APP.testODataService) {
         .finally(done);
     });
   });
+}
+
+function initTestData(store) {
+  return Ember.RSVP.Promise.all([
+    store.createRecord('ember-flexberry-dummy-application-user', {
+      name: 'Vasya',
+      eMail: '1@mail.ru',
+      karma: 5
+    }).save(),
+
+    store.createRecord('ember-flexberry-dummy-application-user', {
+      name: 'Vasya',
+      eMail: '2@mail.ru',
+      karma: 3
+    }).save(),
+
+    store.createRecord('ember-flexberry-dummy-application-user', {
+      name: 'Oleg',
+      eMail: '3@mail.ru',
+      karma: 4
+    }).save()
+  ])
 }
 
 function runTest(store, builder, callback) {
