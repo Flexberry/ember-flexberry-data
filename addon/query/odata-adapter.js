@@ -80,8 +80,8 @@ export default class ODataAdapter extends BaseAdapter {
       $skip: this._buildODataSkip(query),
       $top: this._buildODataTop(query),
       $count: this._buildODataCount(query),
-      $expand: this._buildODataExpand(query),
-      $select: this._buildODataSelect(query)
+      $select: this._buildODataSelect(query),
+      $expand: this._buildODataExpand(query)
     };
 
     // TODO: do not use order,expand with count
@@ -122,11 +122,45 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataSelect(query) {
-    return query.select.map((i) => this._getODataAttributeName(query.modelName, i)).join(',');
+    return query.select.map((i) => this._getODataAttributeName(query.modelName, i, true)).join(',');
   }
 
   _buildODataExpand(query) {
-    return query.expand.map((i) => this._getODataAttributeName(query.modelName, i)).join(',');
+    let _this = this;
+    let f = function (select, expand, modelName) {
+      let oDataSelect = select
+        .map(i => _this._getODataAttributeName(modelName, i, true))
+        .join(',');
+
+      let oDataExpand = Object.keys(expand)
+        .map(i => {
+          let data = expand[i];
+          let { oDataSelect, oDataExpand } = f(data.select, data.expand, _this._info.getMeta(modelName, i).type);
+
+          let m = [];
+          let b = false;
+
+          if (oDataSelect) {
+            m.push(`$select=${oDataSelect}`);
+            b = true;
+          }
+
+          if (oDataExpand) {
+            m.push(`$expand=${oDataExpand}`);
+            b = true;
+          }
+
+          let p1 = b ? '(' : '';
+          let p2 = b ? ')' : '';
+          let attribute = _this._getODataAttributeName(modelName, i, true);
+          return `${attribute}${p1}${m.join(';')}${p2}`;
+        })
+        .join(',');
+
+      return { oDataSelect, oDataExpand };
+    };
+
+    return f(query.select, query.expand, query.modelName).oDataExpand;
   }
 
   _buildODataCount(query) {
@@ -196,7 +230,7 @@ export default class ODataAdapter extends BaseAdapter {
     if (predicate instanceof StringPredicate) {
       let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
       if (prefix) {
-        attribute = `${prefix}:${prefix}/${attribute}`;
+        attribute = `${prefix}/${attribute}`;
       }
 
       return `contains(${attribute},'${predicate.containsValue}')`;
@@ -212,9 +246,12 @@ export default class ODataAdapter extends BaseAdapter {
         throw new Error(`OData supports only 'any' or 'or' operations for details`);
       }
 
-      let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, modelName, prefix + 'f', level);
+      let additionalPrefix = 'f';
+      let meta = this._info.getMeta(modelName, predicate.detailPath);
+      let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, meta.type, prefix + additionalPrefix, level);
+      let detailPath = this._getODataAttributeName(modelName, predicate.detailPath);
 
-      return `${predicate.detailPath}/${func}(${detailPredicate})`;
+      return `${detailPath}/${func}(${additionalPrefix}:${detailPredicate})`;
     }
 
     if (predicate instanceof ComplexPredicate) {
@@ -260,7 +297,7 @@ export default class ODataAdapter extends BaseAdapter {
     }
   }
 
-  _getODataAttributeName(modelName, attributePath) {
+  _getODataAttributeName(modelName, attributePath, noIdConversion) {
     let attr = [];
     let lastModel = modelName;
     let fields = Information.parseAttributePath(attributePath);
@@ -275,7 +312,9 @@ export default class ODataAdapter extends BaseAdapter {
       if (i + 1 === fields.length) {
         if (meta.isMaster) {
           attr.push(serializer.keyForAttribute(fields[i]));
-          attr.push(serializer.primaryKey);
+          if (!noIdConversion) {
+            attr.push(serializer.primaryKey);
+          }
         } else if (meta.isKey) {
           attr.push(serializer.primaryKey);
         } else {
@@ -292,7 +331,7 @@ export default class ODataAdapter extends BaseAdapter {
   _buildODataSimplePredicate(predicate, modelName, prefix) {
     let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
     if (prefix) {
-      attribute = `${prefix}:${prefix}/${attribute}`;
+      attribute = `${prefix}/${attribute}`;
     }
 
     let value;

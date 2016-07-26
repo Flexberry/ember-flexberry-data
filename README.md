@@ -1,6 +1,6 @@
 # Ember Flexberry Data
-[![Build Status Master](https://travis-ci.org/Flexberry/ember-flexberry-data.svg?branch=master)](https://travis-ci.org/Flexberry/ember-flexberry-data)
-[![Build Status Develop](https://travis-ci.org/Flexberry/ember-flexberry-data.svg?branch=develop)](https://travis-ci.org/Flexberry/ember-flexberry-data)
+[![Build Status Master](https://img.shields.io/travis/Flexberry/ember-flexberry-data/master.svg?label=master%20build%20)](https://travis-ci.org/Flexberry/ember-flexberry-data)
+[![Build Status Develop](https://img.shields.io/travis/Flexberry/ember-flexberry-data/develop.svg?label=develop%20build)](https://travis-ci.org/Flexberry/ember-flexberry-data/branches)
 [![NPM Version](https://badge.fury.io/js/ember-flexberry-data.svg)](https://badge.fury.io/js/ember-flexberry-data)
 
 [![ember](https://embadge.io/v1/badge.svg?label=ember&range=~2.4.3)](https://github.com/emberjs/ember.js/releases)
@@ -62,11 +62,11 @@ You will need the following things properly installed on your computer.
   * To increment patch version run without specifying options.
   * To increment minor version run with `--minor` option.
   * To increment major version run with `--major` option.
+* `npm publish ./` (for more information visit [How to publish packages to NPM](https://gist.github.com/coolaj86/1318304))
 * Merge master branch that contains additional commit for changing addon version with develop branch
   * `git checkout develop`
   * `git merge --no-ff master`
   * `git push`
-* `npm publish ./` (for more information visit [How to publish packages to NPM](https://gist.github.com/coolaj86/1318304))
 
 #### Documenting
 

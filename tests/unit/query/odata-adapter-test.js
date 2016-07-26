@@ -30,6 +30,14 @@ test('adapter | odata | simple predicate | eq', function (assert) {
   runTest(assert, builder, `/Customers?$filter=FirstName eq 'Vasya'`);
 });
 
+test('adapter | odata | simple predicate | eq | guid', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'customer').where('uid', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
+
+  // Act && Assert.
+  runTest(assert, builder, `/Customers?$filter=Uid eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+});
+
 test('adapter | odata | simple predicate | eq | null', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Eq, null);
@@ -76,6 +84,14 @@ test('adapter | odata | simple predicate | eq | master field', function (assert)
 
   // Act && Assert.
   runTest(assert, builder, `/Customers?$filter=Manager/First Name eq 'Vasya'`);
+});
+
+test('adapter | odata | simple predicate | eq | boolean', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user').where('activated', FilterOperator.Eq, true);
+
+  // Act && Assert.
+  runTest(assert, builder, `/EmberFlexberryDummyApplicationUsers?$filter=Activated eq true`);
 });
 
 test('adapter | odata | simple predicate | neq', function (assert) {
@@ -148,70 +164,72 @@ test('adapter | odata | string predicate | inside complex', function (assert) {
 
 test('adapter | odata | detail predicate | all | with simple predicate', function (assert) {
   // Arrange.
-  let dp = new DetailPredicate('DetailName').all(new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya'));
+  let dp = new DetailPredicate('userVotes').all(new SimplePredicate('applicationUser.name', FilterOperator.Eq, 'Vasya'));
 
   // Act.
-  let builder = new QueryBuilder(store, 'customer').where(dp);
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/all(f:f/FirstName eq 'Vasya')`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya')`);
 });
 
 test('adapter | odata | detail predicate | any | with simple predicate', function (assert) {
   // Arrange.
-  let dp = new DetailPredicate('DetailName').any(new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya'));
+  let dp = new DetailPredicate('userVotes').any(new SimplePredicate('applicationUser.name', FilterOperator.Eq, 'Vasya'));
 
   // Act.
-  let builder = new QueryBuilder(store, 'customer').where(dp);
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/any(f:f/FirstName eq 'Vasya')`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/any(f:f/ApplicationUser/Name eq 'Vasya')`);
 });
 
 test('adapter | odata | detail predicate | all | with string predicate', function (assert) {
   // Arrange.
-  let dp = new DetailPredicate('DetailName').all(new StringPredicate('firstName').contains('Vasya'));
+  let dp = new DetailPredicate('userVotes').all(new StringPredicate('applicationUser.name').contains('Oleg'));
 
   // Act.
-  let builder = new QueryBuilder(store, 'customer').where(dp);
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/all(contains(f:f/FirstName,'Vasya'))`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(f:contains(f/ApplicationUser/Name,'Oleg'))`);
 });
 
 test('adapter | odata | detail predicate | any | with string predicate', function (assert) {
   // Arrange.
-  let dp = new DetailPredicate('DetailName').any(new StringPredicate('firstName').contains('Vasya'));
-  let builder = new QueryBuilder(store, 'customer').where(dp);
+  let dp = new DetailPredicate('userVotes').any(new StringPredicate('applicationUser.name').contains('Vasya'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/any(contains(f:f/FirstName,'Vasya'))`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/any(f:contains(f/ApplicationUser/Name,'Vasya'))`);
 });
 
 test('adapter | odata | detail predicate | all | with complex predicate', function (assert) {
   // Arrange.
-  let sp1 = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
-  let sp2 = new SimplePredicate('lastName', FilterOperator.Eq, 'Ivanov');
+  let sp1 = new SimplePredicate('applicationUser.name', FilterOperator.Eq, 'Vasya');
+  let sp2 = new SimplePredicate('applicationUser.eMail', FilterOperator.Eq, 'a@b.c');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
-  let dp = new DetailPredicate('DetailName').all(cp1);
+  let dp = new DetailPredicate('userVotes').all(cp1);
 
-  let builder = new QueryBuilder(store, 'customer').where(dp);
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/all(f:f/FirstName eq 'Vasya' or f:f/LastName eq 'Ivanov')`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya' or f/ApplicationUser/EMail eq 'a@b.c')`);
 });
 
 test('adapter | odata | detail predicate | any | with complex predicate', function (assert) {
   // Arrange.
-  let sp1 = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
-  let sp2 = new SimplePredicate('lastName', FilterOperator.Eq, 'Ivanov');
+  let sp1 = new SimplePredicate('applicationUser.name', FilterOperator.Eq, 'Vasya');
+  let sp2 = new SimplePredicate('applicationUser.eMail', FilterOperator.Eq, 'a@b.c');
   let cp1 = new ComplexPredicate(Condition.And, sp1, sp2);
-  let dp = new DetailPredicate('DetailName').all(cp1);
+  let dp = new DetailPredicate('userVotes').all(cp1);
 
-  let builder = new QueryBuilder(store, 'customer').where(dp);
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, `/Customers?$filter=DetailName/all(f:f/FirstName eq 'Vasya' and f:f/LastName eq 'Ivanov')`);
+  runTest(assert, builder, `/EmberFlexberryDummyComments?$filter=UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya' and f/ApplicationUser/EMail eq 'a@b.c')`);
 });
 
 test('adapter | odata | complex predicate', function (assert) {
@@ -274,20 +292,32 @@ test('adapter | odata | count', function (assert) {
   runTest(assert, builder, '/Customers?$count=true');
 });
 
-test('adapter | odata | expand', function (assert) {
-  // Arrange.
-  let builder = new QueryBuilder(store, 'customer').expand('firstName,lastName').expand(' age ,  lastName ');
-
-  // Act && Assert.
-  runTest(assert, builder, '/Customers?$expand=FirstName,LastName,Age');
-});
-
 test('adapter | odata | select', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').select('firstName,lastName').select(' age,  lastName ');
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
+    .select(' text,  votes')
+    .select(' moderated ');
 
   // Act && Assert.
-  runTest(assert, builder, '/Customers?$select=FirstName,LastName,Age');
+  runTest(assert, builder, '/EmberFlexberryDummyComments?$select=Text,Votes,Moderated');
+});
+
+test('adapter | odata | select by projection', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').selectByProjection('CommentE');
+
+  // Act && Assert.
+  runTest(
+    assert,
+    builder,
+    '/EmberFlexberryDummyComments?' +
+      '$select=__PrimaryKey,Suggestion,Text,Votes,Moderated,Author,UserVotes' +
+      '&' +
+      '$expand=' +
+        'Suggestion($select=__PrimaryKey,Address),' +
+        'Author($select=__PrimaryKey,Name),' +
+        'UserVotes($select=__PrimaryKey,VoteType,ApplicationUser;$expand=ApplicationUser($select=__PrimaryKey,Name))'
+    );
 });
 
 function runTest(assert, builder, expectedUrl) {

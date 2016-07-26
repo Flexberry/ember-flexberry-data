@@ -36,6 +36,11 @@ test('index exports', function (assert) {
   assert.ok(Query.OdataAdapter);
   assert.ok(Query.OrderByClause);
   assert.ok(Query.BasePredicate);
+  assert.ok(Query.SimplePredicate);
+  assert.ok(Query.ComplexPredicate);
+  assert.ok(Query.StringPredicate);
+  assert.ok(Query.DetailPredicate);
+  assert.ok(Query.createPredicate);
 
   assert.ok(Utils.Information);
 });

@@ -57,11 +57,14 @@ export default DS.RESTAdapter.extend({
    * @param {Query} query
    * @return {Promise} promise
    */
+  /* jshint unused:vars */
   queryRecord(store, type, query) {
     Ember.Logger.debug(`Flexberry ODataAdapter::queryRecord '${type}'`, query);
 
-    return this.query(store, type, query);
+    // TODO: query support for direct calls
+    return this._super.apply(this, arguments);
   },
+  /* jshint unused:true */
 
   /**
    * Overloaded method from `RESTAdapter` (Ember Data).
