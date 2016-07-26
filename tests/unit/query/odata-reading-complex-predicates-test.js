@@ -26,7 +26,7 @@ if (config.APP.testODataService) {
   module('OData');
 
   test('reading | predicates | complex predicates', (assert) => {
-    assert.ok(true, 'Start test');
+    assert.expect(4);
     let done = assert.async();
 
     Ember.run(() => {
@@ -40,7 +40,7 @@ if (config.APP.testODataService) {
 
           let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
             .where(CP);
-          store.query('ember-flexberry-dummy-application-user', builder.build())
+          return store.query('ember-flexberry-dummy-application-user', builder.build())
             .then((data) => {
               assert.equal(data.get('length'), 2, `Predicate "or" | Length`);
               assert.ok(data.any(item => item.get('name') === 'Vasya') &&
@@ -57,7 +57,7 @@ if (config.APP.testODataService) {
 
           let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
             .where(CP);
-          store.query('ember-flexberry-dummy-application-user', builder.build())
+          return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
             assert.equal(data.get('length'), 1, `Predicate "and" | Length`);
             assert.ok(data.every(item => item.get('name') === 'Oleg' &&

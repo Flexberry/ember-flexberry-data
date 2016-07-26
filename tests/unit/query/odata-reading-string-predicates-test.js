@@ -26,7 +26,7 @@ if (config.APP.testODataService) {
   module('OData');
 
   test('reading | predicates | string predicates', (assert) => {
-    assert.ok(true, 'Start test');
+    assert.expect(4);
     let done = assert.async();
 
     Ember.run(() => {
@@ -37,30 +37,32 @@ if (config.APP.testODataService) {
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new StringPredicate('name').contains('as'));
 
-        store.query('ember-flexberry-dummy-application-user', builder.build())
-        .then((data) => {
-          assert.ok(data.every(item => item.get('name') === 'Vasya'),
-            'Contains with correct data | Data');
-          assert.equal(data.get('length'), 2, 'Contains with correct data | Length');
-        });
+        return store.query('ember-flexberry-dummy-application-user', builder.build())
+          .then((data) => {
+              assert.ok(data.every(item => item.get('name') === 'Vasya'),
+                'Contains with correct data | Data');
+              assert.equal(data.get('length'), 2, 'Contains with correct data | Length');
+            });
       })
+
       .then(() => {
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new StringPredicate('name').contains(null));
 
-        store.query('ember-flexberry-dummy-application-user', builder.build())
-        .then((data) => {
-          assert.equal(data.get('length'), 0, 'Contains without data');
-        });
+        return store.query('ember-flexberry-dummy-application-user', builder.build())
+          .then((data) => {
+            assert.equal(data.get('length'), 0, 'Contains without data');
+          });
       })
+
       .then(() => {
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new StringPredicate('name').contains('Ge'));
 
-        store.query('ember-flexberry-dummy-application-user', builder.build())
-        .then((data) => {
-          assert.equal(data.get('length'), 0, `Contains mustn't return any records`);
-        });
+        return store.query('ember-flexberry-dummy-application-user', builder.build())
+          .then((data) => {
+            assert.equal(data.get('length'), 0, `Contains mustn't return any records`);
+          });
       })
       .catch(e => console.log(e, e.message))
       .finally(done);

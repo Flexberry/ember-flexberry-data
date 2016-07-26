@@ -26,7 +26,7 @@ if (config.APP.testODataService) {
   module('OData');
 
   test('reading | restrictions | on fields', (assert) => {
-    assert.ok(true, 'Start test');
+    assert.expect(6);
     let done = assert.async();
 
     Ember.run(() => {
@@ -127,12 +127,12 @@ if (config.APP.testODataService) {
               let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
                 .where('author.id', '==', id);
 
-              store.query('ember-flexberry-dummy-comment', builder.build())
-              .then((data) => {
-                assert.equal(data.get('length'), 2, 'Reading by master field | Length');
-                assert.ok(data.every(item => item.get('author.name') === 'Vasya'),
-                  'Reading by master field | Data');
-              });
+              return store.query('ember-flexberry-dummy-comment', builder.build())
+                .then((data) => {
+                  assert.equal(data.get('length'), 2, 'Reading by master field | Length');
+                  assert.ok(data.every(item => item.get('author.name') === 'Vasya'),
+                    'Reading by master field | Data');
+                });
             })
 
             // Reading with master restrictions.
@@ -145,12 +145,12 @@ if (config.APP.testODataService) {
               let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
                 .where(sp1.and(sp2));
 
-              store.query('ember-flexberry-dummy-comment', builder.build())
-              .then((data) => {
-                assert.equal(data.get('length'), 1, 'Restrictions on master fields | Length');
-                assert.ok(data.get('firstObject').get('id') === commentId,
-                  'Restrictions on master fields | Data');
-              });
+              return store.query('ember-flexberry-dummy-comment', builder.build())
+                .then((data) => {
+                  assert.equal(data.get('length'), 1, 'Restrictions on master fields | Length');
+                  assert.ok(data.get('firstObject').get('id') === commentId,
+                    'Restrictions on master fields | Data');
+                });
             })
 
             // Reading with detail restrictions.
@@ -160,12 +160,12 @@ if (config.APP.testODataService) {
               let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
                 .where(dp);
 
-              store.query('ember-flexberry-dummy-comment', builder.build())
-              .then((data) => {
-                assert.equal(data.get('length'), 2, 'Restrictions on details fields | Length');
-                assert.ok(data.every(item => item.get('author.name') === 'Vasya'),
-                  'Restrictions on details fields | Data');
-              });
+              return store.query('ember-flexberry-dummy-comment', builder.build())
+                .then((data) => {
+                  assert.equal(data.get('length'), 2, 'Restrictions on details fields | Length');
+                  assert.ok(data.every(item => item.get('author.name') === 'Vasya'),
+                    'Restrictions on details fields | Data');
+                });
             })
             .catch(e => console.log(e, e.message))
             .finally(done);

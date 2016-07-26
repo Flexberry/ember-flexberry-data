@@ -54,41 +54,42 @@ if (config.APP.testODataService) {
         // findRecord.
         .then((people) => {
           let id = people[0].get('id');
-          store.findRecord('ember-flexberry-dummy-application-user', id)
-            .then((data) => {
-              assert.equal(data.get('name'), 'User 1', 'findRecord');
-            });
+          return store.findRecord('ember-flexberry-dummy-application-user', id)
+            .then((data) => 
+              assert.equal(data.get('name'), 'User 1', 'findRecord')
+            );
         })
 
         // findAll.
         .then(() => {
-          store.findAll('ember-flexberry-dummy-application-user')
-            .then((data) => {
-              assert.equal(data.get('length'), 4, 'findAll');
-            });
+          return store.findAll('ember-flexberry-dummy-application-user')
+            .then((data) => 
+              assert.equal(data.get('length'), 4, 'findAll')
+            );
         })
-
-        // queryRecord.
-        .then(() => {
-          let builder = new QueryBuilder(store)
-            .from('ember-flexberry-dummy-application-user')
-            .where('name', '==', 'User 2');
-          store.queryRecord('ember-flexberry-dummy-application-user', builder.build())
-            .then((data) => {
-              assert.equal(data.get('name'), 'User 2', 'queryRecord')
-            });
-          })
 
         // query.
         .then(() => {
           let builder = new QueryBuilder(store)
             .from('ember-flexberry-dummy-application-user')
             .where('name', '==', 'User 2');
-          store.query('ember-flexberry-dummy-application-user', builder.build())
+          return store.query('ember-flexberry-dummy-application-user', builder.build())
             .then((data) => {
               assert.ok(data.every(item => item.get('name') === 'User 2'), 'query | Data');
               assert.equal(data.get('length'), 2, 'query | Length');
             });
+        })
+
+        // queryRecord.
+        // Not working!
+        .then(() => {
+          let builder = new QueryBuilder(store)
+            .from('ember-flexberry-dummy-application-user')
+            .where('name', '==', 'User 2');
+          return store.queryRecord('ember-flexberry-dummy-application-user', builder.build())
+            .then((record) => 
+              assert.equal(record.get('name'), 'User 2', 'queryRecord')
+            );
         })
         .catch(e => console.log(e, e.message))
         .finally(done);

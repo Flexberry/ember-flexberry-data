@@ -25,7 +25,7 @@ if (config.APP.testODataService) {
   module('OData');
 
   test('reading | restrictions | odata functions', (assert) => {
-    assert.ok(true, 'Start test');
+    assert.expect(4);
     let done = assert.async();
 
     Ember.run(() => {
@@ -54,7 +54,7 @@ if (config.APP.testODataService) {
         .then(() => {
           let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
             .where('birthday', '>', 'now()');
-          runTest(store, builder, (data) => {
+          return runTest(store, builder, (data) => {
             assert.ok(data.get('firstObject.name') === 'User 1', '> now() | Data');
             assert.equal(data.get('length'), 1, '> now() | Length');
           });
@@ -64,7 +64,7 @@ if (config.APP.testODataService) {
         .then(() => {
           let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
             .where('birthday', '<', 'now()');
-          runTest(store, builder, (data) => {
+          return runTest(store, builder, (data) => {
             assert.ok(data.get('firstObject.name') === 'User 2', '< now() | Data');
             assert.equal(data.get('length'), 1, '< now() | Length');
           });
@@ -76,6 +76,6 @@ if (config.APP.testODataService) {
 }
 
 function runTest(store, builder, callback) {
-  store.query('ember-flexberry-dummy-application-user', builder.build())
+  return store.query('ember-flexberry-dummy-application-user', builder.build())
     .then((data) => callback(data));
 }

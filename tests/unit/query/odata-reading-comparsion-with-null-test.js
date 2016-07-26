@@ -25,7 +25,7 @@ if (config.APP.testODataService) {
   module('OData');
 
   test('reading | comparsion with null', (assert) => {
-    assert.ok(true, 'Start test');
+    assert.expect(8);
     let done = assert.async();
 
     Ember.run(() => {
@@ -88,24 +88,25 @@ if (config.APP.testODataService) {
           .then(() => {
             let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
               .where('phone1', '==', null);
-            store.query('ember-flexberry-dummy-application-user', builder.build())
-            .then((data) => {
-              assert.equal(data.get('length'), 1, 'Eq null for own field | Length');
-              assert.ok(data.any(item => item.get('name') === 'Andrey'),
-                'Eq null for own field | Data');
-            });
+            return store.query('ember-flexberry-dummy-application-user', builder.build())
+              .then((data) => {
+                assert.equal(data.get('length'), 1, 'Eq null for own field | Length');
+                assert.ok(data.any(item => item.get('name') === 'Andrey'),
+                  'Eq null for own field | Data');
+              });
           })
 
           // Neq null for own field.
           .then(() => {
             let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
               .where('phone1', '!=', null);
-            store.query('ember-flexberry-dummy-application-user', builder.build())
-            .then((data) => {
-              assert.equal(data.get('length'), 2, 'Neq null for own field | Length');
-              assert.ok(data.any(item => item.get('name') === 'Vasya') &&
-                data.any(item => item.get('name') === 'Kolya'),
-                'Neq null for own field | Data');
+            return store.query('ember-flexberry-dummy-application-user', builder.build())
+              .then((data) => {
+                assert.equal(data.get('length'), 2, 'Neq null for own field | Length');
+                assert.ok(
+                  data.any(item => item.get('name') === 'Vasya') &&
+                  data.any(item => item.get('name') === 'Kolya'),
+                  'Neq null for own field | Data');
             });
           })
 
@@ -113,26 +114,26 @@ if (config.APP.testODataService) {
           .then(() => {
             let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
               .where('author.phone1', '==', null);
-            store.query('ember-flexberry-dummy-comment', builder.build())
-            .then((data) => {
-              assert.equal(data.get('length'), 1, 'Eq null for master field | Length');
-              assert.ok(data.get('firstObject.author.name') === 'Andrey',
-                'Eq null for master field | Data');
-            });
+            return store.query('ember-flexberry-dummy-comment', builder.build())
+              .then((data) => {
+                assert.equal(data.get('length'), 1, 'Eq null for master field | Length');
+                assert.ok(data.get('firstObject.author.name') === 'Andrey',
+                  'Eq null for master field | Data');
+              });
           })
 
           // Neq null for master field.
           .then(() => {
             let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
               .where('author.phone1', '!=', null);
-            store.query('ember-flexberry-dummy-comment', builder.build())
-            .then((data) => {
-              assert.equal(data.get('length'), 2, 'Neq null for master field | Length');
-              assert.ok(
-                data.any(item => item.get('author.name') === 'Vasya') &&
-                data.any(item => item.get('author.name') === 'Kolya'),
-                  'Neq null for master field | Data');
-            });
+            return store.query('ember-flexberry-dummy-comment', builder.build())
+              .then((data) => {
+                assert.equal(data.get('length'), 2, 'Neq null for master field | Length');
+                assert.ok(
+                  data.any(item => item.get('author.name') === 'Vasya') &&
+                  data.any(item => item.get('author.name') === 'Kolya'),
+                    'Neq null for master field | Data');
+              });
           })
           .catch(e => console.log(e, e.message))
           .finally(done);
