@@ -30,6 +30,14 @@ test('adapter | odata | simple predicate | eq', function (assert) {
   runTest(assert, builder, `/Customers?$filter=FirstName eq 'Vasya'`);
 });
 
+test('adapter | odata | simple predicate | eq | guid', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'customer').where('uid', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
+
+  // Act && Assert.
+  runTest(assert, builder, `/Customers?$filter=Uid eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c`);
+});
+
 test('adapter | odata | simple predicate | eq | null', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Eq, null);
