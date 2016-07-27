@@ -41,12 +41,12 @@ if (config.APP.testODataService) {
         })
 
         // findAll.
-        .then(() => {
-          return store.findAll('ember-flexberry-dummy-application-user')
+        .then(() => 
+          store.findAll('ember-flexberry-dummy-application-user')
             .then((data) =>
               assert.equal(data.get('length'), 4, 'findAll')
-            );
-        })
+            )
+        )
 
         // query.
         .then(() => {

@@ -114,16 +114,16 @@ function initTestData(store) {
   ])
 
     // Сreating suggestion.
-    .then((sugAttrsValues) => {
-      return store.createRecord('ember-flexberry-dummy-suggestion', {
+    .then((sugAttrsValues) => 
+      store.createRecord('ember-flexberry-dummy-suggestion', {
         type: sugAttrsValues.find(item => item.get('name') === 'Type 1'),
         author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
         editor1: sugAttrsValues.find(item => item.get('name') === 'Kolya')
       }).save()
 
         // Creating comments.
-        .then((sug) => {
-          return Ember.RSVP.Promise.all([
+        .then((sug) => 
+          Ember.RSVP.Promise.all([
             store.createRecord('ember-flexberry-dummy-comment', {
               author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
               text: 'Comment 1',
@@ -141,7 +141,7 @@ function initTestData(store) {
               text: 'Comment 3',
               suggestion: sug
             }).save()
-          ]);
-        });
-    });
+          ])
+        )
+    );
 }

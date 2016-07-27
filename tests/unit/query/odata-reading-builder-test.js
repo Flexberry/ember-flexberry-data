@@ -95,7 +95,7 @@ if (config.APP.testODataService) {
           let builder = new QueryBuilder(store)
             .from('ember-flexberry-dummy-application-user')
             .select('id, name, karma');
-  
+
           store.unloadAll('ember-flexberry-dummy-application-user');
 
           return runTest(store, builder, (data) => {
@@ -103,9 +103,9 @@ if (config.APP.testODataService) {
             for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
               let curRecord = data.objectAt(i);
               let recordAttrs =  Object.keys(curRecord.get('data'));
-              isDataCorrect = recordAttrs.join() === "name,karma";
+              isDataCorrect = recordAttrs.join() === 'name,karma';
             }
-            
+        
             assert.ok(isDataCorrect, 'select');
           });
         })
@@ -123,9 +123,9 @@ if (config.APP.testODataService) {
             for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
               let curRecord = data.objectAt(i);
               let recordAttrs =  Object.keys(curRecord.get('data'));
-              isDataCorrect = recordAttrs.join() === "name,eMail,activated,birthday,karma";
+              isDataCorrect = recordAttrs.join() === 'name,eMail,activated,birthday,karma';
             }
-            
+
             assert.ok(isDataCorrect, 'selectByProjection');
           });
 

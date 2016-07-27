@@ -115,16 +115,16 @@ function initTestData(store) {
   ])
 
     // Сreating suggestion.
-    .then((sugAttrsValues) => {
-      return store.createRecord('ember-flexberry-dummy-suggestion', {
+    .then((sugAttrsValues) => 
+      store.createRecord('ember-flexberry-dummy-suggestion', {
         type: sugAttrsValues.find(item => item.get('name') === 'Type 1'),
         author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
         editor1: sugAttrsValues.find(item => item.get('name') === 'Kolya')
       }).save()
 
         // Creating comments.
-        .then((sug) => {
-          return Ember.RSVP.Promise.all([
+        .then((sug) => 
+          Ember.RSVP.Promise.all([
             store.createRecord('ember-flexberry-dummy-comment', {
               author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
               text: 'Comment 1',
@@ -151,8 +151,8 @@ function initTestData(store) {
           ])
 
             // Creating votes.
-            .then((comments) => {
-              return Ember.RSVP.Promise.all([
+            .then((comments) => 
+              Ember.RSVP.Promise.all([
                 store.createRecord('ember-flexberry-dummy-comment-vote', {
                   applicationUser: sugAttrsValues.find(item => item.get('name') === 'Oleg'),
                   comment: comments.find(item => item.get('text') === 'Comment 1')
@@ -174,14 +174,12 @@ function initTestData(store) {
                   comment: comments.find(item => item.get('text') === 'Comment 3')
                 }).save()
               ])
-                .then(() => {
-                  return [
-                    sugAttrsValues.find(item => item.get('name') === 'Vasya').get('id'),
-                    comments.find(item => item.get('text') === 'Comment 3' && item.get('author.name') === 'Kolya')
-                      .get('id')
-                  ];
-                });
-            });
-        });
-    });
+                .then(() => [
+                  sugAttrsValues.find(item => item.get('name') === 'Vasya').get('id'),
+                  comments.find(item => item.get('text') === 'Comment 3' && item.get('author.name') === 'Kolya')
+                    .get('id')
+                ])
+            )
+        )
+    );
 }

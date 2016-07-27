@@ -30,11 +30,10 @@ if (config.APP.testODataService) {
     assert.expect(24);
     let done = assert.async();
 
-    let builderStrOp = null;
-    let builderConstOp = null;
-    let callback = null;
-
     Ember.run(() => {
+      let builderStrOp = null;
+      let builderConstOp = null;
+
       initTestData(store)
 
         // Eq.
