@@ -1,140 +1,117 @@
 import Ember from 'ember';
-import { module, test } from 'qunit';
-
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import ODataAdapter from 'ember-flexberry-data/adapters/odata';
+import executeTest from './execute-odata-reading-test';
 
-import startApp from '../../helpers/start-app';
-import config from '../../../../dummy/config/environment';
+executeTest('reading | builder functions', (store, assert) => {
+  assert.expect(9);
+  let done = assert.async();
 
-if (config.APP.testODataService) {
-  const randKey = Math.floor(Math.random() * 9999);
-  const baseUrl = 'http://rtc-web:8081/odatatmp/ember' + randKey;
-  const app = startApp();
-  const store = app.__container__.lookup('service:store');
+  Ember.run(() => {
+    initTestData(store)
 
-  const adapter = ODataAdapter.create();
-  Ember.set(adapter, 'host', baseUrl);
+      // from.
+      .then(() => {
+        let builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-application-user')
+          .where('name', '==', 'Vasya');
+        return runTest(store, builder, (data) => {
+          assert.ok(data.every(item => item.get('name') === 'Vasya') &&
+            data.get('length') === 2, 'from');
+        });
+      })
 
-  store.reopen({
-    adapterFor() {
-      return adapter;
-    }
+      // orderBy.
+      .then(() => {
+        let builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-application-user')
+          .orderBy('karma');
+        return runTest(store, builder, (data) => {
+          let isDataCorrect = true;
+          for (let i = 0; i < data.get('length') - 1 && isDataCorrect; i++) {
+            if (data.objectAt(i).get('karma') > data.objectAt(i + 1).get('karma')) { isDataCorrect = false; }
+          }
+
+          assert.ok(isDataCorrect, 'orderBy | Data');
+          assert.equal(data.get('length'), 3, 'orderBy | Length');
+        });
+      })
+
+      // top.
+      .then(() => {
+        let builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-application-user')
+          .orderBy('karma')
+          .top(2);
+        return runTest(store, builder, (data) => {
+          assert.equal(data.get('length'), 2, 'top');
+        });
+      })
+
+      // skip.
+      .then(() => {
+        let builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-application-user')
+          .orderBy('karma')
+          .skip(1);
+        return runTest(store, builder, (data) => {
+          assert.equal(data.get('firstObject.karma'), 4, 'skip | Data');
+          assert.equal(data.get('length'), 2, 'skip | Length');
+        });
+      })
+
+      // count.
+      .then(() => {
+        let builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-application-user')
+          .where('name', '==', 'Vasya')
+          .count();
+        return runTest(store, builder, (data) => assert.equal(data.meta.count, 2, 'count'));
+      })
+
+      // select
+      .then(() => {
+        let builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-application-user')
+          .select('id, name, karma');
+
+        store.unloadAll('ember-flexberry-dummy-application-user');
+
+        return runTest(store, builder, (data) => {
+          let isDataCorrect = true;
+          for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
+            let curRecord = data.objectAt(i);
+            let recordAttrs =  Object.keys(curRecord.get('data'));
+            isDataCorrect = recordAttrs.join() === 'name,karma';
+          }
+
+          assert.ok(isDataCorrect, 'select');
+        });
+      })
+
+      // selectByProjection
+      .then(() => {
+        let builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-application-user')
+          .selectByProjection('ApplicationUserL');
+
+        store.unloadAll('ember-flexberry-dummy-application-user');
+
+        return runTest(store, builder, (data) => {
+          let isDataCorrect = true;
+          for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
+            let curRecord = data.objectAt(i);
+            let recordAttrs =  Object.keys(curRecord.get('data'));
+            isDataCorrect = recordAttrs.join() === 'name,eMail,activated,birthday,karma';
+          }
+
+          assert.ok(isDataCorrect, 'selectByProjection');
+        });
+
+      })
+      .catch(e => console.log(e, e.message))
+      .finally(done);
   });
-
-  module('OData');
-
-  test('reading | builder functions', (assert) => {
-    assert.expect(9);
-    let done = assert.async();
-
-    Ember.run(() => {
-      initTestData(store)
-
-        // from.
-        .then(() => {
-          let builder = new QueryBuilder(store)
-            .from('ember-flexberry-dummy-application-user')
-            .where('name', '==', 'Vasya');
-          return runTest(store, builder, (data) => {
-            assert.ok(data.every(item => item.get('name') === 'Vasya') &&
-              data.get('length') === 2, 'from');
-          });
-        })
-
-        // orderBy.
-        .then(() => {
-          let builder = new QueryBuilder(store)
-            .from('ember-flexberry-dummy-application-user')
-            .orderBy('karma');
-          return runTest(store, builder, (data) => {
-            let isDataCorrect = true;
-            for (let i = 0; i < data.get('length') - 1 && isDataCorrect; i++) {
-              if (data.objectAt(i).get('karma') > data.objectAt(i + 1).get('karma')) { isDataCorrect = false; }
-            }
-
-            assert.ok(isDataCorrect, 'orderBy | Data');
-            assert.equal(data.get('length'), 3, 'orderBy | Length');
-          });
-        })
-
-        // top.
-        .then(() => {
-          let builder = new QueryBuilder(store)
-            .from('ember-flexberry-dummy-application-user')
-            .orderBy('karma')
-            .top(2);
-          return runTest(store, builder, (data) => {
-            assert.equal(data.get('length'), 2, 'top');
-          });
-        })
-
-        // skip.
-        .then(() => {
-          let builder = new QueryBuilder(store)
-            .from('ember-flexberry-dummy-application-user')
-            .orderBy('karma')
-            .skip(1);
-          return runTest(store, builder, (data) => {
-            assert.equal(data.get('firstObject.karma'), 4, 'skip | Data');
-            assert.equal(data.get('length'), 2, 'skip | Length');
-          });
-        })
-
-        // count.
-        .then(() => {
-          let builder = new QueryBuilder(store)
-            .from('ember-flexberry-dummy-application-user')
-            .where('name', '==', 'Vasya')
-            .count();
-          return runTest(store, builder, (data) => assert.equal(data.meta.count, 2, 'count'));
-        })
-
-        // select
-        .then(() => {
-          let builder = new QueryBuilder(store)
-            .from('ember-flexberry-dummy-application-user')
-            .select('id, name, karma');
-
-          store.unloadAll('ember-flexberry-dummy-application-user');
-
-          return runTest(store, builder, (data) => {
-            let isDataCorrect = true;
-            for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
-              let curRecord = data.objectAt(i);
-              let recordAttrs =  Object.keys(curRecord.get('data'));
-              isDataCorrect = recordAttrs.join() === 'name,karma';
-            }
-        
-            assert.ok(isDataCorrect, 'select');
-          });
-        })
-
-        // selectByProjection
-        .then(() => {
-          let builder = new QueryBuilder(store)
-            .from('ember-flexberry-dummy-application-user')
-            .selectByProjection('ApplicationUserL');
-
-          store.unloadAll('ember-flexberry-dummy-application-user');
-
-          return runTest(store, builder, (data) => {
-            let isDataCorrect = true;
-            for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
-              let curRecord = data.objectAt(i);
-              let recordAttrs =  Object.keys(curRecord.get('data'));
-              isDataCorrect = recordAttrs.join() === 'name,eMail,activated,birthday,karma';
-            }
-
-            assert.ok(isDataCorrect, 'selectByProjection');
-          });
-
-        })
-        .catch(e => console.log(e, e.message))
-        .finally(done);
-    });
-  });
-}
+});
 
 function initTestData(store) {
   return Ember.RSVP.Promise.all([

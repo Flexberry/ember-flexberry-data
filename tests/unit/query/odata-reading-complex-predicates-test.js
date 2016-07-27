@@ -1,75 +1,52 @@
 import Ember from 'ember';
-import { module, test } from 'qunit';
-
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import ODataAdapter from 'ember-flexberry-data/adapters/odata';
 import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
+import executeTest from './execute-odata-reading-test';
 
-import startApp from '../../helpers/start-app';
-import config from '../../../../dummy/config/environment';
+executeTest('reading | predicates | complex predicates', (store, assert) => {
+  assert.expect(4);
+  let done = assert.async();
 
-if (config.APP.testODataService) {
-  const randKey = Math.floor(Math.random() * 9999);
-  const baseUrl = 'http://rtc-web:8081/odatatmp/ember' + randKey;
-  const app = startApp();
-  const store = app.__container__.lookup('service:store');
+  Ember.run(() => {
+    initTestData(store)
 
-  const adapter = ODataAdapter.create();
-  Ember.set(adapter, 'host', baseUrl);
+      // Or.
+      .then(() => {
+        let SP1 = new SimplePredicate('name', '==', 'Vasya');
+        let SP2 = new SimplePredicate('karma', '==', 6);
+        let CP = SP1.or(SP2);
 
-  store.reopen({
-    adapterFor() {
-      return adapter;
-    }
-  });
-
-  module('OData');
-
-  test('reading | predicates | complex predicates', (assert) => {
-    assert.expect(4);
-    let done = assert.async();
-
-    Ember.run(() => {
-      initTestData(store)
-
-        // Or.
-        .then(() => {
-          let SP1 = new SimplePredicate('name', '==', 'Vasya');
-          let SP2 = new SimplePredicate('karma', '==', 6);
-          let CP = SP1.or(SP2);
-
-          let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where(CP);
-          return store.query('ember-flexberry-dummy-application-user', builder.build())
-            .then((data) => {
-              assert.equal(data.get('length'), 2, `Predicate "or" | Length`);
-              assert.ok(data.any(item => item.get('name') === 'Vasya') &&
-                data.any(item => item.get('karma') === 6),
-                `Predicate "or" | Data`);
-            });
-        })
-
-        // And.
-        .then(() => {
-          let SP1 = new SimplePredicate('name', '==', 'Oleg');
-          let SP2 = new SimplePredicate('karma', '==', 7);
-          let CP = SP1.and(SP2);
-
-          let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where(CP);
-          return store.query('ember-flexberry-dummy-application-user', builder.build())
+        let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where(CP);
+        return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
-            assert.equal(data.get('length'), 1, `Predicate "and" | Length`);
-            assert.ok(data.every(item => item.get('name') === 'Oleg' &&
-              item.get('karma') === 7),
-            `Predicate "and" | Data`);
+            assert.equal(data.get('length'), 2, `Predicate "or" | Length`);
+            assert.ok(data.any(item => item.get('name') === 'Vasya') &&
+              data.any(item => item.get('karma') === 6),
+              `Predicate "or" | Data`);
           });
-        })
-        .catch(e => console.log(e, e.message))
-        .finally(done);
-    });
+      })
+
+      // And.
+      .then(() => {
+        let SP1 = new SimplePredicate('name', '==', 'Oleg');
+        let SP2 = new SimplePredicate('karma', '==', 7);
+        let CP = SP1.and(SP2);
+
+        let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where(CP);
+        return store.query('ember-flexberry-dummy-application-user', builder.build())
+        .then((data) => {
+          assert.equal(data.get('length'), 1, `Predicate "and" | Length`);
+          assert.ok(data.every(item => item.get('name') === 'Oleg' &&
+            item.get('karma') === 7),
+          `Predicate "and" | Data`);
+        });
+      })
+      .catch(e => console.log(e, e.message))
+      .finally(done);
   });
-}
+});
 
 function initTestData(store) {
   return Ember.RSVP.Promise.all([

@@ -8,7 +8,7 @@ var Model = Projection.Model.extend({
     inverse: 'userVotes',
     async: false
   }),
-  
+
   //voteType: DS.attr('ember-flexberry-dummy-vote-type'),
 
   // This property is for flexberry-lookup component. No inverse relationship here.

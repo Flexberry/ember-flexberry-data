@@ -12,7 +12,7 @@ var Model = Projection.Model.extend({
   facebook: DS.attr('string'),
   twitter: DS.attr('string'),
   birthday: DS.attr('date'),
-  
+
   //gender: DS.attr('ember-flexberry-dummy-gender'),
   vip: DS.attr('boolean'),
   karma: DS.attr('number'),

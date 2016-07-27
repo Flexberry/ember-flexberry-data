@@ -1,153 +1,130 @@
 import Ember from 'ember';
-import { module, test } from 'qunit';
-
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import ODataAdapter from 'ember-flexberry-data/adapters/odata';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
+import executeTest from './execute-odata-reading-test';
 
-import startApp from '../../helpers/start-app';
-import config from '../../../../dummy/config/environment';
+executeTest('reading | predicates | simple predicates | operators', (store, assert) => {
+  assert.expect(24);
+  let done = assert.async();
 
-if (config.APP.testODataService) {
-  const randKey = Math.floor(Math.random() * 9999);
-  const baseUrl = 'http://rtc-web:8081/odatatmp/ember' + randKey;
-  const app = startApp();
-  const store = app.__container__.lookup('service:store');
+  Ember.run(() => {
+    let builderStrOp = null;
+    let builderConstOp = null;
 
-  const adapter = ODataAdapter.create();
-  Ember.set(adapter, 'host', baseUrl);
+    initTestData(store)
 
-  store.reopen({
-    adapterFor() {
-      return adapter;
-    }
+      // Eq.
+      .then(() => {
+        builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where('karma', '==', 5);
+        builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where(new SimplePredicate('karma', FilterOperator.Eq, 5));
+
+        return runTest(store, [builderStrOp, builderConstOp], [
+            ['Eq with operator | Data', 'Eq with operator | Length'],
+            ['Eq with simple predicate | Data', 'Eq with simple predicate | Length']
+          ],
+          (data, messages) => {
+            assert.ok(data.every(item => item.get('karma') === 5), messages[0]);
+            assert.equal(data.get('length'), 2, messages[1]);
+          }
+        );
+      })
+
+      // Neq.
+      .then(() => {
+        builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where('karma', '!=', 5);
+        builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where(new SimplePredicate('karma', FilterOperator.Neq, 5));
+
+        return runTest(store, [builderStrOp, builderConstOp], [
+            ['Neq with operator | Data', 'Neq with operator | Length'],
+            ['Neq with simple predicate | Data', 'Neq with simple predicate | Length']
+          ],
+          (data, messages) => {
+            assert.ok(data.every(item => item.get('karma') !== 5), messages[0]);
+            assert.equal(data.get('length'), 2, messages[1]);
+          }
+        );
+      })
+
+      // Ge.
+      .then(() => {
+        builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where('karma', '>', 4);
+        builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where(new SimplePredicate('karma', FilterOperator.Ge, 4));
+
+        return runTest(store, [builderStrOp, builderConstOp], [
+            ['Ge with operator | Data', 'Ge with operator | Length'],
+            ['Ge with simple predicate | Data', 'Ge with simple predicate | Length'],
+          ],
+          (data, messages) => {
+            assert.ok(data.every(item => item.get('karma') > 4), messages[0]);
+            assert.equal(data.get('length'), 3, messages[1]);
+          }
+        );
+      })
+
+      // Geq.
+      .then(() => {
+        builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where('karma', '>=', 5);
+        builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where(new SimplePredicate('karma', FilterOperator.Geq, 5));
+
+        return runTest(store, [builderStrOp, builderConstOp], [
+            ['Geq with operator | Data', 'Geq with operator | Length'],
+            ['Geq with simple predicate | Data', 'Geq with simple predicate | Length']
+          ],
+          (data, messages) => {
+            assert.ok(data.every(item => item.get('karma') >= 5), messages[0]);
+            assert.equal(data.get('length'), 3, messages[1]);
+          }
+        );
+      })
+
+      // Le.
+      .then(() => {
+        builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where('karma', '<', 6);
+        builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where(new SimplePredicate('karma', FilterOperator.Le, 6));
+
+        return runTest(store, [builderStrOp, builderConstOp], [
+            ['Le with operator | Data', 'Le with operator | Length'],
+            ['Le with simple predicate data', 'Le with simple predicate length']
+          ],
+          (data, messages) => {
+            assert.ok(data.every(item => item.get('karma') <  6), messages[0]);
+            assert.equal(data.get('length'), 3, messages[1]);
+          }
+        );
+      })
+
+      // Leq.
+      .then(() => {
+        builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where('karma', '<=', 5);
+        builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+          .where(new SimplePredicate('karma', FilterOperator.Leq, 5));
+
+        return runTest(store, [builderStrOp, builderConstOp], [
+            ['Leq with operator | Data', 'Leq with operator | Length'],
+            ['Leq with simple predicate | Data', 'Leq with simple predicate | Length']
+          ],
+          (data, messages) => {
+            assert.ok(data.every(item => item.get('karma') <=  5), messages[0]);
+            assert.equal(data.get('length'), 3, messages[1]);
+          }
+        );
+      })
+      .catch(e => console.log(e, e.message))
+      .finally(done);
   });
-
-  module('OData');
-
-  test('reading | predicates | simple predicates | operators', (assert) => {
-    assert.expect(24);
-    let done = assert.async();
-
-    Ember.run(() => {
-      let builderStrOp = null;
-      let builderConstOp = null;
-
-      initTestData(store)
-
-        // Eq.
-        .then(() => {
-          builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where('karma', '==', 5);
-          builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where(new SimplePredicate('karma', FilterOperator.Eq, 5));
-
-          return runTest(store, [builderStrOp, builderConstOp], [
-              ['Eq with operator | Data', 'Eq with operator | Length'],
-              ['Eq with simple predicate | Data', 'Eq with simple predicate | Length']
-            ],
-            (data, messages) => {
-              assert.ok(data.every(item => item.get('karma') === 5), messages[0]);
-              assert.equal(data.get('length'), 2, messages[1]);
-            }
-          );
-        })
-
-        // Neq.
-        .then(() => {
-          builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where('karma', '!=', 5);
-          builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where(new SimplePredicate('karma', FilterOperator.Neq, 5));
-
-          return runTest(store, [builderStrOp, builderConstOp], [
-              ['Neq with operator | Data', 'Neq with operator | Length'],
-              ['Neq with simple predicate | Data', 'Neq with simple predicate | Length']
-            ],
-            (data, messages) => {
-              assert.ok(data.every(item => item.get('karma') !== 5), messages[0]);
-              assert.equal(data.get('length'), 2, messages[1]);
-            }
-          );
-        })
-
-        // Ge.
-        .then(() => {
-          builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where('karma', '>', 4);
-          builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where(new SimplePredicate('karma', FilterOperator.Ge, 4));
-
-          return runTest(store, [builderStrOp, builderConstOp], [
-              ['Ge with operator | Data', 'Ge with operator | Length'],
-              ['Ge with simple predicate | Data', 'Ge with simple predicate | Length'],
-            ],
-            (data, messages) => {
-              assert.ok(data.every(item => item.get('karma') > 4), messages[0]);
-              assert.equal(data.get('length'), 3, messages[1]);
-            }
-          );
-        })
-
-        // Geq.
-        .then(() => {
-          builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where('karma', '>=', 5);
-          builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where(new SimplePredicate('karma', FilterOperator.Geq, 5));
-
-          return runTest(store, [builderStrOp, builderConstOp], [
-              ['Geq with operator | Data', 'Geq with operator | Length'],
-              ['Geq with simple predicate | Data', 'Geq with simple predicate | Length']
-            ],
-            (data, messages) => {
-              assert.ok(data.every(item => item.get('karma') >= 5), messages[0]);
-              assert.equal(data.get('length'), 3, messages[1]);
-            }
-          );
-        })
-
-        // Le.
-        .then(() => {
-          builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where('karma', '<', 6);
-          builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where(new SimplePredicate('karma', FilterOperator.Le, 6));
-
-          return runTest(store, [builderStrOp, builderConstOp], [
-              ['Le with operator | Data', 'Le with operator | Length'],
-              ['Le with simple predicate data', 'Le with simple predicate length']
-            ],
-            (data, messages) => {
-              assert.ok(data.every(item => item.get('karma') <  6), messages[0]);
-              assert.equal(data.get('length'), 3, messages[1]);
-            }
-          );
-        })
-
-        // Leq.
-        .then(() => {
-          builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where('karma', '<=', 5);
-          builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-            .where(new SimplePredicate('karma', FilterOperator.Leq, 5));
-
-          return runTest(store, [builderStrOp, builderConstOp], [
-              ['Leq with operator | Data', 'Leq with operator | Length'],
-              ['Leq with simple predicate | Data', 'Leq with simple predicate | Length']
-            ],
-            (data, messages) => {
-              assert.ok(data.every(item => item.get('karma') <=  5), messages[0]);
-              assert.equal(data.get('length'), 3, messages[1]);
-            }
-          );
-        })
-        .catch(e => console.log(e, e.message))
-        .finally(done);
-    });
-  });
-}
+});
 
 function initTestData(store) {
   return Ember.RSVP.Promise.all([

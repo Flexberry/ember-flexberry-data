@@ -328,7 +328,6 @@ test('adapter | odata | select by projection', function (assert) {
   runTest(assert, builder, '/Customers?$select=FirstName,LastName,Age');
 });
 
-
 function runTest(assert, builder, expectedUrl) {
   let url = adapter.getODataFullUrl(builder.build());
   assert.equal(url, baseUrl + expectedUrl);
