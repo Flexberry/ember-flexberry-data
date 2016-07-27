@@ -25,5 +25,4 @@ export default function executeTest(testName, callback) {
 
     test(testName, (assert) => callback(store, assert));
   }
-  
 }
