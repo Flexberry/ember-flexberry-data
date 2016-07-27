@@ -17,12 +17,13 @@ export default function executeTest(testName, callback) {
     Ember.set(adapter, 'host', baseUrl);
 
     store.reopen({
-        adapterFor() {
+      adapterFor() {
         return adapter;
-        }
+      }
     });
     module('OData');
 
     test(testName, (assert) => callback(store, assert));
   }
+  
 }
