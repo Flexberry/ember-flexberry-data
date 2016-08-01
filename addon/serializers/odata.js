@@ -8,7 +8,7 @@ import BaseSerializer from './base';
  *
  * @module ember-flexberry-data
  * @namespace Serializer
- * @class Odata
+ * @class OData
  */
 export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
   /**
