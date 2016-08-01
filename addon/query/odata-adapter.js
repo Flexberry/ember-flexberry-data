@@ -11,7 +11,7 @@ import Information from '../utils/information';
  *
  * @module ember-flexberry-data
  * @namespace Query
- * @class OdataAdapter
+ * @class ODataAdapter
  * @extends Query.BaseAdapter
  */
 export default class ODataAdapter extends BaseAdapter {
