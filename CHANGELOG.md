@@ -1,19 +1,23 @@
 # Change Log
 
 ## [Unreleased]
-### Fixed
-- Error in building OData query for details.
-- Error in building OData query for projections.
-- Error in building OData query for details.
-- Method `store.findRecord` now correctly returns single object.
 
+## [0.3.1] - 2016-07-26
 ### Added
 - As you can see, we started to use integrated tests with OData...
 
 ### Removed
 - Method `QueryBuilder.expand` removed.
 
-## [0.3.0] - 19.07.2016
+### Fixed
+- Error in building OData query for details.
+- Missing classes in `Query` namespace that should be exported.
+- Error in building OData query for projections.
+- Error in building OData query for details.
+- Method `store.findRecord` now correctly returns single object.
+- Using properties for relationships in projections do not cause errors when apply `selectByProjection` method of query language for reading models.
+
+## [0.3.0] - 2016-07-19
 ### Added
 - Support `polymorphic` options for `belongsTo` relationships.
 - Support special 'id' attribute at query language:
@@ -40,29 +44,29 @@
 ### Known issues
 - Using properties for relationships in projections may cause errors when apply `selectByProjection` method of query language for reading models.
 
-## [0.2.0] - 01.07.2016
+## [0.2.0] - 2016-07-01
 ### Added
 - Predicates for details with any / all functionality.
 - Filtering and ordering by master (using primary key) and it's fields.
 ### Fixed
 - Using nested complex predicates for all query language adapters.
 
-## [0.1.0] - 03.06.2016
+## [0.1.0] - 2016-06-03
 ### Changed
 - Downgrade version of `broccoli-jscs` to 1.2.2.
 - Upgrade `ember-cli` to 2.4.3.
 
-## [0.0.3] - 02.06.2016
+## [0.0.3] - 2016-06-02
 ### Added
 - Implementation of abstract query language adapter for IndexedDB.
 ### Fixed
 - Logical operators in OData queries.
 
-## [0.0.2] - 25.05.2016
+## [0.0.2] - 2016-05-25
 ### Fixed
 - Building OData URL for CRUD operations.
 
-## [0.0.1] - 20.05.2016
+## [0.0.1] - 2016-05-20
 The first release of ember-flexberry-data!
 ### Added
 - Implementation of _projections_ - predefined named set of model attributes.
