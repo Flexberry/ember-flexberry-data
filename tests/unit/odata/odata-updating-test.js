@@ -17,19 +17,19 @@ executeTest('updating', (store, assert) => {
             return returnedRecord.save();
           })
 
-          .then(() => {
-            return store.findRecord('ember-flexberry-dummy-application-user', id)
+          .then(() =>
+            store.findRecord('ember-flexberry-dummy-application-user', id)
               .then((editedRecord) => {
                 assert.equal(editedRecord.get('name'), 'User 1', 'Without relationships');
-                
+
                 // Rollback changes.
                 return store.findRecord('ember-flexberry-dummy-application-user', id)
                   .then((returnedRecord) => {
                     returnedRecord.set('name', 'Vasya');
                     return returnedRecord.save();
                   });
-              });
-          })
+              })
+          )
           .then(() => ids);
       })
 
@@ -43,12 +43,12 @@ executeTest('updating', (store, assert) => {
             return returnedRecord.save();
           })
 
-          .then(() => {
-            return store.findRecord('ember-flexberry-dummy-application-user', userId)
+          .then(() =>
+            store.findRecord('ember-flexberry-dummy-application-user', userId)
               .then((editedRecord) => {
                 assert.equal(editedRecord.get('name'), 'User 1', 'With master relationship');
-              });
-          })
+              })
+          )
           .then(() => ids);
       })
 
@@ -62,20 +62,20 @@ executeTest('updating', (store, assert) => {
             return comments.save();
           })
 
-          .then(() => {
-            return store.findRecord('ember-flexberry-dummy-comment', commentId)
+          .then(() =>
+            store.findRecord('ember-flexberry-dummy-comment', commentId)
               .then((editedRecord) => {
                 let vote = editedRecord.get('userVotes').find(item => item.get('applicationUser.name') === 'Oleg');
                 assert.equal(vote.get('text'), 'Edited Comment', 'With detail relationship');
-                
+
                 // Rollback changes.
                 return store.findRecord('ember-flexberry-dummy-comment-vote', vote.get('id'))
                   .then((returnedRecord) => {
                     returnedRecord.set('text', 'Comment 3');
                     return returnedRecord.save();
                   });
-              });
-          })
+              })
+          )
           .then(() => ids);
       })
 
@@ -140,8 +140,8 @@ function initTestData(store) {
   }).save()
 
   // Attrs for creating suggestion.
-  .then((parentType) => {
-    return Ember.RSVP.Promise.all([
+  .then((parentType) =>
+    Ember.RSVP.Promise.all([
       store.createRecord('ember-flexberry-dummy-application-user', {
         name: 'Vasya',
         eMail: '1@mail.ru',
@@ -166,8 +166,8 @@ function initTestData(store) {
         name: 'Type 1',
         parent: parentType
       }).save()
-    ]);
-  })
+    ])
+  )
 
   // Сreating suggestion.
   .then((sugAttrsValues) =>
@@ -235,7 +235,7 @@ function initTestData(store) {
               comments[0].get('id'),
               sug.get('id')
             ])
-      )   
+      )
     )
   );
 }
