@@ -21,7 +21,7 @@ export default function executeTest(testName, callback) {
         return adapter;
       }
     });
-    module('OData');
+    module('OData | CRUD');
 
     test(testName, (assert) => callback(store, assert));
   }

@@ -1,13 +1,24 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from './execute-odata-reading-test';
+import executeTest from './execute-odata-CRUD-test';
 
 executeTest('reading | builder functions', (store, assert) => {
-  assert.expect(9);
+  assert.expect(10);
   let done = assert.async();
 
   Ember.run(() => {
     initTestData(store)
+
+      // byId.
+      .then((people) => {
+        let id = people[0].get('id');
+        let builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-application-user')
+          .byId(id);
+        return runTest(store, builder, (record) => {
+          assert.equal(record.get('firstObject.eMail'), '1@mail.ru', 'byId');
+        });
+      })
 
       // from.
       .then(() => {

@@ -2,7 +2,7 @@ import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
-import executeTest from './execute-odata-reading-test';
+import executeTest from './execute-odata-CRUD-test';
 
 executeTest('reading | predicates | simple predicates | operators', (store, assert) => {
   assert.expect(24);

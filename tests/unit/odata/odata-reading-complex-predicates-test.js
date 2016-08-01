@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
-import executeTest from './execute-odata-reading-test';
+import executeTest from './execute-odata-CRUD-test';
 
 executeTest('reading | predicates | complex predicates', (store, assert) => {
   assert.expect(4);

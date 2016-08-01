@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from './execute-odata-reading-test';
+import executeTest from './execute-odata-CRUD-test';
 
 executeTest('reading | comparsion with null', (store, assert) => {
   assert.expect(8);
@@ -93,28 +93,28 @@ function initTestData(store) {
     // Сreating suggestion.
     .then((sugAttrsValues) =>
       store.createRecord('ember-flexberry-dummy-suggestion', {
-        type: sugAttrsValues.find(item => item.get('name') === 'Type 1'),
-        author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
-        editor1: sugAttrsValues.find(item => item.get('name') === 'Kolya')
+        type: sugAttrsValues[3],
+        author: sugAttrsValues[0],
+        editor1: sugAttrsValues[1]
       }).save()
 
         // Creating comments.
         .then((sug) =>
           Ember.RSVP.Promise.all([
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
+              author: sugAttrsValues[0],
               text: 'Comment 1',
               suggestion: sug,
             }).save(),
 
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find(item => item.get('name') === 'Kolya'),
+              author: sugAttrsValues[1],
               text: 'Comment 2',
               suggestion: sug
             }).save(),
 
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find(item => item.get('name') === 'Andrey'),
+              author: sugAttrsValues[2],
               text: 'Comment 3',
               suggestion: sug
             }).save()

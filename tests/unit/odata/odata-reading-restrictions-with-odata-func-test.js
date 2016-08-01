@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from './execute-odata-reading-test';
+import executeTest from './execute-odata-CRUD-test';
 
 executeTest('reading | restrictions | odata functions', (store, assert) => {
   assert.expect(4);

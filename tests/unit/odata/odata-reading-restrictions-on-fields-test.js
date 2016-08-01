@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import { DetailPredicate, StringPredicate } from 'ember-flexberry-data/query/predicate';
-import executeTest from './execute-odata-reading-test';
+import executeTest from './execute-odata-CRUD-test';
 
 executeTest('reading | restrictions | on fields', (store, assert) => {
   assert.expect(6);
@@ -62,8 +62,6 @@ executeTest('reading | restrictions | on fields', (store, assert) => {
 });
 
 function initTestData(store) {
-  // Creates data for tests and returns neccessary data for them (2 ids).
-
   // Attrs for creating suggestion.
   return Ember.RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
@@ -94,34 +92,34 @@ function initTestData(store) {
     // Сreating suggestion.
     .then((sugAttrsValues) =>
       store.createRecord('ember-flexberry-dummy-suggestion', {
-        type: sugAttrsValues.find(item => item.get('name') === 'Type 1'),
-        author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
-        editor1: sugAttrsValues.find(item => item.get('name') === 'Kolya')
+        type: sugAttrsValues[4],
+        author: sugAttrsValues[0],
+        editor1: sugAttrsValues[1]
       }).save()
 
         // Creating comments.
         .then((sug) =>
           Ember.RSVP.Promise.all([
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
+              author: sugAttrsValues[0],
               text: 'Comment 1',
               suggestion: sug,
             }).save(),
 
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find(item => item.get('name') === 'Vasya'),
+              author: sugAttrsValues[0],
               text: 'Comment 2',
               suggestion: sug
             }).save(),
 
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find(item => item.get('name') === 'Kolya'),
+              author: sugAttrsValues[1],
               text: 'Comment 3',
               suggestion: sug
             }).save(),
 
             store.createRecord('ember-flexberry-dummy-comment', {
-              author: sugAttrsValues.find(item => item.get('name') === 'Kolya'),
+              author: sugAttrsValues[1],
               text: 'Comment 4',
               suggestion: sug
             }).save()
@@ -131,28 +129,28 @@ function initTestData(store) {
             .then((comments) =>
               Ember.RSVP.Promise.all([
                 store.createRecord('ember-flexberry-dummy-comment-vote', {
-                  applicationUser: sugAttrsValues.find(item => item.get('name') === 'Oleg'),
-                  comment: comments.find(item => item.get('text') === 'Comment 1')
+                  applicationUser: sugAttrsValues[3],
+                  comment: comments[0]
                 }).save(),
                 store.createRecord('ember-flexberry-dummy-comment-vote', {
-                  applicationUser: sugAttrsValues.find(item => item.get('name') === 'Andrey'),
-                  comment: comments.find(item => item.get('text') === 'Comment 1')
+                  applicationUser: sugAttrsValues[2],
+                  comment: comments[0]
                 }).save(),
                 store.createRecord('ember-flexberry-dummy-comment-vote', {
-                  applicationUser: sugAttrsValues.find(item => item.get('name') === 'Andrey'),
-                  comment: comments.find(item => item.get('text') === 'Comment 1')
+                  applicationUser: sugAttrsValues[2],
+                  comment: comments[0]
                 }).save(),
                 store.createRecord('ember-flexberry-dummy-comment-vote', {
-                  applicationUser: sugAttrsValues.find(item => item.get('name') === 'Oleg'),
-                  comment: comments.find(item => item.get('text') === 'Comment 2')
+                  applicationUser: sugAttrsValues[3],
+                  comment: comments[1]
                 }).save(),
                 store.createRecord('ember-flexberry-dummy-comment-vote', {
-                  applicationUser: sugAttrsValues.find(item => item.get('name') === 'Kolya'),
-                  comment: comments.find(item => item.get('text') === 'Comment 3')
+                  applicationUser: sugAttrsValues[1],
+                  comment: comments[2]
                 }).save()
               ])
                 .then(() => [
-                  sugAttrsValues.find(item => item.get('name') === 'Vasya').get('id'),
+                  sugAttrsValues[0].get('id'),
                   comments.find(item => item.get('text') === 'Comment 3' && item.get('author.name') === 'Kolya')
                     .get('id')
                 ])
