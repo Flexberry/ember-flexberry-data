@@ -3,14 +3,17 @@ import Ember from 'ember';
 var RSVP = Ember.RSVP;
 
 /*
- * This method does not change store, only change localforage
- *
- * @method reloadLocalRecords
- * @param {String|DS.Model} type
- * @param {Boolean} reload
- * @param {String} projectionName
- * @return {Promise} Promise
- */
+  This method saves specified models by type in offline storage.
+  Optionally it allows to reload all specified records from online storage.
+  All models will be replaced in local storage.
+
+  @method reloadLocalRecords
+  @param {String|DS.Model} type
+  @param {Boolean} reload
+  @param {String} [projectionName]
+  @return {Promise} Promise
+  @private
+*/
 export function reloadLocalRecords(type, reload, projectionName) {
   var store = Ember.getOwner(this).lookup('service:store');
   var modelType = store.modelFor(type);
@@ -34,7 +37,7 @@ export function reloadLocalRecords(type, reload, projectionName) {
   }
 
   function createAll() {
-    var projection = modelType.projections[projectionName];
+    var projection = Ember.isNone(projectionName) ? null : modelType.projections[projectionName];
     if (reload) {
       let options = {
         reload: true,
@@ -107,19 +110,19 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
   function createRelatedRecords(store, mainRecord, localAdapter, localStore, projection) {
     var promises = Ember.A();
     var modelType = store.modelFor(mainRecord.constructor.modelName);
-    var attrs = projection.attributes;
+    var attrs = Ember.isNone(projection) ? null : projection.attributes;
     var relationshipNames = Ember.get(modelType, 'relationshipNames');
     var createRelatedBelongsToRecordFunction = (relatedRecord) => {
       if (!Ember.isNone(relatedRecord)) {
-        promises.pushObject(createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, attrs[belongToName]));
+        promises.pushObject(createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[belongToName]));
       }
     };
 
     for (let i = 0; i < relationshipNames.belongsTo.length; i++) {
       var belongToName = relationshipNames.belongsTo[i];
 
-      // Save related record into local store only if relationship included into projection.
-      if (attrs.hasOwnProperty(belongToName)) {
+      // Save related record into local store only if relationship included into projection (if projection is set).
+      if (Ember.isNone(projection) || (attrs && attrs.hasOwnProperty(belongToName))) {
         let async = isAsync(modelType, belongToName);
         if (async) {
           mainRecord.get(belongToName).then(createRelatedBelongsToRecordFunction);
@@ -127,7 +130,9 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
           if (isEmbedded(store, modelType, belongToName)) {
             var relatedRecord = mainRecord.get(belongToName);
             if (!Ember.isNone(relatedRecord)) {
-              promises.pushObject(createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, attrs[belongToName]));
+              promises.pushObject(
+                createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[belongToName])
+              );
             }
           }
         }
@@ -135,20 +140,20 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
     }
 
     var createRelatedHasManyRecordsFunction = (relatedRecords) =>
-      promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, attrs[hasManyName]));
+      promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[hasManyName]));
 
     for (let i = 0; i < relationshipNames.hasMany.length; i++) {
       var hasManyName = relationshipNames.hasMany[i];
 
-      // Save related records into local store only if relationship included into projection.
-      if (attrs.hasOwnProperty(hasManyName)) {
+      // Save related records into local store only if relationship included into projection (if projection is set).
+      if (Ember.isNone(projection) || (attrs && attrs.hasOwnProperty(hasManyName))) {
         let async = isAsync(modelType, hasManyName);
         if (async) {
           mainRecord.get(hasManyName).then(createRelatedHasManyRecordsFunction);
         } else {
           if (isEmbedded(store, modelType, hasManyName)) {
             var relatedRecords = mainRecord.get(hasManyName);
-            promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, attrs[hasManyName]));
+            promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[hasManyName]));
           }
         }
       }
