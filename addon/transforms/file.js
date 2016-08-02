@@ -22,20 +22,20 @@ import StringTransform from 'ember-data/-private/transforms/string';
   });
   ```
 */
-
 export default StringTransform.extend({
   /**
     Deserializes serialized attribute value.
   */
-  /* jshint unused:vars */
   deserialize(serialized) {
+    /* jshint unused:vars */
     return this._super(...arguments);
   },
+
   /**
     Serializes deserialized attribute value.
   */
-  /* jshint unused:vars */
   serialize(deserialized) {
+    /* jshint unused:vars */
     return this._super(...arguments);
   }
 });
