@@ -1,7 +1,8 @@
 import DS from 'ember-data';
 import { Projection } from 'ember-flexberry-data';
+import AuditModelMixin from 'ember-flexberry-data/mixins/audit-model';
 
-var Model = Projection.Model.extend({
+var Model = Projection.Model.extend(AuditModelMixin, {
   address: DS.attr('string'),
   text: DS.attr('string'),
   date: DS.attr('date'),
