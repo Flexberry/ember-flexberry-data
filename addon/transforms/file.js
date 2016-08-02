@@ -31,7 +31,6 @@ export default StringTransform.extend({
   deserialize(serialized) {
     return this._super(...arguments);
   },
-  /* jshint unused:true */
   /**
     Serializes deserialized attribute value.
   */
@@ -39,5 +38,4 @@ export default StringTransform.extend({
   serialize(deserialized) {
     return this._super(...arguments);
   }
-  /* jshint unused:true */
 });
