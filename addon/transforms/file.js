@@ -21,7 +21,9 @@ import StringTransform from 'ember-data/-private/transforms/string';
     attachment: DS.attr('file')
   });
   ```
-*/
+*/ 
+
+/* jshint unused:true */
 export default StringTransform.extend({
   /**
     Deserializes serialized attribute value.
