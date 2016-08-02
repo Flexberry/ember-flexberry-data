@@ -21,21 +21,23 @@ import StringTransform from 'ember-data/-private/transforms/string';
     attachment: DS.attr('file')
   });
   ```
-*/ 
+*/
 
-/* jshint unused:true */
 export default StringTransform.extend({
   /**
     Deserializes serialized attribute value.
   */
+  /* jshint unused:vars */
   deserialize(serialized) {
     return this._super(...arguments);
   },
-
+  /* jshint unused:true */
   /**
     Serializes deserialized attribute value.
   */
+  /* jshint unused:vars */
   serialize(deserialized) {
     return this._super(...arguments);
   }
+  /* jshint unused:true */
 });
