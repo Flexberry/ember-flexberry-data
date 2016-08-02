@@ -320,6 +320,15 @@ test('adapter | odata | select by projection', function (assert) {
     );
 });
 
+test('adapter | odata | cyrillic', function (assert) {
+  //Arrange.
+  let builder = new QueryBuilder(store, 'cyrillic')
+     .select('имя,name');
+
+  //Act && Assert.
+  runTest(assert, builder, '/Cyrillics?$select=Имя,Name');
+});
+
 function runTest(assert, builder, expectedUrl) {
   let url = adapter.getODataFullUrl(builder.build());
   assert.equal(url, baseUrl + expectedUrl);
