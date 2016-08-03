@@ -88,14 +88,7 @@ executeTest('reading | builder functions', (store, assert) => {
         store.unloadAll('ember-flexberry-dummy-application-user');
 
         return runTest(store, builder, (data) => {
-          let isDataCorrect = true;
-          for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
-            let curRecord = data.objectAt(i);
-            let recordAttrs =  Object.keys(curRecord.get('data'));
-            isDataCorrect = recordAttrs.join() === 'name,karma';
-          }
-
-          assert.ok(isDataCorrect, 'select');
+          assert.ok(data.every(item => Object.keys(item.get('data')).join() === 'name,karma'), 'select');
         });
       })
 
@@ -108,14 +101,11 @@ executeTest('reading | builder functions', (store, assert) => {
         store.unloadAll('ember-flexberry-dummy-application-user');
 
         return runTest(store, builder, (data) => {
-          let isDataCorrect = true;
-          for (let i = 0; i < data.get('length') && isDataCorrect; i++) {
-            let curRecord = data.objectAt(i);
-            let recordAttrs =  Object.keys(curRecord.get('data'));
-            isDataCorrect = recordAttrs.join() === 'name,eMail,activated,birthday,karma';
-          }
-
-          assert.ok(isDataCorrect, 'selectByProjection');
+          assert.ok(
+            data.every(item => 
+              Object.keys(item.get('data')).join() === 'name,eMail,activated,birthday,gender,karma'),
+            'selectByProjection'
+          );
         });
 
       })
