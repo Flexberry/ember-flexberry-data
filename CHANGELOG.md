@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Transforms and enum initializers from ember-flexberry.
 
 ## [0.3.1] - 2016-07-26
 ### Added
