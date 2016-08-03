@@ -22,19 +22,18 @@ export default DS.RESTAdapter.extend({
   idType: 'number',
 
   /**
-   * Overloaded method from `RESTAdapter` (Ember Data).
-   * Called by the sore in order to fetch data from the server.
-   *
-   * @method query
-   * @param {DS.Store} store
-   * @param {DS.Model} type
-   * @param {Query} query Flexberry Query object.
-   * @return {Promise}
-   */
+    Overloaded method from `RESTAdapter` (Ember Data).
+    Called by the sore in order to fetch data from the server.
+
+    @method query
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Query} query Flexberry Query object.
+    @return {Promise}
+  */
   query(store, type, query) {
-    let host = Ember.get(this, 'host');
-    let builder = new ODataQueryAdapter(host, store);
-    let url = builder.getODataBaseUrl(query);
+    let url = this._buildURL(query.modelName);
+    let builder = new ODataQueryAdapter(url, store);
     let data = builder.getODataQuery(query);
 
     if (this.sortQueryParams) {
