@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 ### Added
-- Transforms and enum initializers from ember-flexberry.
+- Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
 
 ## [0.3.1] - 2016-07-26
 ### Added
