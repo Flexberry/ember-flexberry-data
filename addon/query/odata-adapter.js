@@ -1,4 +1,3 @@
-import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
@@ -35,34 +34,6 @@ export default class ODataAdapter extends BaseAdapter {
     this._baseUrl = baseUrl;
     this._store = store;
     this._info = new Information(store);
-  }
-
-  /**
-   * Determines the pathname for a given type.
-   * Additionally capitalizes the type name (requirement of Flexberry OData Server).
-   *
-   * @method pathForType
-   * @param {String} modelName
-   * @return {String} The path for a given type.
-   */
-  pathForType(modelName) {
-    var camelized = Ember.String.camelize(modelName);
-    var capitalized = Ember.String.capitalize(camelized);
-    return Ember.String.pluralize(capitalized);
-  }
-
-  /**
-   * Returns base part of URL for querying OData feed (without query part).
-   *
-   * @method getODataFullUrl
-   * @param {Object} query The query for building OData URL.
-   * @return {String}
-   * @public
-   */
-  getODataBaseUrl(query) {
-    let type = this.pathForType(query.modelName);
-
-    return `${this._baseUrl}/${type}`;
   }
 
   /**
