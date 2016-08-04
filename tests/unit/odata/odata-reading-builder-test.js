@@ -87,9 +87,9 @@ executeTest('reading | builder functions', (store, assert) => {
 
         store.unloadAll('ember-flexberry-dummy-application-user');
 
-        return runTest(store, builder, (data) => {
-          assert.ok(data.every(item => Object.keys(item.get('data')).join() === 'name,karma'), 'select');
-        });
+        return runTest(store, builder, (data) =>
+          assert.ok(data.every(item => Object.keys(item.get('data')).join() === 'name,karma'), 'select')
+        );
       })
 
       // selectByProjection
@@ -100,13 +100,9 @@ executeTest('reading | builder functions', (store, assert) => {
 
         store.unloadAll('ember-flexberry-dummy-application-user');
 
-        return runTest(store, builder, (data) => {
-          assert.ok(
-            data.every(item => 
-              Object.keys(item.get('data')).join() === 'name,eMail,activated,birthday,gender,karma'),
-            'selectByProjection'
-          );
-        });
+        return runTest(store, builder, (data) =>
+          assert.ok(data.every(item => Object.keys(item.get('data')).join() === 'name,eMail,activated,birthday,gender,karma'), 'selectByProjection')
+        );
 
       })
       .catch(e => console.log(e, e.message))
