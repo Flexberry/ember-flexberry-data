@@ -320,14 +320,6 @@ test('adapter | odata | select by projection', function (assert) {
     );
 });
 
-test('adapter | odata | select by projection', function (assert) {
-  // Arrange.
-  let builder = new QueryBuilder(store, 'customer').selectByProjection('firstName,lastName').select('age, lastName');
-
-  // Act && Assert.
-  runTest(assert, builder, '/Customers?$select=FirstName,LastName,Age');
-});
-
 function runTest(assert, builder, expectedUrl) {
   let url = adapter.getODataFullUrl(builder.build());
   assert.equal(url, baseUrl + expectedUrl);
