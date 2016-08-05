@@ -11,6 +11,7 @@ executeTest('reading | store commands', (store, assert) => {
 
       // findRecord.
       .then((people) => {
+        store.unloadAll();
         let id = people[0].get('id');
         return store.findRecord('ember-flexberry-dummy-application-user', id)
           .then((data) =>
@@ -19,15 +20,17 @@ executeTest('reading | store commands', (store, assert) => {
       })
 
       // findAll.
-      .then(() =>
-        store.findAll('ember-flexberry-dummy-application-user')
+      .then(() => {
+        store.unloadAll();
+        return store.findAll('ember-flexberry-dummy-application-user')
           .then((data) =>
             assert.equal(data.get('length'), 4, 'findAll')
           )
-      )
+      })
 
       // query.
       .then(() => {
+        store.unloadAll();
         let builder = new QueryBuilder(store)
           .from('ember-flexberry-dummy-application-user')
           .where('name', '==', 'User 2');
@@ -41,6 +44,7 @@ executeTest('reading | store commands', (store, assert) => {
       // queryRecord.
       // Not working!
       .then(() => {
+        store.unloadAll();
         let builder = new QueryBuilder(store)
           .from('ember-flexberry-dummy-application-user')
           .where('name', '==', 'User 2');
