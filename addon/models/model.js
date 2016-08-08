@@ -14,6 +14,48 @@ import createProj from '../utils/create';
 var Model = DS.Model.extend({
   /**
   */
+  changedHasMany() {
+    let _this = this;
+    let changedHasMany = {};
+    _this.eachRelationship((key, { kind }) => {
+      if (kind === 'hasMany') {
+        if (_this.get(key).filterBy('hasDirtyAttributes', true).length) {
+          changedHasMany[key] = [
+            _this.get(`${key}.canonicalState`).map(internalModel => internalModel.record),
+            _this.get(`${key}.currentState`).map(internalModel => internalModel.record),
+          ];
+        }
+      }
+    });
+    return changedHasMany;
+  },
+
+  /**
+  */
+  rollbackHasMany(forOnlyKey) {
+    let _this = this;
+    _this.eachRelationship((key, { kind, options }) => {
+      if (kind === 'hasMany' && (!forOnlyKey || forOnlyKey === key)) {
+        if (_this.get(key).filterBy('hasDirtyAttributes', true).length) {
+          [_this.get(`${key}.canonicalState`), _this.get(`${key}.currentState`)].forEach((state, i) => {
+            let records = state.map(internalModel => internalModel.record);
+            records.forEach((record) => {
+              record.rollbackAttributes();
+              if (options.inverse) {
+                record.rollbackBelongsTo(options.inverse);
+              }
+            });
+            if (i === 0) {
+              _this.set(key, records);
+            }
+          });
+        }
+      }
+    });
+  },
+
+  /**
+  */
   changedBelongsTo() {
     let _this = this;
     let changedBelongsTo = {};
