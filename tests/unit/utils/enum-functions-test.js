@@ -51,5 +51,5 @@ test('inverseEnum returns inverted object', function (assert) {
 test('enumCaptions return array with caption properties', function(assert) {
   let result = enumCaptions(enumWithCaption);
 
-  assert.deepEqual(result, ['Enum value 1', 'Enum value 2']);
+  assert.deepEqual(result, enumWithCaption);
 });
