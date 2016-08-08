@@ -13,6 +13,25 @@ import createProj from '../utils/create';
  */
 var Model = DS.Model.extend({
   /**
+    Return object with changes.
+
+    Object will have structure:
+    * key - is name relationships that has changed
+      * array - include two array, array with index `0` this old values, array with index `1` this new values.
+
+
+    @example
+      ```javascript
+      {
+        key: [
+          [oldValues],
+          [newValues],
+        ],
+      }
+      ```
+
+    @method changedHasMany
+    @return {Object} Object with changes, empty object if no change.
   */
   changedHasMany() {
     let _this = this;
@@ -31,6 +50,10 @@ var Model = DS.Model.extend({
   },
 
   /**
+    Rollback changes for `hasMany` relationships.
+
+    @method rollbackHasMany
+    @param {String} [forOnlyKey] If specified, it is rollback invoked for relationship with this key.
   */
   rollbackHasMany(forOnlyKey) {
     let _this = this;
@@ -55,6 +78,21 @@ var Model = DS.Model.extend({
   },
 
   /**
+    Return object with changes.
+
+    Object will have structure:
+    * key - is name relationships that has changed
+      * array - include two items, old value, with index `0`, and new value, with index `1`.
+
+    @example
+      ```javascript
+      {
+        key: [oldValue, newValue],
+      }
+      ```
+
+    @method changedBelongsTo
+    @return {Object} Object with changes, empty object if no change.
   */
   changedBelongsTo() {
     let _this = this;
@@ -72,6 +110,10 @@ var Model = DS.Model.extend({
   },
 
   /**
+    Rollback changes for `belongsTo` relationships.
+
+    @method rollbackBelongsTo
+    @param {String} [forOnlyKey] If specified, it is rollback invoked for relationship with this key.
   */
   rollbackBelongsTo(forOnlyKey) {
     let _this = this;
@@ -91,6 +133,10 @@ var Model = DS.Model.extend({
   },
 
   /**
+    Fired when the record is loaded from the server.
+    [More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).
+
+    @method didLoad
   */
   didLoad() {
     this._super(...arguments);
@@ -98,6 +144,10 @@ var Model = DS.Model.extend({
   },
 
   /**
+    Fired when the record is updated.
+    [More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didUpdate).
+
+    @method didUpdate
   */
   didUpdate() {
     this._super(...arguments);
@@ -105,6 +155,10 @@ var Model = DS.Model.extend({
   },
 
   /**
+    Set each `belongsTo` relationship, observer, that save canonical state.
+
+    @method _saveCanonicalBelongsTo
+    @private
   */
   _saveCanonicalBelongsTo() {
     let _this = this;
@@ -116,6 +170,13 @@ var Model = DS.Model.extend({
   },
 
   /**
+    Save canonical state for `belongsTo` relationships.
+
+    @method _saveBelongsToObserver
+    @private
+
+    @param {DS.Model} sender
+    @param {String} key
   */
   _saveBelongsToObserver(sender, key) {
     let canonicalBelongsTo = sender.get('canonicalBelongsTo') || {};
