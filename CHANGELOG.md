@@ -3,6 +3,11 @@
 ## [Unreleased]
 ### Added
 - Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
+- Rollback relationships for model, use function:
+  - `changedBelongsTo` - to find out what `belongsTo` relationships changed
+  - `rollbackBelongsTo` - to perform rollback `belongsTo` relationships
+  - `changedHasMany` - to find out what `hasMany` relationships changed
+  - `rollbackHasMany` - to perform rollback `hasMany` relationships
 
 ## [0.3.1] - 2016-07-26
 ### Added
