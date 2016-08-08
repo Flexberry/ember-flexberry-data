@@ -12,6 +12,75 @@ import createProj from '../utils/create';
  * @public
  */
 var Model = DS.Model.extend({
+  /**
+  */
+  changedBelongsTo() {
+    let _this = this;
+    let changedBelongsTo = {};
+    _this.eachRelationship((key, { kind }) => {
+      if (kind === 'belongsTo') {
+        let current = _this.get(key);
+        let canonical = _this.get('canonicalBelongsTo')[key];
+        if (current !== canonical) {
+          changedBelongsTo[key] = [canonical, current];
+        }
+      }
+    });
+    return changedBelongsTo;
+  },
+
+  /**
+  */
+  rollbackBelongsTo(forOnlyKey) {
+    let _this = this;
+    _this.eachRelationship((key, { kind, options }) => {
+      if (kind === 'belongsTo' && (!forOnlyKey || forOnlyKey === key)) {
+        let current = _this.get(key);
+        let canonical = _this.get('canonicalBelongsTo')[key];
+        if (current !== canonical) {
+          if (options.inverse) {
+            current.rollbackBelongsTo(options.inverse);
+          }
+
+          _this.set(key, canonical);
+        }
+      }
+    });
+  },
+
+  /**
+  */
+  didLoad() {
+    this._super(...arguments);
+    this._saveCanonicalBelongsTo();
+  },
+
+  /**
+  */
+  didUpdate() {
+    this._super(...arguments);
+    this._saveCanonicalBelongsTo();
+  },
+
+  /**
+  */
+  _saveCanonicalBelongsTo() {
+    let _this = this;
+    _this.eachRelationship((key, { kind }) => {
+      if (kind === 'belongsTo') {
+        _this.addObserver(key, _this, _this._saveBelongsToObserver);
+      }
+    });
+  },
+
+  /**
+  */
+  _saveBelongsToObserver(sender, key) {
+    let canonicalBelongsTo = sender.get('canonicalBelongsTo') || {};
+    canonicalBelongsTo[key] = sender.get(key);
+    sender.set('canonicalBelongsTo', canonicalBelongsTo);
+    sender.removeObserver(key, this, this._saveBelongsToObserver);
+  },
 });
 
 Model.reopenClass({
