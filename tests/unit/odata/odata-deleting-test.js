@@ -72,7 +72,7 @@ executeTest('deleting', (store, assert) => {
         .where('id', '==', sugId)
         .selectByProjection('SuggestionE');
       return store.query('ember-flexberry-dummy-suggestion', builder.build())
-      
+
       .then((sugs) => {
         let comment = sugs.get('firstObject.comments.firstObject');
 
@@ -100,7 +100,6 @@ executeTest('deleting', (store, assert) => {
 
       .then(() => records);
     })
-    
 
     // With master relationship.
     .then((records) => {
