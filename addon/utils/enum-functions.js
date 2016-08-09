@@ -39,18 +39,22 @@ export function inverseEnum(dictionary) {
 }
 
 /**
-  Returns array of all property values.
+  Returns object without null values.
 
   @function enumCaptions
   @param {Object} dictionary
-  @return {Array}
+  @return {Object}
 */
 export function enumCaptions(dictionary) {
-  let captions = [];
+  let captions = {};
+
   for (let key in dictionary) {
-    captions.push(dictionary[key]);
+    if (dictionary[key] === null) {
+      captions[key] = '';
+    } else {
+      captions[key] = dictionary[key];
+    }
   }
 
   return captions;
 }
-
