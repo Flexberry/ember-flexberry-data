@@ -4,6 +4,9 @@
 ### Added
 - Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
 
+### Changed
+- Function `enumCaptions` now returns object without null values.
+
 ## [0.3.1] - 2016-07-26
 ### Added
 - As you can see, we started to use integrated tests with OData...
