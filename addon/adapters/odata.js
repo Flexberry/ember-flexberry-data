@@ -10,7 +10,7 @@ import ODataQueryAdapter from '../query/odata-adapter';
  *
  * @module ember-flexberry-data
  * @namespace Adapter
- * @class Odata
+ * @class OData
  * @extends DS.RESTAdapter
  * @public
  */
