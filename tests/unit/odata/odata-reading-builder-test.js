@@ -131,7 +131,7 @@ function initTestData(store) {
       karma: 4
     }).save()
   ])
-  
+
   .then((people) =>
     new Ember.RSVP.Promise((resolve) =>
       resolve({
