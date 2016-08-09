@@ -2,10 +2,12 @@
 
 ## [Unreleased]
 ### Added
-- Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
+- Transforms, models, enums and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
+- CRUD operations tests for OData.
 
 ### Changed
 - Function `enumCaptions` now returns object without null values.
+- Line endings from CRLF to LF in all files. 
 
 ## [0.3.1] - 2016-07-26
 ### Added
