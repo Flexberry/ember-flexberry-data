@@ -6,6 +6,8 @@
 
 ### Changed
 - Function `enumCaptions` now returns object without null values.
+- Offline support:
+    - It is not necessary now to specify projection when syncing down or reading data from offline storage.
 
 ## [0.3.1] - 2016-07-26
 ### Added
