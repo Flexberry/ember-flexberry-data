@@ -9,57 +9,57 @@ executeTest('updating', (store, assert) => {
   Ember.run(() => {
     initTestData(store)
 
-      // Without relationships.
-      .then((records) => {
-        let userId = records.people[0];
-        return store.findRecord('ember-flexberry-dummy-application-user', userId)
-          .then((returnedRecord) => {
-            returnedRecord.set('name', 'User 1');
-            return returnedRecord.save();
-          })
-
-          .then(() => {
-            store.unloadAll();
-            return store.findRecord('ember-flexberry-dummy-application-user', userId)
-              .then((editedRecord) =>
-                assert.equal(editedRecord.get('name'), 'User 1', 'Without relationships')
-              );
-          })
-          .then(() => records);
+    // Without relationships.
+    .then((records) => {
+      let userId = records.people[0];
+      return store.findRecord('ember-flexberry-dummy-application-user', userId)
+      .then((returnedRecord) => {
+        returnedRecord.set('name', 'User 1');
+        return returnedRecord.save();
       })
 
-      // With master relationship.
-      .then((records) => {
+      .then(() => {
         store.unloadAll();
-        let userId = records.people[1];
-        let commentId = records.comments[0];
-
-        let builder = new QueryBuilder(store)
-          .from('ember-flexberry-dummy-comment')
-          .where('id', '==', commentId)
-          .selectByProjection('CommentE');
-
-        return store.query('ember-flexberry-dummy-comment', builder.build())
-          .then((comments) => {
-            let comment = comments.get('firstObject');
-            return store.findRecord('ember-flexberry-dummy-application-user', userId)
-              .then((user) => {
-                comment.set('author', user);
-                return comment.save();
-              });
-          })
-
-          .then(() => {
-            store.unloadAll();
-            return store.query('ember-flexberry-dummy-comment', builder.build())
-              .then((comments) =>
-                assert.equal(comments.get('firstObject.author.id'), userId, 'With master relationship')
-              );
-          })
-          .then(() => records);
+        return store.findRecord('ember-flexberry-dummy-application-user', userId)
+        .then((editedRecord) =>
+          assert.equal(editedRecord.get('name'), 'User 1', 'Without relationships')
+        );
       })
-      .catch(e => console.log(e, e.message))
-      .finally(done);
+      .then(() => records);
+    })
+
+    // With master relationship.
+    .then((records) => {
+      store.unloadAll();
+      let userId = records.people[1];
+      let commentId = records.comments[0];
+
+      let builder = new QueryBuilder(store)
+        .from('ember-flexberry-dummy-comment')
+        .where('id', '==', commentId)
+        .selectByProjection('CommentE');
+
+      return store.query('ember-flexberry-dummy-comment', builder.build())
+      .then((comments) => {
+        let comment = comments.get('firstObject');
+        return store.findRecord('ember-flexberry-dummy-application-user', userId)
+        .then((user) => {
+          comment.set('author', user);
+          return comment.save();
+        });
+      })
+
+      .then(() => {
+        store.unloadAll();
+        return store.query('ember-flexberry-dummy-comment', builder.build())
+        .then((comments) =>
+          assert.equal(comments.get('firstObject.author.id'), userId, 'With master relationship')
+        );
+      })
+      .then(() => records);
+    })
+    .catch(e => console.log(e, e.message))
+    .finally(done);
   });
 });
 
@@ -132,10 +132,10 @@ function initTestData(store) {
           }).save(),
         ])
 
-        .then((votes) => 
+        .then((votes) =>
           new Ember.RSVP.Promise((resolve) =>
             resolve({
-              people: sugAttrs.slice(0,3).map(item => item.get('id')),
+              people: sugAttrs.slice(0, 3).map(item => item.get('id')),
               comments: comments.map(item => item.get('id')),
               votes: votes.map(item => item.get('id')),
               sug: sug.get('id')

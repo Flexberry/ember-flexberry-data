@@ -9,84 +9,83 @@ executeTest('deleting', (store, assert) => {
   Ember.run(() => {
     initTestData(store)
 
-      // Without relationships.
-      .then((records) => {
-        store.unloadAll();
-        let voteId = records.votes[0];
-        return store.findRecord('ember-flexberry-dummy-comment-vote', voteId)
-          .then((vote) => {
-            vote.deleteRecord();
-            return vote.save();
-          })
-
-          .then(() => {
-            let builder = new QueryBuilder(store)
-              .from('ember-flexberry-dummy-comment-vote')
-              .selectByProjection('CommentVoteE');
-            return store.query('ember-flexberry-dummy-comment-vote', builder.build());
-          })
-
-          .then((votes) =>
-            assert.equal(votes.get('length'), 1, 'Without relationships')
-          )
-
-          .then(() => records);
+    // Without relationships.
+    .then((records) => {
+      store.unloadAll();
+      let voteId = records.votes[0];
+      return store.findRecord('ember-flexberry-dummy-comment-vote', voteId)
+      .then((vote) => {
+        vote.deleteRecord();
+        return vote.save();
       })
 
-      // With detail relationship.
-      .then((records) => {
-        store.unloadAll();
-        let commentId = records.comment;
-
+      .then(() => {
         let builder = new QueryBuilder(store)
-          .from('ember-flexberry-dummy-comment')
-          .where('id', '==', commentId)
-          .selectByProjection('CommentE');
-        return store.query('ember-flexberry-dummy-comment', builder.build())
-          .then((comments) => {
-            let comment = comments.get('firstObject');
-            let vote = comment.get('userVotes.firstObject');
-            vote.deleteRecord();
-            return vote.save();
-          })
-
-          .then(() => {
-            store.unloadAll();
-            return store.query('ember-flexberry-dummy-comment', builder.build());
-          })
-          .then((comments) => {
-            let votes = comments.get('firstObject.userVotes');
-            assert.equal(votes.get('length'), 0, 'With detail relationship');
-          })
-
-          .then(() => records);
+          .from('ember-flexberry-dummy-comment-vote')
+          .selectByProjection('CommentVoteE');
+        return store.query('ember-flexberry-dummy-comment-vote', builder.build());
       })
 
+      .then((votes) =>
+        assert.equal(votes.get('length'), 1, 'Without relationships')
+      )
 
-      // With master relationship.
-      .then((records) => {
+      .then(() => records);
+    })
+
+    // With detail relationship.
+    .then((records) => {
+      store.unloadAll();
+      let commentId = records.comment;
+
+      let builder = new QueryBuilder(store)
+        .from('ember-flexberry-dummy-comment')
+        .where('id', '==', commentId)
+        .selectByProjection('CommentE');
+      return store.query('ember-flexberry-dummy-comment', builder.build())
+      .then((comments) => {
+        let comment = comments.get('firstObject');
+        let vote = comment.get('userVotes.firstObject');
+        vote.deleteRecord();
+        return vote.save();
+      })
+
+      .then(() => {
         store.unloadAll();
-        let commentId = records.comment;
-        let userId = records.people[0];
-        return store.findRecord('ember-flexberry-dummy-comment', commentId)
-          .then((comment) => {
-            comment.deleteRecord();
-            return comment.save();
-          })
-
-          .then(() => {
-            store.unloadAll();
-            return store.findAll('ember-flexberry-dummy-comment');
-          })
-          .then((comments) => {
-            return store.findRecord('ember-flexberry-dummy-application-user', userId)
-              .then((user) =>
-                assert.ok(comments.get('length') === 0 && user, 'With master relationship')
-              );
-          });
+        return store.query('ember-flexberry-dummy-comment', builder.build());
       })
-      .catch(e => console.log(e, e.message))
-      .finally(done);
+      .then((comments) => {
+        let votes = comments.get('firstObject.userVotes');
+        assert.equal(votes.get('length'), 0, 'With detail relationship');
+      })
+
+      .then(() => records);
+    })
+
+    // With master relationship.
+    .then((records) => {
+      store.unloadAll();
+      let commentId = records.comment;
+      let userId = records.people[0];
+      return store.findRecord('ember-flexberry-dummy-comment', commentId)
+      .then((comment) => {
+        comment.deleteRecord();
+        return comment.save();
+      })
+
+      .then(() => {
+        store.unloadAll();
+        return store.findAll('ember-flexberry-dummy-comment');
+      })
+      .then((comments) =>
+        store.findRecord('ember-flexberry-dummy-application-user', userId)
+        .then((user) =>
+          assert.ok(comments.get('length') === 0 && user, 'With master relationship')
+        )
+      );
+    })
+    .catch(e => console.log(e, e.message))
+    .finally(done);
   });
 });
 

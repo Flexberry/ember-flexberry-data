@@ -9,29 +9,29 @@ executeTest('reading | restrictions | odata functions', (store, assert) => {
   Ember.run(() => {
     initTestData(store)
 
-      // User has a birthday tommorow.
-      .then(() => {
-        store.unloadAll();
-        let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-          .where('birthday', '>', 'now()');
-        return runTest(store, builder, (data) => {
-          assert.ok(data.get('firstObject.name') === 'User 1', '> now() | Data');
-          assert.equal(data.get('length'), 1, '> now() | Length');
-        });
-      })
+    // User has a birthday tommorow.
+    .then(() => {
+      store.unloadAll();
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where('birthday', '>', 'now()');
+      return runTest(store, builder, (data) => {
+        assert.ok(data.get('firstObject.name') === 'User 1', '> now() | Data');
+        assert.equal(data.get('length'), 1, '> now() | Length');
+      });
+    })
 
-      // User had a birthday yesterday.
-      .then(() => {
-        store.unloadAll();
-        let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-          .where('birthday', '<', 'now()');
-        return runTest(store, builder, (data) => {
-          assert.ok(data.get('firstObject.name') === 'User 2', '< now() | Data');
-          assert.equal(data.get('length'), 1, '< now() | Length');
-        });
-      })
-      .catch(e => console.log(e, e.message))
-      .finally(done);
+    // User had a birthday yesterday.
+    .then(() => {
+      store.unloadAll();
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where('birthday', '<', 'now()');
+      return runTest(store, builder, (data) => {
+        assert.ok(data.get('firstObject.name') === 'User 2', '< now() | Data');
+        assert.equal(data.get('length'), 1, '< now() | Length');
+      });
+    })
+    .catch(e => console.log(e, e.message))
+    .finally(done);
   });
 });
 
@@ -58,5 +58,5 @@ function initTestData(store) {
 
 function runTest(store, builder, callback) {
   return store.query('ember-flexberry-dummy-application-user', builder.build())
-    .then((data) => callback(data));
+  .then((data) => callback(data));
 }

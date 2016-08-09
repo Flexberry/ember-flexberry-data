@@ -13,14 +13,13 @@ executeTest('reading | predicates | string predicates', (store, assert) => {
     // Contains.
     .then(() => {
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-      .where(new StringPredicate('name').contains('as'));
+        .where(new StringPredicate('name').contains('as'));
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
-        .then((data) => {
-          assert.ok(data.every(item => item.get('name') === 'Vasya'),
-            'Contains with correct data | Data');
-          assert.equal(data.get('length'), 2, 'Contains with correct data | Length');
-        });
+      .then((data) => {
+        assert.ok(data.every(item => item.get('name') === 'Vasya'), 'Contains with correct data | Data');
+        assert.equal(data.get('length'), 2, 'Contains with correct data | Length');
+      });
     })
 
     .then(() => {
@@ -28,19 +27,19 @@ executeTest('reading | predicates | string predicates', (store, assert) => {
       .where(new StringPredicate('name').contains(null));
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
-        .then((data) => {
-          assert.equal(data.get('length'), 0, 'Contains without data');
-        });
+      .then((data) =>
+        assert.equal(data.get('length'), 0, 'Contains without data')
+      );
     })
 
     .then(() => {
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-      .where(new StringPredicate('name').contains('Ge'));
+        .where(new StringPredicate('name').contains('Ge'));
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
-        .then((data) => {
-          assert.equal(data.get('length'), 0, `Contains mustn't return any records`);
-        });
+      .then((data) =>
+        assert.equal(data.get('length'), 0, `Contains mustn't return any records`)
+      );
     })
     .catch(e => console.log(e, e.message))
     .finally(done);

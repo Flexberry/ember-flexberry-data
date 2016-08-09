@@ -10,37 +10,36 @@ executeTest('reading | predicates | complex predicates', (store, assert) => {
   Ember.run(() => {
     initTestData(store)
 
-      // Or.
-      .then(() => {
-        let SP1 = new SimplePredicate('name', '==', 'Vasya');
-        let SP2 = new SimplePredicate('karma', '==', 6);
-        let CP = SP1.or(SP2);
+    // Or.
+    .then(() => {
+      let SP1 = new SimplePredicate('name', '==', 'Vasya');
+      let SP2 = new SimplePredicate('karma', '==', 6);
+      let CP = SP1.or(SP2);
 
-        let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-          .where(CP);
-        return store.query('ember-flexberry-dummy-application-user', builder.build())
-          .then((data) => {
-            assert.equal(data.get('length'), 2, `Predicate "or" | Length`);
-            assert.ok(data.any(item => item.get('name') === 'Vasya') && data.any(item => item.get('karma') === 6), `Predicate "or" | Data`);
-          });
-      })
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user').where(CP);
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.equal(data.get('length'), 2, `Predicate "or" | Length`);
+        assert.ok(data.any(item => item.get('name') === 'Vasya') && data.any(item => item.get('karma') === 6), `Predicate "or" | Data`);
+      });
+    })
 
-      // And.
-      .then(() => {
-        let SP1 = new SimplePredicate('name', '==', 'Oleg');
-        let SP2 = new SimplePredicate('karma', '==', 7);
-        let CP = SP1.and(SP2);
+    // And.
+    .then(() => {
+      let SP1 = new SimplePredicate('name', '==', 'Oleg');
+      let SP2 = new SimplePredicate('karma', '==', 7);
+      let CP = SP1.and(SP2);
 
-        let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-          .where(CP);
-        return store.query('ember-flexberry-dummy-application-user', builder.build())
-        .then((data) => {
-          assert.equal(data.get('length'), 1, `Predicate "and" | Length`);
-          assert.ok(data.every(item => item.get('name') === 'Oleg' && item.get('karma') === 7), `Predicate "and" | Data`);
-        });
-      })
-      .catch(e => console.log(e, e.message))
-      .finally(done);
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(CP);
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.equal(data.get('length'), 1, `Predicate "and" | Length`);
+        assert.ok(data.every(item => item.get('name') === 'Oleg' && item.get('karma') === 7), `Predicate "and" | Data`);
+      });
+    })
+    .catch(e => console.log(e, e.message))
+    .finally(done);
   });
 });
 
