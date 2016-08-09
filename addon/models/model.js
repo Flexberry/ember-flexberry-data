@@ -66,16 +66,13 @@ var Model = DS.Model.extend({
   */
   rollbackHasMany(forOnlyKey) {
     let _this = this;
-    _this.eachRelationship((key, { kind, options }) => {
+    _this.eachRelationship((key, { kind }) => {
       if (kind === 'hasMany' && (!forOnlyKey || forOnlyKey === key)) {
         if (_this.get(key).filterBy('hasDirtyAttributes', true).length) {
           [_this.get(`${key}.canonicalState`), _this.get(`${key}.currentState`)].forEach((state, i) => {
             let records = state.map(internalModel => internalModel.record);
             records.forEach((record) => {
-              record.rollbackAttributes();
-              if (options.inverse) {
-                record.rollbackBelongsTo(options.inverse);
-              }
+              record.rollbackAll();
             });
             if (i === 0) {
               _this.set(key, records);
