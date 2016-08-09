@@ -1,132 +1,62 @@
 import Ember from 'ember';
+import QueryBuilder from 'ember-flexberry-data/query/builder';
 import executeTest from './execute-odata-CRUD-test';
 
 executeTest('updating', (store, assert) => {
-  assert.expect(5);
+  assert.expect(2);
   let done = assert.async();
 
   Ember.run(() => {
     initTestData(store)
 
       // Without relationships.
-      .then((ids) => {
-        let id = ids[0];
-        return store.findRecord('ember-flexberry-dummy-application-user', id)
+      .then((records) => {
+        let userId = records.people[0];
+        return store.findRecord('ember-flexberry-dummy-application-user', userId)
           .then((returnedRecord) => {
             returnedRecord.set('name', 'User 1');
             return returnedRecord.save();
           })
 
-          .then(() =>
-            store.findRecord('ember-flexberry-dummy-application-user', id)
-              .then((editedRecord) => {
-                assert.equal(editedRecord.get('name'), 'User 1', 'Without relationships');
-              })
-          )
-          .then(() => ids);
+          .then(() => {
+            store.unloadAll();
+            return store.findRecord('ember-flexberry-dummy-application-user', userId)
+              .then((editedRecord) =>
+                assert.equal(editedRecord.get('name'), 'User 1', 'Without relationships')
+              );
+          })
+          .then(() => records);
       })
 
       // With master relationship.
-      .then((ids) => {
-        let userId = ids[0];
-        let commentId = ids[2];
-        return store.findRecord('ember-flexberry-dummy-comment', commentId)
-          .then((returnedRecord) => {
-            returnedRecord.set('author.name', 'User 1');
-            return returnedRecord.save();
-          })
+      .then((records) => {
+        store.unloadAll();
+        let userId = records.people[1];
+        let commentId = records.comments[0];
 
-          .then(() =>
-            store.findRecord('ember-flexberry-dummy-application-user', userId)
-              .then((editedRecord) => {
-                assert.equal(editedRecord.get('name'), 'User 1', 'With master relationship');
-              })
-          )
-          .then(() => ids);
-      })
+        let builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-comment')
+          .where('id', '==', commentId)
+          .selectByProjection('CommentE');
 
-      // With detail relationship.
-      .then((ids) => {
-        let newUserId = ids[0];
-        let oldUserId = ids[1];
-        let commentId = ids[2];
-
-        return store.findRecord('ember-flexberry-dummy-comment', commentId)
-          .then((comment) =>
-            store.findRecord('ember-flexberry-dummy-application-user', newUserId)
-              .then((newUser) => {
-                let vote = comment.get('userVotes').find(item => item.get('applicationUser.id') === oldUserId);
-                vote.set('applicationUser', newUser);
+        return store.query('ember-flexberry-dummy-comment', builder.build())
+          .then((comments) => {
+            let comment = comments.get('firstObject');
+            return store.findRecord('ember-flexberry-dummy-application-user', userId)
+              .then((user) => {
+                comment.set('author', user);
                 return comment.save();
-              })
-          )
-
-          .then(() =>
-            store.findRecord('ember-flexberry-dummy-comment', commentId)
-              .then((editedRecord) => {
-                let vote = editedRecord.get('userVotes').objectAt(1);
-                assert.equal(vote.get('applicationUser.id'), newUserId, 'With detail relationship');
-
-                // Rollback changes.
-                return store.findRecord('ember-flexberry-dummy-comment-vote', vote.get('id'))
-                  .then((returnedRecord) => {
-                    store.findRecord('ember-flexberry-dummy-application-user', oldUserId)
-                      .then((oldUser) =>
-                        returnedRecord.set('applicationUser', oldUser)
-                      );
-                    return returnedRecord.save();
-                  });
-              })
-          )
-          .then(() => ids);
-      })
-
-      // With 2nd level master relationship.
-      .then((ids) => {
-        let sugId = ids[3];
-        return store.findRecord('ember-flexberry-dummy-suggestion', sugId)
-          .then((sug) => {
-            sug.get('type.parent').set('name', 'Edited type');
-            return sug.save();
+              });
           })
 
           .then(() => {
-            store.findRecord('ember-flexberry-dummy-suggestion', sugId)
-              .then((editedRecord) => {
-                let type = editedRecord.get('type.parent');
-                assert.equal(type.get('name'), 'Edited type',
-                  'With 2nd level master relationship');
-              });
+            store.unloadAll();
+            return store.query('ember-flexberry-dummy-comment', builder.build())
+              .then((comments) =>
+                assert.equal(comments.get('firstObject.author.id'), userId, 'With master relationship')
+              );
           })
-          .then(() => ids);
-      })
-
-      // With 2nd level detail relationship.
-      .then((ids) => {
-        let newUserId = ids[0];
-        let oldUserId = ids[1];
-        let commentId = ids[2];
-        let sugId = ids[3];
-        return store.findRecord('ember-flexberry-dummy-suggestion', sugId)
-          .then((sug) =>
-            store.findRecord('ember-flexberry-dummy-application-user', newUserId)
-              .then((newUser) => {
-                let comments = sug.get('comments').find(item => item.get('id') === commentId);
-                let vote = comments.get('userVotes').find(item => item.get('applicationUser.id') === oldUserId);
-                vote.set('applicationUser', newUser);
-                return sug.save();
-              })
-          )
-
-          .then(() => {
-            store.findRecord('ember-flexberry-dummy-suggestion', sugId)
-              .then((editedRecord) => {
-                let comments = editedRecord.get('comments').find(item => item.get('id') === commentId);
-                let vote = comments.get('userVotes').objectAt(1);
-                assert.equal(vote.get('applicationUser.id'), newUserId,
-                  'With 2nd level detail relationship');
-              });
-          });
+          .then(() => records);
       })
       .catch(e => console.log(e, e.message))
       .finally(done);
@@ -165,41 +95,53 @@ function initTestData(store) {
   )
 
   // Сreating suggestion.
-  .then((sugAttrsValues) =>
+  .then((sugAttrs) =>
     store.createRecord('ember-flexberry-dummy-suggestion', {
-      type: sugAttrsValues[3],
-      author: sugAttrsValues[0],
-      editor1: sugAttrsValues[1]
+      type: sugAttrs[3],
+      author: sugAttrs[0],
+      editor1: sugAttrs[1]
     }).save()
 
-    // Creating comments.
+    // Creating comment.
     .then((sug) =>
-      store.createRecord('ember-flexberry-dummy-comment', {
-        author: sugAttrsValues[0],
-        text: 'Comment 1',
-        suggestion: sug,
-      }).save()
+      Ember.RSVP.Promise.all([
+        store.createRecord('ember-flexberry-dummy-comment', {
+          author: sugAttrs[0],
+          text: 'Comment 1',
+          suggestion: sug,
+        }).save(),
 
-        // Creating votes.
-        .then((commentItem) =>
-          Ember.RSVP.Promise.all([
-            store.createRecord('ember-flexberry-dummy-comment-vote', {
-              applicationUser: sugAttrsValues[1],
-              comment: commentItem
-            }).save(),
+        store.createRecord('ember-flexberry-dummy-comment', {
+          author: sugAttrs[0],
+          text: 'Comment 2',
+          suggestion: sug,
+        }).save()
+      ])
 
-            store.createRecord('ember-flexberry-dummy-comment-vote', {
-              applicationUser: sugAttrsValues[2],
-              comment: commentItem
-            }).save(),
-          ])
+      // Creating votes.
+      .then((comments) =>
+        Ember.RSVP.Promise.all([
+          store.createRecord('ember-flexberry-dummy-comment-vote', {
+            applicationUser: sugAttrs[1],
+            comment: comments[0]
+          }).save(),
 
-            .then(() => [
-              sugAttrsValues[0].get('id'),
-              sugAttrsValues[2].get('id'),
-              commentItem.get('id'),
-              sug.get('id')
-            ])
+          store.createRecord('ember-flexberry-dummy-comment-vote', {
+            applicationUser: sugAttrs[2],
+            comment: comments[1]
+          }).save(),
+        ])
+
+        .then((votes) => 
+          new Ember.RSVP.Promise((resolve) =>
+            resolve({
+              people: sugAttrs.slice(0,3).map(item => item.get('id')),
+              comments: comments.map(item => item.get('id')),
+              votes: votes.map(item => item.get('id')),
+              sug: sug.get('id')
+            })
+          )
+        )
       )
     )
   );

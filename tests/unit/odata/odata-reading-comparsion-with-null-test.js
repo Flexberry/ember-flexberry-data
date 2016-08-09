@@ -11,6 +11,7 @@ executeTest('reading | comparsion with null', (store, assert) => {
 
       // Eq null for own field.
       .then(() => {
+        store.unloadAll();
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
           .where('phone1', '==', null);
         return store.query('ember-flexberry-dummy-application-user', builder.build())
@@ -29,16 +30,16 @@ executeTest('reading | comparsion with null', (store, assert) => {
           .then((data) => {
             assert.equal(data.get('length'), 2, 'Neq null for own field | Length');
             assert.ok(
-              data.any(item => item.get('name') === 'Vasya') &&
-              data.any(item => item.get('name') === 'Kolya'),
-              'Neq null for own field | Data');
+              data.any(item => item.get('name') === 'Vasya') && data.any(item => item.get('name') === 'Kolya'), 'Neq null for own field | Data'
+            );
           });
       })
 
       // Eq null for master field.
       .then(() => {
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
-          .where('author.phone1', '==', null);
+          .where('author.phone1', '==', null)
+          .selectByProjection('CommentE');
         return store.query('ember-flexberry-dummy-comment', builder.build())
           .then((data) => {
             assert.equal(data.get('length'), 1, 'Eq null for master field | Length');
@@ -50,7 +51,8 @@ executeTest('reading | comparsion with null', (store, assert) => {
       // Neq null for master field.
       .then(() => {
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
-          .where('author.phone1', '!=', null);
+          .where('author.phone1', '!=', null)
+          .selectByProjection('CommentE');
         return store.query('ember-flexberry-dummy-comment', builder.build())
           .then((data) => {
             assert.equal(data.get('length'), 2, 'Neq null for master field | Length');

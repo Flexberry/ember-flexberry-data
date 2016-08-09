@@ -11,6 +11,7 @@ executeTest('reading | restrictions | odata functions', (store, assert) => {
 
       // User has a birthday tommorow.
       .then(() => {
+        store.unloadAll();
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
           .where('birthday', '>', 'now()');
         return runTest(store, builder, (data) => {
@@ -21,6 +22,7 @@ executeTest('reading | restrictions | odata functions', (store, assert) => {
 
       // User had a birthday yesterday.
       .then(() => {
+        store.unloadAll();
         let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
           .where('birthday', '<', 'now()');
         return runTest(store, builder, (data) => {
