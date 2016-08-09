@@ -1,28 +1,8 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import executeTest from './execute-odata-CRUD-test';
-import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
+//import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
-
-function initTestData(store) {
-    return Ember.RSVP.Promise.all([
-        store.createRecord('decimal-number', {
-            decimalNumber: 555.5
-        }).save(),
-
-        // store.createRecord('decimal-number', {
-        //     decimalNumber: '555.5'
-        // }).save(),
-
-        store.createRecord('decimal-number', {
-            decimalNumber: 444.4
-        }).save(),
-
-        // store.createRecord('decimal-number', {
-        //     decimalNumber: '444.4'
-        // }).save()
-    ]);
-}
 
 executeTest('reading | decimal', (store, assert) => {
     //assert.expect(8);
@@ -95,3 +75,23 @@ executeTest('reading | decimal', (store, assert) => {
             .finally(done);
     });
 });
+
+function initTestData(store) {
+    return Ember.RSVP.Promise.all([
+        store.createRecord('decimal-number', {
+            decimalNumber: 555.5
+        }).save(),
+
+        // store.createRecord('decimal-number', {
+        //     decimalNumber: '555.5'
+        // }).save(),
+
+        store.createRecord('decimal-number', {
+            decimalNumber: 444.4
+        }).save(),
+
+        // store.createRecord('decimal-number', {
+        //     decimalNumber: '444.4'
+        // }).save()
+    ]);
+}

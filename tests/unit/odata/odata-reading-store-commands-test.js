@@ -25,7 +25,7 @@ executeTest('reading | store commands', (store, assert) => {
         return store.findAll('ember-flexberry-dummy-application-user')
           .then((data) =>
             assert.equal(data.get('length'), 4, 'findAll')
-          )
+          );
       })
 
       // query.
