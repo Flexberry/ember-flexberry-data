@@ -3,7 +3,7 @@ import QueryBuilder from 'ember-flexberry-data/query/builder';
 import executeTest from './execute-odata-CRUD-test';
 
 executeTest('deleting', (store, assert) => {
-  assert.expect(3);
+  assert.expect(4);
   let done = assert.async();
 
   Ember.run(() => {
@@ -27,13 +27,13 @@ executeTest('deleting', (store, assert) => {
       })
 
       .then((votes) =>
-        assert.equal(votes.get('length'), 1, 'Without relationships')
+        assert.equal(votes.get('length'), 2, 'Without relationships')
       )
 
       .then(() => records);
     })
 
-    // With detail relationship.
+    // With 1st level detail relationship.
     .then((records) => {
       store.unloadAll();
       let commentId = records.comment;
@@ -45,7 +45,7 @@ executeTest('deleting', (store, assert) => {
       return store.query('ember-flexberry-dummy-comment', builder.build())
       .then((comments) => {
         let comment = comments.get('firstObject');
-        let vote = comment.get('userVotes.firstObject');
+        let vote = comment.get('userVotes').find(item => item.get('id') === records.votes[1]);
         vote.deleteRecord();
         return vote.save();
       })
@@ -56,11 +56,51 @@ executeTest('deleting', (store, assert) => {
       })
       .then((comments) => {
         let votes = comments.get('firstObject.userVotes');
-        assert.equal(votes.get('length'), 0, 'With detail relationship');
+        assert.equal(votes.get('length'), 1, 'With 1st level detail relationship');
       })
 
       .then(() => records);
     })
+
+    // With 2nd level detail relationship.
+    .then((records) => {
+      store.unloadAll();
+      let sugId = records.suggestion;
+
+      let builder = new QueryBuilder(store)
+        .from('ember-flexberry-dummy-suggestion')
+        .where('id', '==', sugId)
+        .selectByProjection('SuggestionE');
+      return store.query('ember-flexberry-dummy-suggestion', builder.build())
+      
+      .then((sugs) => {
+        let comment = sugs.get('firstObject.comments.firstObject');
+
+        builder = new QueryBuilder(store)
+          .from('ember-flexberry-dummy-comment')
+          .where('id', '==', comment.get('id'))
+          .selectByProjection('CommentE');
+        return store.query('ember-flexberry-dummy-comment', builder.build());
+      })
+
+      .then((comments) => {
+        let vote = comments.get('firstObject.userVotes.firstObject');
+        vote.deleteRecord();
+        return vote.save();
+      })
+
+      .then(() => {
+        store.unloadAll();
+        return store.query('ember-flexberry-dummy-comment', builder.build());
+      })
+      .then((comments) => {
+        let votes = comments.get('firstObject.userVotes');
+        assert.equal(votes.get('length'), 0, 'With 2nd level detail relationship');
+      })
+
+      .then(() => records);
+    })
+    
 
     // With master relationship.
     .then((records) => {
@@ -141,6 +181,11 @@ function initTestData(store) {
       .then((commentItem) =>
         Ember.RSVP.Promise.all([
           store.createRecord('ember-flexberry-dummy-comment-vote', {
+            applicationUser: sugAttrs[0],
+            comment: commentItem
+          }).save(),
+
+          store.createRecord('ember-flexberry-dummy-comment-vote', {
             applicationUser: sugAttrs[1],
             comment: commentItem
           }).save(),
@@ -157,7 +202,7 @@ function initTestData(store) {
             resolve({
               people: sugAttrs.slice(0, 3).map(item => item.get('id')),
               type: sugAttrs[3].get('id'),
-              sug: sug.get('id'),
+              suggestion: sug.get('id'),
               comment: commentItem.get('id'),
               votes: votes.map(item => item.get('id'))
             })

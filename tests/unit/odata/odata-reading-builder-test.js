@@ -127,7 +127,6 @@ function initTestData(store) {
       name: 'Oleg',
       eMail: '3@mail.ru',
       activated: true,
-      birthday: new Date('05.09.1996'),
       karma: 4
     }).save()
   ])
