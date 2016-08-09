@@ -133,6 +133,26 @@ var Model = DS.Model.extend({
   },
 
   /**
+    Rollback changes for all relationships.
+
+    @method rollbackRelationships
+  */
+  rollbackRelationships() {
+    this.rollbackBelongsTo();
+    this.rollbackHasMany();
+  },
+
+  /**
+    Rollback all changes.
+
+    @method rollbackAll
+  */
+  rollbackAll() {
+    this.rollbackRelationships();
+    this.rollbackAttributes();
+  },
+
+  /**
     Fired when the record is loaded from the server.
     [More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).
 
