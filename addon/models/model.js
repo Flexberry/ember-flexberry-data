@@ -128,7 +128,7 @@ var Model = DS.Model.extend({
         let current = _this.get(key);
         let canonical = _this.get('_canonicalBelongsTo')[key] || null;
         if (current !== canonical) {
-          if (options.inverse) {
+          if (options.inverse && options.inverse !== key) {
             current.rollbackBelongsTo(options.inverse);
           }
 
