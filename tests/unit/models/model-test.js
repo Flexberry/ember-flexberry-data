@@ -69,6 +69,9 @@ test('rollback relationships', function(assert) {
       date: new Date(),
       votes: 0,
       moderated: false,
+      type: type1,
+      author: user1,
+      editor1: user1,
     });
 
     let vote1 = store.createRecord('ember-flexberry-dummy-vote', {
@@ -99,11 +102,6 @@ test('rollback relationships', function(assert) {
 
     //Instead of save on server.
     suggestion.didLoad();
-
-    //Instead of load `belongsTo`.
-    suggestion.set('type', type1);
-    suggestion.set('author', user1);
-    suggestion.set('editor1', user1);
 
     //Change `belongsTo` relationships.
     suggestion.set('type', type2);

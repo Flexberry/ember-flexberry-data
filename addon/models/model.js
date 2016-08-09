@@ -13,6 +13,15 @@ import createProj from '../utils/create';
  */
 var Model = DS.Model.extend({
   /**
+    Stored canonical `belongsTo` relationships.
+
+    @property _canonicalBelongsTo
+    @type Object
+    @private
+  */
+  _canonicalBelongsTo: Ember.computed(() => ({})),
+
+  /**
     Return object with changes.
 
     Object will have structure:
@@ -100,7 +109,7 @@ var Model = DS.Model.extend({
     _this.eachRelationship((key, { kind }) => {
       if (kind === 'belongsTo') {
         let current = _this.get(key);
-        let canonical = _this.get('canonicalBelongsTo')[key];
+        let canonical = _this.get('_canonicalBelongsTo')[key] || null;
         if (current !== canonical) {
           changedBelongsTo[key] = [canonical, current];
         }
@@ -120,7 +129,7 @@ var Model = DS.Model.extend({
     _this.eachRelationship((key, { kind, options }) => {
       if (kind === 'belongsTo' && (!forOnlyKey || forOnlyKey === key)) {
         let current = _this.get(key);
-        let canonical = _this.get('canonicalBelongsTo')[key];
+        let canonical = _this.get('_canonicalBelongsTo')[key] || null;
         if (current !== canonical) {
           if (options.inverse) {
             current.rollbackBelongsTo(options.inverse);
@@ -184,7 +193,12 @@ var Model = DS.Model.extend({
     let _this = this;
     _this.eachRelationship((key, { kind }) => {
       if (kind === 'belongsTo') {
-        _this.addObserver(key, _this, _this._saveBelongsToObserver);
+        let belongsToValue = _this.get(key);
+        if (belongsToValue) {
+          _this.get('_canonicalBelongsTo')[key] = belongsToValue;
+        } else {
+          _this.addObserver(key, _this, _this._saveBelongsToObserver);
+        }
       }
     });
   },
@@ -199,9 +213,7 @@ var Model = DS.Model.extend({
     @param {String} key
   */
   _saveBelongsToObserver(sender, key) {
-    let canonicalBelongsTo = sender.get('canonicalBelongsTo') || {};
-    canonicalBelongsTo[key] = sender.get(key);
-    sender.set('canonicalBelongsTo', canonicalBelongsTo);
+    sender.get('_canonicalBelongsTo')[key] = sender.get(key);
     sender.removeObserver(key, this, this._saveBelongsToObserver);
   },
 });
