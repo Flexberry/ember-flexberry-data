@@ -9,9 +9,15 @@ test('decimal | deserialize | number', function (assert) {
   assert.equal(deserialized, 555.5);
 });
 
-test('decimal | deserialize | string', function (assert) {
+test('decimal | deserialize | string with \'.\'', function (assert) {
   let transform = this.subject();
   let deserialized = transform.deserialize('555.5');
+  assert.equal(deserialized, 555.5);
+});
+
+test('decimal | deserialize | string with \',\'', function (assert) {
+  let transform = this.subject();
+  let deserialized = transform.deserialize('555,5');
   assert.equal(deserialized, 555.5);
 });
 

@@ -14,8 +14,9 @@ import NumberTransform from 'ember-data/-private/transforms/number';
     decimalNumber: DS.attr('decimal')
   });
   ```
-*/
+ */
 export default NumberTransform.extend({
+<<<<<<< HEAD
 
     /**
       Deserializes serialized attribute value.
@@ -32,3 +33,19 @@ export default NumberTransform.extend({
     }
 
 });
+=======
+  /**
+    Deserializes serialized attribute value.
+   */
+  deserialize(serialized) {
+    return Number(serialized.toString().replace(',', '.'));
+  },
+
+  /**
+    Serializes deserialized attribute value.
+   */
+  serialize(deserialized) {
+    return Number(deserialized.toString().replace(',', '.'));
+  }
+});
+>>>>>>> develop

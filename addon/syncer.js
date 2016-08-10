@@ -135,7 +135,7 @@ export default Ember.Object.extend({
     function saveRecordToLocalStore(store, record, projectionName) {
       let modelName = record.constructor.modelName;
       let modelType = store.modelFor(modelName);
-      let projection = modelType.projections[projectionName];
+      let projection = Ember.isNone(projectionName) ? null : modelType.projections[projectionName];
       let localStore = this.get('offlineStore');
       let localAdapter = localStore.adapterFor(modelName);
       let snapshot = record._createSnapshot();

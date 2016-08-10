@@ -301,7 +301,7 @@ export default DS.Store.extend({
     let onlineStore = this.get('onlineStore');
     let offlineStore = this.get('offlineStore');
     let adapter = onlineStore.adapterFor(modelName);
-    if (this.get('offlineGlobals').get('isOfflineEnabled')) {
+    if (this.get('offlineGlobals.isOfflineEnabled')) {
       let useOnlineStoreCondition = useOnlineStore || (Ember.isNone(useOnlineStore) && this._isOnline());
       return useOnlineStoreCondition ? decorateAdapter.call(this, adapter, modelName) : offlineStore.adapterFor(modelName);
     } else {
@@ -320,7 +320,7 @@ export default DS.Store.extend({
     let onlineStore = this.get('onlineStore');
     let offlineStore = this.get('offlineStore');
     let serializer = onlineStore.serializerFor(modelName);
-    if (this.get('offlineGlobals').get('isOfflineEnabled')) {
+    if (this.get('offlineGlobals.isOfflineEnabled')) {
       let useOnlineStoreCondition = useOnlineStore || (Ember.isNone(useOnlineStore) && this._isOnline());
       return useOnlineStoreCondition ? decorateSerializer.call(this, serializer, modelName) : offlineStore.serializerFor(modelName);
     } else {
@@ -337,7 +337,7 @@ export default DS.Store.extend({
     let decoratedMethod = decorateAPICall(finderType, originMethod);
     if (optionsIndex > -1) {
       let options = originMethodArguments[optionsIndex];
-      options = this.get('offlineGlobals').get('isOfflineEnabled') ? options : Ember.$.extend(true, { bypass: true }, options);
+      options = this.get('offlineGlobals.isOfflineEnabled') ? options : Ember.$.extend(true, { bypass: true }, options);
       originMethodArguments[optionsIndex] = options;
     }
 
@@ -360,6 +360,9 @@ export default DS.Store.extend({
     let offlineStore = this.get('offlineStore');
     let useOnlineStore = (args[0].length - 1) >= useOnlineStoreParamNum ? args[0][useOnlineStoreParamNum] : null;
     let useOnlineStoreCondition = useOnlineStore || (Ember.isNone(useOnlineStore) && this._isOnline());
-    return useOnlineStoreCondition ? onlineStore[methodName].apply(onlineStore, args[0]) : offlineStore[methodName].apply(offlineStore, args[0]);
+    let offlineEnabled = this.get('offlineGlobals.isOfflineEnabled');
+    return !offlineEnabled || (offlineEnabled && useOnlineStoreCondition) ?
+      onlineStore[methodName].apply(onlineStore, args[0]) :
+      offlineStore[methodName].apply(offlineStore, args[0]);
   }
 });
