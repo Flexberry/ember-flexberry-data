@@ -188,13 +188,19 @@ var Model = DS.Model.extend({
   */
   _saveCanonicalBelongsTo() {
     let _this = this;
-    _this.eachRelationship((key, { kind }) => {
+    _this.eachRelationship((key, { kind, options }) => {
       if (kind === 'belongsTo') {
-        let belongsToValue = _this.get(key);
-        if (belongsToValue) {
-          _this.get('_canonicalBelongsTo')[key] = belongsToValue;
+        if (options.async === false) {
+          let belongsToValue = _this.get(key);
+          if (belongsToValue) {
+            _this.get('_canonicalBelongsTo')[key] = belongsToValue;
+          } else {
+            _this.addObserver(key, _this, _this._saveBelongsToObserver);
+          }
         } else {
-          _this.addObserver(key, _this, _this._saveBelongsToObserver);
+          _this.get(key).then((record) => {
+            _this.get('_canonicalBelongsTo')[key] = record;
+          });
         }
       }
     });
