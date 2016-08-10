@@ -14,21 +14,21 @@ import NumberTransform from 'ember-data/-private/transforms/number';
     decimalNumber: DS.attr('decimal')
   });
   ```
-*/
+ */
 export default NumberTransform.extend({
 
     /**
       Deserializes serialized attribute value.
-    */
+     */
     deserialize() {
         return this._super(...arguments);
-    },
+      },
 
     /**
       Serializes deserialized attribute value.
-    */
+     */
     serialize(deserialized) {
         return Number(deserialized.toString().replace(',', '.'));
-    }
+      }
 
 });
