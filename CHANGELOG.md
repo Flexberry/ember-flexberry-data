@@ -3,10 +3,10 @@
 ## [Unreleased]
 ### Added
 - Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
+- `decimal` transform for ability to use '.' and ',' as decimal separator in float numbers. So now it is possible to use `decimal` type for declaring attributes of models.
 
 ### Changed
 - Function `enumCaptions` now returns object without null values.
-- Type for `karma` in `ember-flexberry-dummy-application-user` model to `decimal`.
 - Offline support:
     - It is not necessary now to specify projection when syncing down or reading data from offline storage.
 
