@@ -2,7 +2,7 @@ import NumberTransform from 'ember-data/-private/transforms/number';
 
 /**
   Transformation for model's attributes defined as <a href="http://emberjs.com/api/data/#method_attr">DS.attr</a>
-  with type 'decimal'.  
+  with type 'decimal'.
   It extends <a href="http://emberjs.com/api/data/classes/DS.NumberTransform.html">number transformation</a> from ember data.
   @class DecimalTransform
   @extends <a href="http://emberjs.com/api/data/classes/DS.NumberTransform.html">DS.NumberTransform</a>
@@ -18,17 +18,17 @@ import NumberTransform from 'ember-data/-private/transforms/number';
 export default NumberTransform.extend({
 
     /**
-    Deserializes serialized attribute value.
+      Deserializes serialized attribute value.
     */
     deserialize() {
         return this._super(...arguments);
     },
 
     /**
-    Serializes deserialized attribute value.
+      Serializes deserialized attribute value.
     */
     serialize(deserialized) {
         return Number(deserialized.toString().replace(',', '.'));
     }
 
-}); 
+});
