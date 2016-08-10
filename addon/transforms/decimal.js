@@ -29,5 +29,4 @@ export default NumberTransform.extend({
   serialize(deserialized) {
     return Number(deserialized.toString().replace(',', '.'));
   }
-
 })
