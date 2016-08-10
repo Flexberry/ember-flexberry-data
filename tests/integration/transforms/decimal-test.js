@@ -27,7 +27,7 @@ test('decimal | serialize | number', function (assert) {
   let store = App.__container__.lookup('service:store');
 
   $.mockjax({
-    url: "/test-models",
+    url: '/test-models',
     data: function (json) {
       assert.equal(JSON.parse(json).DecimalNumber, 555.5);
       return true;
