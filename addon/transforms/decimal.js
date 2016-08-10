@@ -15,7 +15,7 @@ import NumberTransform from 'ember-data/-private/transforms/number';
   });
   ```
  */
-export default NumberTransform.extend({    
+export default NumberTransform.extend({
   /**
     Deserializes serialized attribute value.
    */
@@ -30,4 +30,4 @@ export default NumberTransform.extend({
     return Number(deserialized.toString().replace(',', '.'));
   }
 
-});
+})
