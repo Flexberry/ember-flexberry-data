@@ -104,7 +104,7 @@ test('decimal | deserialize | number', function (assert) {
   });
 });
 
-test('decimal | deserialize | string', function (assert) {
+test('decimal | deserialize | string with \'.\'', function (assert) {
   App.register('model:testModel', TestModel);
 
   let store = App.__container__.lookup('service:store');
@@ -113,6 +113,25 @@ test('decimal | deserialize | string', function (assert) {
     url: '/test-models/1',
     dataType: 'json',
     responseText: { id: 1, DecimalNumber: '555.5' }
+  });
+
+  Ember.run(function () {
+    store.findRecord('testModel', 1).then(function (data) {
+      assert.equal(data.get('decimalNumber'), 555.5);
+    });
+    wait();
+  });
+});
+
+test('decimal | deserialize | string with \',\'', function (assert) {
+  App.register('model:testModel', TestModel);
+
+  let store = App.__container__.lookup('service:store');
+
+  $.mockjax({
+    url: '/test-models/1',
+    dataType: 'json',
+    responseText: { id: 1, DecimalNumber: '555,5' }
   });
 
   Ember.run(function () {

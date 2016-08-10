@@ -19,8 +19,8 @@ export default NumberTransform.extend({
   /**
     Deserializes serialized attribute value.
    */
-  deserialize() {
-    return this._super(...arguments);
+  deserialize(serialized) {
+    return Number(serialized.toString().replace(',', '.'));
   },
 
   /**
