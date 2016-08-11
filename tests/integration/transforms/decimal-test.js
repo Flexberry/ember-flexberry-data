@@ -56,7 +56,6 @@ test('decimal | serialize | string with \'.\'', function (assert) {
     responseText: { DecimalNumber: 555.5 }
   });
 
-
   Ember.run(function () {
     store.createRecord('testModel', {
       decimalNumber: '555.5'

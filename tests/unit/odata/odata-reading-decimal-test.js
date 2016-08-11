@@ -85,7 +85,6 @@ executeTest('reading | decimal', (store, assert) => {
         return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
             assert.equal(data.get('length'), 6);
-            //assert.equal(data.any(item => item.get('karma'), 555.5));
           });
       })
 
@@ -105,7 +104,6 @@ executeTest('reading | decimal', (store, assert) => {
         return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
             assert.equal(data.get('length'), 6);
-            //assert.equal(data.any(item => item.get('karma'), 444.4));
           });
       })
 
