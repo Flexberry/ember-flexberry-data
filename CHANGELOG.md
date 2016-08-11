@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Transforms, models, enums and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
+- `decimal` transform for ability to use '.' and ',' as decimal separator in float numbers. So now it is possible to use `decimal` type for declaring attributes of models.
 - CRUD operations tests for OData.
 
 ### Changed
