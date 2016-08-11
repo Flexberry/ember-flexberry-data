@@ -16,24 +16,7 @@ import NumberTransform from 'ember-data/-private/transforms/number';
   ```
  */
 export default NumberTransform.extend({
-<<<<<<< HEAD
 
-    /**
-      Deserializes serialized attribute value.
-    */
-    deserialize() {
-        return this._super(...arguments);
-    },
-
-    /**
-      Serializes deserialized attribute value.
-    */
-    serialize(deserialized) {
-        return Number(deserialized.toString().replace(',', '.'));
-    }
-
-});
-=======
   /**
     Deserializes serialized attribute value.
    */
@@ -48,4 +31,3 @@ export default NumberTransform.extend({
     return Number(deserialized.toString().replace(',', '.'));
   }
 });
->>>>>>> develop
