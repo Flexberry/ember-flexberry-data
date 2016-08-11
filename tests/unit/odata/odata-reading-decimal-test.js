@@ -14,7 +14,7 @@ function initTestData(store) {
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Oleg',
       eMail: '2@mail.ru',
-      karma: '5.5M'
+      karma: '5.5'
     }).save(),
 
     store.createRecord('ember-flexberry-dummy-application-user', {
