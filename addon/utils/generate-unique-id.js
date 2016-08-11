@@ -1,9 +1,8 @@
+import uuid from 'npm:node-uuid';
+
 /**
- * @return { String } a combination of timestamp and 5 random digits
+ * @return { String } RFC4122 version 4 UUID
  */
-export default function generateUniqueId(prefix) {
-  prefix = prefix || 'flexberry';
-  let time = (new Date()).getTime();
-  let randomFiveDigits = Math.random().toFixed(5).slice(2);
-  return [prefix, time, randomFiveDigits].join('-');
+export default function generateUniqueId() {
+  return uuid.v4();
 }
