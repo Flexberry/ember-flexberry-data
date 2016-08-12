@@ -25,13 +25,13 @@ export default NumberTransform.extend({
     Deserializes serialized attribute value.
    */
   deserialize(serialized) {
-    return Number(serialized.toString().replace(',', '.'));
+    return Ember.isEmpty(serialized) ? null : this._super(serialized.toString().replace(',', '.'));
   },
 
   /**
     Serializes deserialized attribute value.
    */
   serialize(deserialized) {
-    return Number(deserialized.toString().replace(',', '.'));
+    return Ember.isEmpty(deserialized) ? null : this._super(deserialized.toString().replace(',', '.'));
   }
 });
