@@ -54,8 +54,8 @@ executeTest('reading | decimal', (store, assert) => {
           .where('karma', '==', 5.5);
         return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
-            assert.equal(data.get('length'), 3, 'Decimal | length');
-            assert.ok(data.any(item => item.get('karma') === 5.5), 'Decimal | data');
+            assert.equal(data.get('length'), 3, 'Eq | length');
+            assert.ok(data.any(item => item.get('karma') === 5.5), 'Eq | data');
           });
       })
 
@@ -64,8 +64,8 @@ executeTest('reading | decimal', (store, assert) => {
           .where('karma', FilterOperator.Neq, 5.5);
         return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
-            assert.equal(data.get('length'), 3);
-            assert.equal(data.any(item => item.get('karma'), 4.4));
+            assert.equal(data.get('length'), 3, 'Neq | length');
+            assert.notOk(data.any(item => item.get('karma') === 5.5), 'Neq | data');
           });
       })
 
@@ -74,8 +74,8 @@ executeTest('reading | decimal', (store, assert) => {
           .where('karma', FilterOperator.Ge, 4.4);
         return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
-            assert.equal(data.get('length'), 3);
-            assert.equal(data.any(item => item.get('karma'), 5.5));
+            assert.equal(data.get('length'), 3, 'Ge | length');
+            assert.notOk(data.any(item => item.get('karma') === 4.4), 'Ge | data');
           });
       })
 
@@ -84,7 +84,8 @@ executeTest('reading | decimal', (store, assert) => {
           .where('karma', FilterOperator.Geq, 4.4);
         return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
-            assert.equal(data.get('length'), 6);
+            assert.equal(data.get('length'), 6, 'Geq | length');
+            assert.ok(data.any(item => item.get('karma') === 4.4), 'Geq | data');
           });
       })
 
@@ -93,8 +94,8 @@ executeTest('reading | decimal', (store, assert) => {
           .where('karma', FilterOperator.Le, 5.5);
         return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
-            assert.equal(data.get('length'), 3);
-            assert.equal(data.any(item => item.get('karma'), 4.4));
+            assert.equal(data.get('length'), 3, 'Le | length');
+            assert.notOk(data.any(item => item.get('karma') === 5.5), 'Le | data');
           });
       })
 
@@ -103,7 +104,8 @@ executeTest('reading | decimal', (store, assert) => {
           .where('karma', FilterOperator.Leq, 5.5);
         return store.query('ember-flexberry-dummy-application-user', builder.build())
           .then((data) => {
-            assert.equal(data.get('length'), 6);
+            assert.equal(data.get('length'), 6, 'Leq | length');
+            assert.ok(data.any(item => item.get('karma') === 5.5), 'Leq | data');
           });
       })
 
