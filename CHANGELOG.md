@@ -2,11 +2,9 @@
 
 ## [Unreleased]
 
-### Changed
-- `ODataAdapter` uses `namespace` property at build URL.
-
 ### Fixed
-- Using `pathForType` function in `ODataAdapter` at build URL.
+- Using `pathForType` function in `ODataAdapter` for building URL.
+- It is possible now to specify `namespace` property in `ODataAdapter` for building URL.
 
 ## [0.3.1] - 2016-07-26
 ### Added
