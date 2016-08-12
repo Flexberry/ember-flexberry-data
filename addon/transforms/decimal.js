@@ -1,3 +1,8 @@
+/**
+  @module ember-flexberry-data
+*/
+
+import Ember from 'ember';
 import NumberTransform from 'ember-data/-private/transforms/number';
 
 /**
@@ -14,20 +19,20 @@ import NumberTransform from 'ember-data/-private/transforms/number';
     decimalNumber: DS.attr('decimal')
   });
   ```
- */
+*/
 export default NumberTransform.extend({
 
   /**
     Deserializes serialized attribute value.
    */
   deserialize(serialized) {
-    return Number(serialized.toString().replace(',', '.'));
+    return Ember.isEmpty(serialized) ? null : this._super(serialized.toString().replace(',', '.'));
   },
 
   /**
     Serializes deserialized attribute value.
    */
   serialize(deserialized) {
-    return Number(deserialized.toString().replace(',', '.'));
+    return Ember.isEmpty(deserialized) ? null : this._super(deserialized.toString().replace(',', '.'));
   }
 });
