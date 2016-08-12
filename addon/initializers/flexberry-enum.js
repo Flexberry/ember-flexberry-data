@@ -1,5 +1,5 @@
 /**
-  @module ember-flexberry
+  @module ember-flexberry-data
 */
 
 /**

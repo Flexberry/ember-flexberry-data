@@ -1,3 +1,8 @@
+/**
+  @module ember-flexberry-data
+*/
+
+import Ember from 'ember';
 import NumberTransform from 'ember-data/-private/transforms/number';
 
 /**
@@ -14,7 +19,7 @@ import NumberTransform from 'ember-data/-private/transforms/number';
     decimalNumber: DS.attr('decimal')
   });
   ```
- */
+*/
 export default NumberTransform.extend({
   /**
     Deserializes serialized attribute value.
