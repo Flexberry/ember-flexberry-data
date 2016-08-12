@@ -10,6 +10,10 @@
 - Offline support:
     - It is not necessary now to specify projection when syncing down or reading data from offline storage.
 
+### Fixed
+- Using `pathForType` function in `ODataAdapter` for building URL.
+- It is possible now to specify `namespace` property in `ODataAdapter` for building URL.
+
 ## [0.3.1] - 2016-07-26
 ### Added
 - As you can see, we started to use integrated tests with OData...
