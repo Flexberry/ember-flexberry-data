@@ -1,6 +1,18 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
+- `decimal` transform for ability to use '.' and ',' as decimal separator in float numbers. So now it is possible to use `decimal` type for declaring attributes of models.
+
+### Changed
+- Function `enumCaptions` now returns object without null values.
+- Offline support:
+    - It is not necessary now to specify projection when syncing down or reading data from offline storage.
+
+### Fixed
+- Using `pathForType` function in `ODataAdapter` for building URL.
+- It is possible now to specify `namespace` property in `ODataAdapter` for building URL.
 
 ## [0.3.1] - 2016-07-26
 ### Added

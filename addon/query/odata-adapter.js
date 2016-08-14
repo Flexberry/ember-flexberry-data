@@ -1,4 +1,3 @@
-import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
@@ -11,7 +10,7 @@ import Information from '../utils/information';
  *
  * @module ember-flexberry-data
  * @namespace Query
- * @class OdataAdapter
+ * @class ODataAdapter
  * @extends Query.BaseAdapter
  */
 export default class ODataAdapter extends BaseAdapter {
@@ -35,34 +34,6 @@ export default class ODataAdapter extends BaseAdapter {
     this._baseUrl = baseUrl;
     this._store = store;
     this._info = new Information(store);
-  }
-
-  /**
-   * Determines the pathname for a given type.
-   * Additionally capitalizes the type name (requirement of Flexberry OData Server).
-   *
-   * @method pathForType
-   * @param {String} modelName
-   * @return {String} The path for a given type.
-   */
-  pathForType(modelName) {
-    var camelized = Ember.String.camelize(modelName);
-    var capitalized = Ember.String.capitalize(camelized);
-    return Ember.String.pluralize(capitalized);
-  }
-
-  /**
-   * Returns base part of URL for querying OData feed (without query part).
-   *
-   * @method getODataFullUrl
-   * @param {Object} query The query for building OData URL.
-   * @return {String}
-   * @public
-   */
-  getODataBaseUrl(query) {
-    let type = this.pathForType(query.modelName);
-
-    return `${this._baseUrl}/${type}`;
   }
 
   /**
@@ -99,13 +70,12 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   /**
-   * Returns full URL for querying OData feed (base part and query part).
-   *
-   * @method getODataFullUrl
-   * @param {Object} query The query for building OData URL.
-   * @return {String}
-   * @public
-   */
+    Returns full URL for querying OData feed (base part and query part).
+
+    @method getODataFullUrl
+    @param {Object} query The query for building OData URL.
+    @return {String} Full URL.
+  */
   getODataFullUrl(query) {
     let odataArgs = this.getODataQuery(query);
     let queryArgs = [];
@@ -118,7 +88,7 @@ export default class ODataAdapter extends BaseAdapter {
     let queryMark = queryArgs.length > 0 ? '?' : '';
     let queryPart = queryArgs.join('&');
 
-    return this.getODataBaseUrl(query) + queryMark + queryPart;
+    return `${this._baseUrl}${queryMark}${queryPart}`;
   }
 
   _buildODataSelect(query) {
