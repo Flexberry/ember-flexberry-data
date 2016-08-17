@@ -180,7 +180,22 @@ export default Ember.Object.extend({
 
     var namespace = getNamespace(typeName);
     return this.get('db').setItem(namespace, records);
-  }
+  },
+
+  /**
+  */
+  syncUp(continueOnError) {
+    let _this = this;
+    let store = Ember.getOwner(this).lookup('service:store');
+    return _this.get('offlineStore').query('auditEntity', {
+      // TODO: Needs sort by `operationTime`.
+    }).then((jobs) => {
+      // TODO: Delete `sortBy` after sort by `operationTime`.
+      jobs = jobs.sortBy('operationTime');
+      return _this._runJobs(store, jobs.map(job => job), continueOnError);
+    });
+  },
+
   /**
   */
   createJob(record) {
@@ -193,6 +208,118 @@ export default Ember.Object.extend({
           reject(reason);
         });
       });
+    });
+  },
+
+  /**
+  */
+  _runJobs(store, jobs, continueOnError, jobCount) {
+    let _this = this;
+    let job = jobs.shiftObject();
+    let executedJob = jobCount || 0;
+    return new RSVP.Promise((resolve, reject) => {
+      if (job) {
+        _this._runJob(store, job).then((job) => {
+          _this._endJob(job).then(() => {
+            resolve(_this._runJobs(store, jobs, continueOnError, ++executedJob));
+          }).catch((reason) => {
+            if (continueOnError) {
+              resolve(_this._runJobs(store, jobs, continueOnError, executedJob));
+            } else {
+              reject(reason);
+            }
+          });
+        });
+      } else {
+        resolve(executedJob);
+      }
+    });
+  },
+
+  /**
+  */
+  _endJob(job) {
+    return new RSVP.Promise((resolve, reject) => {
+      if (job.get('executionResult') === 'Executed') {
+        RSVP.all(job.get('auditFields').map(field => field.destroyRecord())).then(() => {
+          resolve(job.destroyRecord());
+        });
+      } else {
+        reject(job);
+      }
+    });
+  },
+
+  /**
+  */
+  _runJob(store, job) {
+    switch (job.get('operationType')) {
+      case 'created': return this._runCreatingJob(store, job);
+      case 'updated': return this._runUpdatingJob(store, job);
+      case 'deleted': return this._runRemovingJob(store, job);
+      default: throw new Error('Unknown operation type.');
+    }
+  },
+
+  /**
+  */
+  _runCreatingJob(store, job) {
+    let attributes = {
+      id: job.get('objectPrimaryKey'),
+    };
+    job.get('auditFields').forEach((field) => {
+      attributes[field.get('field')] = field.get('newValue');
+    });
+    return store.createRecord(job.get('objectType'), attributes, true).save().then(() => {
+      job.set('executionResult', 'Executed');
+      return job.save();
+    }).catch((/*reason*/) => {
+      // TODO: Resolve conflicts here.
+      job.set('executionResult', 'Failed');
+      return job.save();
+    });
+  },
+
+  /**
+  */
+  _runUpdatingJob(store, job) {
+    let query = this._createQuery(store, job);
+    return store.queryRecord(query.modelName, query).then((record) => {
+      if (record) {
+        job.get('auditFields').forEach((field) => {
+          record.set(field.get('field'), field.get('newValue'));
+        });
+        return record.save().then(() => {
+          job.set('executionResult', 'Executed');
+          return job.save();
+        }).catch((/*reason*/) => {
+          // TODO: Resolve conflicts here.
+          job.set('executionResult', 'Failed');
+          return job.save();
+        });
+      } else {
+        throw new Error('No record is found on server.');
+      }
+    });
+  },
+
+  /**
+  */
+  _runRemovingJob(store, job) {
+    let query = this._createQuery(store, job);
+    return store.queryRecord(query.modelName, query).then((record) => {
+      if (record) {
+        return record.destroyRecord().then(() => {
+          job.set('executionResult', 'Executed');
+          return job.save();
+        }).catch((/*reason*/) => {
+          // TODO: Resolve conflicts here.
+          job.set('executionResult', 'Failed');
+          return job.save();
+        });
+      } else {
+        throw new Error('No record is found on server.');
+      }
     });
   },
 
@@ -297,6 +424,16 @@ export default Ember.Object.extend({
     return changes;
   },
 
+  /**
+  */
+  _createQuery(store, job) {
+    let builder = new Builder(store)
+      .from(job.get('objectType'))
+      .byId(job.get('objectPrimaryKey'));
+    let query = builder.build();
+    query.useOnlineStore = true;
+    return query;
+  },
 });
 
 function pluralize(typeName) {
