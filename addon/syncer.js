@@ -1,8 +1,9 @@
 import Ember from 'ember';
-import {reloadLocalRecords, syncDownRelatedRecords} from './utils/reload-local-records';
+import Builder from './query/builder';
+import { reloadLocalRecords, syncDownRelatedRecords } from './utils/reload-local-records';
 import isModelInstance from './utils/is-model-instance';
 
-var RSVP = Ember.RSVP;
+const { RSVP } = Ember;
 
 /**
   We save offline jobs to localforage and run them one at a time when online
@@ -49,6 +50,10 @@ export default Ember.Object.extend({
     @type <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
   */
   offlineStore: undefined,
+
+  /**
+  */
+  auditEnabled: true,
 
   /**
    * Initialize db.
@@ -176,6 +181,122 @@ export default Ember.Object.extend({
     var namespace = getNamespace(typeName);
     return this.get('db').setItem(namespace, records);
   }
+  /**
+  */
+  createJob(record) {
+    let _this = this;
+    return new RSVP.Promise((resolve, reject) => {
+      _this._createAuditEntity(record).then((auditEntity) => {
+        _this._createAuditFields(auditEntity, record).then((auditEntity) => {
+          resolve(auditEntity);
+        }).catch((reason) => {
+          reject(reason);
+        });
+      });
+    });
+  },
+
+  /**
+  */
+  _createAuditEntity(record) {
+    let auditData = this._auditDataFromRecord(record);
+    return this.get('auditEnabled') ? this._newAuditEntity(auditData) : this._updateAuditEntity(auditData);
+  },
+
+  /**
+  */
+  _newAuditEntity(auditData) {
+    return this.get('offlineStore').createRecord('auditEntity', auditData).save();
+  },
+
+  /**
+  */
+  _updateAuditEntity(auditData) {
+    let _this = this;
+    return _this.get('offlineStore').queryRecord('auditEntity', {
+      objectPrimaryKey: auditData.objectPrimaryKey,
+    }).then((auditEntity) => {
+      if (auditEntity) {
+        return RSVP.all(auditEntity.get('auditFields').map(field => field.destroyRecord())).then(() => {
+          if (auditData.operationType === 'deleted' && auditEntity.get('operationType') === 'created') {
+            return auditEntity.destroyRecord();
+          } else {
+            delete auditData.operationType;
+            auditEntity.setProperties(auditData);
+            return auditEntity.save();
+          }
+        });
+      } else {
+        return _this._newAuditEntity(auditData);
+      }
+    });
+  },
+
+  /**
+  */
+  _createAuditFields(auditEntity, record) {
+    let promises = [];
+    if (auditEntity.get('operationType') !== 'deleted') {
+      let changes = this._changesFromRecord(record);
+      for (let change in changes) {
+        promises.push(this._createAuditField(auditEntity, change, changes[change]));
+      }
+    }
+
+    return RSVP.all(promises).then((fields) => {
+      auditEntity.set('auditFields', fields);
+      return auditEntity.save();
+    });
+  },
+
+  /**
+  */
+  _createAuditField(auditEntity, attributeName, attributeData) {
+    let _this = this;
+    return _this.get('offlineStore').createRecord('auditField', {
+      field: attributeName,
+      oldValue: attributeData[0],
+      newValue: attributeData[1],
+      auditEntity: auditEntity,
+    }).save();
+  },
+
+  /**
+  */
+  _auditDataFromRecord(record) {
+    return {
+      objectPrimaryKey: record.get('id'),
+      operationTime: new Date(),
+      operationType: record.get('dirtyType'),
+      createTime: record.get('createTime'),
+      creator: record.get('creator'),
+      editTime: record.get('editTime'),
+      editor: record.get('editor'),
+      objectType: record._createSnapshot().modelName,
+    };
+  },
+
+  /**
+  */
+  _changesFromRecord(record) {
+    let changes = {};
+    if (this.get('auditEnabled')) {
+      let changedAttributes = record.changedAttributes();
+      for (let attribute in changedAttributes) {
+        changes[attribute] = changedAttributes[attribute];
+      }
+    } else {
+      record.eachAttribute((name) => {
+        let value = record.get(name);
+        if (value) {
+          changes[name] = [null, value];
+        }
+      });
+    }
+
+    return changes;
+  },
+
 });
 
 function pluralize(typeName) {
