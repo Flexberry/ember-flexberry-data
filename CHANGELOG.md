@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Added missing files to `app/initializers` which are required for offline support.
 
 ## [0.4.0] - 2016-08-14
 ### Added
