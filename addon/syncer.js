@@ -192,7 +192,7 @@ export default Ember.Object.extend({
     }).then((jobs) => {
       // TODO: Delete `sortBy` after sort by `operationTime`.
       jobs = jobs.sortBy('operationTime');
-      return _this._runJobs(store, jobs.map(job => job), continueOnError);
+      return _this._runJobs(store, jobs, continueOnError);
     });
   },
 
