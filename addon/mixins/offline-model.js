@@ -67,6 +67,12 @@ export default Ember.Mixin.create({
   readOnly: DS.attr('boolean'),
 
   /**
+  */
+  currentUserName: Ember.computed(function() {
+    return 'userName';
+  }).readOnly(),
+
+  /**
     Global instance of Syncer that contains methods to sync model up and down.
 
     @property syncer
@@ -88,24 +94,46 @@ export default Ember.Mixin.create({
   /*
     Overrides saving method of model to set metadata properties.
   */
-  save: function() {
-    if (Ember.isNone(this.get('readOnly')) || !this.get('readOnly')) {
-      if (this.get('hasDirtyAttributes') && !this.get('isDeleted')) {
-        let modifiedTime = new Date();
-        if (Ember.isNone(this.get('readOnly'))) {
-          this.set('readOnly', false);
+  save() {
+    let _this = this;
+    let __super = _this._super;
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      if (_this.get('readOnly')) {
+        reject(new Error('Attempt to save readonly model instane.'));
+      } else {
+        let currentDate = new Date();
+        let currentUser = _this.get('currentUserName');
+        let hasDirtyAttributes = _this.get('hasDirtyAttributes');
+        if (_this.get('isNew')) {
+          _this.set('createTime', currentDate);
+          _this.set('creator', currentUser);
         }
 
-        if (this.get('isNew')) {
-          this.set('createTime', modifiedTime);
+        if (hasDirtyAttributes && !_this.get('isDeleted')) {
+          _this.set('editTime', currentDate);
+          _this.set('editor', currentUser);
         }
 
-        this.set('editTime', modifiedTime);
-
-        this._super(...arguments);
+        let store = Ember.getOwner(_this).lookup('service:store');
+        if (hasDirtyAttributes && !store.get('offlineGlobals.isOnline')) {
+          _this.get('syncer').createJob(_this).then((auditEntity) => {
+            if (auditEntity.get('objectPrimaryKey')) {
+              resolve(__super.call(_this, ...arguments));
+            } else {
+              __super.call(_this, ...arguments).then((record) => {
+                auditEntity.set('objectPrimaryKey', record.get('id'));
+                auditEntity.save().then(() => {
+                  resolve(record);
+                });
+              });
+            }
+          }).catch((reason) => {
+            reject(reason);
+          });
+        } else {
+          resolve(__super.call(_this, ...arguments));
+        }
       }
-    } else {
-      throw new Error('Attempt to save readonly model \'' + this.get('modelName') + '\'');
-    }
-  }
+    });
+  },
 });

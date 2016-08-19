@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Synchronization offline changes, using `syncUp` method in the `Syncer` class.
+
 ### Fixed
 - Added missing files to `app/initializers` which are required for offline support.
 
