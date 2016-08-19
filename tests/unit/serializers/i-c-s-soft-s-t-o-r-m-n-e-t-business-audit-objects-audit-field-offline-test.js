@@ -5,10 +5,10 @@ import startApp from 'dummy/tests/helpers/start-app';
 
 let App;
 
-moduleForModel('audit-field', 'Unit | Serializer | audit-field-offline', {
+moduleForModel('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', 'Unit | Serializer | audit-field-offline', {
   needs: [
-    'serializer:audit-field-offline',
-    'model:audit-entity',
+    'serializer:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field-offline',
+    'model:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity',
   ],
 
   beforeEach() {

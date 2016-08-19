@@ -12,5 +12,5 @@ export default DS.Model.extend({
   editTime: DS.attr('date'),
   editor: DS.attr('string'),
   objectType: DS.attr('string'),
-  auditFields: DS.hasMany('audit-field', { inverse: 'auditEntity', async: false }),
+  auditFields: DS.hasMany('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', { inverse: 'auditEntity', async: false }),
 });

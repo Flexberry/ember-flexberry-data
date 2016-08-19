@@ -3,6 +3,6 @@ import { Serializer } from 'ember-flexberry-data';
 
 export default Serializer.Offline.extend(DS.EmbeddedRecordsMixin, {
   attrs: {
-    auditEntity: { serialize: 'id', deserialize: 'records' },
+    ICSSoftSTORMNETBusinessAuditObjectsAuditFields: { serialize: 'ids', deserialize: 'records' },
   },
 });
