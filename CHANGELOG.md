@@ -4,6 +4,9 @@
 ### Added
 - Synchronization offline changes, using `syncUp` method in the `Syncer` class.
 
+### Fixed
+- Added missing files to `app/initializers` which are required for offline support.
+
 ## [0.4.0] - 2016-08-14
 ### Added
 - Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
