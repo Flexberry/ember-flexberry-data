@@ -1,8 +1,10 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.5.0-beta.0] - 2016-08-19
 ### Added
-- Synchronization offline changes, using `syncUp` method in the `Syncer` class.
+- Synchronization of model changes made in offline mode using `syncUp` method (with a server) in `Syncer` class.
 
 ### Fixed
 - Added missing files to `app/initializers` which are required for offline support.
