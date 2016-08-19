@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Synchronization offline changes, using `syncUp` method in the `Syncer` class.
 
 ## [0.4.0] - 2016-08-14
 ### Added
