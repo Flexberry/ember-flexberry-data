@@ -187,7 +187,7 @@ export default Ember.Object.extend({
   syncUp(continueOnError) {
     let _this = this;
     let store = Ember.getOwner(this).lookup('service:store');
-    return _this.get('offlineStore').query('iCSSoftSTORMNETBusinessAuditObjectsAuditEntity', {
+    return _this.get('offlineStore').query('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
       // TODO: Needs sort by `operationTime`.
     }).then((jobs) => {
       // TODO: Delete `sortBy` after sort by `operationTime`.
@@ -333,14 +333,14 @@ export default Ember.Object.extend({
   /**
   */
   _newAuditEntity(auditData) {
-    return this.get('offlineStore').createRecord('iCSSoftSTORMNETBusinessAuditObjectsAuditEntity', auditData).save();
+    return this.get('offlineStore').createRecord('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', auditData).save();
   },
 
   /**
   */
   _updateAuditEntity(auditData) {
     let _this = this;
-    return _this.get('offlineStore').queryRecord('iCSSoftSTORMNETBusinessAuditObjectsAuditEntity', {
+    return _this.get('offlineStore').queryRecord('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
       objectPrimaryKey: auditData.objectPrimaryKey,
     }).then((auditEntity) => {
       if (auditEntity) {
@@ -380,7 +380,7 @@ export default Ember.Object.extend({
   */
   _createAuditField(auditEntity, attributeName, attributeData) {
     let _this = this;
-    return _this.get('offlineStore').createRecord('iCSSoftSTORMNTTBusinessAuditObjectsAuditField', {
+    return _this.get('offlineStore').createRecord('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', {
       field: attributeName,
       oldValue: attributeData[0],
       newValue: attributeData[1],
