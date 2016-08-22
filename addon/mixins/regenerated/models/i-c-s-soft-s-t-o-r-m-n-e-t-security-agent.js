@@ -18,9 +18,9 @@ export let Model = Ember.Mixin.create({
   update: DS.attr('boolean'),
   delete: DS.attr('boolean'),
   execute: DS.attr('boolean'),
-  createTime: DS.attr('string'),
+  createTime: DS.attr('date'),
   creator: DS.attr('string'),
-  editTime: DS.attr('string'),
+  editTime: DS.attr('date'),
   editor: DS.attr('string'),
   validations: {
     name: { presence: true },
