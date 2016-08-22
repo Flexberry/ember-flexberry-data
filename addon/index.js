@@ -45,6 +45,8 @@ import { StringPredicate }from './query/predicate';
 import { DetailPredicate } from './query/predicate';
 import { createPredicate } from './query/predicate';
 
+import UserService from './services/user';
+
 /**
   This namespace contains classes to support work in offline mode.
 
@@ -134,10 +136,20 @@ Query.createPredicate = createPredicate;
 let Utils = createNamespace();
 Utils.Information = Information;
 
+/**
+  This namespace contains security claseses.
+
+  @class Security
+  @static
+  @public
+*/
+let Security = createNamespace();
+Security.UserService = UserService;
+
 function createNamespace() {
   return Ember.Namespace.create({
     VERSION: version
   });
 }
 
-export { Projection, Offline, Adapter, Serializer, Query, Utils };
+export { Projection, Offline, Adapter, Serializer, Query, Utils, Security };
