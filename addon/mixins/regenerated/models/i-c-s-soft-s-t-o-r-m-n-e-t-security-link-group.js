@@ -3,9 +3,9 @@ import DS from 'ember-data';
 import { Projection } from 'ember-flexberry-data';
 
 export let Model = Ember.Mixin.create({
-  createTime: DS.attr('string'),
+  createTime: DS.attr('date'),
   creator: DS.attr('string'),
-  editTime: DS.attr('string'),
+  editTime: DS.attr('date'),
   editor: DS.attr('string'),
   group: DS.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', { inverse: null, async: false }),
   user: DS.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', { inverse: null, async: false }),
