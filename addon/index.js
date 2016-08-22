@@ -47,6 +47,8 @@ import { createPredicate } from './query/predicate';
 
 import UserService from './services/user';
 
+import AuditModelMixin from './mixins/audit-model';
+
 /**
   This namespace contains classes to support work in offline mode.
 
@@ -146,10 +148,20 @@ Utils.Information = Information;
 let Security = createNamespace();
 Security.UserService = UserService;
 
+/**
+  This namespace contains audit claseses.
+
+  @class Audit
+  @static
+  @public
+*/
+let Audit = createNamespace();
+Audit.ModelMixin = AuditModelMixin;
+
 function createNamespace() {
   return Ember.Namespace.create({
     VERSION: version
   });
 }
 
-export { Projection, Offline, Adapter, Serializer, Query, Utils, Security };
+export { Projection, Offline, Adapter, Serializer, Query, Utils, Security, Audit };
