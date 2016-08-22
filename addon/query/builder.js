@@ -3,6 +3,7 @@ import DS from 'ember-data';
 import BaseBuilder from './base-builder';
 import { createPredicate } from './predicate';
 import OrderByClause from './order-by-clause';
+import QueryObject from './query-object';
 
 /**
  * Class of builder for query.
@@ -187,19 +188,18 @@ export default class Builder extends BaseBuilder {
       Object.keys(tree.expand).forEach(i => this._expand[i] = tree.expand[i]);
     }
 
-    // TODO: Use special class.
-    return {
-      id: this._id,
-      modelName: this._modelName,
-      predicate: this._predicate,
-      order: this._orderByClause,
-      top: this._top,
-      skip: this._skip,
-      count: this._isCount,
-      expand: this._expand,
-      select: Object.keys(this._select),
-      projectionName: this._projectionName
-    };
+    return new QueryObject(
+      this._modelName,
+      this._id,
+      this._projectionName,
+      this._predicate,
+      this._orderByClause,
+      this._top,
+      this._skip,
+      this._isCount,
+      this._expand,
+      Object.keys(this._select)
+    );
   }
 
   _getQueryTree(projection, store) {
