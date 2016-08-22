@@ -254,10 +254,10 @@ export default Ember.Object.extend({
   */
   _runJob(store, job) {
     switch (job.get('operationType')) {
-      case 'created': return this._runCreatingJob(store, job);
-      case 'updated': return this._runUpdatingJob(store, job);
-      case 'deleted': return this._runRemovingJob(store, job);
-      default: throw new Error('Unknown operation type.');
+      case 'INSERT': return this._runCreatingJob(store, job);
+      case 'UPDATE': return this._runUpdatingJob(store, job);
+      case 'DELETE': return this._runRemovingJob(store, job);
+      default: throw new Error('Unsupported operation type.');
     }
   },
 
@@ -270,7 +270,7 @@ export default Ember.Object.extend({
     job.get('auditFields').forEach((field) => {
       attributes[field.get('field')] = field.get('newValue');
     });
-    return store.createRecord(job.get('objectType'), attributes, true).save().then(() => {
+    return store.createRecord(job.get('objectType.name'), attributes, true).save().then(() => {
       job.set('executionResult', 'Executed');
       return job.save();
     }).catch((/*reason*/) => {
@@ -326,8 +326,10 @@ export default Ember.Object.extend({
   /**
   */
   _createAuditEntity(record) {
-    let auditData = this._auditDataFromRecord(record);
-    return this.get('auditEnabled') ? this._newAuditEntity(auditData) : this._updateAuditEntity(auditData);
+    let _this = this;
+    return _this._auditDataFromRecord(record).then(
+      auditData => _this.get('auditEnabled') ? _this._newAuditEntity(auditData) : _this._updateAuditEntity(auditData)
+    );
   },
 
   /**
@@ -345,7 +347,7 @@ export default Ember.Object.extend({
     }).then((auditEntity) => {
       if (auditEntity) {
         return RSVP.all(auditEntity.get('auditFields').map(field => field.destroyRecord())).then(() => {
-          if (auditData.operationType === 'deleted' && auditEntity.get('operationType') === 'created') {
+          if (auditData.operationType === 'DELETE' && auditEntity.get('operationType') === 'INSERT') {
             return auditEntity.destroyRecord();
           } else {
             delete auditData.operationType;
@@ -363,7 +365,7 @@ export default Ember.Object.extend({
   */
   _createAuditFields(auditEntity, record) {
     let promises = [];
-    if (auditEntity.get('operationType') !== 'deleted') {
+    if (auditEntity.get('operationType') !== 'DELETE') {
       let changes = this._changesFromRecord(record);
       for (let change in changes) {
         promises.push(this._createAuditField(auditEntity, change, changes[change]));
@@ -391,16 +393,51 @@ export default Ember.Object.extend({
   /**
   */
   _auditDataFromRecord(record) {
-    return {
-      objectPrimaryKey: record.get('id'),
-      operationTime: new Date(),
-      operationType: record.get('dirtyType'),
-      createTime: record.get('createTime'),
-      creator: record.get('creator'),
-      editTime: record.get('editTime'),
-      editor: record.get('editor'),
-      objectType: record._createSnapshot().modelName,
-    };
+    let _this = this;
+    let userService = Ember.getOwner(_this).lookup('service:user');
+    let operationType = _this._getOperationType(record.get('dirtyType'));
+    return userService.getCurrentUser().then(currentUser => _this._getObjectType(record._createSnapshot().modelName).then(objectType => ({
+          objectPrimaryKey: record.get('id'),
+          operationTime: new Date(),
+          operationType: operationType,
+          executionResult: 'Unexecuted',
+          createTime: record.get('createTime'),
+          creator: record.get('creator'),
+          editTime: record.get('editTime'),
+          editor: record.get('editor'),
+          user: currentUser,
+          objectType: objectType,
+        })
+      )
+    );
+  },
+
+  /**
+  */
+  _getObjectType(objectTypeName) {
+    let _this = this;
+    return _this.get('offlineStore').queryRecord('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', {
+      name: objectTypeName,
+    }).then((objectType) => {
+      if (objectType) {
+        return objectType;
+      } else {
+        return _this.get('offlineStore').createRecord('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', {
+          name: objectTypeName,
+        }).save();
+      }
+    });
+  },
+
+  /**
+  */
+  _getOperationType(dirtyType) {
+    switch (dirtyType) {
+      case 'created': return 'INSERT';
+      case 'updated': return 'UPDATE';
+      case 'deleted': return 'DELETE';
+      default: throw new Error('Unknown dirty type.');
+    }
   },
 
   /**
@@ -428,7 +465,7 @@ export default Ember.Object.extend({
   */
   _createQuery(store, job) {
     let builder = new Builder(store)
-      .from(job.get('objectType'))
+      .from(job.get('objectType.name'))
       .byId(job.get('objectPrimaryKey'));
     let query = builder.build();
     query.useOnlineStore = true;
