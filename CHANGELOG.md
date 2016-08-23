@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [0.5.0-beta.1] - 2016-08-23
+## [0.5.0-beta.2] - 2016-08-23
 ### Changed
 - Updated audit model to match server model.
 
