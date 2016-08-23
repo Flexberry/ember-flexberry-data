@@ -13,7 +13,7 @@ export default Ember.Service.extend({
       useOnlineStore: false,
     }).then((users) => {
       if (users.get('length')) {
-        return users.get('firstObject');
+        return new Ember.RSVP.resolve(users.get('firstObject'));
       } else {
         return store.createRecord('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', {
           name: 'user',
