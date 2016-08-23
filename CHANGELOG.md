@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Updated audit model to match OData server model.
 
 ## [0.5.0-beta.0] - 2016-08-19
 ### Added

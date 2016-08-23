@@ -5,14 +5,9 @@ import startApp from 'dummy/tests/helpers/start-app';
 
 let App;
 
-moduleForModel('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', 'Unit | Serializer | audit-entity-offline', {
+moduleForModel('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', 'Unit | Serializer | agent-offline', {
   needs: [
-    'serializer:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity-offline',
-    'transform:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant',
-    'transform:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation',
-    'model:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field',
-    'model:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type',
-    'model:i-c-s-soft-s-t-o-r-m-n-e-t-security-agent',
+    'serializer:i-c-s-soft-s-t-o-r-m-n-e-t-security-agent-offline',
   ],
 
   beforeEach() {
