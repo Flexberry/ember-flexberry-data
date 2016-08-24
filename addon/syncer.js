@@ -189,6 +189,8 @@ export default Ember.Object.extend({
     let store = Ember.getOwner(this).lookup('service:store');
     return _this.get('offlineStore').query('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
       // TODO: Needs sort by `operationTime`.
+      // TODO: After inject query language support, add filter `executionResult` by `Unexecuted` or `Failed`.
+      executionResult: 'Unexecuted',
     }).then((jobs) => {
       // TODO: Delete `sortBy` after sort by `operationTime`.
       jobs = jobs.sortBy('operationTime');
