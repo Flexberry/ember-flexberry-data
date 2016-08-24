@@ -5,7 +5,7 @@ import { Projection } from 'ember-flexberry-data';
 export let Model = Ember.Mixin.create({
   objectPrimaryKey: DS.attr('string'),
   operationTime: DS.attr('date'),
-  operationType: DS.attr('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation'),
+  operationType: DS.attr('string'),
   executionResult: DS.attr('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant'),
   source: DS.attr('string'),
   serializedField: DS.attr('string'),
