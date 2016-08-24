@@ -10,6 +10,7 @@
 
 ### Fixed
 - Attribute type for `operationType` in `audit-entity` model.
+- Uses `queryRecord` function in `Syncer` caused the error.
 
 ## [0.5.0-beta.2] - 2016-08-23
 ### Changed
