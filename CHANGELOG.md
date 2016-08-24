@@ -1,11 +1,15 @@
 # Change Log
 
 ## [Unreleased]
+### Added
 - Rollback relationships for model, use function:
   - `changedBelongsTo` - to find out what `belongsTo` relationships changed
   - `rollbackBelongsTo` - to perform rollback `belongsTo` relationships
   - `changedHasMany` - to find out what `hasMany` relationships changed
   - `rollbackHasMany` - to perform rollback `hasMany` relationships
+
+### Fixed
+- Attribute type for `operationType` in `audit-entity` model.
 
 ## [0.5.0-beta.2] - 2016-08-23
 ### Changed
