@@ -342,10 +342,11 @@ export default Ember.Object.extend({
   */
   _updateAuditEntity(auditData) {
     let _this = this;
-    return _this.get('offlineStore').queryRecord('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
+    return _this.get('offlineStore').query('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
       objectPrimaryKey: auditData.objectPrimaryKey,
-    }).then((auditEntity) => {
-      if (auditEntity) {
+    }).then((auditEntities) => {
+      if (auditEntities.get('length')) {
+        let auditEntity = auditEntities.get('firstObject');
         return RSVP.all(auditEntity.get('auditFields').map(field => field.destroyRecord())).then(() => {
           if (auditData.operationType === 'DELETE' && auditEntity.get('operationType') === 'INSERT') {
             return auditEntity.destroyRecord();
@@ -416,11 +417,11 @@ export default Ember.Object.extend({
   */
   _getObjectType(objectTypeName) {
     let _this = this;
-    return _this.get('offlineStore').queryRecord('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', {
+    return _this.get('offlineStore').query('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', {
       name: objectTypeName,
-    }).then((objectType) => {
-      if (objectType) {
-        return objectType;
+    }).then((objectTypes) => {
+      if (objectTypes.get('length')) {
+        return new RSVP.resolve(objectTypes.get('firstObject'));
       } else {
         return _this.get('offlineStore').createRecord('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', {
           name: objectTypeName,
