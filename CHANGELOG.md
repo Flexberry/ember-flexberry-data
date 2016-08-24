@@ -1,13 +1,36 @@
 # Change Log
 
 ## [Unreleased]
-### Added
-- Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
 - Rollback relationships for model, use function:
   - `changedBelongsTo` - to find out what `belongsTo` relationships changed
   - `rollbackBelongsTo` - to perform rollback `belongsTo` relationships
   - `changedHasMany` - to find out what `hasMany` relationships changed
   - `rollbackHasMany` - to perform rollback `hasMany` relationships
+
+## [0.5.0-beta.2] - 2016-08-23
+### Changed
+- Updated audit model to match server model.
+
+## [0.5.0-beta.0] - 2016-08-19
+### Added
+- Synchronization of model changes made in offline mode using `syncUp` method (with a server) in `Syncer` class.
+
+### Fixed
+- Added missing files to `app/initializers` which are required for offline support.
+
+## [0.4.0] - 2016-08-14
+### Added
+- Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
+- `decimal` transform for ability to use '.' and ',' as decimal separator in float numbers. So now it is possible to use `decimal` type for declaring attributes of models.
+
+### Changed
+- Function `enumCaptions` now returns object without null values.
+- Offline support:
+    - It is not necessary now to specify projection when syncing down or reading data from offline storage.
+
+### Fixed
+- Using `pathForType` function in `ODataAdapter` for building URL.
+- It is possible now to specify `namespace` property in `ODataAdapter` for building URL.
 
 ## [0.3.1] - 2016-07-26
 ### Added

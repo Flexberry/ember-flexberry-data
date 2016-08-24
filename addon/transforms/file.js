@@ -1,5 +1,5 @@
 /**
-  @module ember-flexberry
+  @module ember-flexberry-data
 */
 
 import StringTransform from 'ember-data/-private/transforms/string';
