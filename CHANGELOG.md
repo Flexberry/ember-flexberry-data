@@ -1,16 +1,18 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.5.0-beta.3] - 2016-08-24
 ### Added
-- Rollback relationships for model, use function:
-  - `changedBelongsTo` - to find out what `belongsTo` relationships changed
-  - `rollbackBelongsTo` - to perform rollback `belongsTo` relationships
-  - `changedHasMany` - to find out what `hasMany` relationships changed
-  - `rollbackHasMany` - to perform rollback `hasMany` relationships
+- Methods for rollback relationships of model:
+  - `changedBelongsTo` - to find out `belongsTo` relationships were changed.
+  - `rollbackBelongsTo` - to perform rollback `belongsTo` relationships operation.
+  - `changedHasMany` - to find out `hasMany` relationships were changed.
+  - `rollbackHasMany` - to perform rollback `hasMany` relationships operation.
 
 ### Fixed
 - Attribute type for `operationType` in `audit-entity` model.
-- Uses `queryRecord` function in `Syncer` caused the error.
+- Now using `query` method instead of `queryRecord` in `Syncer` because of [issue in `ember-data@2.4.3`](https://github.com/emberjs/data/issues/4310).
 
 ## [0.5.0-beta.2] - 2016-08-23
 ### Changed
