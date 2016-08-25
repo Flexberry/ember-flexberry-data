@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 ### Fixed
+- Using captions instead keys for enum fields in `syncer`.
 - Missing attributes in `audit-entity-offline` serializer.
 
 ## [0.5.0-beta.3] - 2016-08-24

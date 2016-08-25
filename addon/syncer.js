@@ -242,7 +242,7 @@ export default Ember.Object.extend({
   */
   _endJob(job) {
     return new RSVP.Promise((resolve, reject) => {
-      if (job.get('executionResult') === 'Executed') {
+      if (job.get('executionResult') === 'Выполнено') {
         RSVP.all(job.get('auditFields').map(field => field.destroyRecord())).then(() => {
           resolve(job.destroyRecord());
         });
@@ -273,11 +273,11 @@ export default Ember.Object.extend({
       attributes[field.get('field')] = field.get('newValue');
     });
     return store.createRecord(job.get('objectType.name'), attributes, true).save().then(() => {
-      job.set('executionResult', 'Executed');
+      job.set('executionResult', 'Выполнено');
       return job.save();
     }).catch((/*reason*/) => {
       // TODO: Resolve conflicts here.
-      job.set('executionResult', 'Failed');
+      job.set('executionResult', 'Ошибка');
       return job.save();
     });
   },
@@ -292,11 +292,11 @@ export default Ember.Object.extend({
           record.set(field.get('field'), field.get('newValue'));
         });
         return record.save().then(() => {
-          job.set('executionResult', 'Executed');
+          job.set('executionResult', 'Выполнено');
           return job.save();
         }).catch((/*reason*/) => {
           // TODO: Resolve conflicts here.
-          job.set('executionResult', 'Failed');
+          job.set('executionResult', 'Ошибка');
           return job.save();
         });
       } else {
@@ -312,11 +312,11 @@ export default Ember.Object.extend({
     return store.queryRecord(query.modelName, query).then((record) => {
       if (record) {
         return record.destroyRecord().then(() => {
-          job.set('executionResult', 'Executed');
+          job.set('executionResult', 'Выполнено');
           return job.save();
         }).catch((/*reason*/) => {
           // TODO: Resolve conflicts here.
-          job.set('executionResult', 'Failed');
+          job.set('executionResult', 'Ошибка');
           return job.save();
         });
       } else {
@@ -403,7 +403,7 @@ export default Ember.Object.extend({
           objectPrimaryKey: record.get('id'),
           operationTime: new Date(),
           operationType: operationType,
-          executionResult: 'Unexecuted',
+          executionResult: 'Не выполнено',
           createTime: record.get('createTime'),
           creator: record.get('creator'),
           editTime: record.get('editTime'),
