@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Using key for set value in enum fields.
 
 ## [0.5.0-beta.3] - 2016-08-24
 ### Added
