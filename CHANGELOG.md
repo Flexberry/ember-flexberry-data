@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Missing attributes in `audit-entity-offline` serializer.
 
 ## [0.5.0-beta.3] - 2016-08-24
 ### Added
