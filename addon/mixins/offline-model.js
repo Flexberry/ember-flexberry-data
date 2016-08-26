@@ -63,26 +63,23 @@ export default Ember.Mixin.create(AuditModelMixin, {
     return new Ember.RSVP.Promise((resolve, reject) => {
       if (_this.get('readOnly')) {
         reject(new Error('Attempt to save readonly model instane.'));
-      } else {
-        let store = Ember.getOwner(_this).lookup('service:store');
-        if (_this.get('hasDirtyAttributes') && !store.get('offlineGlobals.isOnline')) {
-          _this.get('syncer').createJob(_this).then((auditEntity) => {
-            if (auditEntity.get('objectPrimaryKey')) {
-              resolve(__super.call(_this, ...arguments));
-            } else {
-              __super.call(_this, ...arguments).then((record) => {
-                auditEntity.set('objectPrimaryKey', record.get('id'));
-                auditEntity.save().then(() => {
-                  resolve(record);
-                });
+      } else if (_this.get('hasDirtyAttributes') && _this.get('offlineGlobals.isOnline')) {
+        _this.get('syncer').createJob(_this).then((auditEntity) => {
+          if (auditEntity.get('objectPrimaryKey')) {
+            resolve(__super.call(_this, ...arguments));
+          } else {
+            __super.call(_this, ...arguments).then((record) => {
+              auditEntity.set('objectPrimaryKey', record.get('id'));
+              auditEntity.save().then(() => {
+                resolve(record);
               });
-            }
-          }).catch((reason) => {
-            reject(reason);
-          });
-        } else {
-          resolve(__super.call(_this, ...arguments));
-        }
+            });
+          }
+        }).catch((reason) => {
+          reject(reason);
+        });
+      } else {
+        resolve(__super.call(_this, ...arguments));
       }
     });
   },
