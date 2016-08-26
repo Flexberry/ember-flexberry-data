@@ -47,17 +47,7 @@ export default Ember.Mixin.create(AuditModelMixin, {
     @type Syncer
     @readOnly
   */
-  syncer: null,
-
-  /*
-    Model initialization.
-  */
-  init() {
-    this._super(...arguments);
-
-    let syncer = Ember.getOwner(this).lookup('syncer:main');
-    this.set('syncer', syncer);
-  },
+  syncer: Ember.inject.service('syncer'),
 
   /**
     Save the record and persist any changes to the record to an external source via the adapter.
