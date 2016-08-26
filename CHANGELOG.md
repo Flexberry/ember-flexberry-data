@@ -1,6 +1,10 @@
 # Change Log
 
-## [0.5.0-beta.3] - 2016-08-25
+## [Unreleased]
+### Changed
+- Now `syncer` is a ember service.
+
+## [0.5.0-beta.4] - 2016-08-25
 ### Fixed
 - Using captions instead keys for enum fields in `syncer`.
 - Missing attributes in `audit-entity-offline` serializer.
