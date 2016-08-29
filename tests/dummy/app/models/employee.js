@@ -6,8 +6,8 @@ let Employee = Projection.Model.extend({
   'First Name': attr('string'),
   'Last Name': attr('string'),
   'Birth Date': attr('date'),
-  'Age': attr('number'),
-  'Name': attr('string'),
+  Age: attr('number'),
+  Name: attr('string'),
   manager: DS.belongsTo('employee')
 });
 

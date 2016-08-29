@@ -115,7 +115,7 @@ function getSchemaFromProjection(store, query) {
       if (fields.length > 1) {
         let lastModelName = query.modelName;
         for (let i = 1; i < fields.length; i++) {
-          let meta = information.getMeta(lastModelName, fields[i-1]);
+          let meta = information.getMeta(lastModelName, fields[i - 1]);
           lastModelName = meta.type;
           if (Ember.isEmpty(storeSchema[lastModelName])) {
             storeSchema[lastModelName] = 'id';
