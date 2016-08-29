@@ -72,3 +72,53 @@ test('information | getType | nested', function (assert) {
   assert.equal(information.getType('customer', 'manager.manager.manager.First Name'), 'string');
   assert.equal(information.getType('customer', 'manager.manager.manager.id'), 'string');
 });
+
+test('information | isAttribute | own attribute', function (assert) {
+  assert.ok(information.isAttribute('ember-flexberry-dummy-suggestion', 'id'));
+  assert.ok(information.isAttribute('ember-flexberry-dummy-suggestion', 'address'));
+  assert.notOk(information.isAttribute('ember-flexberry-dummy-suggestion', 'author'));
+  assert.notOk(information.isAttribute('ember-flexberry-dummy-suggestion', 'userVotes'));
+});
+
+test('information | isAttribute | nested', function (assert) {
+  assert.ok(information.isAttribute('ember-flexberry-dummy-suggestion', 'type.id'));
+  assert.ok(information.isAttribute('ember-flexberry-dummy-suggestion', 'type.name'));
+  assert.ok(information.isAttribute('ember-flexberry-dummy-suggestion', 'type.parent.name'));
+  assert.notOk(information.isAttribute('ember-flexberry-dummy-suggestion', 'type.parent'));
+  assert.notOk(information.isAttribute('ember-flexberry-dummy-suggestion', 'type.parent.parent'));
+  assert.notOk(information.isAttribute('ember-flexberry-dummy-suggestion', 'type.localizedTypes'));
+});
+
+test('information | isRelationship | own attribute', function (assert) {
+  assert.ok(information.isRelationship('ember-flexberry-dummy-suggestion', 'author'));
+  assert.ok(information.isRelationship('ember-flexberry-dummy-suggestion', 'userVotes'));
+  assert.notOk(information.isRelationship('ember-flexberry-dummy-suggestion', 'id'));
+  assert.notOk(information.isRelationship('ember-flexberry-dummy-suggestion', 'address'));
+});
+
+test('information | isRelationship | nested', function (assert) {
+  assert.ok(information.isRelationship('ember-flexberry-dummy-suggestion', 'type.parent'));
+  assert.ok(information.isRelationship('ember-flexberry-dummy-suggestion', 'type.parent.parent'));
+  assert.ok(information.isRelationship('ember-flexberry-dummy-suggestion', 'type.localizedTypes'));
+  assert.notOk(information.isRelationship('ember-flexberry-dummy-suggestion', 'type.id'));
+  assert.notOk(information.isRelationship('ember-flexberry-dummy-suggestion', 'type.name'));
+  assert.notOk(information.isRelationship('ember-flexberry-dummy-suggestion', 'type.parent.id'));
+  assert.notOk(information.isRelationship('ember-flexberry-dummy-suggestion', 'type.parent.name'));
+});
+
+test('information | isKey | own attribute', function (assert) {
+  assert.ok(information.isKey('ember-flexberry-dummy-suggestion', 'id'));
+  assert.ok(information.isKey('ember-flexberry-dummy-suggestion', 'author'));
+  assert.notOk(information.isKey('ember-flexberry-dummy-suggestion', 'userVotes'));
+  assert.notOk(information.isKey('ember-flexberry-dummy-suggestion', 'address'));
+});
+
+test('information | isKey | nested', function (assert) {
+  assert.ok(information.isKey('ember-flexberry-dummy-suggestion', 'type.id'));
+  assert.ok(information.isKey('ember-flexberry-dummy-suggestion', 'type.parent'));
+  assert.ok(information.isKey('ember-flexberry-dummy-suggestion', 'type.parent.id'));
+  assert.ok(information.isKey('ember-flexberry-dummy-suggestion', 'type.parent.parent'));
+  assert.notOk(information.isKey('ember-flexberry-dummy-suggestion', 'type.localizedTypes'));
+  assert.notOk(information.isKey('ember-flexberry-dummy-suggestion', 'type.name'));
+  assert.notOk(information.isKey('ember-flexberry-dummy-suggestion', 'type.parent.name'));
+});

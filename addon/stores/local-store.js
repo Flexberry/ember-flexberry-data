@@ -17,8 +17,7 @@ export default DS.Store.extend({
   init: function() {
     let owner = Ember.getOwner(this);
     let adapter = OfflineAdapter.create(owner.ownerInjection(), {
-      caching: 'none',
-      namespace: 'ember-flexberry-offline:store',
+      databaseName: 'ember-flexberry-data:store',
     });
 
     this.set('adapter', adapter);
