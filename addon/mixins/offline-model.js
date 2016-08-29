@@ -63,7 +63,7 @@ export default Ember.Mixin.create(AuditModelMixin, {
     return new Ember.RSVP.Promise((resolve, reject) => {
       if (_this.get('readOnly')) {
         reject(new Error('Attempt to save readonly model instane.'));
-      } else if (_this.get('hasDirtyAttributes') && _this.get('offlineGlobals.isOnline')) {
+      } else if (_this.get('hasDirtyAttributes') && !_this.get('offlineGlobals.isOnline')) {
         _this.get('syncer').createJob(_this).then((auditEntity) => {
           if (auditEntity.get('objectPrimaryKey')) {
             resolve(__super.call(_this, ...arguments));
