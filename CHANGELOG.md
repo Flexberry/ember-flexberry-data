@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 ### Changed
-- Now `syncer` is a ember service.
+- Now `syncer` is an ember service.
 
 ## [0.5.0-beta.4] - 2016-08-25
 ### Fixed
