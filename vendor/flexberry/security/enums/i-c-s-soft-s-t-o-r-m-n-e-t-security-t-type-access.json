@@ -1,0 +1,12 @@
+﻿{
+  "className": "tTypeAccess",
+  "enumObjects": {
+    "Full": null,
+    "Read": null,
+    "Insert": null,
+    "Update": null,
+    "Delete": null,
+    "Execute": null,
+    "Print": ""
+  }
+}
