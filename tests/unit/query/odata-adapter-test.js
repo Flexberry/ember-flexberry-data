@@ -93,6 +93,14 @@ test('adapter | odata | simple predicate | eq | boolean', function (assert) {
   runTest(assert, builder, 'EmberFlexberryDummyApplicationUsers', `$filter=Activated eq true`);
 });
 
+test('adapter | odata | simple predicate | eq | enum', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user').where('gender', FilterOperator.Eq, 'Male');
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyApplicationUsers', `$filter=Gender eq EmberFlexberryDummyGender'Male'`);
+});
+
 test('adapter | odata | simple predicate | neq', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Neq, 'Vasya');
