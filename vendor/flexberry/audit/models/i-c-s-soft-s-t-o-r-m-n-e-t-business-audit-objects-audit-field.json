@@ -1,0 +1,128 @@
+﻿{
+  "name": "ICSSoftSTORMNETBusinessAuditObjectsAuditField",
+  "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field",
+  "className": "AuditField",
+  "parentModelName": null,
+  "parentClassName": null,
+  "attrs": [
+    {
+      "name": "field",
+      "type": "string",
+      "flexberryType": "typeString100",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "caption",
+      "type": "string",
+      "flexberryType": "string",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "oldValue",
+      "type": "string",
+      "flexberryType": "typeStringMax",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "newValue",
+      "type": "string",
+      "flexberryType": "typeStringMax",
+      "notNull": false,
+      "defaultValue": ""
+    }
+  ],
+  "belongsTo": [
+    {
+      "polymorphic": false,
+      "presence": false,
+      "name": "mainChange",
+      "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field",
+      "inverse": null
+    },
+    {
+      "polymorphic": false,
+      "presence": true,
+      "name": "auditEntity",
+      "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity",
+      "inverse": "auditFields"
+    }
+  ],
+  "hasMany": [],
+  "projections": [
+    {
+      "name": "AuditEntityUpdateView",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field",
+      "attrs": [
+        {
+          "name": "field",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "oldValue",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "newValue",
+          "caption": "",
+          "hidden": false,
+          "index": 2
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "AuditFieldE",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field",
+      "attrs": [
+        {
+          "name": "field",
+          "caption": "Поле",
+          "hidden": true,
+          "index": 0
+        },
+        {
+          "name": "caption",
+          "caption": "Имя поля",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "oldValue",
+          "caption": "Старое значение",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "newValue",
+          "caption": "Новое значение",
+          "hidden": false,
+          "index": 3
+        }
+      ],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "MainChange",
+          "belongsTo": [],
+          "hidden": true,
+          "attrs": [],
+          "index": 4,
+          "caption": "",
+          "name": "mainChange",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    }
+  ]
+}

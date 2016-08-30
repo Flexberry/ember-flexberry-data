@@ -1,0 +1,381 @@
+﻿{
+  "name": "ICSSoftSTORMNETBusinessAuditObjectsAuditEntity",
+  "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity",
+  "className": "AuditEntity",
+  "parentModelName": null,
+  "parentClassName": null,
+  "attrs": [
+    {
+      "name": "objectPrimaryKey",
+      "type": "string",
+      "flexberryType": "object",
+      "notNull": true,
+      "defaultValue": ""
+    },
+    {
+      "name": "operationTime",
+      "type": "date",
+      "flexberryType": "typeDate",
+      "notNull": true,
+      "defaultValue": ""
+    },
+    {
+      "name": "operationType",
+      "type": "string",
+      "flexberryType": "typeString100",
+      "notNull": true,
+      "defaultValue": ""
+    },
+    {
+      "name": "executionResult",
+      "type": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant",
+      "flexberryType": "tExecutionVariant",
+      "notNull": true,
+      "defaultValue": ""
+    },
+    {
+      "name": "source",
+      "type": "string",
+      "flexberryType": "typeString255",
+      "notNull": true,
+      "defaultValue": ""
+    },
+    {
+      "name": "serializedField",
+      "type": "string",
+      "flexberryType": "typeStringMax",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "createTime",
+      "type": "date",
+      "flexberryType": "NullableDateTime",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "creator",
+      "type": "string",
+      "flexberryType": "string",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "editTime",
+      "type": "date",
+      "flexberryType": "NullableDateTime",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "editor",
+      "type": "string",
+      "flexberryType": "string",
+      "notNull": false,
+      "defaultValue": ""
+    }
+  ],
+  "belongsTo": [
+    {
+      "polymorphic": false,
+      "presence": true,
+      "name": "user",
+      "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-agent",
+      "inverse": null
+    },
+    {
+      "polymorphic": false,
+      "presence": true,
+      "name": "objectType",
+      "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type",
+      "inverse": null
+    }
+  ],
+  "hasMany": [
+    {
+      "name": "auditFields",
+      "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field",
+      "inverse": "auditEntity"
+    }
+  ],
+  "projections": [
+    {
+      "name": "AuditEntityE",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity",
+      "attrs": [
+        {
+          "name": "objectPrimaryKey",
+          "caption": "Идентификатор",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "operationTime",
+          "caption": "Время операции",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "operationType",
+          "caption": "Тип операции",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "executionResult",
+          "caption": "Результат",
+          "hidden": false,
+          "index": 5
+        },
+        {
+          "name": "source",
+          "caption": "Источник",
+          "hidden": false,
+          "index": 6
+        },
+        {
+          "name": "createTime",
+          "caption": "Создание",
+          "hidden": false,
+          "index": 9
+        },
+        {
+          "name": "creator",
+          "caption": "Создатель",
+          "hidden": false,
+          "index": 10
+        },
+        {
+          "name": "editTime",
+          "caption": "Редактирование",
+          "hidden": false,
+          "index": 11
+        },
+        {
+          "name": "editor",
+          "caption": "Редактор",
+          "hidden": false,
+          "index": 12
+        }
+      ],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "ObjectType",
+          "belongsTo": [],
+          "hidden": true,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "Тип объекта",
+              "hidden": false,
+              "index": 2
+            }
+          ],
+          "index": 1,
+          "caption": "",
+          "name": "objectType",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type",
+          "inverse": null
+        },
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "Имя",
+              "hidden": false,
+              "index": 7
+            },
+            {
+              "name": "login",
+              "caption": "Логин",
+              "hidden": false,
+              "index": 8
+            }
+          ],
+          "index": -1,
+          "caption": "Имя",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": [
+        {
+          "projectionName": "AuditFieldE",
+          "caption": "Изменения",
+          "name": "auditFields",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field",
+          "inverse": null
+        }
+      ]
+    },
+    {
+      "name": "AuditEntityL",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity",
+      "attrs": [
+        {
+          "name": "objectPrimaryKey",
+          "caption": "Идентификатор",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "operationTime",
+          "caption": "Время операции",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "operationType",
+          "caption": "Тип операции",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "executionResult",
+          "caption": "Результат",
+          "hidden": false,
+          "index": 5
+        },
+        {
+          "name": "source",
+          "caption": "Источник",
+          "hidden": false,
+          "index": 7
+        }
+      ],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "ObjectType",
+          "belongsTo": [],
+          "hidden": true,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "Тип объекта",
+              "hidden": false,
+              "index": 2
+            }
+          ],
+          "index": 1,
+          "caption": "",
+          "name": "objectType",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type",
+          "inverse": null
+        },
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "Инициатор",
+              "hidden": false,
+              "index": 6
+            }
+          ],
+          "index": -1,
+          "caption": "Инициатор",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    },
+    {
+      "name": "AuditEntityUpdateView",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity",
+      "attrs": [
+        {
+          "name": "operationTime",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "executionResult",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": [
+        {
+          "projectionName": "AuditEntityUpdateView",
+          "caption": "",
+          "name": "auditFields",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field",
+          "inverse": null
+        }
+      ]
+    },
+    {
+      "name": "ConstructNotStoredAttr",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity",
+      "attrs": [
+        {
+          "name": "objectPrimaryKey",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "operationTime",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "operationType",
+          "caption": "",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "executionResult",
+          "caption": "",
+          "hidden": false,
+          "index": 4
+        }
+      ],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "",
+              "hidden": false,
+              "index": 3
+            }
+          ],
+          "index": -1,
+          "caption": "",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    }
+  ]
+}
