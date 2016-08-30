@@ -1,6 +1,10 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Enum support for OData query language adapter.
+- `guid` transform to support adding constraints on attributes with guid type via query language.
+
 ### Changed
 - Now `syncer` is an ember service.
 
