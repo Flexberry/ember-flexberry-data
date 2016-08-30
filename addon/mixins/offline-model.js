@@ -47,17 +47,7 @@ export default Ember.Mixin.create(AuditModelMixin, {
     @type Syncer
     @readOnly
   */
-  syncer: null,
-
-  /*
-    Model initialization.
-  */
-  init() {
-    this._super(...arguments);
-
-    let syncer = Ember.getOwner(this).lookup('syncer:main');
-    this.set('syncer', syncer);
-  },
+  syncer: Ember.inject.service('syncer'),
 
   /**
     Save the record and persist any changes to the record to an external source via the adapter.
@@ -72,27 +62,24 @@ export default Ember.Mixin.create(AuditModelMixin, {
     let __super = _this._super;
     return new Ember.RSVP.Promise((resolve, reject) => {
       if (_this.get('readOnly')) {
-        reject(new Error('Attempt to save readonly model instane.'));
-      } else {
-        let store = Ember.getOwner(_this).lookup('service:store');
-        if (_this.get('hasDirtyAttributes') && !store.get('offlineGlobals.isOnline')) {
-          _this.get('syncer').createJob(_this).then((auditEntity) => {
-            if (auditEntity.get('objectPrimaryKey')) {
-              resolve(__super.call(_this, ...arguments));
-            } else {
-              __super.call(_this, ...arguments).then((record) => {
-                auditEntity.set('objectPrimaryKey', record.get('id'));
-                auditEntity.save().then(() => {
-                  resolve(record);
-                });
+        reject(new Error('Attempt to save readonly model instance.'));
+      } else if (_this.get('hasDirtyAttributes') && !_this.get('offlineGlobals.isOnline')) {
+        _this.get('syncer').createJob(_this).then((auditEntity) => {
+          if (auditEntity.get('objectPrimaryKey')) {
+            resolve(__super.call(_this, ...arguments));
+          } else {
+            __super.call(_this, ...arguments).then((record) => {
+              auditEntity.set('objectPrimaryKey', record.get('id'));
+              auditEntity.save().then(() => {
+                resolve(record);
               });
-            }
-          }).catch((reason) => {
-            reject(reason);
-          });
-        } else {
-          resolve(__super.call(_this, ...arguments));
-        }
+            });
+          }
+        }).catch((reason) => {
+          reject(reason);
+        });
+      } else {
+        resolve(__super.call(_this, ...arguments));
       }
     });
   },

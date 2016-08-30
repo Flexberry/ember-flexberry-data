@@ -21,7 +21,7 @@ import LocalStore from './stores/local-store';
 import OfflineSerializer from './serializers/offline';
 import OfflineAdapter from './adapters/offline';
 import OfflineGlobalsService from './services/offline-globals';
-import Syncer from './syncer';
+import Syncer from './services/syncer';
 
 import OdataAdapter from './adapters/odata';
 import BaseSerializer from './serializers/base';

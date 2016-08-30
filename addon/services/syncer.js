@@ -1,7 +1,7 @@
 import Ember from 'ember';
-import Builder from './query/builder';
-import { reloadLocalRecords, syncDownRelatedRecords } from './utils/reload-local-records';
-import isModelInstance from './utils/is-model-instance';
+import Builder from '../query/builder';
+import { reloadLocalRecords, syncDownRelatedRecords } from '../utils/reload-local-records';
+import isModelInstance from '../utils/is-model-instance';
 
 const { RSVP } = Ember;
 
@@ -35,7 +35,7 @@ const { RSVP } = Ember;
   @namespace Offline
   @extends Ember.Object
 */
-export default Ember.Object.extend({
+export default Ember.Service.extend({
   db: null,
 
   // initialize jobs since jobs may be used before we fetch from localforage
