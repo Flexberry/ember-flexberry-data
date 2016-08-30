@@ -101,6 +101,14 @@ test('adapter | odata | simple predicate | eq | enum', function (assert) {
   runTest(assert, builder, 'EmberFlexberryDummyApplicationUsers', `$filter=Gender eq EmberFlexberryDummyGender'Male'`);
 });
 
+test('adapter | odata | simple predicate | eq | quid', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'employee').where('externalId', FilterOperator.Eq, '0882519a-f62b-4b6d-a73e-3e727ff145cd');
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyApplicationUsers', `$filter=ExternalId eq 0882519a-f62b-4b6d-a73e-3e727ff145cd`);
+});
+
 test('adapter | odata | simple predicate | neq', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Neq, 'Vasya');
