@@ -1,6 +1,14 @@
 # Change Log
 
-## [0.5.0-beta.3] - 2016-08-25
+## [Unreleased]
+### Added
+- Enum support for OData query language adapter.
+- `guid` transform to support adding constraints on attributes with guid type via query language.
+
+### Changed
+- Now `syncer` is an ember service.
+
+## [0.5.0-beta.4] - 2016-08-25
 ### Fixed
 - Using captions instead keys for enum fields in `syncer`.
 - Missing attributes in `audit-entity-offline` serializer.
@@ -30,8 +38,9 @@
 
 ## [0.4.0] - 2016-08-14
 ### Added
-- Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
+- Transforms, models, enums and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
 - `decimal` transform for ability to use '.' and ',' as decimal separator in float numbers. So now it is possible to use `decimal` type for declaring attributes of models.
+- CRUD operations tests for OData.
 
 ### Changed
 - Function `enumCaptions` now returns object without null values.

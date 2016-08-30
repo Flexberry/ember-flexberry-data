@@ -41,7 +41,7 @@ export default DS.Store.extend({
     @type Syncer
     @readOnly
   */
-  syncer: null,
+  syncer: Ember.inject.service('syncer'),
 
   /*
     Store initialization.
@@ -55,10 +55,6 @@ export default DS.Store.extend({
       let onlineStore = DS.Store.create(owner.ownerInjection());
       this.set('onlineStore', onlineStore);
     }
-
-    // Set Syncer.
-    let syncer = owner.lookup('syncer:main');
-    this.set('syncer', syncer);
 
     // Set offline store.
     let offlineStore = owner.lookup('store:local');
