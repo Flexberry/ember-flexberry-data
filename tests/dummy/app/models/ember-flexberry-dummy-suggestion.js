@@ -16,8 +16,7 @@ var Model = Projection.Model.extend({
 
   // This property is for flexberry-lookup component. No inverse relationship here.
   author: DS.belongsTo('ember-flexberry-dummy-application-user', {
-    inverse: null,
-    async: false
+    inverse: null, async: false
   }),
 
   // This property is for flexberry-lookup component. No inverse relationship here.
@@ -104,7 +103,8 @@ Model.defineProjection('SuggestionE', 'ember-flexberry-dummy-suggestion', {
     applicationUser: Projection.belongsTo('ember-flexberry-dummy-application-user', 'Application user', {
       name: Projection.attr('Name', {
         hidden: true
-      })
+      }),
+      eMail: Projection.attr('Email')
     }, {
       displayMemberPath: 'name'
     })
@@ -140,7 +140,8 @@ Model.defineProjection('SuggestionL', 'ember-flexberry-dummy-suggestion', {
   author: Projection.belongsTo('ember-flexberry-dummy-application-user', 'Author', {
     name: Projection.attr('Name', {
       hidden: true
-    })
+    }),
+    eMail: Projection.attr('Email')
   }, {
     displayMemberPath: 'name'
   }),
@@ -207,6 +208,17 @@ Model.defineProjection('FolvWithLimitFunctionExampleView', 'ember-flexberry-dumm
     name: Projection.attr('Name', {
       hidden: true
     })
+  }, {
+    displayMemberPath: 'name'
+  })
+});
+
+// Projection for lookup in block form.
+Model.defineProjection('LookupInBlockFormView', 'ember-flexberry-dummy-suggestion', {
+  editor1: Projection.belongsTo('ember-flexberry-dummy-application-user', 'Editor', {
+    name: Projection.attr('name', { hidden: true }),
+    eMail: Projection.attr('eMail', { hidden: true }),
+    gender: Projection.attr('gender', { hidden: true })
   }, {
     displayMemberPath: 'name'
   })
