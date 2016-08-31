@@ -4,12 +4,19 @@ import createProj from '../utils/create';
 import EmberValidations from 'ember-validations';
 
 /**
- * Model that supports projections.
+ * Base model that supports projections and validations.
  *
  * @module ember-flexberry-data
  * @class Model
  * @namespace Projection
  * @extends DS.Model
+ * @uses EmberValidationsMixin
+ * @uses Ember.EventedMixin
+
+ * @event preSave
+ * @param {Object} event Event object
+ * @param {Promise[]} promises Array to which custom 'preSave' promises could be pushed
+
  * @public
  */
 var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
@@ -104,7 +111,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       }).then(() => this.beforeSave(options)).then(() => {
         // Call to base class 'save' method with right context.
         // The problem is that call to current save method will be already finished,
-        // and traditional _this._super will point to something else, but not to Projection.Model 'save' method,
+        // and traditional _this._super will point to something else, but not to DS.Model 'save' method,
         // so there is no other way, except to call it through the base class prototype.
         if (!options.softSave) {
           return DS.Model.prototype.save.call(this, options);
