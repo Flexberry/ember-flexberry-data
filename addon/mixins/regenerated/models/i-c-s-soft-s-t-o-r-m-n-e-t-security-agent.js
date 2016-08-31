@@ -60,6 +60,17 @@ export let defineProjections = function (model) {
     isRole: Projection.attr(''),
     enabled: Projection.attr('')
   });
+  model.defineProjection('RoleOrGroupE', 'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', {
+    name: Projection.attr(''),
+    enabled: Projection.attr(''),
+    isUser: Projection.attr('', { hidden: true }),
+    isGroup: Projection.attr('', { hidden: true }),
+    isRole: Projection.attr('', { hidden: true }),
+    createTime: Projection.attr('', { hidden: true }),
+    creator: Projection.attr('', { hidden: true }),
+    editTime: Projection.attr('', { hidden: true }),
+    editor: Projection.attr('', { hidden: true })
+  });
   model.defineProjection('RoleOrGroupL', 'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', {
     name: Projection.attr(''),
     enabled: Projection.attr(''),
@@ -133,6 +144,17 @@ export let defineProjections = function (model) {
     creator: Projection.attr('Создатель'),
     editTime: Projection.attr('Дата изменения'),
     editor: Projection.attr('Редактор')
+  });
+  model.defineProjection('UserE', 'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', {
+    name: Projection.attr(''),
+    login: Projection.attr(''),
+    email: Projection.attr(''),
+    enabled: Projection.attr(''),
+    pwd: Projection.attr(''),
+    createTime: Projection.attr('', { hidden: true }),
+    creator: Projection.attr('', { hidden: true }),
+    editTime: Projection.attr('', { hidden: true }),
+    editor: Projection.attr('', { hidden: true })
   });
   model.defineProjection('UserL', 'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', {
     name: Projection.attr(''),

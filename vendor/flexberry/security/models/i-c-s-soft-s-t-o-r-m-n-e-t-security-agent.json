@@ -307,6 +307,68 @@
       "hasMany": []
     },
     {
+      "name": "RoleOrGroupE",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": true,
+          "index": 2
+        },
+        {
+          "name": "isGroup",
+          "caption": "",
+          "hidden": true,
+          "index": 3
+        },
+        {
+          "name": "isRole",
+          "caption": "",
+          "hidden": true,
+          "index": 4
+        },
+        {
+          "name": "createTime",
+          "caption": "",
+          "hidden": true,
+          "index": 5
+        },
+        {
+          "name": "creator",
+          "caption": "",
+          "hidden": true,
+          "index": 6
+        },
+        {
+          "name": "editTime",
+          "caption": "",
+          "hidden": true,
+          "index": 7
+        },
+        {
+          "name": "editor",
+          "caption": "",
+          "hidden": true,
+          "index": 8
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
       "name": "RoleOrGroupL",
       "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
       "attrs": [
@@ -713,6 +775,68 @@
           "caption": "Редактор",
           "hidden": false,
           "index": 5
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "UserE",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "email",
+          "caption": "",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "pwd",
+          "caption": "",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "createTime",
+          "caption": "",
+          "hidden": true,
+          "index": 5
+        },
+        {
+          "name": "creator",
+          "caption": "",
+          "hidden": true,
+          "index": 6
+        },
+        {
+          "name": "editTime",
+          "caption": "",
+          "hidden": true,
+          "index": 7
+        },
+        {
+          "name": "editor",
+          "caption": "",
+          "hidden": true,
+          "index": 8
         }
       ],
       "belongsTo": [],
