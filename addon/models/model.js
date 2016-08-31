@@ -107,7 +107,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
         // and traditional _this._super will point to something else, but not to Projection.Model 'save' method,
         // so there is no other way, except to call it through the base class prototype.
         if (!options.softSave) {
-          return this.prototype.save.call(this, options);
+          return DS.Model.prototype.save.call(this, options);
         }
       }).then(value => {
         // Model validation was successful (model is valid or deleted),
