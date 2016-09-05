@@ -1,3 +1,3 @@
 /* globals Ember */
-var version = '0.5.0-beta.4';
+var version = '0.5.0';
 Ember.libraries.register('Ember Flexberry Data', version);
