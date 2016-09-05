@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
@@ -315,12 +316,12 @@ export default class ODataAdapter extends BaseAdapter {
         } else {
           throw new Error(`Unsupported key type '${meta.keyType}'.`);
         }
+      } else if (meta.isEnum) {
+        value = `${Ember.String.classify(meta.type)}'${predicate.value}'`;
+      } else if (meta.type === 'string') {
+        value = `'${predicate.value}'`;
       } else {
-        if (meta.type === 'string') {
-          value = `'${predicate.value}'`;
-        } else {
-          value = predicate.value;
-        }
+        value = predicate.value;
       }
     }
 

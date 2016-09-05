@@ -10,7 +10,7 @@ export default function decorateAPICall(finderType, superFunc) {
   return function apiCall() {
     var _this = this;
     var args = arguments;
-    var syncer = Ember.getOwner(_this).lookup('syncer:main');
+    var syncer = Ember.getOwner(_this).lookup('service:syncer');
     var _superFinder = superFunc;
 
     if (args.length > 0) {
