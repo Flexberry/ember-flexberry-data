@@ -1,39 +1,25 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.5.0] - 2016-09-05
 ### Added
 - Enum support for OData query language adapter.
 - `guid` transform to support adding constraints on attributes with guid type via query language.
-
-### Changed
-- Now `syncer` is an ember service.
-
-## [0.5.0-beta.4] - 2016-08-25
-### Fixed
-- Using captions instead keys for enum fields in `syncer`.
-- Missing attributes in `audit-entity-offline` serializer.
-
-## [0.5.0-beta.3] - 2016-08-24
-### Added
 - Methods for rollback relationships of model:
   - `changedBelongsTo` - to find out `belongsTo` relationships were changed.
   - `rollbackBelongsTo` - to perform rollback `belongsTo` relationships operation.
   - `changedHasMany` - to find out `hasMany` relationships were changed.
   - `rollbackHasMany` - to perform rollback `hasMany` relationships operation.
-
-### Fixed
-- Attribute type for `operationType` in `audit-entity` model.
-- Now using `query` method instead of `queryRecord` in `Syncer` because of [issue in `ember-data@2.4.3`](https://github.com/emberjs/data/issues/4310).
-
-## [0.5.0-beta.2] - 2016-08-23
-### Changed
-- Updated audit model to match server model.
-
-## [0.5.0-beta.0] - 2016-08-19
-### Added
 - Synchronization of model changes made in offline mode using `syncUp` method (with a server) in `Syncer` class.
+- Models for supporting client side audit.
+
+### Changed
+- Now `syncer` is an ember service.
 
 ### Fixed
+- Using captions instead keys for enum fields in `syncer`.
+- Now using `query` method instead of `queryRecord` in `Syncer` because of [issue in `ember-data@2.4.3`](https://github.com/emberjs/data/issues/4310).
 - Added missing files to `app/initializers` which are required for offline support.
 
 ## [0.4.0] - 2016-08-14
