@@ -1,0 +1,938 @@
+﻿{
+  "name": "ICSSoftSTORMNETSecurityAgent",
+  "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+  "className": "Agent",
+  "parentModelName": null,
+  "parentClassName": null,
+  "attrs": [
+    {
+      "name": "name",
+      "type": "string",
+      "flexberryType": "string80",
+      "notNull": true,
+      "defaultValue": ""
+    },
+    {
+      "name": "login",
+      "type": "string",
+      "flexberryType": "string50",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "pwd",
+      "type": "string",
+      "flexberryType": "string50",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "isUser",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": true,
+      "defaultValue": ""
+    },
+    {
+      "name": "isGroup",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": true,
+      "defaultValue": ""
+    },
+    {
+      "name": "isRole",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": true,
+      "defaultValue": ""
+    },
+    {
+      "name": "connString",
+      "type": "string",
+      "flexberryType": "string",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "enabled",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": false,
+      "defaultValue": "true"
+    },
+    {
+      "name": "email",
+      "type": "string",
+      "flexberryType": "string80",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "full",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "read",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "insert",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "update",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "delete",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "execute",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "createTime",
+      "type": "date",
+      "flexberryType": "AuditNullableDateTime",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "creator",
+      "type": "string",
+      "flexberryType": "string",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "editTime",
+      "type": "date",
+      "flexberryType": "AuditNullableDateTime",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "editor",
+      "type": "string",
+      "flexberryType": "string",
+      "notNull": false,
+      "defaultValue": ""
+    }
+  ],
+  "belongsTo": [],
+  "hasMany": [],
+  "projections": [
+    {
+      "name": "AuditView",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "Имя",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "Логин",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "pwd",
+          "caption": "Пароль",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "isUser",
+          "caption": "Пользователь",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "isGroup",
+          "caption": "Группа",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "isRole",
+          "caption": "Роль",
+          "hidden": false,
+          "index": 5
+        },
+        {
+          "name": "connString",
+          "caption": "Строка соединения",
+          "hidden": false,
+          "index": 6
+        },
+        {
+          "name": "enabled",
+          "caption": "Включён",
+          "hidden": false,
+          "index": 7
+        },
+        {
+          "name": "email",
+          "caption": "Email",
+          "hidden": false,
+          "index": 8
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "CheckExistLogin",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "login",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "CheckLoginPwd",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "pwd",
+          "caption": "",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "email",
+          "caption": "",
+          "hidden": false,
+          "index": 5
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "OwnProperties",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "isGroup",
+          "caption": "",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "isRole",
+          "caption": "",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 5
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "RoleOrGroupE",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": true,
+          "index": 2
+        },
+        {
+          "name": "isGroup",
+          "caption": "",
+          "hidden": true,
+          "index": 3
+        },
+        {
+          "name": "isRole",
+          "caption": "",
+          "hidden": true,
+          "index": 4
+        },
+        {
+          "name": "createTime",
+          "caption": "",
+          "hidden": true,
+          "index": 5
+        },
+        {
+          "name": "creator",
+          "caption": "",
+          "hidden": true,
+          "index": 6
+        },
+        {
+          "name": "editTime",
+          "caption": "",
+          "hidden": true,
+          "index": 7
+        },
+        {
+          "name": "editor",
+          "caption": "",
+          "hidden": true,
+          "index": 8
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "RoleOrGroupL",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": true,
+          "index": 2
+        },
+        {
+          "name": "isGroup",
+          "caption": "",
+          "hidden": true,
+          "index": 3
+        },
+        {
+          "name": "isRole",
+          "caption": "",
+          "hidden": true,
+          "index": 4
+        },
+        {
+          "name": "createTime",
+          "caption": "",
+          "hidden": false,
+          "index": 5
+        },
+        {
+          "name": "creator",
+          "caption": "",
+          "hidden": false,
+          "index": 6
+        },
+        {
+          "name": "editTime",
+          "caption": "",
+          "hidden": false,
+          "index": 7
+        },
+        {
+          "name": "editor",
+          "caption": "",
+          "hidden": false,
+          "index": 8
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_AgentE",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "Имя",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "Логин",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "pwd",
+          "caption": "Пароль",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "connString",
+          "caption": "Строка подключения",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "enabled",
+          "caption": "Актуален",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": true,
+          "index": 5
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_AgentL",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "Имя",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "Логин",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "isUser",
+          "caption": "Пользователь",
+          "hidden": true,
+          "index": 2
+        },
+        {
+          "name": "isGroup",
+          "caption": "Группа",
+          "hidden": true,
+          "index": 3
+        },
+        {
+          "name": "isRole",
+          "caption": "Роль",
+          "hidden": true,
+          "index": 4
+        },
+        {
+          "name": "connString",
+          "caption": "Строка подключения",
+          "hidden": false,
+          "index": 5
+        },
+        {
+          "name": "enabled",
+          "caption": "Запись активна",
+          "hidden": false,
+          "index": 6
+        },
+        {
+          "name": "createTime",
+          "caption": "Дата создания",
+          "hidden": false,
+          "index": 7
+        },
+        {
+          "name": "creator",
+          "caption": "Создатель",
+          "hidden": false,
+          "index": 8
+        },
+        {
+          "name": "editTime",
+          "caption": "Дата изменения",
+          "hidden": false,
+          "index": 9
+        },
+        {
+          "name": "editor",
+          "caption": "Редактор",
+          "hidden": false,
+          "index": 10
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_AgentTypeAccess",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "Имя",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "Логин",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "connString",
+          "caption": "Строка соединения",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "full",
+          "caption": "Полный доступ",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "read",
+          "caption": "Чтение",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "insert",
+          "caption": "Вставка",
+          "hidden": false,
+          "index": 5
+        },
+        {
+          "name": "update",
+          "caption": "Обновление",
+          "hidden": false,
+          "index": 6
+        },
+        {
+          "name": "delete",
+          "caption": "Удаление",
+          "hidden": false,
+          "index": 7
+        },
+        {
+          "name": "execute",
+          "caption": "Исполнение",
+          "hidden": false,
+          "index": 8
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_GetRoles",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "Имя",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "Логин",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "isUser",
+          "caption": "Пользователь",
+          "hidden": true,
+          "index": 2
+        },
+        {
+          "name": "isGroup",
+          "caption": "Группа",
+          "hidden": true,
+          "index": 3
+        },
+        {
+          "name": "isRole",
+          "caption": "Роль",
+          "hidden": true,
+          "index": 4
+        },
+        {
+          "name": "enabled",
+          "caption": "Запись активна",
+          "hidden": false,
+          "index": 5
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_NotUserL",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "Имя",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": true,
+          "index": 1
+        },
+        {
+          "name": "isGroup",
+          "caption": "",
+          "hidden": true,
+          "index": 2
+        },
+        {
+          "name": "isRole",
+          "caption": "",
+          "hidden": true,
+          "index": 3
+        },
+        {
+          "name": "connString",
+          "caption": "Строка подключения",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "createTime",
+          "caption": "Дата создания",
+          "hidden": false,
+          "index": 5
+        },
+        {
+          "name": "creator",
+          "caption": "Создатель",
+          "hidden": false,
+          "index": 6
+        },
+        {
+          "name": "editTime",
+          "caption": "Дата изменения",
+          "hidden": false,
+          "index": 7
+        },
+        {
+          "name": "editor",
+          "caption": "Редактор",
+          "hidden": false,
+          "index": 8
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_OpAgentRolesE",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_RolesL",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "Название",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "isRole",
+          "caption": "",
+          "hidden": true,
+          "index": 1
+        },
+        {
+          "name": "createTime",
+          "caption": "Дата создания",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "creator",
+          "caption": "Создатель",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "editTime",
+          "caption": "Дата изменения",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "editor",
+          "caption": "Редактор",
+          "hidden": false,
+          "index": 5
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "UserE",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "email",
+          "caption": "",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "pwd",
+          "caption": "",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "createTime",
+          "caption": "",
+          "hidden": true,
+          "index": 5
+        },
+        {
+          "name": "creator",
+          "caption": "",
+          "hidden": true,
+          "index": 6
+        },
+        {
+          "name": "editTime",
+          "caption": "",
+          "hidden": true,
+          "index": 7
+        },
+        {
+          "name": "editor",
+          "caption": "",
+          "hidden": true,
+          "index": 8
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": true,
+          "index": 9
+        },
+        {
+          "name": "isGroup",
+          "caption": "",
+          "hidden": true,
+          "index": 10
+        },
+        {
+          "name": "isRole",
+          "caption": "",
+          "hidden": true,
+          "index": 11
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "UserL",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "login",
+          "caption": "",
+          "hidden": false,
+          "index": 1
+        },
+        {
+          "name": "email",
+          "caption": "",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": true,
+          "index": 3
+        },
+        {
+          "name": "isGroup",
+          "caption": "",
+          "hidden": true,
+          "index": 4
+        },
+        {
+          "name": "isRole",
+          "caption": "",
+          "hidden": true,
+          "index": 5
+        },
+        {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 6
+        },
+        {
+          "name": "createTime",
+          "caption": "",
+          "hidden": false,
+          "index": 7
+        },
+        {
+          "name": "creator",
+          "caption": "",
+          "hidden": false,
+          "index": 8
+        },
+        {
+          "name": "editTime",
+          "caption": "",
+          "hidden": false,
+          "index": 9
+        },
+        {
+          "name": "editor",
+          "caption": "",
+          "hidden": false,
+          "index": 10
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    }
+  ]
+}

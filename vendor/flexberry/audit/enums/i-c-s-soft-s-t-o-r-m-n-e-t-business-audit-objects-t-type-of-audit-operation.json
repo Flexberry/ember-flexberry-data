@@ -1,0 +1,10 @@
+﻿{
+  "className": "tTypeOfAuditOperation",
+  "enumObjects": {
+    "INSERT": "Создание",
+    "UPDATE": "Изменение",
+    "DELETE": "Удаление",
+    "SELECT": "Чтение",
+    "EXECUTE": "Выполнение"
+  }
+}
