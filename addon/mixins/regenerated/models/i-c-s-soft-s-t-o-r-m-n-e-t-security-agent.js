@@ -154,7 +154,10 @@ export let defineProjections = function (model) {
     createTime: Projection.attr('', { hidden: true }),
     creator: Projection.attr('', { hidden: true }),
     editTime: Projection.attr('', { hidden: true }),
-    editor: Projection.attr('', { hidden: true })
+    editor: Projection.attr('', { hidden: true }),
+    isUser: Projection.attr('', { hidden: true }),
+    isGroup: Projection.attr('', { hidden: true }),
+    isRole: Projection.attr('', { hidden: true })
   });
   model.defineProjection('UserL', 'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', {
     name: Projection.attr(''),

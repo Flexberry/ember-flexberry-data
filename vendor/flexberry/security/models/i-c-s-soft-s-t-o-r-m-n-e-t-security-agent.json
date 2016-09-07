@@ -837,6 +837,24 @@
           "caption": "",
           "hidden": true,
           "index": 8
+        },
+        {
+          "name": "isUser",
+          "caption": "",
+          "hidden": true,
+          "index": 9
+        },
+        {
+          "name": "isGroup",
+          "caption": "",
+          "hidden": true,
+          "index": 10
+        },
+        {
+          "name": "isRole",
+          "caption": "",
+          "hidden": true,
+          "index": 11
         }
       ],
       "belongsTo": [],
