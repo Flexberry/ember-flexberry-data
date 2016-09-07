@@ -1,6 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+
+### Changed
+- Base model validation from ember-flexberry
+- Updates models for supporting role based security
 
 ## [0.5.0] - 2016-09-05
 ### Added
