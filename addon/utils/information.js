@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import FlexberryEnum from '../transforms/flexberry-enum';
+
 /**
  * Class for loading metadata about models.
  *
@@ -137,12 +139,18 @@ class Information {
     let fields = Information.parseAttributePath(attributePath);
 
     for (let i = 0; i < fields.length; i++) {
-      // console.log(fields[i]);
       if (fields.length - 1 === i) {
         let attributes = Ember.get(model, 'attributes');
         let attribute = attributes.get(fields[i]);
         if (attribute) {
-          return { isMaster: false, isDetail: false, isKey: false, type: attribute.type };
+          let transform = Ember.getOwner(this._store).lookup('transform:' + attribute.type);
+          return {
+            isMaster: false,
+            isDetail: false,
+            isKey: false,
+            isEnum: transform instanceof FlexberryEnum,
+            type: attribute.type
+          };
         }
 
         let relationships = Ember.get(model, 'relationshipsByName');
@@ -154,6 +162,7 @@ class Information {
             isMaster: isMaster,
             isDetail: isDetail,
             isKey: isMaster,
+            isEnum: false,
             type: relationship.type,
             keyType: 'guid' // TODO: other key types
           };
@@ -164,6 +173,7 @@ class Information {
             isMaster: false,
             isDetail: false,
             isKey: true,
+            isEnum: false,
             type: 'string',
             keyType: 'guid' // TODO: other key types
           };

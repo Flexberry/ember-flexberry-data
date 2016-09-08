@@ -1,13 +1,37 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.0-beta.0] - 2016-09-07
+### Changed
+- Moved base model validation from [`ember-flexberry` addon](https://github.com/Flexberry/ember-flexberry).
+- Update models for supporting role based security.
+
+## [0.5.0] - 2016-09-05
+### Added
+- Enum support for OData query language adapter.
+- `guid` transform to support adding constraints on attributes with guid type via query language.
+- Methods for rollback relationships of model:
+  - `changedBelongsTo` - to find out `belongsTo` relationships were changed.
+  - `rollbackBelongsTo` - to perform rollback `belongsTo` relationships operation.
+  - `changedHasMany` - to find out `hasMany` relationships were changed.
+  - `rollbackHasMany` - to perform rollback `hasMany` relationships operation.
+- Synchronization of model changes made in offline mode using `syncUp` method (with a server) in `Syncer` class.
+- Models for supporting client side audit.
+
+### Changed
+- Now `syncer` is an ember service.
+
 ### Fixed
+- Using captions instead keys for enum fields in `syncer`.
+- Now using `query` method instead of `queryRecord` in `Syncer` because of [issue in `ember-data@2.4.3`](https://github.com/emberjs/data/issues/4310).
 - Added missing files to `app/initializers` which are required for offline support.
 
 ## [0.4.0] - 2016-08-14
 ### Added
-- Transforms and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
+- Transforms, models, enums and enum initializer from [`ember-flexberry`](https://github.com/Flexberry/ember-flexberry) addon.
 - `decimal` transform for ability to use '.' and ',' as decimal separator in float numbers. So now it is possible to use `decimal` type for declaring attributes of models.
+- CRUD operations tests for OData.
 
 ### Changed
 - Function `enumCaptions` now returns object without null values.

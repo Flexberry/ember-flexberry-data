@@ -1,0 +1,9 @@
+﻿{
+  "className": "tExecutionVariant",
+  "enumObjects": {
+    "Unknown": "Неизвестно",
+    "Unexecuted": "Не выполнено",
+    "Executed": "Выполнено",
+    "Failed": "Ошибка"
+  }
+}

@@ -8,7 +8,8 @@ let Employee = Projection.Model.extend({
   'Birth Date': attr('date'),
   Age: attr('number'),
   Name: attr('string'),
-  manager: DS.belongsTo('employee')
+  manager: DS.belongsTo('employee'),
+  externalId: attr('guid')
 });
 
 Employee.defineProjection('EmployeeTestProjection', 'employee', {

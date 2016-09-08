@@ -1,5 +1,5 @@
 import { module, test } from 'qunit';
-import { Projection, Offline, Adapter, Serializer, Query, Utils } from 'ember-flexberry-data';
+import { Projection, Offline, Adapter, Serializer, Query, Utils, Security, Audit } from 'ember-flexberry-data';
 
 module('index tests');
 
@@ -44,4 +44,8 @@ test('index exports', function (assert) {
   assert.ok(Query.createPredicate);
 
   assert.ok(Utils.Information);
+
+  assert.ok(Security.UserService);
+
+  assert.ok(Audit.ModelMixin);
 });

@@ -52,7 +52,7 @@ module.exports = function(environment) {
     ENV.APP.rootElement = '#ember-testing';
 
     // TODO: find proper way to pass arguments to tests
-    ENV.APP.testODataService = process.argv.indexOf('--testODataSerivce') > -1;
+    ENV.APP.testODataService = process.argv.indexOf('--testODataService') > -1;
   }
 
   if (environment === 'production') {
