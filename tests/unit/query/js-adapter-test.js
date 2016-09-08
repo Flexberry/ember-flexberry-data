@@ -21,7 +21,7 @@ test('adapter | js | without predicate', (assert) => {
     { Id: 3, Name: 'B', Surname: 'Z', Age: 15 }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel');
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id');
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -39,7 +39,7 @@ test('adapter | js | simple predicate | eq', (assert) => {
     { Name: 'B', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Eq, 'B');
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Surname').where('Name', FilterOperator.Eq, 'B');
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -56,7 +56,7 @@ test('adapter | js | simple predicate | eq | null', (assert) => {
     { Id: 3, Surname: 'Z' }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Surname', FilterOperator.Eq, null);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where('Surname', FilterOperator.Eq, null);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -72,7 +72,7 @@ test('adapter | js | simple predicate | eq | master field', function (assert) {
     { Id: 3, Manager: { Name: 'Y' } }
   ];
 
-  let builder = new QueryBuilder(store, 'customer').where('Manager.Name', FilterOperator.Eq, 'Y');
+  let builder = new QueryBuilder(store, 'customer').select('Id').where('Manager.Name', FilterOperator.Eq, 'Y');
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -88,7 +88,7 @@ test('adapter | js | simple predicate | neq', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Neq, 'B');
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Surname').where('Name', FilterOperator.Neq, 'B');
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -105,7 +105,7 @@ test('adapter | js | simple predicate | le', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Age', FilterOperator.Le, 12);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Surname').where('Age', FilterOperator.Le, 12);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -122,7 +122,7 @@ test('adapter | js | simple predicate | leq', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Age', FilterOperator.Leq, 11);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Surname').where('Age', FilterOperator.Leq, 11);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -139,7 +139,7 @@ test('adapter | js | simple predicate | ge', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Age', FilterOperator.Ge, 10);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Surname').where('Age', FilterOperator.Ge, 10);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -156,7 +156,7 @@ test('adapter | js | simple predicate | geq', (assert) => {
     { Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Age', FilterOperator.Geq, 11);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Surname').where('Age', FilterOperator.Geq, 11);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -174,7 +174,7 @@ test('adapter | js | string predicate | contains', (assert) => {
   ];
 
   let sp1 = new StringPredicate('Country').contains('i');
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(sp1);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(sp1);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -192,7 +192,7 @@ test('adapter | js | string predicate | contains | master field', (assert) => {
   ];
 
   let sp1 = new StringPredicate('Country.Name').contains('i');
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(sp1);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(sp1);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -210,7 +210,7 @@ test('adapter | js | detail predicate | all | simple predicate', (assert) => {
   ];
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(dp);
 
   let filter = adapter.buildFunc(builder.build());
 
@@ -228,7 +228,7 @@ test('adapter | js | detail predicate | all | simple predicate | master field', 
   ];
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(dp);
 
   let filter = adapter.buildFunc(builder.build());
 
@@ -246,7 +246,7 @@ test('adapter | js | detail predicate | any | simple predicate', (assert) => {
   ];
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(dp);
 
   let filter = adapter.buildFunc(builder.build());
 
@@ -265,7 +265,7 @@ test('adapter | js | detail predicate | any | simple predicate | master field', 
   ];
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(dp);
 
   let filter = adapter.buildFunc(builder.build());
 
@@ -287,7 +287,7 @@ test('adapter | js | detail predicate | all | complex predicate', (assert) => {
   let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag3');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').all(cp1);
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(dp);
 
   let filter = adapter.buildFunc(builder.build());
 
@@ -308,7 +308,7 @@ test('adapter | js | detail predicate | all | complex predicate | master field',
   let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Z');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').all(cp1);
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(dp);
 
   let filter = adapter.buildFunc(builder.build());
 
@@ -329,7 +329,7 @@ test('adapter | js | detail predicate | any | complex predicate', (assert) => {
   let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag2');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').any(cp1);
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(dp);
 
   let filter = adapter.buildFunc(builder.build());
 
@@ -351,7 +351,7 @@ test('adapter | js | detail predicate | any | complex predicate | master field',
   let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Y');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').any(cp1);
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(dp);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Id').where(dp);
 
   let filter = adapter.buildFunc(builder.build());
 
@@ -373,7 +373,7 @@ test('adapter | js | complex predicate | and', (assert) => {
   let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 10);
   let cp1 = new ComplexPredicate(Condition.And, sp1, sp2);
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(cp1);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Surname').where(cp1);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -394,7 +394,7 @@ test('adapter | js | complex predicate | or', (assert) => {
   let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 12);
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(cp1);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Surname').where(cp1);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -420,7 +420,7 @@ test('adapter | js | complex predicate | with nested complex predicate', functio
   let cp2 = new ComplexPredicate(Condition.And, cp1, sp3);
 
   // Act.
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').where(cp2);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Surname').where(cp2);
   let filter = adapter.buildFunc(builder.build());
 
   // Assert.
@@ -455,7 +455,7 @@ test('adapter | js | order', (assert) => {
     { Name: 'C', Price: 900, Age: 15 }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').orderBy('Age desc, Price asc');
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Name').orderBy('Age desc, Price asc');
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -473,7 +473,7 @@ test('adapter | js | order | master field', (assert) => {
     { Name: 'C', Price: 900, Master: { Age: 15 } }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').orderBy('Master.Age desc, Price asc');
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Name').orderBy('Master.Age desc, Price asc');
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -491,7 +491,7 @@ test('adapter | js | skip-top', (assert) => {
     { Name: 'C', Price: 900, Age: 15 }
   ];
 
-  let builder = new QueryBuilder(store, 'AnyUnknownModel').skip(1).top(1);
+  let builder = new QueryBuilder(store, 'AnyUnknownModel').select('Name').skip(1).top(1);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
