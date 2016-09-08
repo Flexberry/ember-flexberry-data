@@ -495,6 +495,23 @@ test('adapter | indexeddb | skip-top', (assert) => {
   });
 });
 
+test('adapter | indexeddb | by id', (assert) => {
+  let data = [
+    { id: 1, Name: 'A', Price: 200, Age: 10 },
+    { id: 2, Name: 'B', Price: 100, Age: 10 },
+    { id: 3, Name: 'C', Price: 900, Age: 15 }
+  ];
+
+  let builder = new QueryBuilder(store, modelName).byId(1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result);
+    assert.equal(result.length, 1);
+    assert.equal(result[0].id, 1);
+    assert.equal(result[0].Name, 'A');
+  });
+});
+
 /**
  * Executes asyncronuous test with temp IndexedDB.
  *

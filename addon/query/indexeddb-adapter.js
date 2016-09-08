@@ -142,11 +142,20 @@ function getSchemaFromProjection(store, query) {
  * @returns {Dexie.Collection|Dexie.Table} Table or collection that can be used with `toArray` method.
  */
 function updateWhereClause(table, query) {
-  if (!query.predicate) {
+  let predicate = query.predicate;
+
+  if (query.id) {
+    if (!predicate) {
+      predicate = new SimplePredicate('id', FilterOperator.Eq, query.id);
+    } else {
+      predicate = predicate.and(new SimplePredicate('id', FilterOperator.Eq, query.id));
+    }
+  }
+
+  if (!predicate) {
     return table;
   }
 
-  let predicate = query.predicate;
   if (predicate instanceof SimplePredicate) {
     if (predicate.value === null) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.

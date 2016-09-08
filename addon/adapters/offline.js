@@ -36,7 +36,7 @@ var OfflineAdapter = DS.Adapter.extend({
     @property databaseName
     @type String
   */
-  databaseName: null,
+  databaseName: undefined,
 
   /*
     Adapter initialization.
@@ -79,7 +79,7 @@ var OfflineAdapter = DS.Adapter.extend({
     @param {Object|String|Integer|null} id
   */
   findRecord(store, type, id) {
-    let table = this._getTableForOperationsViaId(type);
+    let table = this._getTableForOperationsByModelType(type);
     return table.get(id);
   },
 
@@ -108,7 +108,7 @@ var OfflineAdapter = DS.Adapter.extend({
   },
 
   queryRecord(store, type, query) {
-    return this.query(store, type, query).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
+    return this.query(store, type, query).then(result => new Ember.RSVP.Promise((resolve) => resolve(result[0])));
   },
 
   /**
@@ -160,7 +160,7 @@ var OfflineAdapter = DS.Adapter.extend({
   },
 
   deleteRecord(store, type, snapshot) {
-    let table = this._getTableForOperationsViaId(type);
+    let table = this._getTableForOperationsByModelType(type);
     return table.delete(snapshot.id);
   },
 
@@ -170,7 +170,7 @@ var OfflineAdapter = DS.Adapter.extend({
     Gets [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given model type.
     Creates [Dexie's schema](https://github.com/dfahlander/Dexie.js/wiki/Version.stores()) that contains only 'id' property for specified model type.
 
-    @method _getTableForOperationsViaId
+    @method _getTableForOperationsByModelType
     @param {subclass of DS.Model} type Model type.
     @return {WritableTable} Instance of [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given model type.
     @private
@@ -187,7 +187,7 @@ var OfflineAdapter = DS.Adapter.extend({
     Gets [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given snapshot.
     Creates [Dexie's schema](https://github.com/dfahlander/Dexie.js/wiki/Version.stores()) that contains model properties taken from snapshot.
 
-    @method _getTableForOperationsViaId
+    @method _getTableForOperationsByModelSnapshot
     @param {DS.Snapshot} snapshot Snapshot of model.
     @return {WritableTable} Instance of [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given snapshot.
     @private
@@ -295,7 +295,7 @@ var OfflineAdapter = DS.Adapter.extend({
     }
 
     // If using Query Language
-    if (query && query instanceof QueryObject) {
+    if (query && query instanceof QueryObject && !Ember.isNone(query.projectionName)) {
       let proj = typeClass.projections.get(query.projectionName);
 
       return proj;
@@ -337,7 +337,7 @@ var OfflineAdapter = DS.Adapter.extend({
         let relationshipsByNameOfPossibleInverseType = Ember.get(possibleInverseType, 'relationshipsByName');
         let inverseAttribute = relationshipsByName.get(attrName).options.inverse;
         let possibleInverseTypeMeta = !Ember.isNone(inverseAttribute) ? relationshipsByNameOfPossibleInverseType.get(inverseAttribute) : null;
-        if (Ember.isNone(possibleInverseTypeMeta) || relationshipsByName.get(attrName).type !== originTypeModelName) {
+        if ((Ember.isNone(possibleInverseTypeMeta) || relationshipsByName.get(attrName).type !== originTypeModelName) && !Ember.isEmpty(record[attrName])) {
           this._replaceIdToHash(store, type, record, relationshipsByName, attrName, promises);
         }
       }, this);
