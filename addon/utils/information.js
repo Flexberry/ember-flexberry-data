@@ -107,6 +107,7 @@ class Information {
             isDetail: false,
             isKey: false,
             isEnum: transform instanceof FlexberryEnum,
+            sourceType: transform.get('sourceType'),
             type: attribute.type
           };
         }

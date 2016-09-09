@@ -98,7 +98,7 @@ test('adapter | odata | simple predicate | eq | enum', function (assert) {
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user').where('gender', FilterOperator.Eq, 'Male');
 
   // Act && Assert.
-  runTest(assert, builder, 'EmberFlexberryDummyApplicationUsers', `$filter=Gender eq EmberFlexberryDummyGender'Male'&$select=__PrimaryKey`);
+  runTest(assert, builder, 'EmberFlexberryDummyApplicationUsers', `$filter=Gender eq EmberFlexberryDummy.Gender'Male'&$select=__PrimaryKey`);
 });
 
 test('adapter | odata | simple predicate | eq | quid', function (assert) {

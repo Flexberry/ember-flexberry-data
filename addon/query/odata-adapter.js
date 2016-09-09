@@ -317,7 +317,13 @@ export default class ODataAdapter extends BaseAdapter {
           throw new Error(`Unsupported key type '${meta.keyType}'.`);
         }
       } else if (meta.isEnum) {
-        value = `${Ember.String.classify(meta.type)}'${predicate.value}'`;
+        let type = meta.sourceType;
+        if (!type) {
+          Ember.Logger.warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`);
+          type = Ember.String.classify(meta.type);
+        }
+
+        value = `${type}'${predicate.value}'`;
       } else if (meta.type === 'string') {
         value = `'${predicate.value}'`;
       } else {
