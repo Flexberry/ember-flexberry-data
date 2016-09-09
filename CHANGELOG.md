@@ -6,6 +6,10 @@
 ### Changed
 - Moved base model validation from [`ember-flexberry` addon](https://github.com/Flexberry/ember-flexberry).
 - Update models for supporting role based security.
+- Model key automatically added for queries without projection (using method `Query.Builder.select`).
+
+### Fixed
+- Errors in building queries without projection (using `Query.Builder.select`).
 
 ## [0.5.0] - 2016-09-05
 ### Added
