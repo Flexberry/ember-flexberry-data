@@ -204,8 +204,8 @@ export default class Builder extends BaseBuilder {
       this._top,
       this._skip,
       this._isCount,
-      this._expand,
-      Object.keys(this._select)
+      expand,
+      select
     );
   }
 
