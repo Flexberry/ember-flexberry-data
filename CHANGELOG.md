@@ -2,14 +2,24 @@
 
 ## [Unreleased]
 
-## [0.6.0-beta.0] - 2016-09-07
+## [0.6.0-beta.1] - 2016-09-09
+### Added
+- Query language support for `offline` adapter.
+- Dependency on [`node-uuid` package](https://github.com/broofa/node-uuid). Please update addon using `ember install` command or add this dependency to `package.json` manually.
+
 ### Changed
-- Moved base model validation from [`ember-flexberry` addon](https://github.com/Flexberry/ember-flexberry).
-- Update models for supporting role based security.
 - Model key automatically added for queries without projection (using method `Query.Builder.select`).
 
 ### Fixed
 - Errors in building queries without projection (using `Query.Builder.select`).
+
+### Removed
+- Dependency on `ember-locaforage-adapter` addon and `localforage` library. **Please remove these dependencies** from `package.json` and `bower.json` in your application. Also **please delete corresponding folders** from `node_modules` and `bower_components` in applicatoin's sources.
+
+## [0.6.0-beta.0] - 2016-09-07
+### Changed
+- Moved base model validation from [`ember-flexberry` addon](https://github.com/Flexberry/ember-flexberry).
+- Update models for supporting role based security.
 
 ## [0.5.0] - 2016-09-05
 ### Added
