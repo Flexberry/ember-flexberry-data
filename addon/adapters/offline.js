@@ -266,7 +266,13 @@ var OfflineAdapter = DS.Adapter.extend({
       builder.where(cp);
     }
 
-    return builder.build();
+    let queryObject = builder.build();
+    if (Ember.isEmpty(queryObject.projectionName)) {
+      // Now if projection is not specified then only 'id' field will be selected.
+      queryObject.select = [];
+    }
+
+    return queryObject;
   },
 
   /**
@@ -398,6 +404,11 @@ var OfflineAdapter = DS.Adapter.extend({
       }
 
       let query = builder.build();
+      if (Ember.$.isEmptyObject(builder._select)) {
+        // Now if projection is not specified then only 'id' field will be selected.
+        query.select = [];
+      }
+
       query.originType = originType;
       if (proj && proj.modelName) {
         query.projection = proj;

@@ -93,6 +93,9 @@ export default DS.Store.extend({
   findAll: function(modelName, options) {
     let builder = new QueryBuilder(this, modelName);
     let queryObject = builder.build();
+
+    // Now if projection is not specified then only 'id' field will be selected.
+    queryObject.select = [];
     if (options && options.projection) {
       queryObject.projection = options.projection;
       return this.query(modelName, queryObject);
@@ -119,6 +122,9 @@ export default DS.Store.extend({
     // TODO: case of options.reload === false.
     let builder = new QueryBuilder(this, modelName).byId(id);
     let queryObject = builder.build();
+
+    // Now if projection is not specified then only 'id' field will be selected.
+    queryObject.select = [];
     if (options && options.projection) {
       queryObject.projection = options.projection;
     }
