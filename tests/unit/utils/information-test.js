@@ -20,8 +20,8 @@ test('information | constructor', assert => {
 test('information | isMaster | exceptions', assert => {
   assert.throws(() => information.isMaster('unknownmodel', 'firstName'), Error);
   assert.throws(() => information.isMaster('customer', 'unknownfield'), Error);
-  assert.throws(() => information.isMaster('customer', 'manager.unknownfield'), Error);
-  assert.throws(() => information.isMaster('customer', 'manager.manager.unknownfield'), Error);
+  assert.throws(() => information.isMaster('customer', 'Manager.unknownfield'), Error);
+  assert.throws(() => information.isMaster('customer', 'Manager.Manager.unknownfield'), Error);
 });
 
 test('information | isMaster | own attribute', assert => {
@@ -45,11 +45,11 @@ test('information | isMaster | own attribute', assert => {
 });
 
 test('information | isMaster | nested', assert => {
-  assert.notOk(information.isMaster('customer', 'manager.First Name'));
-  assert.ok(information.isMaster('customer', 'manager.manager'));
-  assert.ok(information.isMaster('customer', 'manager.manager.manager'));
-  assert.notOk(information.isMaster('customer', 'manager.manager.manager.First Name'));
-  assert.notOk(information.isMaster('customer', 'manager.manager.manager.id'));
+  assert.notOk(information.isMaster('customer', 'Manager.First Name'));
+  assert.ok(information.isMaster('customer', 'Manager.Manager'));
+  assert.ok(information.isMaster('customer', 'Manager.Manager.Manager'));
+  assert.notOk(information.isMaster('customer', 'Manager.Manager.Manager.First Name'));
+  assert.notOk(information.isMaster('customer', 'Manager.Manager.Manager.id'));
 });
 
 test('information | isEnum | own attribute', assert => {
@@ -65,22 +65,22 @@ test('information | isEnum | nested', assert => {
 test('information | getType | exceptions', assert => {
   assert.throws(() => information.getType('unknownmodel', 'firstName'), Error);
   assert.throws(() => information.getType('customer', 'unknownfield'), Error);
-  assert.throws(() => information.getType('customer', 'manager.unknownfield'), Error);
-  assert.throws(() => information.getType('customer', 'manager.manager.unknownfield'), Error);
+  assert.throws(() => information.getType('customer', 'Manager.unknownfield'), Error);
+  assert.throws(() => information.getType('customer', 'Manager.Manager.unknownfield'), Error);
 });
 
 test('information | getType | own attribute', assert => {
   assert.equal(information.getType('customer', 'id'), 'string');
-  assert.equal(information.getType('customer', 'manager'), 'employee');
+  assert.equal(information.getType('customer', 'Manager'), 'employee');
   assert.equal(information.getType('customer', 'firstName'), 'string');
 });
 
 test('information | getType | nested', assert => {
-  assert.equal(information.getType('customer', 'manager.First Name'), 'string');
-  assert.equal(information.getType('customer', 'manager.manager'), 'employee');
-  assert.equal(information.getType('customer', 'manager.manager.manager'), 'employee');
-  assert.equal(information.getType('customer', 'manager.manager.manager.First Name'), 'string');
-  assert.equal(information.getType('customer', 'manager.manager.manager.id'), 'string');
+  assert.equal(information.getType('customer', 'Manager.First Name'), 'string');
+  assert.equal(information.getType('customer', 'Manager.Manager'), 'employee');
+  assert.equal(information.getType('customer', 'Manager.Manager.Manager'), 'employee');
+  assert.equal(information.getType('customer', 'Manager.Manager.Manager.First Name'), 'string');
+  assert.equal(information.getType('customer', 'Manager.Manager.Manager.id'), 'string');
 });
 
 test('information | isAttribute | own attribute', function (assert) {

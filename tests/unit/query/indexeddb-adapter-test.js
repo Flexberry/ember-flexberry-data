@@ -24,7 +24,7 @@ test('adapter | indexeddb | without predicate', (assert) => {
     { id: 3 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id');
+  let builder = new QueryBuilder(store, modelName);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -42,7 +42,7 @@ test('adapter | indexeddb | simple predicate | eq', (assert) => {
     { id: 3, Name: 'B' }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').where('Name', FilterOperator.Eq, 'B');
+  let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, 'B');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -59,7 +59,7 @@ test('adapter | indexeddb | simple predicate | eq | null', (assert) => {
     { id: 3, Name: 'B' }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').where('Name', FilterOperator.Eq, null);
+  let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, null);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -75,7 +75,7 @@ test('adapter | js | simple predicate | eq | master field', function (assert) {
     { id: 3, Manager: { Name: 'Y' } }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').where('Manager.Name', FilterOperator.Eq, 'Y');
+  let builder = new QueryBuilder(store, modelName).where('Manager.Name', FilterOperator.Eq, 'Y');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -91,7 +91,7 @@ test('adapter | indexeddb | simple predicate | neq', (assert) => {
     { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').where('Name', FilterOperator.Neq, 'B');
+  let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Neq, 'B');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -108,7 +108,7 @@ test('adapter | indexeddb | simple predicate | le', (assert) => {
     { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').where('Age', FilterOperator.Le, 12);
+  let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Le, 12);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -125,7 +125,7 @@ test('adapter | indexeddb | simple predicate | leq', (assert) => {
     { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').where('Age', FilterOperator.Leq, 11);
+  let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Leq, 11);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -142,7 +142,7 @@ test('adapter | indexeddb | simple predicate | ge', (assert) => {
     { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').where('Age', FilterOperator.Ge, 10);
+  let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Ge, 10);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -159,7 +159,7 @@ test('adapter | indexeddb | simple predicate | geq', (assert) => {
     { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').where('Age', FilterOperator.Geq, 11);
+  let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Geq, 11);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -171,13 +171,13 @@ test('adapter | indexeddb | simple predicate | geq', (assert) => {
 
 test('adapter | indexeddb | string predicate | contains', (assert) => {
   let data = [
-    { id: 1, Country: 'Argentina' },
-    { id: 2, Country: 'Paragwaj' },
-    { id: 3, Country: 'Russia' }
+    { id: 1, CountryName: 'Argentina' },
+    { id: 2, CountryName: 'Paragwaj' },
+    { id: 3, CountryName: 'Russia' }
   ];
 
-  let sp1 = new StringPredicate('Country').contains('i');
-  let builder = new QueryBuilder(store, modelName).select('Id').where(sp1);
+  let sp1 = new StringPredicate('CountryName').contains('i');
+  let builder = new QueryBuilder(store, modelName).where(sp1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -195,7 +195,7 @@ test('adapter | indexeddb | string predicate | contains | master field', (assert
   ];
 
   let sp1 = new StringPredicate('Country.Name').contains('i');
-  let builder = new QueryBuilder(store, modelName).select('Id').where(sp1);
+  let builder = new QueryBuilder(store, modelName).where(sp1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -213,7 +213,7 @@ test('adapter | indexeddb | detail predicate | all | simple predicate', (assert)
   ];
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
-  let builder = new QueryBuilder(store, modelName).select('Id').where(dp);
+  let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -230,7 +230,7 @@ test('adapter | indexeddb | detail predicate | all | simple predicate | master f
   ];
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
-  let builder = new QueryBuilder(store, modelName).select('Id').where(dp);
+  let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -247,7 +247,7 @@ test('adapter | indexeddb | detail predicate | any | simple predicate', (assert)
   ];
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
-  let builder = new QueryBuilder(store, modelName).select('Id').where(dp);
+  let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -265,7 +265,7 @@ test('adapter | indexeddb | detail predicate | any | simple predicate | master f
   ];
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
-  let builder = new QueryBuilder(store, modelName).select('Id').where(dp);
+  let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -286,7 +286,7 @@ test('adapter | indexeddb | detail predicate | all | complex predicate', (assert
   let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag3');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').all(cp1);
-  let builder = new QueryBuilder(store, modelName).select('Id').where(dp);
+  let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -306,7 +306,7 @@ test('adapter | indexeddb | detail predicate | all | complex predicate | master 
   let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Z');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').all(cp1);
-  let builder = new QueryBuilder(store, modelName).select('Id').where(dp);
+  let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -326,7 +326,7 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
   let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag2');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').any(cp1);
-  let builder = new QueryBuilder(store, modelName).select('Id').where(dp);
+  let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -347,7 +347,7 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
   let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Y');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').any(cp1);
-  let builder = new QueryBuilder(store, modelName).select('Id').where(dp);
+  let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -450,7 +450,7 @@ test('adapter | indexeddb | order', (assert) => {
     { id: 3, Price: 900, Age: 15 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').orderBy('Age desc, Price asc');
+  let builder = new QueryBuilder(store, modelName).orderBy('Age desc, Price asc');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -468,7 +468,7 @@ test('adapter | indexeddb | order | master field', (assert) => {
     { id: 3, Price: 900, Creator: { Age: 15 } }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id').orderBy('Creator.Age desc, Price asc');
+  let builder = new QueryBuilder(store, modelName).orderBy('Creator.Age desc, Price asc');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);
@@ -502,7 +502,7 @@ test('adapter | indexeddb | by id', (assert) => {
     { id: 3, Name: 'C', Price: 900, Age: 15 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).byId(1);
+  let builder = new QueryBuilder(store, modelName).select('Name').byId(1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result);

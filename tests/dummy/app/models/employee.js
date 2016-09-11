@@ -8,7 +8,13 @@ let Employee = Projection.Model.extend({
   'Birth Date': attr('date'),
   Age: attr('number'),
   Name: attr('string'),
-  manager: DS.belongsTo('employee'),
+  Surname: attr('string'),
+  CountryName: attr('string'),
+  Price: attr('decimal'),
+  Country: DS.belongsTo('country'),
+  Creator: DS.belongsTo('creator'),
+  Manager: DS.belongsTo('employee'),
+  Tags: DS.hasMany('tag'),
   externalId: attr('guid')
 });
 

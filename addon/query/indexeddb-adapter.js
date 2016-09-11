@@ -73,12 +73,37 @@ export default class extends BaseAdapter {
  */
 function getSchemaFromProjection(store, query) {
   let storeSchema = {};
+  let information = new Information(store);
+
   let fieldContainsInSchema = (modelName, field) => {
     if (Ember.isEmpty(storeSchema[modelName])) {
       return false;
     } else {
       let fieldsArray = storeSchema[modelName].split(',');
       return (fieldsArray.indexOf(field) > -1) || (fieldsArray.indexOf('*' + field) > -1);
+    }
+  };
+
+  let getSchemaForAttribute = (property) => {
+    let fields = Information.parseAttributePath(property);
+    let propertyName = fields.length === 1 ? property : fields[0];
+    if (!fieldContainsInSchema(query.modelName, propertyName)) {
+      storeSchema[query.modelName] += information.isDetail(query.modelName, propertyName) ? ',*' + propertyName : ',' + propertyName;
+    }
+
+    if (fields.length > 1) {
+      let lastModelName = query.modelName;
+      for (let i = 1; i < fields.length; i++) {
+        let meta = information.getMeta(lastModelName, fields[i - 1]);
+        lastModelName = meta.type;
+        if (Ember.isEmpty(storeSchema[lastModelName])) {
+          storeSchema[lastModelName] = 'id';
+        }
+
+        if (!fieldContainsInSchema(lastModelName, fields[i])) {
+          storeSchema[lastModelName] += information.isDetail(lastModelName, fields[i]) ? ',*' + fields[i] : ',' + fields[i];
+        }
+      }
     }
   };
 
@@ -104,29 +129,64 @@ function getSchemaFromProjection(store, query) {
     getSchemaForModel(projection);
   } else if (!Ember.isEmpty(query.select)) {
     storeSchema[query.modelName] = 'id';
-    let information = new Information(store);
     query.select.forEach(function(property) {
-      let fields = Information.parseAttributePath(property);
-      let propertyName = fields.length === 1 ? property : fields[0];
-      if (!fieldContainsInSchema(query.modelName, propertyName)) {
-        storeSchema[query.modelName] += information.isDetail(query.modelName, propertyName) ? ',*' + propertyName : ',' + propertyName;
-      }
-
-      if (fields.length > 1) {
-        let lastModelName = query.modelName;
-        for (let i = 1; i < fields.length; i++) {
-          let meta = information.getMeta(lastModelName, fields[i - 1]);
-          lastModelName = meta.type;
-          if (Ember.isEmpty(storeSchema[lastModelName])) {
-            storeSchema[lastModelName] = 'id';
-          }
-
-          if (!fieldContainsInSchema(lastModelName, fields[i])) {
-            storeSchema[lastModelName] += information.isDetail(lastModelName, fields[i]) ? ',*' + fields[i] : ',' + fields[i];
-          }
-        }
-      }
+      getSchemaForAttribute(property);
     });
+  }
+
+  if (!Ember.isEmpty(query.predicate)) {
+    let getSchemaForAttributesOfSimplePredicate = (prefix, predicate) => {
+      Ember.assert('Given predicate is not an instance of SimplePredicate', predicate instanceof SimplePredicate);
+      let attributeName = Ember.isEmpty(prefix) ? predicate.attributePath : prefix + '.' + predicate.attributePath;
+      getSchemaForAttribute(attributeName);
+    };
+
+    let getSchemaForAttributesOfStringPredicate = (prefix, predicate) => {
+      Ember.assert('Given predicate is not an instance of StringPredicate', predicate instanceof StringPredicate);
+      let attributeName = Ember.isEmpty(prefix) ? predicate.attributePath : prefix + '.' + predicate.attributePath;
+      getSchemaForAttribute(attributeName);
+    };
+
+    let getSchemaForAttributesOfComplexPredicate = (prefix, predicate) => {
+      Ember.assert('Given predicate is not an instance of ComplexPredicate', predicate instanceof ComplexPredicate);
+      predicate.predicates.forEach(p => {
+        if (p instanceof SimplePredicate) {
+          getSchemaForAttributesOfSimplePredicate(prefix, p);
+        } else if (p instanceof StringPredicate) {
+          getSchemaForAttributesOfStringPredicate(prefix, p);
+        } else if (p instanceof ComplexPredicate) {
+          getSchemaForAttributesOfComplexPredicate(prefix, p);
+        } else if (p instanceof DetailPredicate) {
+          getSchemaForAttributesOfDetailPredicate(prefix, p);
+        }
+      });
+    };
+
+    let getSchemaForAttributesOfDetailPredicate = (prefix, predicate) => {
+      Ember.assert('Given predicate is not an instance of DetailPredicate', predicate instanceof DetailPredicate);
+      let attributeName = Ember.isEmpty(prefix) ? predicate.detailPath : prefix + '.' + predicate.detailPath;
+      getSchemaForAttribute(attributeName);
+      let p = predicate.predicate;
+      if (p instanceof SimplePredicate) {
+        getSchemaForAttributesOfSimplePredicate(attributeName, p);
+      } else if (p instanceof StringPredicate) {
+        getSchemaForAttributesOfStringPredicate(attributeName, p);
+      } else if (p instanceof ComplexPredicate) {
+        getSchemaForAttributesOfComplexPredicate(attributeName, p);
+      } else if (p instanceof DetailPredicate) {
+        getSchemaForAttributesOfDetailPredicate(attributeName, p);
+      }
+    };
+
+    if (query.predicate instanceof SimplePredicate) {
+      getSchemaForAttributesOfSimplePredicate('', query.predicate);
+    } else if (query.predicate instanceof StringPredicate) {
+      getSchemaForAttributesOfStringPredicate('', query.predicate);
+    } else if (query.predicate instanceof ComplexPredicate) {
+      getSchemaForAttributesOfComplexPredicate('', query.predicate);
+    } else if (query.predicate instanceof DetailPredicate) {
+      getSchemaForAttributesOfDetailPredicate('', query.predicate);
+    }
   }
 
   return storeSchema;
@@ -157,7 +217,8 @@ function updateWhereClause(table, query) {
   }
 
   if (predicate instanceof SimplePredicate) {
-    if (predicate.value === null) {
+    let fields = Information.parseAttributePath(predicate.attributePath);
+    if (predicate.value === null || fields.length > 1) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
       return table.filter(getAttributeFilterFunction(predicate));

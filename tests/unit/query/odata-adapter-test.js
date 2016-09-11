@@ -47,7 +47,7 @@ test('adapter | odata | simple predicate | eq | null', function (assert) {
 
 test('adapter | odata | simple predicate | eq | master pk', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').where('manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
+  let builder = new QueryBuilder(store, 'customer').where('Manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', `$filter=Manager/EmployeeID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c&$select=CustomerID`);
@@ -55,7 +55,7 @@ test('adapter | odata | simple predicate | eq | master pk', function (assert) {
 
 test('adapter | odata | simple predicate | eq | master master pk', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').where('manager.manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
+  let builder = new QueryBuilder(store, 'customer').where('Manager.Manager', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', `$filter=Manager/Manager/EmployeeID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c&$select=CustomerID`);
@@ -63,7 +63,7 @@ test('adapter | odata | simple predicate | eq | master master pk', function (ass
 
 test('adapter | odata | simple predicate | eq | master field | with cast', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').where('manager', FilterOperator.Eq, 'cast(3bcc4730-9cc1-4237-a843-c4b1de881d7c,Edm.Guid)');
+  let builder = new QueryBuilder(store, 'customer').where('Manager', FilterOperator.Eq, 'cast(3bcc4730-9cc1-4237-a843-c4b1de881d7c,Edm.Guid)');
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', `$filter=Manager/EmployeeID eq cast(3bcc4730-9cc1-4237-a843-c4b1de881d7c,Edm.Guid)&$select=CustomerID`);
@@ -71,7 +71,7 @@ test('adapter | odata | simple predicate | eq | master field | with cast', funct
 
 test('adapter | odata | simple predicate | eq | master id', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').where('manager.id', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
+  let builder = new QueryBuilder(store, 'customer').where('Manager.id', FilterOperator.Eq, '3bcc4730-9cc1-4237-a843-c4b1de881d7c');
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', `$filter=Manager/EmployeeID eq 3bcc4730-9cc1-4237-a843-c4b1de881d7c&$select=CustomerID`);
@@ -79,7 +79,7 @@ test('adapter | odata | simple predicate | eq | master id', function (assert) {
 
 test('adapter | odata | simple predicate | eq | master field', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').where('manager.First Name', FilterOperator.Eq, 'Vasya');
+  let builder = new QueryBuilder(store, 'customer').where('Manager.First Name', FilterOperator.Eq, 'Vasya');
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', `$filter=Manager/First Name eq 'Vasya'&$select=CustomerID`);
@@ -285,7 +285,7 @@ test('adapter | odata | complex predicate | with nested complex predicate', func
 
 test('adapter | odata | order', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').orderBy('firstName,lastName asc,age desc,manager.First Name,manager.Last Name asc,manager.Birth Date desc');
+  let builder = new QueryBuilder(store, 'customer').orderBy('firstName,lastName asc,age desc,Manager.First Name,Manager.Last Name asc,Manager.Birth Date desc');
 
   // Act && Assert.
   runTest(
