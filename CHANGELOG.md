@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [0.6.0-beta.1] - 2016-09-09
+## [0.6.0-beta.1] - 2016-09-12
 ### Added
 - Query language support for `offline` adapter.
 - Dependency on [`node-uuid` package](https://github.com/broofa/node-uuid). Please update addon using `ember install` command or add this dependency to `package.json` manually.
