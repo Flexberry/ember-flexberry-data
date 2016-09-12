@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import OfflineAdapter from '../adapters/offline';
+import QueryBuilder from '../query/builder';
 
 /**
   @module ember-flexberry-data
@@ -14,11 +15,19 @@ import OfflineAdapter from '../adapters/offline';
   @private
 */
 export default DS.Store.extend({
+  /**
+    Database name for IndexedDB.
+
+    @property databaseName
+    @type String
+  */
+  databaseName: undefined,
+
   init: function() {
     let owner = Ember.getOwner(this);
+    let databaseName = Ember.isNone(this.get('databaseName')) ? 'ember-flexberry-data' : this.get('databaseName');
     let adapter = OfflineAdapter.create(owner.ownerInjection(), {
-      caching: 'none',
-      namespace: 'ember-flexberry-offline:store',
+      databaseName: databaseName,
     });
 
     this.set('adapter', adapter);
@@ -82,10 +91,14 @@ export default DS.Store.extend({
    * @return {DS.AdapterPopulatedRecordArray} Records promise.
    */
   findAll: function(modelName, options) {
+    let builder = new QueryBuilder(this, modelName);
+    let queryObject = builder.build();
+
+    // Now if projection is not specified then only 'id' field will be selected.
+    queryObject.select = [];
     if (options && options.projection) {
-      return this.query(modelName, {
-        projection: options.projection
-      });
+      queryObject.projection = options.projection;
+      return this.query(modelName, queryObject);
     }
 
     return this._super(...arguments);
@@ -106,15 +119,17 @@ export default DS.Store.extend({
    * @return {Promise} Record promise.
    */
   findRecord: function(modelName, id, options) {
+    // TODO: case of options.reload === false.
+    let builder = new QueryBuilder(this, modelName).byId(id);
+    let queryObject = builder.build();
+
+    // Now if projection is not specified then only 'id' field will be selected.
+    queryObject.select = [];
     if (options && options.projection) {
-      // TODO: case of options.reload === false.
-      return this.queryRecord(modelName, {
-        id: id,
-        projection: options.projection
-      });
+      queryObject.projection = options.projection;
     }
 
-    return this._super(...arguments);
+    return this.queryRecord(modelName, queryObject);
   },
 
   /**
@@ -153,5 +168,13 @@ export default DS.Store.extend({
    */
   queryRecord: function(modelName, query) {
     return this._super(modelName, query);
-  }
+  },
+
+  /**
+   * Changes `databaseName` adapter's property if `databaseName` property was changed.
+   */
+  _databaseNameObserver: Ember.observer('databaseName', function() {
+    let databaseName = this.get('databaseName');
+    this.get('adapter').set('databaseName', databaseName);
+  })
 });

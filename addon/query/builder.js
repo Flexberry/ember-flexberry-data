@@ -2,6 +2,7 @@ import DS from 'ember-data';
 
 import BaseBuilder from './base-builder';
 import OrderByClause from './order-by-clause';
+import QueryObject from './query-object';
 import { createPredicate } from './predicate';
 import Information from '../utils/information';
 
@@ -194,21 +195,18 @@ export default class Builder extends BaseBuilder {
 
     let expand = tree.expand;
 
-    // TODO: Use special class.
-    return {
-      id: this._id,
-      modelName: this._modelName,
-      predicate: this._predicate,
-      order: this._orderByClause,
-      top: this._top,
-      skip: this._skip,
-      count: this._isCount,
-
-      select: select,
-      expand: expand,
-
-      projectionName: this._projectionName
-    };
+    return new QueryObject(
+      this._modelName,
+      this._id,
+      this._projectionName,
+      this._predicate,
+      this._orderByClause,
+      this._top,
+      this._skip,
+      this._isCount,
+      expand,
+      select
+    );
   }
 
   _getQueryBySelect() {

@@ -4,11 +4,18 @@ import { moduleFor, test } from 'ember-qunit';
 import startApp from '../../helpers/start-app';
 
 var App;
+var store;
+
+var TestModel = DS.Model.extend({
+  decimalNumber: DS.attr('decimal')
+});
 
 moduleFor('transform:decimal', 'Integration | Transform | decimal', {
 
   beforeEach: function () {
     App = startApp();
+    App.register('model:testModel', TestModel);
+    store = App.__container__.lookup('service:store');
   },
 
   afterEach: function () {
@@ -17,15 +24,7 @@ moduleFor('transform:decimal', 'Integration | Transform | decimal', {
 
 });
 
-var TestModel = DS.Model.extend({
-  decimalNumber: DS.attr('decimal')
-});
-
 test('decimal | serialize | number', function (assert) {
-  App.register('model:testModel', TestModel);
-
-  let store = App.__container__.lookup('service:store');
-
   $.mockjax({
     url: '/test-models',
     data: function (json) {
@@ -35,7 +34,7 @@ test('decimal | serialize | number', function (assert) {
     responseText: { DecimalNumber: 555.5 }
   });
 
-  Ember.run(function () {
+  Ember.run(() => {
     store.createRecord('testModel', {
       decimalNumber: 555.5
     }).save();
@@ -43,10 +42,6 @@ test('decimal | serialize | number', function (assert) {
 });
 
 test('decimal | serialize | string with \'.\'', function (assert) {
-  App.register('model:testModel', TestModel);
-
-  let store = App.__container__.lookup('service:store');
-
   $.mockjax({
     url: '/test-models',
     data: function (json) {
@@ -56,7 +51,7 @@ test('decimal | serialize | string with \'.\'', function (assert) {
     responseText: { DecimalNumber: 555.5 }
   });
 
-  Ember.run(function () {
+  Ember.run(() => {
     store.createRecord('testModel', {
       decimalNumber: '555.5'
     }).save();
@@ -65,10 +60,6 @@ test('decimal | serialize | string with \'.\'', function (assert) {
 });
 
 test('decimal | serialize | string with \',\'', function (assert) {
-  App.register('model:testModel', TestModel);
-
-  let store = App.__container__.lookup('service:store');
-
   $.mockjax({
     url: '/test-models',
     data: function (json) {
@@ -78,7 +69,7 @@ test('decimal | serialize | string with \',\'', function (assert) {
     responseText: { DecimalNumber: 555.5 }
   });
 
-  Ember.run(function () {
+  Ember.run(() => {
     store.createRecord('testModel', {
       decimalNumber: '555,5'
     }).save();
@@ -86,17 +77,13 @@ test('decimal | serialize | string with \',\'', function (assert) {
 });
 
 test('decimal | deserialize | number', function (assert) {
-  App.register('model:testModel', TestModel);
-
-  let store = App.__container__.lookup('service:store');
-
   $.mockjax({
     url: '/test-models/1',
     dataType: 'json',
     responseText: { id: 1, DecimalNumber: 555.5 }
   });
 
-  Ember.run(function () {
+  Ember.run(() => {
     store.findRecord('testModel', 1).then(function (data) {
       assert.equal(data.get('decimalNumber'), 555.5);
     });
@@ -105,17 +92,13 @@ test('decimal | deserialize | number', function (assert) {
 });
 
 test('decimal | deserialize | string with \'.\'', function (assert) {
-  App.register('model:testModel', TestModel);
-
-  let store = App.__container__.lookup('service:store');
-
   $.mockjax({
     url: '/test-models/1',
     dataType: 'json',
     responseText: { id: 1, DecimalNumber: '555.5' }
   });
 
-  Ember.run(function () {
+  Ember.run(() => {
     store.findRecord('testModel', 1).then(function (data) {
       assert.equal(data.get('decimalNumber'), 555.5);
     });
@@ -124,17 +107,13 @@ test('decimal | deserialize | string with \'.\'', function (assert) {
 });
 
 test('decimal | deserialize | string with \',\'', function (assert) {
-  App.register('model:testModel', TestModel);
-
-  let store = App.__container__.lookup('service:store');
-
   $.mockjax({
     url: '/test-models/1',
     dataType: 'json',
     responseText: { id: 1, DecimalNumber: '555,5' }
   });
 
-  Ember.run(function () {
+  Ember.run(() => {
     store.findRecord('testModel', 1).then(function (data) {
       assert.equal(data.get('decimalNumber'), 555.5);
     });

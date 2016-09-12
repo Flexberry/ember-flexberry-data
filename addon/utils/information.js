@@ -42,6 +42,48 @@ class Information {
   }
 
   /**
+   Checks if the specified attribute path is an attribute.
+
+   @method isAttribute
+   @param {String} modelName The name of the model.
+   @param {String} attributePath The path to the attribute.
+   @returns {Boolean} True if the specified attribute path is an attribute.
+   @public
+   */
+  isAttribute(modelName, attributePath) {
+    let meta = this.getMeta(modelName, attributePath);
+    return !meta.isMaster && !meta.isDetail;
+  }
+
+  /**
+   Checks if the specified attribute path is a key (i.e. it is an id or belongsTo relationship).
+
+   @method isKey
+   @param {String} modelName The name of the model.
+   @param {String} attributePath The path to the attribute.
+   @returns {Boolean} True if the specified attribute path is a key.
+   @public
+   */
+  isKey(modelName, attributePath) {
+    let meta = this.getMeta(modelName, attributePath);
+    return meta.isKey;
+  }
+
+  /**
+   Checks if the specified attribute path is a relationship.
+
+   @method isRelationship
+   @param {String} modelName The name of the model.
+   @param {String} attributePath The path to the attribute.
+   @returns {Boolean} True if the specified attribute path is a relationship.
+   @public
+   */
+  isRelationship(modelName, attributePath) {
+    let meta = this.getMeta(modelName, attributePath);
+    return meta.isMaster || meta.isDetail;
+  }
+
+  /**
    Checks if the specified attribute path is a master field.
 
    @method isMaster
@@ -75,7 +117,7 @@ class Information {
    @method getType
    @param {String} modelName The name of the model.
    @param {String} attributePath The path to the attribute.
-   @returns {Boolean} The type of the specified attribute path.
+   @returns {String} The type of the specified attribute path.
    @public
    */
   getType(modelName, attributePath) {

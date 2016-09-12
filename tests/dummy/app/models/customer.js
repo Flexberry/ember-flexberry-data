@@ -6,6 +6,6 @@ export default Model.extend({
   firstName: attr('string'),
   lastName: attr('string'),
   age: attr('number'),
-  manager: DS.belongsTo('employee'),
+  Manager: DS.belongsTo('employee'),
   uid: attr('guid')
 });
