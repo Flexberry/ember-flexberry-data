@@ -33,6 +33,7 @@ executeTest('reading | store commands', (store, assert) => {
       store.unloadAll();
       let builder = new QueryBuilder(store)
         .from('ember-flexberry-dummy-application-user')
+        .selectByProjection('ApplicationUserE')
         .where('name', '==', 'User 2');
       return store.query('ember-flexberry-dummy-application-user', builder.build());
     })
@@ -47,6 +48,7 @@ executeTest('reading | store commands', (store, assert) => {
       store.unloadAll();
       let builder = new QueryBuilder(store)
         .from('ember-flexberry-dummy-application-user')
+        .selectByProjection('ApplicationUserE')
         .where('name', '==', 'User 2');
       return store.queryRecord('ember-flexberry-dummy-application-user', builder.build())
       .then((record) =>
