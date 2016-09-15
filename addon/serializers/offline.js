@@ -3,7 +3,7 @@
 */
 
 import Ember from 'ember';
-import LFSerializer from 'ember-localforage-adapter/serializers/localforage';
+import DS from 'ember-data';
 import isObject from '../utils/is-object';
 
 /**
@@ -11,9 +11,9 @@ import isObject from '../utils/is-object';
 
   @namespace Serializer
   @class Offline
-  @extends <a href="https://github.com/Flexberry/ember-localforage-adapter/blob/master/addon/serializers/localforage.js">LocalforageSerializer</a>
+  @extends <a href="http://emberjs.com/api/data/classes/DS.JSONSerializer.html">JSONSerializer</a>
 */
-export default LFSerializer.extend({
+export default DS.JSONSerializer.extend({
   /*
     Serializer initialization.
   */
@@ -41,5 +41,21 @@ export default LFSerializer.extend({
     }
 
     return relationshipHash;
+  },
+
+  /*
+    Check if the given hasMany relationship should be serialized.
+  */
+  _shouldSerializeHasMany(snapshot, key, relationship) {
+    const relationshipType = snapshot.type.determineRelationshipType(relationship, this.store);
+
+    if (this._mustSerialize(key)) {
+      return true;
+    }
+
+    return this._canSerialize(key) &&
+      (relationshipType === 'manyToNone' ||
+        relationshipType === 'manyToMany' ||
+        relationshipType === 'manyToOne');
   }
 });

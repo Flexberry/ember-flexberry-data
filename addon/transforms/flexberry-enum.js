@@ -136,7 +136,17 @@ FlexberryEnum.reopenClass({
     @type Boolean
     @default true
   */
-  isEnum: true
+  isEnum: true,
+
+  /**
+    Source type name from the backend.
+
+    @for FlexberryEnumTransform
+    @property sourceType
+    @type String
+    @default null
+   */
+  sourceType: null
 });
 
 export default FlexberryEnum;

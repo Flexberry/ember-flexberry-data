@@ -1,8 +1,10 @@
 import DS from 'ember-data';
 
 import BaseBuilder from './base-builder';
-import { createPredicate } from './predicate';
 import OrderByClause from './order-by-clause';
+import QueryObject from './query-object';
+import { createPredicate } from './predicate';
+import Information from '../utils/information';
 
 /**
  * Class of builder for query.
@@ -177,32 +179,69 @@ export default class Builder extends BaseBuilder {
       throw new Error('Model name is not specified');
     }
 
+    let tree;
     if (this._projectionName) {
       let model = this._store.modelFor(this._modelName);
-      let proj = model.projections.get(this._projectionName);
-      let tree = this._getQueryTree(proj, this._store);
-
-      // Merge, don't replace.
-      tree.select.forEach(i => this._select[i] = true);
-      Object.keys(tree.expand).forEach(i => this._expand[i] = tree.expand[i]);
+      let projection = model.projections.get(this._projectionName);
+      tree = this._getQueryTreeByProjection(projection);
+    } else {
+      tree = this._getQueryBySelect();
     }
 
-    // TODO: Use special class.
-    return {
-      id: this._id,
-      modelName: this._modelName,
-      predicate: this._predicate,
-      order: this._orderByClause,
-      top: this._top,
-      skip: this._skip,
-      count: this._isCount,
-      expand: this._expand,
-      select: Object.keys(this._select),
-      projectionName: this._projectionName
-    };
+    // Merge, don't replace.
+    let uniqSelect = {};
+    tree.select.forEach(i => uniqSelect[i] = true);
+    let select = Object.keys(uniqSelect);
+
+    let expand = tree.expand;
+
+    return new QueryObject(
+      this._modelName,
+      this._id,
+      this._projectionName,
+      this._predicate,
+      this._orderByClause,
+      this._top,
+      this._skip,
+      this._isCount,
+      expand,
+      select
+    );
   }
 
-  _getQueryTree(projection, store) {
+  _getQueryBySelect() {
+    let result = {
+      select: ['id'],
+      expand: {}
+    };
+
+    let selectProperties = Object.keys(this._select);
+
+    for (let i = 0; i < selectProperties.length; i++) {
+      this._buildQueryForProperty(result, selectProperties[i]);
+    }
+
+    return result;
+  }
+
+  _buildQueryForProperty(data, property) {
+    let pathItems = Information.parseAttributePath(property);
+
+    if (pathItems.length === 1) {
+      data.select.push(pathItems[0]);
+    } else {
+      let key = pathItems.shift();
+
+      data.expand[key] = {
+        select: ['id'],
+        expand: {}
+      };
+
+      this._buildQueryForProperty(data.expand[key], pathItems.join('.'));
+    }
+  }
+
+  _getQueryTreeByProjection(projection) {
     let tree = {
       select: ['id'],
       expand: {}
@@ -220,7 +259,7 @@ export default class Builder extends BaseBuilder {
           case 'hasMany':
           case 'belongsTo':
             tree.select.push(attrName);
-            tree.expand[attrName] = this._getQueryTree(attr, store);
+            tree.expand[attrName] = this._getQueryTreeByProjection(attr);
             break;
 
           default:

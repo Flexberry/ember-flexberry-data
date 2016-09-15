@@ -18,8 +18,8 @@ Ember [Flexberry](http://flexberry.ru/) Data addon - Support of database project
 
 ## Documentation
 
-* Auto-generated under master branch: http://flexberry.github.io/Documentation/master/modules/ember-flexberry-data.html
-* Auto-generated under develop branch: http://flexberry.github.io/Documentation/develop/modules/ember-flexberry-data.html
+* Auto-generated under master branch: http://flexberry.github.io/master/modules/ember-flexberry-data.html
+* Auto-generated under develop branch: http://flexberry.github.io/develop/modules/ember-flexberry-data.html
 
 ## Collaborating / Development
 

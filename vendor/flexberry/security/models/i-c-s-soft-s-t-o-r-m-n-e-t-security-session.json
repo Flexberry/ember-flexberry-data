@@ -1,0 +1,40 @@
+﻿{
+  "name": "ICSSoftSTORMNETSecuritySession",
+  "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-session",
+  "className": "Session",
+  "parentModelName": null,
+  "parentClassName": null,
+  "attrs": [
+    {
+      "name": "userKey",
+      "type": "string",
+      "flexberryType": "guid",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "startedAt",
+      "type": "date",
+      "flexberryType": "DateTime",
+      "notNull": false,
+      "defaultValue": "Now"
+    },
+    {
+      "name": "lastAccess",
+      "type": "date",
+      "flexberryType": "DateTime",
+      "notNull": false,
+      "defaultValue": "Now"
+    },
+    {
+      "name": "closed",
+      "type": "boolean",
+      "flexberryType": "bool",
+      "notNull": false,
+      "defaultValue": "false"
+    }
+  ],
+  "belongsTo": [],
+  "hasMany": [],
+  "projections": []
+}

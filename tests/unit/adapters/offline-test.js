@@ -7,6 +7,8 @@ moduleFor('adapter:offline', 'Unit | Adapter | offline', {
 
 // Replace this with your real tests.
 test('it exists', function(assert) {
-  let adapter = this.subject();
+  let adapter = this.subject({
+    databaseName: 'test'
+  });
   assert.ok(adapter);
 });
