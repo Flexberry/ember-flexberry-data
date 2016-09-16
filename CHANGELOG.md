@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.1] - 2016-09-16
 ### Fixed
 - `Adapter.Offline`:
     - Using primary key type of string.
