@@ -199,6 +199,7 @@ var OfflineAdapter = DS.Adapter.extend({
     for (let schema in schemas) {
       db.version(schemas[schema].version).stores(schemas[schema].schema);
     }
+
     return db[type.modelName];
   },
 
