@@ -23,6 +23,15 @@ import Dexie from 'npm:dexie';
   @extends <a href="http://emberjs.com/api/data/classes/DS.Adapter.html">DS.Adapter</a>
 */
 var OfflineAdapter = DS.Adapter.extend({
+  /**
+    Accumulates schemas of models used in Dexie.
+
+    @property _schemas
+    @type Object
+    @private
+  */
+  _schemas: {},
+
   defaultSerializer: 'offline',
 
   //queue: LFQueue.create(),
@@ -176,52 +185,54 @@ var OfflineAdapter = DS.Adapter.extend({
     @private
   */
   _getTableForOperationsByModelType(type) {
+    let schemas = this.get('_schemas');
+    if (!schemas[type.modelName]) {
+      schemas[type.modelName] = {
+        schema: this._createSchema(type),
+        version: Object.keys(schemas).length + 1,
+      };
+
+      this.set('_schemas', schemas);
+    }
+
     let db = new Dexie(this.databaseName);
-    let storeSchema = {};
-    storeSchema[type.modelName] = 'id';
-    db.version(1).stores(storeSchema);
+    for (let schema in schemas) {
+      db.version(schemas[schema].version).stores(schemas[schema].schema);
+    }
+
     return db[type.modelName];
   },
 
   /**
-    Gets [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given snapshot.
-    Creates [Dexie's schema](https://github.com/dfahlander/Dexie.js/wiki/Version.stores()) that contains model properties taken from snapshot.
+    Return schema for Dexie.
 
-    @method _getTableForOperationsByModelSnapshot
-    @param {DS.Snapshot} snapshot Snapshot of model.
-    @return {WritableTable} Instance of [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given snapshot.
-    @private
+    @method _createSchema
+    @param {DS.Model} type
+    @return {Object} Return schema for Dexie.
   */
-  _getTableForOperationsByModelSnapshot(snapshot) {
-    let db = new Dexie(this.databaseName);
-    let storeSchema = {};
-    storeSchema[snapshot.modelName] = 'id';
+  _createSchema(type) {
+    let schema = {};
+    schema[type.modelName] = 'id';
 
-    snapshot.eachAttribute(function(name) {
-      storeSchema[snapshot.modelName] += ',' + name;
+    type.eachAttribute((name) => {
+      schema[type.modelName] += `,${name}`;
     });
 
-    snapshot.eachRelationship(function(name, relationship) {
-      if (relationship.kind === 'hasMany') {
-        storeSchema[snapshot.modelName] += ',*' + name;
+    type.eachRelationship((name, { kind }) => {
+      if (kind === 'hasMany') {
+        schema[type.modelName] += `,*${name}`;
       } else {
-        storeSchema[snapshot.modelName] += ',' + name;
+        schema[type.modelName] += `,${name}`;
       }
     });
 
-    db.version(1).stores(storeSchema);
-    return db[snapshot.modelName];
+    return schema;
   },
 
   _updateOrCreate(store, type, snapshot) {
     const serializer = store.serializerFor(type.modelName);
     const recordHash = serializer.serialize(snapshot, { includeId: true });
-
-    // update(id comes from snapshot) or create(id comes from serialization)
-    const id = snapshot.id || recordHash.id;
-
-    let table = this._getTableForOperationsByModelSnapshot(snapshot);
-    return table.put(recordHash, id);
+    return this._getTableForOperationsByModelType(snapshot.type).put(recordHash);
   },
 
   /**

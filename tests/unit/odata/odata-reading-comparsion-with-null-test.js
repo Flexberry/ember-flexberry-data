@@ -13,6 +13,7 @@ executeTest('reading | comparsion with null', (store, assert) => {
     .then(() => {
       store.unloadAll();
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .selectByProjection('ApplicationUserE')
         .where('phone1', '==', null);
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) => {
@@ -24,6 +25,7 @@ executeTest('reading | comparsion with null', (store, assert) => {
     // Neq null for own field.
     .then(() => {
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .selectByProjection('ApplicationUserE')
         .where('phone1', '!=', null);
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) => {

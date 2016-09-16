@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.6.1] - 2016-09-16
+### Fixed
+- `Adapter.Offline`:
+    - Using primary key type of string.
+    - Schema versioning for [Dexie](https://github.com/dfahlander/Dexie.js/wiki/Design#database-versioning).
+
 ## [0.6.0] - 2016-09-14
 ### Added
 - Query language support for `offline` adapter.
