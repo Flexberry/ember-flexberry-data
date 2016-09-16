@@ -216,12 +216,7 @@ var OfflineAdapter = DS.Adapter.extend({
   _updateOrCreate(store, type, snapshot) {
     const serializer = store.serializerFor(type.modelName);
     const recordHash = serializer.serialize(snapshot, { includeId: true });
-
-    // update(id comes from snapshot) or create(id comes from serialization)
-    const id = snapshot.id || recordHash.id;
-
-    let table = this._getTableForOperationsByModelSnapshot(snapshot);
-    return table.put(recordHash, id);
+    return this._getTableForOperationsByModelType(snapshot.type).put(recordHash);
   },
 
   /**
