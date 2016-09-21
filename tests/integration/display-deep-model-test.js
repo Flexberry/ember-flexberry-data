@@ -20,7 +20,7 @@ module('Display deep model', {
     var done = assert.async();
     run(function () {
       let db = new Dexie(dbName);
-      db.version(1).stores({
+      db.version(0.1).stores({
         'ember-flexberry-dummy-suggestion': suggestion,
         'ember-flexberry-dummy-suggestion-type': suggestionType,
         'ember-flexberry-dummy-application-user': applicationUser,
@@ -29,14 +29,9 @@ module('Display deep model', {
         'ember-flexberry-dummy-comment-vote': commentVote
       });
 
-      let suggestionTable = db['ember-flexberry-dummy-suggestion'];
-      let suggestionTypeTable = db['ember-flexberry-dummy-suggestion-type'];
-      let applicationUserTable = db['ember-flexberry-dummy-application-user'];
-      let voteTable = db['ember-flexberry-dummy-vote'];
-      let commentTable = db['ember-flexberry-dummy-comment'];
-      let commentVoteTable = db['ember-flexberry-dummy-comment-vote'];
-      db.transaction('rw', suggestionTable, suggestionTypeTable, applicationUserTable, voteTable, commentTable, commentVoteTable,  function() {
-        suggestionTable.put({
+      db.open().then((db) => {
+        let promises = [];
+        promises.push(db.table('ember-flexberry-dummy-suggestion').put({
           id: 'fea5b275-cb9b-4584-ba04-26122bc8cbd3',
           address: 'Street, 20',
           text: 'Loooong text',
@@ -49,9 +44,8 @@ module('Display deep model', {
           files: [],
           userVotes: ['8be0d89b-8cab-4b0b-b029-356c59809163'],
           comments: ['7e5d3b63-eb5e-446e-84da-26865f87c1c5']
-        });
-
-        suggestionTypeTable.bulkPut([
+        }));
+        promises.push(db.table('ember-flexberry-dummy-suggestion-type').bulkPut([
           {
             id: 'de627522-47c3-428f-99be-fdac2e8f5618',
             name: '123',
@@ -66,9 +60,8 @@ module('Display deep model', {
             parent: null,
             localizedTypes: []
           }
-        ]);
-
-        applicationUserTable.put({
+        ]));
+        promises.push(db.table('ember-flexberry-dummy-application-user').put({
           id: '555a6d25-ac76-417c-bcc5-25bc260fc3ae',
           name: 'Васиииилий',
           eMail: 'pupkin1@mail.ru',
@@ -83,16 +76,14 @@ module('Display deep model', {
           gender: 'Male',
           vip: true,
           karma: 11.4
-        });
-
-        voteTable.put({
+        }));
+        promises.push(db.table('ember-flexberry-dummy-vote').put({
           id: '8be0d89b-8cab-4b0b-b029-356c59809163',
           suggestion: 'fea5b275-cb9b-4584-ba04-26122bc8cbd3',
           voteType: 'Like',
           applicationUser: '555a6d25-ac76-417c-bcc5-25bc260fc3ae'
-        });
-
-        commentTable.put({
+        }));
+        promises.push(db.table('ember-flexberry-dummy-comment').put({
           id: '7e5d3b63-eb5e-446e-84da-26865f87c1c5',
           suggestion: 'fea5b275-cb9b-4584-ba04-26122bc8cbd3',
           text: 'Not ok',
@@ -100,17 +91,15 @@ module('Display deep model', {
           moderated: false,
           author: '555a6d25-ac76-417c-bcc5-25bc260fc3ae',
           userVotes: ['721e65db-9e04-47a3-8f29-3b5c39fff8dd']
-        });
-
-        commentVoteTable.put({
+        }));
+        promises.push(db.table('ember-flexberry-dummy-comment-vote').put({
           id: '721e65db-9e04-47a3-8f29-3b5c39fff8dd',
           comment: '7e5d3b63-eb5e-446e-84da-26865f87c1c5',
           voteType: 'Dislike',
           applicationUser: '555a6d25-ac76-417c-bcc5-25bc260fc3ae'
-        });
-      }).then(function () {
-        done();
-      });
+        }));
+        return new Dexie.Promise.all(promises).then(db.close);
+      }).finally(done);
     });
 
     run(function () {
