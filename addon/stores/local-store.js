@@ -1,14 +1,15 @@
+/**
+  @module ember-flexberry-data
+*/
+
 import Ember from 'ember';
 import DS from 'ember-data';
 import OfflineAdapter from '../adapters/offline';
 import QueryBuilder from '../query/builder';
 
 /**
-  @module ember-flexberry-data
-*/
-
-/**
   Store that used in offline mode by default.
+
   @class LocalStore
   @namespace Offline
   @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
@@ -18,21 +19,30 @@ export default DS.Store.extend({
   /**
     Database name for IndexedDB.
 
-    @property databaseName
+    @property dbName
     @type String
+    @default 'ember-flexberry-data'
   */
-  databaseName: undefined,
+  dbName: Ember.computed({
+    get() {
+      return this.get('adapter.dbName');
+    },
+    set(key, value) {
+      return this.set('adapter.dbName', value);
+    },
+  }),
 
-  init: function() {
-    let owner = Ember.getOwner(this);
-    let databaseName = Ember.isNone(this.get('databaseName')) ? 'ember-flexberry-data' : this.get('databaseName');
-    let adapter = OfflineAdapter.create(owner.ownerInjection(), {
-      databaseName: databaseName,
-    });
+  /**
+    Initializing instance.
+    [More info](http://emberjs.com/api/data/classes/DS.Store.html#method_init).
 
-    this.set('adapter', adapter);
-
+    @method init
+  */
+  init() {
     this._super(...arguments);
+    let dbName = this.get('dbName');
+    let owner = Ember.getOwner(this);
+    this.set('adapter', OfflineAdapter.create(owner.ownerInjection(), dbName ? { dbName } : {}));
   },
 
   /**
@@ -169,12 +179,4 @@ export default DS.Store.extend({
   queryRecord: function(modelName, query) {
     return this._super(modelName, query);
   },
-
-  /**
-   * Changes `databaseName` adapter's property if `databaseName` property was changed.
-   */
-  _databaseNameObserver: Ember.observer('databaseName', function() {
-    let databaseName = this.get('databaseName');
-    this.get('adapter').set('databaseName', databaseName);
-  })
 });

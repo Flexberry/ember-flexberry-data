@@ -105,7 +105,7 @@ module('Display deep model', {
     run(function () {
       App = startApp();
       store = App.__container__.lookup('service:store');
-      store.set('offlineStore.databaseName', dbName);
+      store.set('offlineStore.dbName', dbName);
       let offlineGlobals = App.__container__.lookup('service:offline-globals');
       offlineGlobals.setOnlineAvailable(false);
     });
