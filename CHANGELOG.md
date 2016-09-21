@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.0] - 2016-09-21
+### Changed
+- `Offline.LocalStore` and `Adapter.Offline`:
+    - Renamed property `databaseName` to `dbName`.
+- `Query.IndexedDBAdapter`:
+    - Unnecessary `store` instance for `query` method.
+    - No build schema by projection for query.
+
+### Fixed
+- `Adapter.Offline`:
+    - Logic for dynamic schema versioning.
+- `Query.IndexedDBAdapter`:
+    - IndexedDB not support filter by keys type of `boolean`.
+
 ## [0.6.1] - 2016-09-16
 ### Fixed
 - `Adapter.Offline`:
