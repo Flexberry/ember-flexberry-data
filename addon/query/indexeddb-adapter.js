@@ -82,7 +82,8 @@ function updateWhereClause(table, query) {
 
   if (predicate instanceof SimplePredicate) {
     let fields = Information.parseAttributePath(predicate.attributePath);
-    if (predicate.value === null || fields.length > 1) {
+    let value = typeof predicate.value === 'boolean' ? `${predicate.value}` : predicate.value;
+    if (value === null || fields.length > 1) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
       return table.filter(getAttributeFilterFunction(predicate));
@@ -90,22 +91,22 @@ function updateWhereClause(table, query) {
 
     switch (predicate.operator) {
       case FilterOperator.Eq:
-        return table.where(predicate.attributePath).equals(predicate.value);
+        return table.where(predicate.attributePath).equals(value);
 
       case FilterOperator.Neq:
-        return table.where(predicate.attributePath).notEqual(predicate.value);
+        return table.where(predicate.attributePath).notEqual(value);
 
       case FilterOperator.Le:
-        return table.where(predicate.attributePath).below(predicate.value);
+        return table.where(predicate.attributePath).below(value);
 
       case FilterOperator.Leq:
-        return table.where(predicate.attributePath).belowOrEqual(predicate.value);
+        return table.where(predicate.attributePath).belowOrEqual(value);
 
       case FilterOperator.Ge:
-        return table.where(predicate.attributePath).above(predicate.value);
+        return table.where(predicate.attributePath).above(value);
 
       case FilterOperator.Geq:
-        return table.where(predicate.attributePath).aboveOrEqual(predicate.value);
+        return table.where(predicate.attributePath).aboveOrEqual(value);
 
       default:
         throw new Error('Unknown operator');
