@@ -524,21 +524,31 @@ function executeTest(data, query, assert, callback) {
   let done = assert.async();
   let dbName = databasePrefix + Math.random();
 
-  let checkResult = (result) => {
+  let checkResult = (result, db) => {
     try {
       callback(result);
     } finally {
+      db.close();
       deleteTempDb(dbName).finally(done);
     }
   };
 
-  let failQuery = (e) => {
-    assert.notOk(true, 'Error in executing query: ' + e);
+  let failQuery = (error, db) => {
+    assert.notOk(true, 'Error in executing query: ' + error);
+    db.close();
     deleteTempDb(dbName).finally(done);
   };
 
   let queryTempDb = () => {
-    new IndexedDbAdapter(dbName).query(store, query).then(checkResult, failQuery);
+    let db = new Dexie(dbName);
+    db.version(0.1).stores({ employee: schema });
+    db.open().then((db) => {
+      new IndexedDbAdapter(db).query(query).then((result) => {
+        checkResult(result, db);
+      }).catch((error, db) => {
+        failQuery(error, db);
+      });
+    });
   };
 
   let failCreateTempDb = (e) => {
@@ -568,6 +578,6 @@ function deleteTempDb(dbName) {
  */
 function createTempDb(dbName, data) {
   let db = new Dexie(dbName);
-  db.version(1).stores({ employee: schema });
+  db.version(0.1).stores({ employee: schema });
   return db.open().then((db) => db.table(modelName).bulkAdd(data).then(db.close));
 }
