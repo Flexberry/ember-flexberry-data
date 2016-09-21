@@ -160,17 +160,48 @@ var OfflineAdapter = DS.Adapter.extend({
     );
   },
 
+  /**
+    Implement this method in a subclass to handle the creation of new records.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_createRecord).
+
+    @method createRecord
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {DS.Snapshot} snapshot
+    @return {Promise}
+  */
   createRecord(store, type, snapshot) {
-    return this._updateOrCreate(store, type, snapshot);
+    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+    return this.dexie(type, db => db.table(type.modelName).add(hash));
   },
 
+  /**
+    Implement this method in a subclass to handle the updating of a record.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_updateRecord).
+
+    @method updateRecord
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {DS.Snapshot} snapshot
+    @return {Promise}
+  */
   updateRecord(store, type, snapshot) {
-    return this._updateOrCreate(store, type, snapshot);
+    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+    return this.dexie(type, db => db.table(type.modelName).update(hash.id, hash));
   },
 
+  /**
+    Implement this method in a subclass to handle the deletion of a record.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_deleteRecord).
+
+    @method deleteRecord
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {DS.Snapshot} snapshot
+    @return {Promise}
+  */
   deleteRecord(store, type, snapshot) {
-    let table = this._getTableForOperationsByModelType(type);
-    return table.delete(snapshot.id);
+    return this.dexie(type, db => db.table(type.modelName).delete(snapshot.id));
   },
 
   // private
@@ -288,10 +319,6 @@ var OfflineAdapter = DS.Adapter.extend({
     return schema;
   },
 
-  _updateOrCreate(store, type, snapshot) {
-    const serializer = store.serializerFor(type.modelName);
-    const recordHash = serializer.serialize(snapshot, { includeId: true });
-    return this._getTableForOperationsByModelType(snapshot.type).put(recordHash);
   /**
     Return schema of database.
     IMPORTANT: If database has been never opened, schema will be empty.
