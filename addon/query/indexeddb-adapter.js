@@ -1,6 +1,8 @@
-import Ember from 'ember';
-import Dexie from 'npm:dexie';
+/**
+  @module ember-flexberry-data
+*/
 
+import Ember from 'ember';
 import FilterOperator from './filter-operator';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
@@ -9,187 +11,49 @@ import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip }
 import Information from '../utils/information';
 
 /**
- * Class of query language adapter that allows to load data from IndexedDB.
- *
- * @module ember-flexberry-data
- * @namespace Query
- * @class IndexedDbAdapter
- * @extends Query.BaseAdapter
- */
+  Class of query language adapter that allows to load data from IndexedDB.
+
+  @namespace Query
+  @class IndexedDBAdapter
+  @extends Query.BaseAdapter
+*/
 export default class extends BaseAdapter {
-  constructor(databaseName) {
+  /**
+    @param {Dexie} db Dexie database instance.
+    @class IndexedDBAdapter
+    @constructor
+  */
+  constructor(db) {
     super();
 
-    if (!databaseName) {
-      throw new Error('Database name is not specified');
+    if (!db || !db.isOpen()) {
+      throw new Error('Database must be opened.');
     }
 
-    this._databaseName = databaseName;
+    this._db = db;
   }
 
   /**
-   * Loads data from IndexedDB.
-   *
-   * @method query
-   * @param {DS.Store} store
-   * @param {Query} Query language instance to the adapter.
-   * @returns {Ember.RSVP.Promise} Promise with loaded data.
-   * @public
-   */
-  query(store, query) {
-    let db = new Dexie(this._databaseName);
-    let schema = getSchemaFromProjection(store, query);
-    if (!Ember.$.isEmptyObject(schema)) {
-      db.version(1).stores(schema);
-    }
+    Loads data from IndexedDB.
 
+    @method query
+    @param {QueryObject} QueryObject instance to the adapter.
+    @return {Promise} Promise with loaded data.
+  */
+  query(query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      db.open().then((db) => {
-        try {
-          let table = Ember.$.isEmptyObject(schema) ? db.table(query.modelName) : db[query.modelName];
-          let projection = buildProjection(query);
-          let order = buildOrder(query);
-          let topskip = buildTopSkip(query);
+      let order = buildOrder(query);
+      let topskip = buildTopSkip(query);
+      let projection = buildProjection(query);
+      let table = this._db.table(query.modelName);
 
-          updateWhereClause(table, query).toArray().then((data) => {
-            resolve(projection(order(topskip(data))));
-          }).catch((e) => reject(e)).finally(() => db.close());
-        } catch (e) {
-          reject(e);
-        } finally {
-          db.close();
-        }
-      }).catch((e) => reject(e));
-    });
-  }
-}
-
-/**
- * Builds IndexedDB database schema by given query object.
- *
- * @param {DS.Store} store
- * @param {Query} query Query language instance for loading data.
- * @returns {Object} IndexedDB database schema.
- */
-function getSchemaFromProjection(store, query) {
-  let storeSchema = {};
-  let information = new Information(store);
-
-  let fieldContainsInSchema = (modelName, field) => {
-    if (Ember.isEmpty(storeSchema[modelName])) {
-      return false;
-    } else {
-      let fieldsArray = storeSchema[modelName].split(',');
-      return (fieldsArray.indexOf(field) > -1) || (fieldsArray.indexOf('*' + field) > -1);
-    }
-  };
-
-  let getSchemaForAttribute = (property) => {
-    let fields = Information.parseAttributePath(property);
-    let propertyName = fields.length === 1 ? property : fields[0];
-    if (!fieldContainsInSchema(query.modelName, propertyName)) {
-      storeSchema[query.modelName] += information.isDetail(query.modelName, propertyName) ? ',*' + propertyName : ',' + propertyName;
-    }
-
-    if (fields.length > 1) {
-      let lastModelName = query.modelName;
-      for (let i = 1; i < fields.length; i++) {
-        let meta = information.getMeta(lastModelName, fields[i - 1]);
-        lastModelName = meta.type;
-        if (Ember.isEmpty(storeSchema[lastModelName])) {
-          storeSchema[lastModelName] = 'id';
-        }
-
-        if (!fieldContainsInSchema(lastModelName, fields[i])) {
-          storeSchema[lastModelName] += information.isDetail(lastModelName, fields[i]) ? ',*' + fields[i] : ',' + fields[i];
-        }
-      }
-    }
-  };
-
-  if (!Ember.isEmpty(query.projectionName)) {
-    let getSchemaForModel = (proj) => {
-      let attrs = proj.attributes;
-      storeSchema[proj.modelName] = 'id';
-      for (let key in attrs) {
-        if (attrs.hasOwnProperty(key) && !Ember.isNone(attrs[key].kind)) {
-          if (!fieldContainsInSchema(proj.modelName, key)) {
-            storeSchema[proj.modelName] += attrs[key].kind === 'hasMany' ? ',*' + key : ',' + key;
-          }
-
-          if (attrs[key].kind === 'belongsTo' || attrs[key].kind === 'hasMany') {
-            getSchemaForModel(attrs[key]);
-          }
-        }
-      }
-    };
-
-    let modelType = store.modelFor(query.modelName);
-    let projection = modelType.projections.get(query.projectionName);
-    getSchemaForModel(projection);
-  } else if (!Ember.isEmpty(query.select)) {
-    storeSchema[query.modelName] = 'id';
-    query.select.forEach(function(property) {
-      getSchemaForAttribute(property);
-    });
-  }
-
-  if (!Ember.isEmpty(query.predicate)) {
-    let getSchemaForAttributesOfSimplePredicate = (prefix, predicate) => {
-      Ember.assert('Given predicate is not an instance of SimplePredicate', predicate instanceof SimplePredicate);
-      let attributeName = Ember.isEmpty(prefix) ? predicate.attributePath : prefix + '.' + predicate.attributePath;
-      getSchemaForAttribute(attributeName);
-    };
-
-    let getSchemaForAttributesOfStringPredicate = (prefix, predicate) => {
-      Ember.assert('Given predicate is not an instance of StringPredicate', predicate instanceof StringPredicate);
-      let attributeName = Ember.isEmpty(prefix) ? predicate.attributePath : prefix + '.' + predicate.attributePath;
-      getSchemaForAttribute(attributeName);
-    };
-
-    let getSchemaForAttributesOfComplexPredicate = (prefix, predicate) => {
-      Ember.assert('Given predicate is not an instance of ComplexPredicate', predicate instanceof ComplexPredicate);
-      predicate.predicates.forEach(p => {
-        if (p instanceof SimplePredicate) {
-          getSchemaForAttributesOfSimplePredicate(prefix, p);
-        } else if (p instanceof StringPredicate) {
-          getSchemaForAttributesOfStringPredicate(prefix, p);
-        } else if (p instanceof ComplexPredicate) {
-          getSchemaForAttributesOfComplexPredicate(prefix, p);
-        } else if (p instanceof DetailPredicate) {
-          getSchemaForAttributesOfDetailPredicate(prefix, p);
-        }
+      updateWhereClause(table, query).toArray().then((data) => {
+        resolve(projection(order(topskip(data))));
+      }).catch((error) => {
+        reject(error);
       });
-    };
-
-    let getSchemaForAttributesOfDetailPredicate = (prefix, predicate) => {
-      Ember.assert('Given predicate is not an instance of DetailPredicate', predicate instanceof DetailPredicate);
-      let attributeName = Ember.isEmpty(prefix) ? predicate.detailPath : prefix + '.' + predicate.detailPath;
-      getSchemaForAttribute(attributeName);
-      let p = predicate.predicate;
-      if (p instanceof SimplePredicate) {
-        getSchemaForAttributesOfSimplePredicate(attributeName, p);
-      } else if (p instanceof StringPredicate) {
-        getSchemaForAttributesOfStringPredicate(attributeName, p);
-      } else if (p instanceof ComplexPredicate) {
-        getSchemaForAttributesOfComplexPredicate(attributeName, p);
-      } else if (p instanceof DetailPredicate) {
-        getSchemaForAttributesOfDetailPredicate(attributeName, p);
-      }
-    };
-
-    if (query.predicate instanceof SimplePredicate) {
-      getSchemaForAttributesOfSimplePredicate('', query.predicate);
-    } else if (query.predicate instanceof StringPredicate) {
-      getSchemaForAttributesOfStringPredicate('', query.predicate);
-    } else if (query.predicate instanceof ComplexPredicate) {
-      getSchemaForAttributesOfComplexPredicate('', query.predicate);
-    } else if (query.predicate instanceof DetailPredicate) {
-      getSchemaForAttributesOfDetailPredicate('', query.predicate);
-    }
+    });
   }
-
-  return storeSchema;
 }
 
 /**
