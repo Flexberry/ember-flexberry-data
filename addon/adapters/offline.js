@@ -7,13 +7,15 @@ import DS from 'ember-data';
 import isAsync from '../utils/is-async';
 import isObject from '../utils/is-object';
 import generateUniqueId from '../utils/generate-unique-id';
-import IndexeddbAdapter from '../query/indexeddb-adapter';
+import IndexedDBAdapter from '../query/indexeddb-adapter';
 import QueryObject from '../query/query-object';
 import QueryBuilder from '../query/builder';
 import FilterOperator from '../query/filter-operator';
 import Condition from '../query/condition';
 import { SimplePredicate, ComplexPredicate } from '../query/predicate';
 import Dexie from 'npm:dexie';
+
+const { RSVP, merge } = Ember;
 
 /**
   Default adapter for {{#crossLink "Offline.LocalStore"}}{{/crossLink}}.
@@ -22,82 +24,95 @@ import Dexie from 'npm:dexie';
   @namespace Adapter
   @extends <a href="http://emberjs.com/api/data/classes/DS.Adapter.html">DS.Adapter</a>
 */
-var OfflineAdapter = DS.Adapter.extend({
+export default DS.Adapter.extend({
   /**
-    Accumulates schemas of models used in Dexie.
+    If you would like your adapter to use a custom serializer you can set the defaultSerializer property to be the name of the custom serializer.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#property_defaultSerializer).
 
-    @property _schemas
-    @type Object
-    @private
+    @property defaultSerializer
+    @type String
+    @default 'offline'
   */
-  _schemas: {},
-
   defaultSerializer: 'offline',
-
-  //queue: LFQueue.create(),
-  //cache: LFCache.create(),
-  //caching: 'model',
-  coalesceFindRequests: true,
 
   /**
     Database name for IndexedDB.
 
-    @property databaseName
+    @property dbName
     @type String
+    @default 'ember-flexberry-data'
   */
-  databaseName: undefined,
+  dbName: 'ember-flexberry-data',
 
-  /*
-    Adapter initialization.
-  */
-  init() {
-    this._super(...arguments);
-    Ember.assert('Error: database name for IndexedDB is not defined', !Ember.isNone(this.databaseName));
-  },
-
-  shouldBackgroundReloadRecord() {
-    return false;
-  },
-
-  shouldReloadAll() {
-    return true;
-  },
-
-  /*
+  /**
     Generate globally unique IDs for records.
+
+    @method generateIdForRecord
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Object} inputProperties
+    @return {String}
   */
   generateIdForRecord: generateUniqueId,
 
   /**
-    Clear adapter's cache and IndexedDB's store.
+    Clear all tables in IndexedDB database.
 
     @method clear
+    @return {Promise}
   */
-  clear: function () {
-    // clear data in databse
-    var db = new Dexie(this.databaseName);
-    return db.delete();
+  clear() {
+    let db = this._dexie(this.get('dbName'));
+    return db.open().then(db => RSVP.all(db.tables.map(table => table.clear())));
   },
 
   /**
-    This is the main entry point into finding records.
+    Delete IndexedDB database.
+
+    @method delete
+    @return {Promise}
+  */
+  delete() {
+    return this._dexie(this.get('dbName')).delete();
+  },
+
+  /**
+    The `findRecord()` method is invoked when the store is asked for a record that has not previously been loaded.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_findRecord).
 
     @method findRecord
     @param {DS.Store} store
     @param {DS.Model} type
-    @param {Object|String|Integer|null} id
+    @param {String|Integer} id
+    @return {Promise}
   */
   findRecord(store, type, id) {
-    let table = this._getTableForOperationsByModelType(type);
-    return table.get(id);
+    return this.dexie(type, db => db.table(type.modelName).get(id));
   },
 
+  /**
+    The `findAll()` method is used to retrieve all records for a given type.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_findAll).
+
+    @method findAll
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @return {Promise}
+  */
   findAll(store, type) {
-    let db = new Dexie(this.databaseName);
-    let table = db.table(type.modelName);
-    return table.toArray();
+    return this.dexie(type, db => db.table(type.modelName).toArray());
   },
 
+  /**
+    Find multiple records at once if coalesceFindRequests is true.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_findMany).
+
+    @method findMany
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Array} ids
+    @return {Promise}
+  */
   findMany(store, type, ids) {
     let promises = Ember.A();
     let records = Ember.A();
@@ -109,55 +124,71 @@ var OfflineAdapter = DS.Adapter.extend({
       promises.pushObject(this.findRecord(store, type, ids[i]).then(addRecord));
     }
 
-    return Ember.RSVP.all(promises).then(() => {
-      Ember.RSVP.resolve(records.compact());
-    }).catch(function(reason) {
-      Ember.RSVP.reject(reason);
-    });
-  },
-
-  queryRecord(store, type, query) {
-    return this.query(store, type, query).then(result => new Ember.RSVP.Promise((resolve) => resolve(result[0])));
+    return RSVP.all(promises).then(() => RSVP.resolve(records.compact())).catch(reason => RSVP.reject(reason));
   },
 
   /**
-    Supports query language objects or queries that look like this:
-     {
-       <property to query>: <value to match>,
-       ...
-     }
+    The `queryRecord()` method is invoked when the store is asked for a single record through a query object.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_queryRecord).
 
-    (in this case every property added to the query is an "AND" query, not "OR")
+    @method queryRecord
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Object|QueryObject} query
+    @return {Promise}
+  */
+  queryRecord(store, type, query) {
+    return this.query(store, type, query).then(records => new RSVP.resolve(records[0]));
+  },
+
+  /**
+    This method is called when you call `query` on the store.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_query).
+
+    Supports {{#crossLink "Query.QueryObject"}}{{/crossLink}} instance or objects that look like this:
+      ```javascript
+      {
+        ...
+        <property to query>: <value to match>,
+        //and
+        <property to query>: <value to match>,
+        ...
+      }
+      ```
+
+    @method query
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Object|QueryObject} query
+    @return {Promise}
   */
   query(store, type, query) {
     let modelName = type.modelName;
-    let proj = this._extractProjectionFromQuery(modelName, type, query);
+    let projection = this._extractProjectionFromQuery(modelName, type, query);
     let originType = null;
     if (query && query.originType) {
       originType = query.originType;
-
       delete query.originType;
     }
 
-    let indexedDBAdapter = new IndexeddbAdapter(this.databaseName);
-
     let _this = this;
-    let queryForIndexedDBAdapter = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, proj);
-    return indexedDBAdapter.query(store, queryForIndexedDBAdapter).then((recordArray) =>
-      new Ember.RSVP.Promise((resolve, reject) => {
+    return this.dexie(type, (db) => {
+      let idba = new IndexedDBAdapter(db);
+      let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
+      return idba.query(queryObject).then(records => new RSVP.Promise((resolve, reject) => {
         let promises = Ember.A();
-        for (let i = 0; i < recordArray.length; i++) {
-          let record = recordArray[i];
-          promises.pushObject(_this._completeLoadRecord(store, type, record, proj, originType));
+        for (let i = 0; i < records.length; i++) {
+          let record = records[i];
+          promises.pushObject(_this._completeLoadRecord(store, type, record, projection, originType));
         }
 
-        Ember.RSVP.all(promises).then(() => {
-          resolve(recordArray);
+        RSVP.all(promises).then(() => {
+          resolve(records);
         }).catch((reason) => {
           reject(reason);
         });
-      })
-    );
+      }));
+    });
   },
 
   /**
@@ -204,33 +235,16 @@ var OfflineAdapter = DS.Adapter.extend({
     return this.dexie(type, db => db.table(type.modelName).delete(snapshot.id));
   },
 
-  // private
-
   /**
-    Gets [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given model type.
-    Creates [Dexie's schema](https://github.com/dfahlander/Dexie.js/wiki/Version.stores()) that contains only 'id' property for specified model type.
     Preparing database and execute `callback` with good database.
     IMPORTANT: From function `callback` must be returned `Promise`, after resolve `Promise`, database will be closed.
 
-    @method _getTableForOperationsByModelType
-    @param {subclass of DS.Model} type Model type.
-    @return {WritableTable} Instance of [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given model type.
     @method dexie
     @private
     @param {DS.Model} type
     @param {Function} callback Function that has one parameters, database is ready for use.
     @return {Promise}
   */
-  _getTableForOperationsByModelType(type) {
-    let schemas = this.get('_schemas');
-    if (!schemas[type.modelName]) {
-      schemas[type.modelName] = {
-        schema: this._createSchema(type),
-        version: Object.keys(schemas).length + 1,
-      };
-
-      this.set('_schemas', schemas);
-    }
   dexie(type, callback) {
     return new RSVP.Promise((resolve, reject) => {
       let db = this._dexie(this.get('dbName'));
@@ -242,10 +256,6 @@ var OfflineAdapter = DS.Adapter.extend({
           db.version(db.verno + 0.1).stores(this._createSchema(type));
         }
 
-    let db = new Dexie(this.databaseName);
-    for (let schema in schemas) {
-      db.version(schemas[schema].version).stores(schemas[schema].schema);
-    }
         return db.open();
       }).catch(Dexie.NoSuchDatabaseError, () => {
         db.version(0.1).stores(this._createSchema(type));
@@ -264,7 +274,6 @@ var OfflineAdapter = DS.Adapter.extend({
     });
   },
 
-    return db[type.modelName];
   /**
     Return new instance of Dexie database.
 
@@ -462,7 +471,7 @@ var OfflineAdapter = DS.Adapter.extend({
       }, this);
     }
 
-    return Ember.RSVP.all(promises).then(() => {
+    return RSVP.all(promises).then(() => {
       let relationshipNames = Ember.get(type, 'relationshipNames');
       let belongsTo = relationshipNames.belongsTo;
       for (let i = 0; i < belongsTo.length; i++) {
@@ -583,5 +592,3 @@ var OfflineAdapter = DS.Adapter.extend({
     }
   }
 });
-
-export default OfflineAdapter;
