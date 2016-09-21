@@ -178,11 +178,17 @@ var OfflineAdapter = DS.Adapter.extend({
   /**
     Gets [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given model type.
     Creates [Dexie's schema](https://github.com/dfahlander/Dexie.js/wiki/Version.stores()) that contains only 'id' property for specified model type.
+    Preparing database and execute `callback` with good database.
+    IMPORTANT: From function `callback` must be returned `Promise`, after resolve `Promise`, database will be closed.
 
     @method _getTableForOperationsByModelType
     @param {subclass of DS.Model} type Model type.
     @return {WritableTable} Instance of [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given model type.
+    @method dexie
     @private
+    @param {DS.Model} type
+    @param {Function} callback Function that has one parameters, database is ready for use.
+    @return {Promise}
   */
   _getTableForOperationsByModelType(type) {
     let schemas = this.get('_schemas');
@@ -194,21 +200,67 @@ var OfflineAdapter = DS.Adapter.extend({
 
       this.set('_schemas', schemas);
     }
+  dexie(type, callback) {
+    return new RSVP.Promise((resolve, reject) => {
+      let db = this._dexie(this.get('dbName'));
+      db.open().then((db) => {
+        let currentSchema = this._currentSchema(db);
+        if (!currentSchema[type.modelName]) {
+          db.close();
+          db.version(db.verno).stores(currentSchema);
+          db.version(db.verno + 0.1).stores(this._createSchema(type));
+        }
 
     let db = new Dexie(this.databaseName);
     for (let schema in schemas) {
       db.version(schemas[schema].version).stores(schemas[schema].schema);
     }
+        return db.open();
+      }).catch(Dexie.NoSuchDatabaseError, () => {
+        db.version(0.1).stores(this._createSchema(type));
+        return db.open();
+      }).catch((error) => {
+        reject(error);
+      }).finally(() => {
+        if (db.isOpen()) {
+          let promise = callback(db);
+          promise.finally(db.close);
+          resolve(promise);
+        } else {
+          reject(new Error('Sorry, database does not open...'));
+        }
+      });
+    });
+  },
 
     return db[type.modelName];
+  /**
+    Return new instance of Dexie database.
+
+    @method _dexie
+    @private
+    @param {String} dbName
+    @param {Object} [options]
+    @param {Array} [options.addons]
+    @param {Boolean} [options.autoOpen=false]
+    @param {IDBFactory} [options.indexedDB=window.indexedDB]
+    @param {IDBKeyRange} [options.IDBKeyRange]
+    @return {Dexie} Dexie database.
+  */
+  _dexie(dbName, options) {
+    return new Dexie(dbName, merge({
+      autoOpen: false,
+      indexedDB: window.indexedDB,
+    }, options));
   },
 
   /**
-    Return schema for Dexie.
+    Return schema of model for Dexie.
 
     @method _createSchema
+    @private
     @param {DS.Model} type
-    @return {Object} Return schema for Dexie.
+    @return {Object} Schema of model for Dexie.
   */
   _createSchema(type) {
     let schema = {};
@@ -219,10 +271,17 @@ var OfflineAdapter = DS.Adapter.extend({
     });
 
     type.eachRelationship((name, { kind }) => {
-      if (kind === 'hasMany') {
-        schema[type.modelName] += `,*${name}`;
-      } else {
-        schema[type.modelName] += `,${name}`;
+      switch (kind) {
+        case 'belongsTo':
+          schema[type.modelName] += `,${name}`;
+          break;
+
+        case 'hasMany':
+          schema[type.modelName] += `,*${name}`;
+          break;
+
+        default:
+          throw new Error(`Unknown kind: '${kind}'.`);
       }
     });
 
@@ -233,6 +292,22 @@ var OfflineAdapter = DS.Adapter.extend({
     const serializer = store.serializerFor(type.modelName);
     const recordHash = serializer.serialize(snapshot, { includeId: true });
     return this._getTableForOperationsByModelType(snapshot.type).put(recordHash);
+  /**
+    Return schema of database.
+    IMPORTANT: If database has been never opened, schema will be empty.
+
+    @method _schemaFromDB
+    @private
+    @param {Dexie} db
+    @return {Object} Schema of database.
+  */
+  _currentSchema(db) {
+    let schema = {};
+    db.tables.forEach((table) => {
+      let projection = [table.schema.primKey].concat(table.schema.indexes);
+      schema[table.name] = projection.map(attribute => attribute.src).join(',');
+    });
+    return schema;
   },
 
   /**
