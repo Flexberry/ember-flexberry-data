@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Now `changedBelongsTo` is empty after saving the created model.
 
 ## [0.6.2-beta.0] - 2016-09-21
 ### Changed
