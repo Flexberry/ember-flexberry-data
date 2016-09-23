@@ -303,6 +303,17 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   },
 
   /**
+    Fired when the record is created.
+    [More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didCreate).
+
+    @method didCreate
+    */
+  didCreate() {
+    this._super(...arguments);
+    this._saveCanonicalBelongsTo();
+  },
+
+  /**
     Set each `belongsTo` relationship, observer, that save canonical state.
 
     @method _saveCanonicalBelongsTo
