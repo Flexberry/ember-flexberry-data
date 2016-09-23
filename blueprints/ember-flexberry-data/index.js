@@ -8,7 +8,7 @@ module.exports = {
       ]
     }).then(function () {
       return _this.addPackagesToProject([
-        { name: 'dexie', target: '1.3.6' },
+        { name: 'dexie', target: '1.4.2' },
         { name: 'node-uuid', target: '1.4.7' }
       ]);
     });
