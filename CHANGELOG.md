@@ -1,8 +1,16 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.1] - 2016-09-23
+### Changed
+- Update Dexie to 1.4.2 version.
+
 ### Fixed
 - Now `changedBelongsTo` is empty after saving the created model.
+
+### Known issues
+- Methods `findRecord`, `findAll` and `findMany` from `Adapter.Offline` returns model with relationships as id's not depending on options.
 
 ## [0.6.2-beta.0] - 2016-09-21
 ### Changed
