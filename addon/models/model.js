@@ -307,7 +307,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     [More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didCreate).
 
     @method didCreate
-    */
+  */
   didCreate() {
     this._super(...arguments);
     this._saveCanonicalBelongsTo();
