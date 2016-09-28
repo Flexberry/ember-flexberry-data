@@ -62,7 +62,7 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   clear() {
-    let db = this._dexie(this.get('dbName'));
+    let db = this.dexie(this.get('dbName'));
     return db.open().then(db => RSVP.all(db.tables.map(table => table.clear())));
   },
 
@@ -73,7 +73,7 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   delete() {
-    return this._dexie(this.get('dbName')).delete();
+    return Dexie.delete(this.get('dbName'));
   },
 
   /**
@@ -87,7 +87,8 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   findRecord(store, type, id) {
-    return this.dexie(type, db => db.table(type.modelName).get(id));
+    let db = this._dexie(store);
+    return db.table(type.modelName).get(id);
   },
 
   /**
@@ -100,7 +101,8 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   findAll(store, type) {
-    return this.dexie(type, db => db.table(type.modelName).toArray());
+    let db = this._dexie(store);
+    return db.table(type.modelName).toArray();
   },
 
   /**
@@ -171,24 +173,22 @@ export default DS.Adapter.extend({
       delete query.originType;
     }
 
-    let _this = this;
-    return this.dexie(type, (db) => {
-      let idba = new IndexedDBAdapter(db);
-      let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
-      return idba.query(queryObject).then(records => new RSVP.Promise((resolve, reject) => {
-        let promises = Ember.A();
-        for (let i = 0; i < records.length; i++) {
-          let record = records[i];
-          promises.pushObject(_this._completeLoadRecord(store, type, record, projection, originType));
-        }
+    let db = this._dexie(store);
+    let idba = new IndexedDBAdapter(db);
+    let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
+    return idba.query(queryObject).then(records => new RSVP.Promise((resolve, reject) => {
+      let promises = Ember.A();
+      for (let i = 0; i < records.length; i++) {
+        let record = records[i];
+        promises.pushObject(this._completeLoadRecord(store, type, record, projection, originType));
+      }
 
-        RSVP.all(promises).then(() => {
-          resolve(records);
-        }).catch((reason) => {
-          reject(reason);
-        });
-      }));
-    });
+      RSVP.all(promises).then(() => {
+        resolve(records);
+      }).catch((reason) => {
+        reject(reason);
+      });
+    }));
   },
 
   /**
@@ -202,8 +202,13 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   createRecord(store, type, snapshot) {
+    let db = this._dexie(store);
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-    return this.dexie(type, db => db.table(type.modelName).add(hash));
+    return new RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).add(hash).then((id) => {
+        resolve({ id });
+      }).catch(reject);
+    });
   },
 
   /**
@@ -217,8 +222,9 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   updateRecord(store, type, snapshot) {
+    let db = this._dexie(store);
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-    return this.dexie(type, db => db.table(type.modelName).update(hash.id, hash));
+    return db.table(type.modelName).update(hash.id, hash);
   },
 
   /**
@@ -232,118 +238,43 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   deleteRecord(store, type, snapshot) {
-    return this.dexie(type, db => db.table(type.modelName).delete(snapshot.id));
-  },
-
-  /**
-    Preparing database and execute `callback` with good database.
-    IMPORTANT: From function `callback` must be returned `Promise`, after resolve `Promise`, database will be closed.
-
-    @method dexie
-    @private
-    @param {DS.Model} type
-    @param {Function} callback Function that has one parameters, database is ready for use.
-    @return {Promise}
-  */
-  dexie(type, callback) {
-    return new RSVP.Promise((resolve, reject) => {
-      let db = this._dexie(this.get('dbName'));
-      db.open().then((db) => {
-        let currentSchema = this._currentSchema(db);
-        if (!currentSchema[type.modelName]) {
-          db.close();
-          db.version(db.verno).stores(currentSchema);
-          db.version(db.verno + 0.1).stores(this._createSchema(type));
-        }
-
-        return db.open();
-      }).catch(Dexie.NoSuchDatabaseError, () => {
-        db.version(0.1).stores(this._createSchema(type));
-        return db.open();
-      }).catch((error) => {
-        reject(error);
-      }).finally(() => {
-        if (db.isOpen()) {
-          let promise = callback(db);
-          promise.finally(db.close);
-          resolve(promise);
-        } else {
-          reject(new Error('Sorry, database does not open...'));
-        }
-      });
-    });
+    let db = this._dexie(store);
+    return db.table(type.modelName).delete(snapshot.id);
   },
 
   /**
     Return new instance of Dexie database.
+    Override for add custom options for Dexie constructor.
 
-    @method _dexie
-    @private
+    @method dexie
     @param {String} dbName
     @param {Object} [options]
     @param {Array} [options.addons]
-    @param {Boolean} [options.autoOpen=false]
-    @param {IDBFactory} [options.indexedDB=window.indexedDB]
+    @param {Boolean} [options.autoOpen]
+    @param {IDBFactory} [options.indexedDB]
     @param {IDBKeyRange} [options.IDBKeyRange]
     @return {Dexie} Dexie database.
   */
-  _dexie(dbName, options) {
-    return new Dexie(dbName, merge({
-      autoOpen: false,
-      indexedDB: window.indexedDB,
-    }, options));
+  dexie(dbName, options) {
+    return new Dexie(dbName, merge({}, options));
   },
 
   /**
-    Return schema of model for Dexie.
+    Return Dexie database with schema.
 
-    @method _createSchema
+    @method _dexie
     @private
-    @param {DS.Model} type
-    @return {Object} Schema of model for Dexie.
+    @param {DS.Store} type
+    @return {Dexie} Return Dexie database.
   */
-  _createSchema(type) {
-    let schema = {};
-    schema[type.modelName] = 'id';
+  _dexie(store) {
+    let db = this.dexie(this.get('dbName'));
+    let schemas = store.get(`offlineSchema.${this.get('dbName')}`);
+    for (let version in schemas) {
+      db.version(version).stores(schemas[version]);
+    }
 
-    type.eachAttribute((name) => {
-      schema[type.modelName] += `,${name}`;
-    });
-
-    type.eachRelationship((name, { kind }) => {
-      switch (kind) {
-        case 'belongsTo':
-          schema[type.modelName] += `,${name}`;
-          break;
-
-        case 'hasMany':
-          schema[type.modelName] += `,*${name}`;
-          break;
-
-        default:
-          throw new Error(`Unknown kind: '${kind}'.`);
-      }
-    });
-
-    return schema;
-  },
-
-  /**
-    Return schema of database.
-    IMPORTANT: If database has been never opened, schema will be empty.
-
-    @method _schemaFromDB
-    @private
-    @param {Dexie} db
-    @return {Object} Schema of database.
-  */
-  _currentSchema(db) {
-    let schema = {};
-    db.tables.forEach((table) => {
-      let projection = [table.schema.primKey].concat(table.schema.indexes);
-      schema[table.name] = projection.map(attribute => attribute.src).join(',');
-    });
-    return schema;
+    return db;
   },
 
   /**

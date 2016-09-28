@@ -26,8 +26,8 @@ export default class extends BaseAdapter {
   constructor(db) {
     super();
 
-    if (!db || !db.isOpen()) {
-      throw new Error('Database must be opened.');
+    if (!db) {
+      throw new Error('Database must be.');
     }
 
     this._db = db;
