@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.2] - 2016-09-28
+### Breaking changes
+- Now uses static `offlineSchema` for Dexie. You must define `offlineSchema` in `Store` your application.
+
+### Fixed
+- Error at attempt to save existing records into IndexedDB.
+
 ## [0.6.2-beta.1] - 2016-09-23
 ### Changed
 - Update Dexie to 1.4.2 version.
