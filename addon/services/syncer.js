@@ -148,7 +148,7 @@ export default Ember.Service.extend({
       if (record.get('isDeleted')) {
         return localAdapter.deleteRecord(localStore, snapshot.type, snapshot);
       } else {
-        return localAdapter.createRecord(localStore, snapshot.type, snapshot).then(function() {
+        return localAdapter.updateOrCreate(localStore, snapshot.type, snapshot).then(function() {
           return syncDownRelatedRecords(store, record, localAdapter, localStore, projection);
         });
       }

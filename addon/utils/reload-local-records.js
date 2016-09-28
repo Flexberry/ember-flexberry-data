@@ -57,7 +57,7 @@ export function reloadLocalRecords(type, reload, projectionName) {
 function createLocalRecord(store, localAdapter, localStore, modelType, record, projection) {
   if (record.get('id')) {
     var snapshot = record._createSnapshot();
-    return localAdapter.createRecord(localStore, modelType, snapshot).then(function() {
+    return localAdapter.updateOrCreate(localStore, modelType, snapshot).then(function() {
       return syncDownRelatedRecords(store, record, localAdapter, localStore, projection);
     });
   } else {

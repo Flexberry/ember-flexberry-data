@@ -243,6 +243,20 @@ export default DS.Adapter.extend({
   },
 
   /**
+    Create record if her not exist, or update record.
+
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {DS.Snapshot} snapshot
+    @return {Promise}
+  */
+  updateOrCreate(store, type, snapshot) {
+    let db = this._dexie(store);
+    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+    return db.table(type.modelName).put(hash);
+  },
+
+  /**
     Return new instance of Dexie database.
     Override for add custom options for Dexie constructor.
 
