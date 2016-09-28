@@ -144,6 +144,9 @@ export default DS.Store.extend({
     // Set offline store.
     let offlineStore = owner.lookup('store:local');
     this.set('offlineStore', offlineStore);
+    this.set('offlineStore.offlineSchema', this.get('offlineSchema'));
+
+    this._dbInit();
   },
 
   /**
@@ -445,5 +448,24 @@ export default DS.Store.extend({
     return !offlineEnabled || (offlineEnabled && useOnlineStoreCondition) ?
       onlineStore[methodName].apply(onlineStore, args[0]) :
       offlineStore[methodName].apply(offlineStore, args[0]);
-  }
+  },
+
+  /**
+    Update all databases in accordance with actual schemas.
+
+    @method _dbInit
+    @private
+  */
+  _dbInit() {
+    let offlineSchema = this.get('offlineSchema');
+    let adapter = this.get('offlineStore.adapter');
+    for (let dbName in offlineSchema) {
+      let db = adapter.dexie(dbName);
+      for (let version in offlineSchema[dbName]) {
+        db.version(version).stores(offlineSchema[dbName][version]);
+      }
+
+      db.open().then((db) => { db.close(); });
+    }
+  },
 });
