@@ -14,6 +14,35 @@ import decorateAPICall from './base-store/decorate-api-call';
 */
 export default DS.Store.extend({
   /**
+    Store offline schemas for all databases.
+
+    @property _offlineSchema
+    @type Object
+    @private
+    @default 'Schema of 1 version for internal models addon'
+  */
+  _offlineSchema: {
+    'ember-flexberry-data': {
+      1: {
+        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity':
+          'id,objectPrimaryKey,operationTime,operationType,executionResult,source,serializedField,' +
+          'createTime,creator,editTime,editor,user,objectType,*auditFields',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field':
+          'id,field,caption,oldValue,newValue,mainChange,auditEntity',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type':
+          'id,name',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent':
+          'id,name,login,pwd,isUser,isGroup,isRole,connString,enabled,email,full,read,insert,update,' +
+          'delete,execute,createTime,creator,editTime,editor',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group':
+          'id,createTime,creator,editTime,editor,group,user',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-security-session':
+          'id,userKey,startedAt,lastAccess,closed',
+      },
+    },
+  },
+
+  /**
     Store that use for making requests in online mode.
     It can be specified in application that use offline mode support.
     If it is not specified then instance of <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
@@ -33,6 +62,62 @@ export default DS.Store.extend({
   */
   offlineStore: null,
   offlineGlobals: Ember.inject.service('offline-globals'),
+
+  /**
+    Set schema for your database.
+
+    @example
+      ```javascript
+      // app/services/store.js
+      ...
+        init() {
+          this.set('offlineSchema', {
+            <name of database>: {
+              <number of version>: {
+                <name of model>: <table definition>,
+              },
+            },
+            dbName: {
+              1: {
+                modelName: 'id,attribute1,attribute2,belongsToRelationship1,belongsToRelationship2,*hasManyRelationship1,*hasManyRelationship2',
+                changedModelName: 'id,attribute1,attribute2',
+                thisModelWillBeRemovedInNextVersion: 'id,attribute1',
+              },
+              2: {
+                newModelName: 'id,attribute1',
+                changedModelName: 'id,attribute1,attribute3,attribute4',
+                thisModelWillBeRemovedInNextVersion: null,
+              },
+            },
+          });
+          return this._super(...arguments);
+        },
+      ...
+      ```
+
+    @property offlineSchema
+    @type Object
+  */
+  offlineSchema: Ember.computed({
+    get() {
+      return this.get('_offlineSchema');
+    },
+    set(key, value) {
+      let offlineSchema = this.get('offlineSchema');
+      for (let db in value) {
+        if (offlineSchema.hasOwnProperty(db)) {
+          for (let version in value[db]) {
+            let schema = offlineSchema[db][version] || {};
+            offlineSchema[db][version] = Ember.merge(schema, value[db][version]);
+          }
+        } else {
+          offlineSchema[db] = value[db];
+        }
+      }
+
+      return this.set('_offlineSchema', offlineSchema);
+    },
+  }),
 
   /**
     Global instance of {{#crossLink "Syncer"}}{{/crossLink}} class that contains methods to sync model.
