@@ -2,9 +2,10 @@
 
 ## [Unreleased]
 
-## [0.6.2-beta.3] - 2016-09-29
+## [0.6.2-beta.4] - 2016-09-29
 ### Fixed
 - Remove validation from audit models.
+- Responses format in `Offline` adapter at `createRecord` and `updateRecord` methods.
 
 ## [0.6.2-beta.2] - 2016-09-28
 ### Breaking changes
