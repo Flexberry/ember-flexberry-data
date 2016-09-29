@@ -206,7 +206,9 @@ export default DS.Adapter.extend({
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
     return new RSVP.Promise((resolve, reject) => {
       db.table(type.modelName).add(hash).then((id) => {
-        resolve({ id });
+        db.table(type.modelName).get(id).then((record) => {
+          resolve(record);
+        }).catch(reject);
       }).catch(reject);
     });
   },
@@ -224,7 +226,17 @@ export default DS.Adapter.extend({
   updateRecord(store, type, snapshot) {
     let db = this._dexie(store);
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-    return db.table(type.modelName).update(hash.id, hash);
+    return new RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).update(hash.id, hash).then((result) => {
+        if (result === 1) {
+          db.table(type.modelName).get(hash.id).then((record) => {
+            resolve(record);
+          }).catch(reject);
+        } else {
+          reject(new Error('Not updated.'));
+        }
+      }).catch(reject);
+    });
   },
 
   /**
