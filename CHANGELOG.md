@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.3] - 2016-09-29
+### Fixed
+- Remove validation from audit models.
+
 ## [0.6.2-beta.2] - 2016-09-28
 ### Breaking changes
 - Now uses static `offlineSchema` for Dexie. You must define `offlineSchema` in `Store` your application.
