@@ -6,9 +6,4 @@ export let Model = Ember.Mixin.create({
   startedAt: DS.attr('date'),
   lastAccess: DS.attr('date'),
   closed: DS.attr('boolean'),
-  validations: {
-
-  },
-
 });
-

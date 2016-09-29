@@ -9,9 +9,6 @@ export let Model = Ember.Mixin.create({
   newValue: DS.attr('string'),
   mainChange: DS.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', { inverse: null, async: false }),
   auditEntity: DS.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', { inverse: 'auditFields', async: false }),
-  validations: {
-    auditEntity: { presence: true },
-  },
 });
 
 export let defineProjections = function (model) {
