@@ -2,12 +2,13 @@
 
 ## [Unreleased]
 
-## [0.6.2-beta.5] - 2016-09-30
+## [0.6.2-beta.6] - 2016-09-30
 ### Fixed
 - Remove validation from audit models.
 - Responses format in `Offline` adapter at `createRecord` and `updateRecord` methods.
 - Disable offline audit for agent model.
 - Convert object into `QueryObject` for query.
+- Save record in offline mode.
 
 ## [0.6.2-beta.2] - 2016-09-28
 ### Breaking changes
