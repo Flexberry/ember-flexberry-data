@@ -339,7 +339,7 @@ export default DS.Adapter.extend({
     } else if (predicates.length > 1) {
       let cp = new ComplexPredicate(Condition.And, predicates[0], predicates[1]);
       for (let i = 2; i < predicates.length; i++) {
-        cp.and(predicates[i]);
+        cp = cp.and(predicates[i]);
       }
 
       builder.where(cp);
