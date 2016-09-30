@@ -120,6 +120,25 @@ export default DS.Store.extend({
   }),
 
   /**
+    Add model names that be loaded from offline store.
+
+    @example
+      ```javascript
+      // app/services/store.js
+      ...
+        offlineModels: {
+          myModel: true,
+        },
+      ...
+      ```
+
+    @property offlineModels
+    @type Object
+    @default {}
+  */
+  offlineModels: {},
+
+  /**
     Global instance of {{#crossLink "Syncer"}}{{/crossLink}} class that contains methods to sync model.
 
     @property syncer
@@ -161,6 +180,7 @@ export default DS.Store.extend({
   findAll(modelName, options) {
     let offlineStore = this.get('offlineStore');
     let useOnlineStore = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
+    useOnlineStore = useOnlineStore ? useOnlineStore : this.get(`offlineModels.${modelName}`) ? false : null;
     let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
     return useOnlineStoreCondition ? this._decorateMethodAndCall('all', 'findAll', arguments, 1) : offlineStore.findAll.apply(offlineStore, arguments);
   },
@@ -179,6 +199,7 @@ export default DS.Store.extend({
   findRecord(modelName, id, options) {
     let offlineStore = this.get('offlineStore');
     let useOnlineStore = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
+    useOnlineStore = useOnlineStore ? useOnlineStore : this.get(`offlineModels.${modelName}`) ? false : null;
     let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
     return useOnlineStoreCondition ? this._decorateMethodAndCall('single', 'findRecord', arguments, 2) : offlineStore.findRecord.apply(offlineStore, arguments);
   },
@@ -210,6 +231,7 @@ export default DS.Store.extend({
   query(modelName, query) {
     let offlineStore = this.get('offlineStore');
     let useOnlineStore = !Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore) ? query.useOnlineStore : null;
+    useOnlineStore = useOnlineStore ? useOnlineStore : this.get(`offlineModels.${modelName}`) ? false : null;
     if (!Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore)) {
       delete query.useOnlineStore;
     }
@@ -229,6 +251,7 @@ export default DS.Store.extend({
   queryRecord(modelName, query) {
     let offlineStore = this.get('offlineStore');
     let useOnlineStore = !Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore) ? query.useOnlineStore : null;
+    useOnlineStore = useOnlineStore ? useOnlineStore : this.get(`offlineModels.${modelName}`) ? false : null;
     if (!Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore)) {
       delete query.useOnlineStore;
     }
