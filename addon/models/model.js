@@ -103,6 +103,8 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Promise} A promise that will be resolved after model will be successfully saved
   */
   save(options) {
+    // TODO: Find an adequate solution!
+    this._internalModel.store = Ember.getOwner(this).lookup('service:store');
     options = Ember.merge({ softSave: false }, options || {});
 
     return new Ember.RSVP.Promise((resolve, reject) => {

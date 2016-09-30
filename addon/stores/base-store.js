@@ -355,6 +355,22 @@ export default DS.Store.extend({
   },
 
   /**
+    This method is called by `record.save`, and gets passed a
+    resolver for the promise that `record.save` returns.
+    It schedules saving to happen at the end of the run loop.
+
+    @method scheduleSave
+    @private
+    @param {InternalModel} internalModel
+    @param {Resolver} resolver
+    @param {Object} options
+    @param {Boolean} [useOnlineStore] Allow to explicitly specify online or offline store using independently of global online status
+  */
+  scheduleSave() {
+    return this._callSuperMethod('scheduleSave', 3, arguments);
+  },
+
+  /**
     This method unloads all records in the store.
     @method unloadAll
     @param {String} modelName
