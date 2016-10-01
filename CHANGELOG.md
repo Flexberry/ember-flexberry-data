@@ -2,7 +2,10 @@
 
 ## [Unreleased]
 
-## [0.6.2-beta.6] - 2016-09-30
+## [0.6.2-beta.7] - 2016-10-01
+### Added
+- Property `offlineModels` of `Offline.Store` for specified models that by default loaded from offline.
+
 ### Fixed
 - Remove validation from audit models.
 - Responses format in `Offline` adapter at `createRecord` and `updateRecord` methods.
