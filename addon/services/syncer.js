@@ -149,7 +149,7 @@ export default Ember.Service.extend({
         return localAdapter.deleteRecord(localStore, snapshot.type, snapshot);
       } else {
         return localAdapter.updateOrCreate(localStore, snapshot.type, snapshot).then(function() {
-          return syncDownRelatedRecords(store, record, localAdapter, localStore, projection);
+          return projection ? syncDownRelatedRecords(store, record, localAdapter, localStore, projection) : RSVP.resolve();
         });
       }
     }
