@@ -3,6 +3,7 @@ import DS from 'ember-data';
 import decorateAdapter from './base-store/decorate-adapter';
 import decorateSerializer from './base-store/decorate-serializer';
 import decorateAPICall from './base-store/decorate-api-call';
+import QueryObject from '../query/query-object';
 
 /**
   Base class for application store.
@@ -231,16 +232,20 @@ export default DS.Store.extend({
     @return {Promise} promise
   */
   query(modelName, query) {
+    // TODO: Method `copy` bewitch `QueryObject` into `Object`.
+    let _query = query instanceof QueryObject ? query : Ember.copy(query);
     let offlineStore = this.get('offlineStore');
     let isOfflineModel = this.get(`offlineModels.${modelName}`);
-    let useOnlineStore = !Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore) ? query.useOnlineStore : null;
+    let useOnlineStore = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
     useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
-    if (!Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore)) {
-      delete query.useOnlineStore;
+    if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
+      delete _query.useOnlineStore;
     }
 
     let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
-    return useOnlineStoreCondition ? this._decorateMethodAndCall('multiple', 'query', arguments, -1) : offlineStore.query.apply(offlineStore, arguments);
+    return useOnlineStoreCondition ?
+      this._decorateMethodAndCall('multiple', 'query', [modelName, _query], -1) :
+      offlineStore.query.apply(offlineStore, [modelName, _query]);
   },
 
   /**
@@ -252,18 +257,20 @@ export default DS.Store.extend({
     @return {Promise} promise
   */
   queryRecord(modelName, query) {
+    // TODO: Method `copy` bewitch `QueryObject` into `Object`.
+    let _query = query instanceof QueryObject ? query : Ember.copy(query);
     let offlineStore = this.get('offlineStore');
     let isOfflineModel = this.get(`offlineModels.${modelName}`);
-    let useOnlineStore = !Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore) ? query.useOnlineStore : null;
+    let useOnlineStore = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
     useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
-    if (!Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore)) {
-      delete query.useOnlineStore;
+    if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
+      delete _query.useOnlineStore;
     }
 
     let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
     return useOnlineStoreCondition ?
-           this._decorateMethodAndCall('single', 'queryRecord', arguments, -1) :
-           offlineStore.queryRecord.apply(offlineStore, arguments);
+      this._decorateMethodAndCall('single', 'queryRecord', [modelName, _query], -1) :
+      offlineStore.queryRecord.apply(offlineStore, [modelName, _query]);
   },
 
   /**
