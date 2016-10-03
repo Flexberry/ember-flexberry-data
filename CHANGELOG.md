@@ -2,12 +2,14 @@
 
 ## [Unreleased]
 
-## [0.6.2-beta.8] - 2016-10-02
+## [0.6.2-beta.9] - 2016-10-03
 ### Changed
 - Service `Syncer` now not sync relationships if projection not specified.
 
 ### Fixed
 - Option `useOnlineStore` not apply due to error check `offlineModels` options.
+- Property `offlineModels` now use in `createRecord` and `scheduleSave` methods from `Offline.Store`.
+- Now not delete `useOnlineStore` parameter from object for `query` and `queryRecord` methods.
 
 ## [0.6.2-beta.7] - 2016-10-01
 ### Added
