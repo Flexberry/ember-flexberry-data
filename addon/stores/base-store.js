@@ -492,12 +492,43 @@ export default DS.Store.extend({
   _callSuperMethod(methodName, useOnlineStoreParamNum, ...args) {
     let onlineStore = this.get('onlineStore');
     let offlineStore = this.get('offlineStore');
+    let isOfflineModel = this._isOfflineModel(methodName, args[0]);
     let useOnlineStore = (args[0].length - 1) >= useOnlineStoreParamNum ? args[0][useOnlineStoreParamNum] : null;
+    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
     let useOnlineStoreCondition = useOnlineStore || (Ember.isNone(useOnlineStore) && this._isOnline());
     let offlineEnabled = this.get('offlineGlobals.isOfflineEnabled');
     return !offlineEnabled || (offlineEnabled && useOnlineStoreCondition) ?
       onlineStore[methodName].apply(onlineStore, args[0]) :
       offlineStore[methodName].apply(offlineStore, args[0]);
+  },
+
+  /**
+    Detect `offlineModels` by method name and arguments.
+
+    Support methods:
+    - `createRecord`
+    - `scheduleSave`
+
+    @method _isOfflineModel
+    @private
+    @param {String} methodName
+    @param {Array} methodArguments
+    @return {Boolean}
+  */
+  _isOfflineModel(methodName, methodArguments) {
+    let isOfflineModel;
+    switch (methodName) {
+      case 'createRecord':
+        isOfflineModel = this.get(`offlineModels.${methodArguments[0]}`);
+        return isOfflineModel || null;
+
+      case 'scheduleSave':
+        isOfflineModel = this.get(`offlineModels.${methodArguments[0].modelName}`);
+        return isOfflineModel || null;
+
+      default:
+        return null;
+    }
   },
 
   /**
