@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.10] - 2016-10-04
+### Fixed
+- Syncing down records with option `syncDownWhenOnlineEnabled` is now using specified projection for online store's method call.
+
 ## [0.6.2-beta.9] - 2016-10-03
 ### Changed
 - Service `Syncer` now not sync relationships if projection not specified.
