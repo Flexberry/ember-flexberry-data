@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.10] - 2016-10-04
+### Added
+- Support `count` function in `Query.Builder` for offline.
+
 ## [0.6.2-beta.9] - 2016-10-03
 ### Changed
 - Service `Syncer` now not sync relationships if projection not specified.
