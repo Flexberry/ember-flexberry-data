@@ -479,17 +479,18 @@ test('adapter | indexeddb | order | master field', (assert) => {
   });
 });
 
-test('adapter | indexeddb | skip-top', (assert) => {
+test('adapter | indexeddb | skip-top-count', (assert) => {
   const data = [
     { id: 1, Name: 'A', Price: 200, Age: 10 },
     { id: 2, Name: 'B', Price: 100, Age: 10 },
     { id: 3, Name: 'C', Price: 900, Age: 15 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Name').skip(1).top(1);
+  let builder = new QueryBuilder(store, modelName).select('Name').count().skip(1).top(1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
+    assert.equal(result.meta.count, 3);
     assert.equal(result.data.length, 1);
     assert.equal(result.data[0].Name, 'B');
   });
