@@ -48,7 +48,12 @@ export default class extends BaseAdapter {
       let table = this._db.table(query.modelName);
 
       updateWhereClause(table, query).toArray().then((data) => {
-        resolve(projection(order(topskip(data))));
+        let response = { meta: {}, data: projection(order(topskip(data))) };
+        if (query.count) {
+          response.meta.count = data.length;
+        }
+
+        resolve(response);
       }).catch((error) => {
         reject(error);
       });

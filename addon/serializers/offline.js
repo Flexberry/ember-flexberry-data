@@ -66,6 +66,21 @@ export default DS.JSONSerializer.extend({
     }
   },
 
+  /**
+    Normalization method for arrays of objects.
+    [More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_normalizeArrayResponse).
+
+    @method normalizeArrayResponse
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Object} payload
+    @return {Object}
+  */
+  normalizeArrayResponse(store, type, payload) {
+    payload.data = payload.data.map(i => this.normalize(type, i).data);
+    return payload;
+  },
+
   /*
     Returns a relationship formatted as a JSON-API "relationship object".
     See http://jsonapi.org/format/#document-resource-object-relationships

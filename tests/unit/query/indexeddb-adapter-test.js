@@ -27,11 +27,11 @@ test('adapter | indexeddb | without predicate', (assert) => {
   let builder = new QueryBuilder(store, modelName);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 3);
-    assert.equal(result[0].id, 1);
-    assert.equal(result[1].id, 2);
-    assert.equal(result[2].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 3);
   });
 });
 
@@ -45,10 +45,10 @@ test('adapter | indexeddb | simple predicate | eq', (assert) => {
   let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, 'B');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 2);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -62,9 +62,9 @@ test('adapter | indexeddb | simple predicate | eq | null', (assert) => {
   let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, null);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].id, 2);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 2);
   });
 });
 
@@ -78,9 +78,9 @@ test('adapter | js | simple predicate | eq | master field', function (assert) {
   let builder = new QueryBuilder(store, modelName).where('Manager.Name', FilterOperator.Eq, 'Y');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 3);
   });
 });
 
@@ -94,10 +94,10 @@ test('adapter | indexeddb | simple predicate | neq', (assert) => {
   let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Neq, 'B');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 1);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -111,10 +111,10 @@ test('adapter | indexeddb | simple predicate | le', (assert) => {
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Le, 12);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 1);
-    assert.equal(result[1].id, 2);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
   });
 });
 
@@ -128,10 +128,10 @@ test('adapter | indexeddb | simple predicate | leq', (assert) => {
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Leq, 11);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 1);
-    assert.equal(result[1].id, 2);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
   });
 });
 
@@ -145,10 +145,10 @@ test('adapter | indexeddb | simple predicate | ge', (assert) => {
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Ge, 10);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 2);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -162,10 +162,10 @@ test('adapter | indexeddb | simple predicate | geq', (assert) => {
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Geq, 11);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 2);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -180,10 +180,10 @@ test('adapter | indexeddb | string predicate | contains', (assert) => {
   let builder = new QueryBuilder(store, modelName).where(sp1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 1);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -198,10 +198,10 @@ test('adapter | indexeddb | string predicate | contains | master field', (assert
   let builder = new QueryBuilder(store, modelName).where(sp1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 1);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -216,9 +216,9 @@ test('adapter | indexeddb | detail predicate | all | simple predicate', (assert)
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
@@ -233,9 +233,9 @@ test('adapter | indexeddb | detail predicate | all | simple predicate | master f
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
@@ -250,10 +250,10 @@ test('adapter | indexeddb | detail predicate | any | simple predicate', (assert)
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 1);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -268,10 +268,10 @@ test('adapter | indexeddb | detail predicate | any | simple predicate | master f
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 1);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -289,9 +289,9 @@ test('adapter | indexeddb | detail predicate | all | complex predicate', (assert
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
@@ -309,9 +309,9 @@ test('adapter | indexeddb | detail predicate | all | complex predicate | master 
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
@@ -329,10 +329,10 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 2);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -350,10 +350,10 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].id, 2);
-    assert.equal(result[1].id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
@@ -371,10 +371,10 @@ test('adapter | indexeddb | complex predicate | and', (assert) => {
   let builder = new QueryBuilder(store, modelName).select('Surname').where(cp1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Surname, 'X');
-    assert.equal(result[1].Surname, 'Y');
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].Surname, 'X');
+    assert.equal(result.data[1].Surname, 'Y');
   });
 });
 
@@ -392,10 +392,10 @@ test('adapter | indexeddb | complex predicate | or', (assert) => {
   let builder = new QueryBuilder(store, modelName).select('Surname').where(cp1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Surname, 'X');
-    assert.equal(result[1].Surname, 'Z');
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].Surname, 'X');
+    assert.equal(result.data[1].Surname, 'Z');
   });
 });
 
@@ -418,9 +418,9 @@ test('adapter | indexeddb | complex predicate | with nested complex predicate', 
   let builder = new QueryBuilder(store, modelName).select('Surname').where(cp2);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Surname, 'Z');
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].Surname, 'Z');
   });
 });
 
@@ -434,12 +434,12 @@ test('adapter | indexeddb | select', (assert) => {
   let builder = new QueryBuilder(store, modelName).select('id,Age,Name');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 3);
-    assert.ok(result[0].id);
-    assert.ok(result[0].Name);
-    assert.ok(result[0].Age);
-    assert.notOk(result[0].Surname);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.ok(result.data[0].id);
+    assert.ok(result.data[0].Name);
+    assert.ok(result.data[0].Age);
+    assert.notOk(result.data[0].Surname);
   });
 });
 
@@ -453,11 +453,11 @@ test('adapter | indexeddb | order', (assert) => {
   let builder = new QueryBuilder(store, modelName).orderBy('Age desc, Price asc');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 3);
-    assert.equal(result[0].id, 3);
-    assert.equal(result[1].id, 2);
-    assert.equal(result[2].id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 3);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 1);
   });
 });
 
@@ -471,27 +471,28 @@ test('adapter | indexeddb | order | master field', (assert) => {
   let builder = new QueryBuilder(store, modelName).orderBy('Creator.Age desc, Price asc');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 3);
-    assert.equal(result[0].id, 3);
-    assert.equal(result[1].id, 2);
-    assert.equal(result[2].id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 3);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 1);
   });
 });
 
-test('adapter | indexeddb | skip-top', (assert) => {
+test('adapter | indexeddb | skip-top-count', (assert) => {
   const data = [
     { id: 1, Name: 'A', Price: 200, Age: 10 },
     { id: 2, Name: 'B', Price: 100, Age: 10 },
     { id: 3, Name: 'C', Price: 900, Age: 15 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Name').skip(1).top(1);
+  let builder = new QueryBuilder(store, modelName).select('Name').count().skip(1).top(1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Name, 'B');
+    assert.ok(result.data);
+    assert.equal(result.meta.count, 3);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].Name, 'B');
   });
 });
 
@@ -505,10 +506,10 @@ test('adapter | indexeddb | by id', (assert) => {
   let builder = new QueryBuilder(store, modelName).select('Name').byId(1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].id, 1);
-    assert.equal(result[0].Name, 'A');
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[0].Name, 'A');
   });
 });
 
