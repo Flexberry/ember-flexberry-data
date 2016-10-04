@@ -77,7 +77,15 @@ export default DS.JSONSerializer.extend({
     @return {Object}
   */
   normalizeArrayResponse(store, type, payload) {
-    payload.data = payload.data.map(i => this.normalize(type, i).data);
+    payload.included = [];
+    payload.data = payload.data.map((item) => {
+      let normalize = this.normalize(type, item);
+      if (normalize.included) {
+        normalize.included.forEach((i) => { payload.included.push(i); });
+      }
+
+      return normalize.data;
+    });
     return payload;
   },
 
