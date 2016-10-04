@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import isObject from '../utils/is-object';
+import isObject from '../../utils/is-object';
 
 /*
   syncUp   before finder
