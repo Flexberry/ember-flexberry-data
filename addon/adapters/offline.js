@@ -140,7 +140,7 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   queryRecord(store, type, query) {
-    return this.query(store, type, query).then(records => new RSVP.resolve(records[0]));
+    return this.query(store, type, query).then(records => new RSVP.resolve(records.data[0]));
   },
 
   /**
@@ -178,8 +178,8 @@ export default DS.Adapter.extend({
     let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
     return idba.query(queryObject).then(records => new RSVP.Promise((resolve, reject) => {
       let promises = Ember.A();
-      for (let i = 0; i < records.length; i++) {
-        let record = records[i];
+      for (let i = 0; i < records.data.length; i++) {
+        let record = records.data[i];
         promises.pushObject(this._completeLoadRecord(store, type, record, projection, originType));
       }
 
