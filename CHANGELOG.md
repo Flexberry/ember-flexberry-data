@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Casting to string only `Date` instead of all types.
 
 ## [0.6.2-beta.12] - 2016-10-05
 ### Added

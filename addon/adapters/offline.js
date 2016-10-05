@@ -328,10 +328,10 @@ export default DS.Adapter.extend({
 
     let predicates = [];
     for (let property in query) {
-      const queryValue = query[property];
+      const queryValue = query[property] instanceof Date ? query[property].toString() : query[property];
 
       // I suppose it's possible to encounter problems when queryValue will have 'Date' type...
-      predicates.push(new SimplePredicate(property, FilterOperator.Eq, queryValue.toString()));
+      predicates.push(new SimplePredicate(property, FilterOperator.Eq, queryValue));
     }
 
     if (predicates.length === 1) {
