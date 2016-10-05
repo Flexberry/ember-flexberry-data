@@ -102,7 +102,7 @@ export default Ember.Service.extend({
 
     } else if (Ember.isArray(descriptor)) {
       let updatedRecords = descriptor.map(function(record) {
-        return _this._syncDownRecord(record, reload, projectionName);
+        return _this._syncDownRecord(record, reload, projectionName).then(_this._waitForMe(null, 500));
       });
       return RSVP.all(updatedRecords);
 
@@ -184,6 +184,14 @@ export default Ember.Service.extend({
 
     var namespace = getNamespace(typeName);
     return this.get('db').setItem(namespace, records);
+  },
+
+  _waitForMe(context, time) {
+    return new Ember.RSVP.Promise((resolve) => {
+      Ember.run.later(()=>{
+        resolve(context);
+      }, time);
+    });
   },
 
   /**

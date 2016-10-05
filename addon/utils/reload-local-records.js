@@ -23,8 +23,11 @@ export function reloadLocalRecords(type, reload, projectionName) {
   var localAdapter = localStore.adapterFor(modelName);
 
   var reloadedRecords = localAdapter.findAll(localStore, modelType)
+    .then(waitForMe(null, 500))
     .then(deleteAll)
-    .then(createAll);
+    .then(waitForMe(null, 500))
+    .then(createAll)
+    .then(waitForMe(null, 500));
 
   return reloadedRecords;
 
@@ -60,6 +63,7 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
     var snapshot = record._createSnapshot();
     return localAdapter.updateOrCreate(localStore, modelType, snapshot).then(function() {
       store.set('completeSyncDownWorksCount', store.get('completeSyncDownWorksCount') + 1);
+      store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
       return syncDownRelatedRecords(store, record, localAdapter, localStore, projection);
     });
   } else {
@@ -71,6 +75,7 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
     Ember.Logger.warn(warnMessage, recordData);
 
     store.set('completeSyncDownWorksCount', store.get('completeSyncDownWorksCount') + 1);
+    store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
 
     return RSVP.resolve();
   }
@@ -78,7 +83,7 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
 
 function createLocalRecords(store, localAdapter, localStore, modelType, records, projection) {
   var createdRecords = records.map(function(record) {
-    return createLocalRecord(store, localAdapter, localStore, modelType, record, projection);
+    return createLocalRecord(store, localAdapter, localStore, modelType, record, projection).waitForMe(null, 500);
   });
   return RSVP.all(createdRecords);
 }
@@ -106,6 +111,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
       let relatedRecord = relatedRecords.objectAt(i);
       let modelType = store.modelFor(relatedRecord.constructor.modelName);
       promises.pushObject(createLocalRecord(store, localAdapter, localStore, modelType, relatedRecord, projection));
+      promises.pushObject(waitForMe(null, 500));
     }
 
     return promises;
@@ -119,6 +125,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
     var createRelatedBelongsToRecordFunction = (relatedRecord) => {
       if (!Ember.isNone(relatedRecord)) {
         promises.pushObject(createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[belongToName]));
+        promises.pushObject(waitForMe(null, 500));
       }
     };
 
@@ -137,14 +144,18 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
               promises.pushObject(
                 createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[belongToName])
               );
+              promises.pushObject(waitForMe(null, 500));
+
             }
           }
         }
       }
     }
 
-    var createRelatedHasManyRecordsFunction = (relatedRecords) =>
+    var createRelatedHasManyRecordsFunction = (relatedRecords) => {
       promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[hasManyName]));
+      promises.pushObject(waitForMe(null, 500));
+    };
 
     for (let i = 0; i < relationshipNames.hasMany.length; i++) {
       var hasManyName = relationshipNames.hasMany[i];
@@ -158,13 +169,22 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
           if (isEmbedded(store, modelType, hasManyName)) {
             var relatedRecords = mainRecord.get(hasManyName);
             promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[hasManyName]));
+            promises.pushObject(waitForMe(null, 500));
           }
         }
       }
     }
 
-    return RSVP.all(promises);
+    return RSVP.all(promises).then(waitForMe(null, 500));
   }
 
   return createRelatedRecords(store, mainRecord, localAdapter, localStore, projection);
+}
+
+function waitForMe(context, time) {
+  return new Ember.RSVP.Promise((resolve) => {
+    Ember.run.later(()=>{
+      resolve(context);
+    }, time);
+  });
 }
