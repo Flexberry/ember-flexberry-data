@@ -148,6 +148,24 @@ export default DS.Store.extend({
   */
   syncer: Ember.inject.service('syncer'),
 
+  /**
+    Count of objects that should be synced down.
+
+    @property queueSyncDownWorksCount
+    @type Number
+    @default 0
+  */
+  queueSyncDownWorksCount: 0,
+
+  /**
+    Count of objects that have been synced down without errors.
+
+    @property completeSyncDownWorksCount
+    @type Number
+    @default 0
+  */
+  completeSyncDownWorksCount: 0,
+
   /*
     Store initialization.
   */

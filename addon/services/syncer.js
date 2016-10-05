@@ -138,6 +138,7 @@ export default Ember.Service.extend({
    */
   _syncDownRecord: function(record, reload, projectionName) {
     function saveRecordToLocalStore(store, record, projectionName) {
+      store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') + 1);
       let modelName = record.constructor.modelName;
       let modelType = store.modelFor(modelName);
       let projection = Ember.isNone(projectionName) ? null : modelType.projections[projectionName];
@@ -146,9 +147,12 @@ export default Ember.Service.extend({
       let snapshot = record._createSnapshot();
 
       if (record.get('isDeleted')) {
-        return localAdapter.deleteRecord(localStore, snapshot.type, snapshot);
+        return localAdapter.deleteRecord(localStore, snapshot.type, snapshot).then(() => {
+          store.set('completeSyncDownWorksCount', store.get('completeSyncDownWorksCount') + 1);
+        });
       } else {
         return localAdapter.updateOrCreate(localStore, snapshot.type, snapshot).then(function() {
+          store.set('completeSyncDownWorksCount', store.get('completeSyncDownWorksCount') + 1);
           return projection ? syncDownRelatedRecords(store, record, localAdapter, localStore, projection) : RSVP.resolve();
         });
       }

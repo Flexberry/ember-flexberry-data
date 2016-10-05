@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.12] - 2016-10-05
+### Added
+- Properties `queueSyncDownWorksCount` and `completeSyncDownWorksCount` in `base-store` class for tracking count of objects that should be synced down.
+
 ## [0.6.2-beta.11] - 2016-10-04
 ### Fixed
 - Syncing down records with option `syncDownWhenOnlineEnabled` is now using specified projection for online store's method call.

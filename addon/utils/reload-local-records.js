@@ -55,9 +55,11 @@ export function reloadLocalRecords(type, reload, projectionName) {
 }
 
 function createLocalRecord(store, localAdapter, localStore, modelType, record, projection) {
+  store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') + 1);
   if (record.get('id')) {
     var snapshot = record._createSnapshot();
     return localAdapter.updateOrCreate(localStore, modelType, snapshot).then(function() {
+      store.set('completeSyncDownWorksCount', store.get('completeSyncDownWorksCount') + 1);
       return syncDownRelatedRecords(store, record, localAdapter, localStore, projection);
     });
   } else {
@@ -67,6 +69,8 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
     var recordData = record.toJSON && record.toJSON();
 
     Ember.Logger.warn(warnMessage, recordData);
+
+    store.set('completeSyncDownWorksCount', store.get('completeSyncDownWorksCount') + 1);
 
     return RSVP.resolve();
   }
