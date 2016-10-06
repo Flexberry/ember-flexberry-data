@@ -183,7 +183,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
 
 function waitForMe(context, time) {
   return new Ember.RSVP.Promise((resolve) => {
-    Ember.run.later(()=>{
+    Ember.run.later(()=> {
       resolve(context);
     }, time);
   });
