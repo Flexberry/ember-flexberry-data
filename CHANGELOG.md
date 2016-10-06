@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Now you can specify table name for `clear` method from `Adapter.Offline` for clear one table.
+
 ### Fixed
 - Method `normalizeArrayResponse` from `Serializer.Offline` did not expect that adapter can return response in various format.
 

@@ -56,14 +56,21 @@ export default DS.Adapter.extend({
   generateIdForRecord: generateUniqueId,
 
   /**
-    Clear all tables in IndexedDB database.
+    Clear tables in IndexedDB database, if `table` not specified, clear all tables.
 
     @method clear
+    @param {String} [table] Table name.
     @return {Promise}
   */
-  clear() {
+  clear(table) {
     let db = this.dexie(this.get('dbName'));
-    return db.open().then(db => RSVP.all(db.tables.map(table => table.clear())));
+    return db.open().then((db) => {
+      if (table) {
+        return db.table(table).clear();
+      } else {
+        return RSVP.all(db.tables.map(table => table.clear()));
+      }
+    });
   },
 
   /**
