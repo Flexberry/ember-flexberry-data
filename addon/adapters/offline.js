@@ -15,7 +15,7 @@ import Condition from '../query/condition';
 import { SimplePredicate, ComplexPredicate } from '../query/predicate';
 import Dexie from 'npm:dexie';
 
-const { RSVP, merge } = Ember;
+const { RSVP } = Ember;
 
 /**
   Default adapter for {{#crossLink "Offline.LocalStore"}}{{/crossLink}}.
@@ -45,6 +45,14 @@ export default DS.Adapter.extend({
   dbName: 'ember-flexberry-data',
 
   /**
+    Instance of dexie service.
+
+    @property dexieService
+    @type Offline.DexieService
+  */
+  dexieService: Ember.inject.service('dexie'),
+
+  /**
     Generate globally unique IDs for records.
 
     @method generateIdForRecord
@@ -63,14 +71,13 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   clear(table) {
-    let db = this.dexie(this.get('dbName'));
-    return db.open().then((db) => {
-      if (table) {
-        return db.table(table).clear();
-      } else {
-        return RSVP.all(db.tables.map(table => table.clear()));
-      }
-    });
+    let store = Ember.getOwner(this).lookup('service:store');
+    let db = this.get('dexieService').dexie(this.get('dbName'), store);
+    if (table) {
+      return db.table(table).clear();
+    } else {
+      return RSVP.all(db.tables.map(table => table.clear()));
+    }
   },
 
   /**
@@ -94,7 +101,7 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   findRecord(store, type, id) {
-    let db = this._dexie(store);
+    let db = this.get('dexieService').dexie(this.get('dbName'), store);
     return db.table(type.modelName).get(id);
   },
 
@@ -108,7 +115,7 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   findAll(store, type) {
-    let db = this._dexie(store);
+    let db = this.get('dexieService').dexie(this.get('dbName'), store);
     return db.table(type.modelName).toArray();
   },
 
@@ -180,7 +187,7 @@ export default DS.Adapter.extend({
       delete query.originType;
     }
 
-    let db = this._dexie(store);
+    let db = this.get('dexieService').dexie(this.get('dbName'), store);
     let idba = new IndexedDBAdapter(db);
     let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
     return idba.query(queryObject).then(records => new RSVP.Promise((resolve, reject) => {
@@ -209,7 +216,7 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   createRecord(store, type, snapshot) {
-    let db = this._dexie(store);
+    let db = this.get('dexieService').dexie(this.get('dbName'), store);
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
     return new RSVP.Promise((resolve, reject) => {
       db.table(type.modelName).add(hash).then((id) => {
@@ -231,7 +238,7 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   updateRecord(store, type, snapshot) {
-    let db = this._dexie(store);
+    let db = this.get('dexieService').dexie(this.get('dbName'), store);
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
     return new RSVP.Promise((resolve, reject) => {
       db.table(type.modelName).update(hash.id, hash).then((result) => {
@@ -257,7 +264,7 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   deleteRecord(store, type, snapshot) {
-    let db = this._dexie(store);
+    let db = this.get('dexieService').dexie(this.get('dbName'), store);
     return db.table(type.modelName).delete(snapshot.id);
   },
 
@@ -270,44 +277,9 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   updateOrCreate(store, type, snapshot) {
-    let db = this._dexie(store);
+    let db = this.get('dexieService').dexie(this.get('dbName'), store);
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
     return db.table(type.modelName).put(hash);
-  },
-
-  /**
-    Return new instance of Dexie database.
-    Override for add custom options for Dexie constructor.
-
-    @method dexie
-    @param {String} dbName
-    @param {Object} [options]
-    @param {Array} [options.addons]
-    @param {Boolean} [options.autoOpen]
-    @param {IDBFactory} [options.indexedDB]
-    @param {IDBKeyRange} [options.IDBKeyRange]
-    @return {Dexie} Dexie database.
-  */
-  dexie(dbName, options) {
-    return new Dexie(dbName, merge({}, options));
-  },
-
-  /**
-    Return Dexie database with schema.
-
-    @method _dexie
-    @private
-    @param {DS.Store} type
-    @return {Dexie} Return Dexie database.
-  */
-  _dexie(store) {
-    let db = this.dexie(this.get('dbName'));
-    let schemas = store.get(`offlineSchema.${this.get('dbName')}`);
-    for (let version in schemas) {
-      db.version(version).stores(schemas[version]);
-    }
-
-    return db;
   },
 
   /**

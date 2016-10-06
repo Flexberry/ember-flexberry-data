@@ -4,6 +4,7 @@ import decorateAdapter from './base-store/decorate-adapter';
 import decorateSerializer from './base-store/decorate-serializer';
 import decorateAPICall from './base-store/decorate-api-call';
 import QueryObject from '../query/query-object';
+import Dexie from 'npm:dexie';
 
 /**
   Base class for application store.
@@ -559,7 +560,7 @@ export default DS.Store.extend({
     let offlineSchema = this.get('offlineSchema');
     let adapter = this.get('offlineStore.adapter');
     for (let dbName in offlineSchema) {
-      let db = adapter.dexie(dbName);
+      let db = new Dexie(dbName);
       for (let version in offlineSchema[dbName]) {
         db.version(version).stores(offlineSchema[dbName][version]);
       }

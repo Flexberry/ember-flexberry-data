@@ -47,6 +47,7 @@ import { DetailPredicate } from './query/predicate';
 import { createPredicate } from './query/predicate';
 
 import UserService from './services/user';
+import DexieService from './services/dexie';
 
 import AuditModelMixin from './mixins/audit-model';
 
@@ -64,6 +65,7 @@ Offline.Model = OfflineModel;
 Offline.ModelMixin = OfflineModelMixin;
 Offline.GlobalsService = OfflineGlobalsService;
 Offline.Syncer = Syncer;
+Offline.DexieService = DexieService;
 
 /**
   This namespace contains classes and methods for working with projections.
