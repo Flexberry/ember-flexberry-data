@@ -6,42 +6,11 @@ import isModelInstance from '../utils/is-model-instance';
 const { RSVP } = Ember;
 
 /**
-  We save offline jobs to localforage and run them one at a time when online
-
-  Job schema:
-  ```
-  {
-    id:        { String },
-    operation: { 'createRecord'|'updateRecord'|'deleteRecord' },
-    typeName:  { String },
-    record:    { Object },
-    createdAt: { Date },
-  }
-  ```
-
-  We save remoteIdRecords to localforage. They are used to lookup remoteIds
-  from localIds.
-
-  RecordId schema:
-  ```
-  {
-    typeName: { String },
-    localId:  { String },
-    remoteId: { String }
-  }
-  ```
-
   @class Syncer
   @namespace Offline
   @extends Ember.Object
 */
 export default Ember.Service.extend({
-  db: null,
-
-  // initialize jobs since jobs may be used before we fetch from localforage
-  jobs: [],
-  remoteIdRecords: [],
-
   /**
     Store that use for making requests in offline mode.
     By default it is set to global instane of {{#crossLink "LocalStore"}}{{/crossLink}} class.
@@ -56,9 +25,7 @@ export default Ember.Service.extend({
   auditEnabled: true,
 
   /**
-   * Initialize db.
-   *
-   * Initialize jobs, remoteIdRecords.
+   * Initialize offline store.
    *
    * @method init
    * @private
@@ -68,21 +35,12 @@ export default Ember.Service.extend({
 
     let localStore = Ember.getOwner(this).lookup('store:local');
 
-    _this.set('db', window.localforage);
     _this.set('offlineStore', localStore);
-
-    // NOTE: get remoteIdRecords first then get jobs,
-    // since jobs depend on remoteIdRecords
-    /*
-    _this.getAll('remoteIdRecord').then(
-      _this.getAll.bind(_this, 'job')
-    );
-    */
   },
 
   /**
    * TODO:
-   * Save all records in the store into localforage.
+   * Save all records in the store into local store.
    *
    * @method syncDown
    * @public
@@ -112,19 +70,13 @@ export default Ember.Service.extend({
   },
 
   /**
-   * Reset syncer and localforage records.
-   * Remove all jobs and remoteIdRecords.
-   * Remove all records in localforage.
+   * Remove all records in local store.
    *
    * @method
    * @public
    */
   reset: function() {
-    return RSVP.all([
-      this.deleteAll('job'),
-      this.deleteAll('remoteIdRecord'),
-      this.this.get('offlineStore.adapter').clear()
-    ]);
+    return this.get('offlineStore.adapter').clear();
   },
 
   /**
@@ -173,17 +125,6 @@ export default Ember.Service.extend({
     } else {
       return saveRecordToLocalStore.call(_this, store, record, projectionName);
     }
-  },
-
-  deleteAll: function(typeName) {
-    return this.saveAll(typeName, []);
-  },
-
-  saveAll: function(typeName, records) {
-    this.set(pluralize(typeName), records);
-
-    var namespace = getNamespace(typeName);
-    return this.get('db').setItem(namespace, records);
   },
 
   /**
@@ -479,15 +420,3 @@ export default Ember.Service.extend({
     return query;
   },
 });
-
-function pluralize(typeName) {
-  return typeName + 's';
-}
-
-function getNamespace(typeName) {
-  var LocalForageKeyHash = {
-    job: 'EmberFryctoriaJobs',
-    remoteIdRecord: 'EmberFryctoriaRemoteIdRecords',
-  };
-  return LocalForageKeyHash[typeName];
-}
