@@ -6,6 +6,7 @@
 
 ### Fixed
 - Method `normalizeArrayResponse` from `Serializer.Offline` did not expect that adapter can return response in various format.
+- Time of processing CRUD operations in offline adapter.
 
 ### Removed
 - Obsolete code in `syncer` service.
