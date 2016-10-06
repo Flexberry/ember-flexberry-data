@@ -558,7 +558,6 @@ export default DS.Store.extend({
   */
   _dbInit() {
     let offlineSchema = this.get('offlineSchema');
-    let adapter = this.get('offlineStore.adapter');
     for (let dbName in offlineSchema) {
       let db = new Dexie(dbName);
       for (let version in offlineSchema[dbName]) {
