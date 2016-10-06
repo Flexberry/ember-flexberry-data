@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Method `normalizeArrayResponse` from `Serializer.Offline` did not expect that adapter can return response in various format.
+
 ## [0.6.2-beta.13] - 2016-10-05
 ### Fixed
 - Casting to string only `Date` instead of all types.
