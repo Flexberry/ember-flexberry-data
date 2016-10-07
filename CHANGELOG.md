@@ -3,10 +3,13 @@
 ## [Unreleased]
 ### Added
 - Now you can specify table name for `clear` method from `Adapter.Offline` for clear one table.
+- Ability to specify query object in `syncDown` method of `syncer` service in case of syncing down records by model mype.
 
 ### Fixed
 - Method `normalizeArrayResponse` from `Serializer.Offline` did not expect that adapter can return response in various format.
 - Time of processing CRUD operations in offline adapter.
+- Closing IndexedDB connection during CRUD operations.
+- Errors during parallel requests to IndexedDB (now using queue of requests).
 
 ### Removed
 - Obsolete code in `syncer` service.
