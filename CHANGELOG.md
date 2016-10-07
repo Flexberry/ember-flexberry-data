@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.14] - 2016-10-07
 ### Added
 - Now you can specify table name for `clear` method from `Adapter.Offline` for clear one table.
 - Ability to specify query object in `syncDown` method of `syncer` service in case of syncing down records by model mype.
