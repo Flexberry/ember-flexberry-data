@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import Dexie from 'npm:dexie';
+import Queue from '../utils/queue';
 
 /**
   @module ember-flexberry-data
@@ -42,6 +43,49 @@ export default Ember.Service.extend(Ember.Evented, {
     return this.set('_dexie', db);
   },
 
+  /**
+    Add operation to queue of Dexie oprations.
+
+    @method performQueueOperation
+    @param {Dexie} db
+    @param {Function} operation
+    @return {Promise} Promise for added to queue operation.
+  */
+  performQueueOperation(db, operation) {
+    return this._queue.attach((resolve, reject) => {
+      if (!db.isOpen()) {
+        db.open().then((db) => {
+          operation(db).then(() => {
+            resolve();
+          }).catch(reject);
+        }).catch(reject);
+      } else {
+        operation(db).then(() => {
+          resolve();
+        }).catch(reject);
+      }
+    });
+  },
+
+  /**
+    Perform Dexie opration without adding it to queue.
+
+    @method performOperation
+    @param {Dexie} db
+    @param {Function} operation
+    @return {Promise} Result of performed operation.
+  */
+  performOperation(db, operation) {
+    if (!db.isOpen()) {
+      return db.open().then((db) => operation(db));
+    } else {
+      return operation(db);
+    }
+  },
+
   /* Dexie instance */
-  _dexie: null
+  _dexie: null,
+
+  /* Queue for requests to Dexie */
+  _queue: Queue.create()
 });

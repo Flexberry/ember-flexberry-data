@@ -72,11 +72,12 @@ export default DS.Adapter.extend({
   */
   clear(table) {
     let store = Ember.getOwner(this).lookup('service:store');
-    let db = this.get('dexieService').dexie(this.get('dbName'), store);
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
     if (table) {
-      return db.table(table).clear();
+      return dexieService.performQueueOperation(db, (db) => db.table(table).clear());
     } else {
-      return RSVP.all(db.tables.map(table => table.clear()));
+      return RSVP.all(db.tables.map(table => dexieService.performQueueOperation(db, () => table.clear())));
     }
   },
 
@@ -101,8 +102,9 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   findRecord(store, type, id) {
-    let db = this.get('dexieService').dexie(this.get('dbName'), store);
-    return db.table(type.modelName).get(id);
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    return dexieService.performOperation(db, (db) => db.table(type.modelName).get(id));
   },
 
   /**
@@ -115,8 +117,9 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   findAll(store, type) {
-    let db = this.get('dexieService').dexie(this.get('dbName'), store);
-    return db.table(type.modelName).toArray();
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    return dexieService.performOperation(db, (db) => db.table(type.modelName).toArray());
   },
 
   /**
@@ -187,22 +190,27 @@ export default DS.Adapter.extend({
       delete query.originType;
     }
 
-    let db = this.get('dexieService').dexie(this.get('dbName'), store);
-    let idba = new IndexedDBAdapter(db);
-    let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
-    return idba.query(queryObject).then(records => new RSVP.Promise((resolve, reject) => {
-      let promises = Ember.A();
-      for (let i = 0; i < records.data.length; i++) {
-        let record = records.data[i];
-        promises.pushObject(this._completeLoadRecord(store, type, record, projection, originType));
-      }
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let queryOperation = (db) => {
+      let idba = new IndexedDBAdapter(db);
+      let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
+      return idba.query(queryObject).then(records => new RSVP.Promise((resolve, reject) => {
+        let promises = Ember.A();
+        for (let i = 0; i < records.data.length; i++) {
+          let record = records.data[i];
+          promises.pushObject(this._completeLoadRecord(store, type, record, projection, originType));
+        }
 
-      RSVP.all(promises).then(() => {
-        resolve(records);
-      }).catch((reason) => {
-        reject(reason);
-      });
-    }));
+        RSVP.all(promises).then(() => {
+          resolve(records);
+        }).catch((reason) => {
+          reject(reason);
+        });
+      }));
+    };
+
+    return dexieService.performOperation(db, queryOperation);
   },
 
   /**
@@ -216,15 +224,20 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   createRecord(store, type, snapshot) {
-    let db = this.get('dexieService').dexie(this.get('dbName'), store);
-    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-    return new RSVP.Promise((resolve, reject) => {
-      db.table(type.modelName).add(hash).then((id) => {
-        db.table(type.modelName).get(id).then((record) => {
-          resolve(record);
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let createOperation = (db) => {
+      let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+      return new RSVP.Promise((resolve, reject) => {
+        db.table(type.modelName).add(hash).then((id) => {
+          db.table(type.modelName).get(id).then((record) => {
+            resolve(record);
+          }).catch(reject);
         }).catch(reject);
-      }).catch(reject);
-    });
+      });
+    };
+
+    return dexieService.performQueueOperation(db, createOperation);
   },
 
   /**
@@ -238,19 +251,24 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   updateRecord(store, type, snapshot) {
-    let db = this.get('dexieService').dexie(this.get('dbName'), store);
-    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-    return new RSVP.Promise((resolve, reject) => {
-      db.table(type.modelName).update(hash.id, hash).then((result) => {
-        if (result === 1) {
-          db.table(type.modelName).get(hash.id).then((record) => {
-            resolve(record);
-          }).catch(reject);
-        } else {
-          reject(new Error('Not updated.'));
-        }
-      }).catch(reject);
-    });
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let updateOperation = (db) => {
+      let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+      return new RSVP.Promise((resolve, reject) => {
+        db.table(type.modelName).update(hash.id, hash).then((result) => {
+          if (result === 1) {
+            db.table(type.modelName).get(hash.id).then((record) => {
+              resolve(record);
+            }).catch(reject);
+          } else {
+            reject(new Error('Not updated.'));
+          }
+        }).catch(reject);
+      });
+    };
+
+    return dexieService.performQueueOperation(db, updateOperation);
   },
 
   /**
@@ -264,8 +282,9 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   deleteRecord(store, type, snapshot) {
-    let db = this.get('dexieService').dexie(this.get('dbName'), store);
-    return db.table(type.modelName).delete(snapshot.id);
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id));
   },
 
   /**
@@ -277,9 +296,10 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   updateOrCreate(store, type, snapshot) {
-    let db = this.get('dexieService').dexie(this.get('dbName'), store);
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-    return db.table(type.modelName).put(hash);
+    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).put(hash));
   },
 
   /**
