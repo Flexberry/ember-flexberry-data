@@ -47,13 +47,14 @@ export default Ember.Service.extend({
    * @param {String|DS.Model|Array} descriptor typeName, record, records.
    * @param {Boolean} [reload] If set to true then syncer perform remote reload for data, otherwise data will get from the store.
    * @param {String} [projectionName] Name of projection for remote reload of data. If not set then all properties of record, except navigation properties, will be read.
+   * @param {Query.QueryObject} [queryObject] QueryObject instance to make query if descriptor is a typeName.
    * @return {Promie}
    */
-  syncDown: function(descriptor, reload, projectionName) {
+  syncDown: function(descriptor, reload, projectionName, queryObject) {
     let _this = this;
 
     if (typeof descriptor === 'string') {
-      return reloadLocalRecords.call(this, descriptor, reload, projectionName);
+      return reloadLocalRecords.call(this, descriptor, reload, projectionName, queryObject);
 
     } else if (isModelInstance(descriptor)) {
       return _this._syncDownRecord(descriptor, reload, projectionName);

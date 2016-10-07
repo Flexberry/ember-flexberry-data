@@ -11,10 +11,11 @@ var RSVP = Ember.RSVP;
   @param {String|DS.Model} type
   @param {Boolean} reload
   @param {String} [projectionName]
+  @param {Query.QueryObject} [queryObject]
   @return {Promise} Promise
   @private
 */
-export function reloadLocalRecords(type, reload, projectionName) {
+export function reloadLocalRecords(type, reload, projectionName, queryObject) {
   var store = Ember.getOwner(this).lookup('service:store');
   var modelType = store.modelFor(type);
   let modelName = modelType.modelName;
@@ -22,31 +23,28 @@ export function reloadLocalRecords(type, reload, projectionName) {
   var localStore = Ember.getOwner(this).lookup('store:local');
   var localAdapter = localStore.adapterFor(modelName);
 
-  var reloadedRecords = localAdapter.findAll(localStore, modelType)
-    .then(deleteAll)
-    .then(createAll);
+  var reloadedRecords = localAdapter.clear(modelType).then(createAll);
 
   return reloadedRecords;
-
-  function deleteAll(localRecords) {
-    var deletedRecords = localRecords.map(function(record) {
-      return localAdapter.deleteRecord(localStore, modelType, { id: record.id });
-    });
-
-    return RSVP.all(deletedRecords);
-  }
 
   function createAll() {
     var projection = Ember.isNone(projectionName) ? null : modelType.projections[projectionName];
     if (reload) {
-      let options = {
-        reload: true,
-        useOnlineStore: true
-      };
-      options = Ember.isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
-      return store.findAll(type, options).then(function(records) {
-        return createLocalRecords(store, localAdapter, localStore, modelType, records, projection);
-      });
+      if (Ember.isNone(queryObject)) {
+        let options = {
+          reload: true,
+          useOnlineStore: true
+        };
+        options = Ember.isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
+        return store.findAll(type, options).then(function(records) {
+          return createLocalRecords(store, localAdapter, localStore, modelType, records, projection);
+        });
+      } else {
+        queryObject = Ember.$.extend(true, queryObject, { useOnlineStore: true });
+        return store.query(type, queryObject).then(function(records) {
+          return createLocalRecords(store, localAdapter, localStore, modelType, records, projection);
+        });
+      }
     } else {
       var records = store.peekAll(type);
       return createLocalRecords(store, localAdapter, localStore, modelType, records, projection);
