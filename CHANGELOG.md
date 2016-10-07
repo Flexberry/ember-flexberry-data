@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.15] - 2016-10-07
+### Changed
+- Property `queueSyncDownWorksCount` now stores actual number of objects that should be synced down.
+
+### Removed
+- Property `completeSyncDownWorksCount` in `base-store` was removed.
+
 ## [0.6.2-beta.14] - 2016-10-07
 ### Added
 - Now you can specify table name for `clear` method from `Adapter.Offline` for clear one table.

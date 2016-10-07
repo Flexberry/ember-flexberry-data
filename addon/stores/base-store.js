@@ -158,15 +158,6 @@ export default DS.Store.extend({
   */
   queueSyncDownWorksCount: 0,
 
-  /**
-    Count of objects that have been synced down without errors.
-
-    @property completeSyncDownWorksCount
-    @type Number
-    @default 0
-  */
-  completeSyncDownWorksCount: 0,
-
   /*
     Store initialization.
   */

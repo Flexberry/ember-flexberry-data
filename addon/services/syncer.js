@@ -101,12 +101,18 @@ export default Ember.Service.extend({
 
       if (record.get('isDeleted')) {
         return localAdapter.deleteRecord(localStore, snapshot.type, snapshot).then(() => {
-          store.set('completeSyncDownWorksCount', store.get('completeSyncDownWorksCount') + 1);
+          store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+        }).catch((reason) => {
+          store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+          Ember.Logger.error(reason);
         });
       } else {
         return localAdapter.updateOrCreate(localStore, snapshot.type, snapshot).then(function() {
-          store.set('completeSyncDownWorksCount', store.get('completeSyncDownWorksCount') + 1);
+          store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
           return projection ? syncDownRelatedRecords(store, record, localAdapter, localStore, projection) : RSVP.resolve();
+        }).catch((reason) => {
+          store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+          Ember.Logger.error(reason);
         });
       }
     }
