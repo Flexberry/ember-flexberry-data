@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Property `queueSyncDownWorksCount` was moved to `dexie` service.
 
 ## [0.6.2-beta.15] - 2016-10-07
 ### Changed

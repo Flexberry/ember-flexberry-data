@@ -91,7 +91,8 @@ export default Ember.Service.extend({
    */
   _syncDownRecord: function(record, reload, projectionName) {
     function saveRecordToLocalStore(store, record, projectionName) {
-      store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') + 1);
+      let dexieService = Ember.getOwner(this).lookup('service:dexie');
+      dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
       let modelName = record.constructor.modelName;
       let modelType = store.modelFor(modelName);
       let projection = Ember.isNone(projectionName) ? null : modelType.projections[projectionName];
@@ -101,17 +102,17 @@ export default Ember.Service.extend({
 
       if (record.get('isDeleted')) {
         return localAdapter.deleteRecord(localStore, snapshot.type, snapshot).then(() => {
-          store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
         }).catch((reason) => {
-          store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           Ember.Logger.error(reason);
         });
       } else {
         return localAdapter.updateOrCreate(localStore, snapshot.type, snapshot).then(function() {
-          store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           return projection ? syncDownRelatedRecords(store, record, localAdapter, localStore, projection) : RSVP.resolve();
         }).catch((reason) => {
-          store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           Ember.Logger.error(reason);
         });
       }
