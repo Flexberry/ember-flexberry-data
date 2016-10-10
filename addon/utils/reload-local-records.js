@@ -53,7 +53,7 @@ export function reloadLocalRecords(type, reload, projectionName, queryObject) {
 }
 
 function createLocalRecord(store, localAdapter, localStore, modelType, record, projection) {
-  let dexieService = Ember.getOwner(this).lookup('service:dexie');
+  let dexieService = Ember.getOwner(store).lookup('service:dexie');
   dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
   if (record.get('id')) {
     var snapshot = record._createSnapshot();
