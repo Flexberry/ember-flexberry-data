@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.17] - 2016-10-10
+### Changed
+- Fix problems with getting `dexie` service.
+
 ## [0.6.2-beta.16] - 2016-10-10
 ### Changed
 - Property `queueSyncDownWorksCount` was moved to `dexie` service.
