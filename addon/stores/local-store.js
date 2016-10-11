@@ -103,15 +103,15 @@ export default DS.Store.extend({
   findAll: function(modelName, options) {
     Ember.Logger.debug(`Flexberry Local Store::findAll ${modelName}`);
 
-    let builder = new QueryBuilder(this, modelName);
-
     if (options && options.projection) {
       Ember.Logger.debug(`Flexberry Local Store::findAll using projection '${options.projection}'`);
 
+      let builder = new QueryBuilder(this, modelName);
       builder.selectByProjection(options.projection);
+      return this.query(modelName, builder.build());
     }
 
-    return this.query(modelName, builder.build());
+    return this._super(...arguments);
   },
 
   /**
@@ -131,15 +131,20 @@ export default DS.Store.extend({
   findRecord: function(modelName, id, options) {
     // TODO: case of options.reload === false.
     Ember.Logger.debug(`Flexberry Local Store::findRecord ${modelName}(${id})`);
-    let builder = new QueryBuilder(this, modelName).byId(id);
 
+    let builder = new QueryBuilder(this, modelName).byId(id);
     if (options && options.projection) {
       Ember.Logger.debug(`Flexberry Local Store::findRecord using projection '${options.projection}'`);
 
       builder.selectByProjection(options.projection);
+      return this.queryRecord(modelName, builder.build());
     }
 
-    return this.queryRecord(modelName, builder.build());
+    let queryObject = builder.build();
+
+    // Now if projection is not specified then only 'id' field will be selected.
+    queryObject.select = [];
+    return this.queryRecord(modelName, queryObject);
   },
 
   /**
