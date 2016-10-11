@@ -9,27 +9,20 @@ var App;
 var store;
 var run = Ember.run;
 var get = Ember.get;
-const suggestion = 'id,address,text,date,votes,moderated,type,author,editor1,*files,*userVotes,*comments';
-const suggestionType = 'id,name,moderated,parent,*localizedTypes';
-const applicationUser = 'id,name,eMail,phone1,phone2,phone3,activated,vK,facebook,twitter,birthday,gender,vip,karma';
-const vote = 'id,suggestion,voteType,applicationUser';
-const comment = 'id,suggestion,text,votes,moderated,author,*userVotes';
-const commentVote = 'id,comment,voteType,applicationUser';
 const dbName = 'TestDB';
-var db = new Dexie(dbName);
-db.version(0.1).stores({
-  'ember-flexberry-dummy-suggestion': suggestion,
-  'ember-flexberry-dummy-suggestion-type': suggestionType,
-  'ember-flexberry-dummy-application-user': applicationUser,
-  'ember-flexberry-dummy-vote': vote,
-  'ember-flexberry-dummy-comment': comment,
-  'ember-flexberry-dummy-comment-vote': commentVote
-});
 
 module('offline-CRUD', {
   beforeEach: function (assert) {
     var done = assert.async();
     run(function () {
+      App = startApp();
+      store = App.__container__.lookup('service:store');
+      store.set('offlineStore.dbName', dbName);
+      let offlineGlobals = App.__container__.lookup('service:offline-globals');
+      offlineGlobals.setOnlineAvailable(false);
+
+      let dexieService = App.__container__.lookup('service:dexie');
+      var db = dexieService.dexie(dbName, store);
       Dexie.delete(dbName).then(() => {
         db.open().then((db) => {
           let promises = [];
@@ -106,14 +99,6 @@ module('offline-CRUD', {
           });
         }).finally(done);
       }).catch(done);
-    });
-
-    run(function () {
-      App = startApp();
-      store = App.__container__.lookup('service:store');
-      store.set('offlineStore.dbName', dbName);
-      let offlineGlobals = App.__container__.lookup('service:offline-globals');
-      offlineGlobals.setOnlineAvailable(false);
     });
   },
 
@@ -197,7 +182,7 @@ test('query record', function (assert) {
   var done2 = assert.async();
   run(function () {
     let modelName = 'ember-flexberry-dummy-suggestion';
-    let builder = new Query.Builder(store, modelName).where('address', Query.FilterOperator.Eq, 'Street, 20');
+    let builder = new Query.Builder(store, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
     store.query(modelName, builder.build()).then(function(records) {
       var firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found with query language');
