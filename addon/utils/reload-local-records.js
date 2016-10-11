@@ -23,7 +23,7 @@ export function reloadLocalRecords(type, reload, projectionName, queryObject) {
   var localStore = Ember.getOwner(this).lookup('store:local');
   var localAdapter = localStore.adapterFor(modelName);
 
-  var reloadedRecords = localAdapter.clear(modelType).then(createAll);
+  var reloadedRecords = localAdapter.clear(modelName).then(createAll);
 
   return reloadedRecords;
 
