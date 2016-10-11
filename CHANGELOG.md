@@ -1,8 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.18] - 2016-10-11
 ### Fixed
-- Function `reloadLocalRecords` try clear table with class model instead of model name.
+- `reloadLocalRecords` method tried to clear table using model class instead of model name.
+- Projection passed in options now processing correctly in `findAll` and `findRecord` methods of local store.
 
 ## [0.6.2-beta.17] - 2016-10-10
 ### Changed
