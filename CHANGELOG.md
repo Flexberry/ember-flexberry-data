@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Function `reloadLocalRecords` try clear table with class model instead of model name.
 
 ## [0.6.2-beta.17] - 2016-10-10
 ### Changed
