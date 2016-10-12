@@ -1,31 +1,33 @@
-import { module, test } from 'qunit';
-import startApp from '../../helpers/start-app';
 import Ember from 'ember';
 import DS from 'ember-data';
+import { module, test } from 'qunit';
+import startApp from 'dummy/tests/helpers/start-app';
 import isModelInstance from 'ember-flexberry-data/utils/is-model-instance';
 
 let App;
-
-let customerModel = DS.Model.extend({
+let CustomerModel = DS.Model.extend({
   contactName: DS.attr('string')
 });
 
 module('Unit | Utility | is model instance', {
-  setup: function() {
+  beforeEach() {
     App = startApp();
-    App.register('model:customer', customerModel);
+    App.register('model:customer', CustomerModel);
   },
-  teardown: function() {
+
+  afterEach() {
     Ember.run(App, 'destroy');
-  }
+  },
 });
 
-// Replace this with your real tests.
 test('it works', function(assert) {
-  let model;
-  Ember.run(function () {
-    model = App.__container__.lookup('service:store').createRecord('customer', { contactName: 'John' });
+  Ember.run(() => {
+    let notModel;
+    let model = App.__container__.lookup('service:store').createRecord('customer', {
+      contactName: 'John',
+    });
+
+    assert.ok(isModelInstance(model));
+    assert.notOk(isModelInstance(notModel));
   });
-  let result = isModelInstance(model);
-  assert.ok(result);
 });
