@@ -1,8 +1,12 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.19] - 2016-10-12
 ### Added
 - `timeout` property to `odata` adapter.
+### Fixed
+- Loading related records logic in `offline` adapter for synchronous reading.
 
 ## [0.6.2-beta.18] - 2016-10-11
 ### Fixed
