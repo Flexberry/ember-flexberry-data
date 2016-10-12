@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- `timeout` property to `odata` adapter.
 
 ## [0.6.2-beta.18] - 2016-10-11
 ### Fixed
