@@ -23,7 +23,7 @@ export function reloadLocalRecords(type, reload, projectionName, queryObject) {
   var localStore = Ember.getOwner(this).lookup('store:local');
   var localAdapter = localStore.adapterFor(modelName);
 
-  var reloadedRecords = localAdapter.clear(modelType).then(createAll);
+  var reloadedRecords = localAdapter.clear(modelName).then(createAll);
 
   return reloadedRecords;
 
@@ -53,14 +53,15 @@ export function reloadLocalRecords(type, reload, projectionName, queryObject) {
 }
 
 function createLocalRecord(store, localAdapter, localStore, modelType, record, projection) {
-  store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') + 1);
+  let dexieService = Ember.getOwner(store).lookup('service:dexie');
+  dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
   if (record.get('id')) {
     var snapshot = record._createSnapshot();
     return localAdapter.updateOrCreate(localStore, modelType, snapshot).then(function() {
-      store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+      dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
       return syncDownRelatedRecords(store, record, localAdapter, localStore, projection);
     }).catch((reason) => {
-      store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+      dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
       Ember.Logger.error(reason);
     });
   } else {
@@ -71,7 +72,7 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
 
     Ember.Logger.warn(warnMessage, recordData);
 
-    store.set('queueSyncDownWorksCount', store.get('queueSyncDownWorksCount') - 1);
+    dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
 
     return RSVP.resolve();
   }

@@ -464,39 +464,33 @@ export default DS.Adapter.extend({
 
   _loadRelatedRecord(store, type, id, proj, originType) {
     let modelName = proj.modelName ? proj.modelName : proj.type;
-    let relatedRecord = store.peekRecord(modelName, id);
-    if (Ember.isNone(relatedRecord)) {
-      let builder = new QueryBuilder(store, modelName);
-      builder.byId(id);
+    let builder = new QueryBuilder(store, modelName);
+    builder.byId(id);
 
-      if (proj && proj.modelName) {
-        let attrNames = 'id';
-        let attrs = proj.attributes;
-        for (let key in attrs) {
-          if (attrs.hasOwnProperty(key) && !Ember.isNone(attrs[key].kind)) {
-            attrNames += ',' + key;
-          }
+    if (proj && proj.modelName) {
+      let attrNames = 'id';
+      let attrs = proj.attributes;
+      for (let key in attrs) {
+        if (attrs.hasOwnProperty(key) && !Ember.isNone(attrs[key].kind)) {
+          attrNames += ',' + key;
         }
-
-        builder.select(attrNames);
       }
 
-      let query = builder.build();
-      if (Ember.$.isEmptyObject(builder._select)) {
-        // Now if projection is not specified then only 'id' field will be selected.
-        query.select = [];
-      }
-
-      query.originType = originType;
-      if (proj && proj.modelName) {
-        query.projection = proj;
-      }
-
-      return this.queryRecord(store, type, query);
-    } else {
-      let relatedRecordObject = relatedRecord.serialize({ includeId: true });
-      return this._completeLoadRecord(store, type, relatedRecordObject, proj, originType);
+      builder.select(attrNames);
     }
+
+    let query = builder.build();
+    if (Ember.$.isEmptyObject(builder._select)) {
+      // Now if projection is not specified then only 'id' field will be selected.
+      query.select = [];
+    }
+
+    query.originType = originType;
+    if (proj && proj.modelName) {
+      query.projection = proj;
+    }
+
+    return this.queryRecord(store, type, query);
   },
 
   _replaceIdToHash(store, type,  record, attributes, attrName, promises) {

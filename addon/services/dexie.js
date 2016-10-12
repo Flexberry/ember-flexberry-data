@@ -16,6 +16,15 @@ import Queue from '../utils/queue';
 */
 export default Ember.Service.extend(Ember.Evented, {
   /**
+    Count of objects that should be synced down.
+
+    @property queueSyncDownWorksCount
+    @type Number
+    @default 0
+  */
+  queueSyncDownWorksCount: 0,
+
+  /**
     Return the only instance of Dexie database with specified schemas.
     Schemas are specified in base store in `offlineSchema` property.
 

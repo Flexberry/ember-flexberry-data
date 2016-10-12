@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.19] - 2016-10-12
+### Added
+- `timeout` property to `odata` adapter.
+
+### Fixed
+- Loading related records logic in `offline` adapter for synchronous reading.
+
+## [0.6.2-beta.18] - 2016-10-11
+### Fixed
+- `reloadLocalRecords` method tried to clear table using model class instead of model name.
+- Projection passed in options now processing correctly in `findAll` and `findRecord` methods of local store.
+
+## [0.6.2-beta.17] - 2016-10-10
+### Changed
+- Fix problems with getting `dexie` service.
+
+## [0.6.2-beta.16] - 2016-10-10
+### Changed
+- Property `queueSyncDownWorksCount` was moved to `dexie` service.
+
 ## [0.6.2-beta.15] - 2016-10-07
 ### Changed
 - Property `queueSyncDownWorksCount` now stores actual number of objects that should be synced down.
