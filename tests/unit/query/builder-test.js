@@ -1,22 +1,21 @@
 import Ember from 'ember';
 import { module, test } from 'qunit';
-
 import { Query } from 'ember-flexberry-data';
-
-import startApp from '../../helpers/start-app';
+import startApp from 'dummy/tests/helpers/start-app';
 
 const { Builder } = Query;
 let app;
 let store;
 
 module('query', {
-  setup: function () {
+  beforeEach() {
     app = startApp();
     store = app.__container__.lookup('service:store');
   },
-  teardown: function () {
+
+  afterEach() {
     Ember.run(app, 'destroy');
-  }
+  },
 });
 
 test('query builder | constructor', assert => {
