@@ -103,15 +103,19 @@ export default DS.Store.extend({
   findAll: function(modelName, options) {
     Ember.Logger.debug(`Flexberry Local Store::findAll ${modelName}`);
 
+    let builder = new QueryBuilder(this, modelName);
     if (options && options.projection) {
       Ember.Logger.debug(`Flexberry Local Store::findAll using projection '${options.projection}'`);
 
-      let builder = new QueryBuilder(this, modelName);
       builder.selectByProjection(options.projection);
       return this.query(modelName, builder.build());
     }
 
-    return this._super(...arguments);
+    let queryObject = builder.build();
+
+    // Now if projection is not specified then only 'id' field will be selected.
+    queryObject.select = [];
+    return this.query(modelName, queryObject);
   },
 
   /**
