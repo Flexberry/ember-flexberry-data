@@ -4,6 +4,9 @@
 ### Added
 - Ability to specify option for unloading records from online store when sync down. It's topical for sync down big data.
 
+### Fixed
+- Not quite adequate implementation of `updateRecord` method of `offline` adapter.
+
 ## [0.6.2-beta.19] - 2016-10-12
 ### Added
 - `timeout` property to `odata` adapter.

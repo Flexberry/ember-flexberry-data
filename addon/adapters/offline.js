@@ -256,14 +256,10 @@ export default DS.Adapter.extend({
     let updateOperation = (db) => {
       let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
       return new RSVP.Promise((resolve, reject) => {
-        db.table(type.modelName).update(hash.id, hash).then((result) => {
-          if (result === 1) {
-            db.table(type.modelName).get(hash.id).then((record) => {
-              resolve(record);
-            }).catch(reject);
-          } else {
-            reject(new Error('Not updated.'));
-          }
+        db.table(type.modelName).put(hash).then((id) => {
+          db.table(type.modelName).get(id).then((record) => {
+            resolve(record);
+          }).catch(reject);
         }).catch(reject);
       });
     };
