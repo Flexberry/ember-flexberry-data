@@ -141,7 +141,7 @@ export default Ember.Service.extend({
       };
       options = Ember.isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
       return store.findRecord(modelName, record.id, options).then(function(reloadedRecord) {
-        store.get('onlineStore').unloadRecord(modelName)
+        store.get('onlineStore').unloadRecord(modelName);
         return saveRecordToLocalStore.call(_this, store, reloadedRecord, projectionName);
       });
     } else {
