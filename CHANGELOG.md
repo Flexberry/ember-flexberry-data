@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Ability to specify option for unloading records from online store when sync down. It's topical for sync down big data.
 
 ## [0.6.2-beta.19] - 2016-10-12
 ### Added
