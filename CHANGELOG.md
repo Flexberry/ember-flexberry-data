@@ -1,13 +1,17 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.20] - 2016-10-14
 ### Added
-- Ability to specify option for unloading records from online store when sync down. It's topical for sync down big data.
-- Insensitive search by string into `Query.JsAdapter`.
+- Ability to specify option for unloading records from online store when sync down. It's topical for sync down big data. Please add `{ unloadSyncedRecords: true }` as fourth parameter in `syncDown` method calls where needed.
+
+### Changed
+- Search by string (by all fields in lists) is now case insensitive in offline mode.
 
 ### Fixed
 - Not quite adequate implementation of `updateRecord` method of `offline` adapter.
-- Search by empty value into `Query.JsAdapter`.
+- Search by empty fields in `js-adapter`.
 
 ## [0.6.2-beta.19] - 2016-10-12
 ### Added
