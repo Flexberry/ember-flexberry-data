@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Update IndexedDB database failed if database version into schema specified as string.
 
 ## [0.6.2-beta.20] - 2016-10-14
 ### Added
