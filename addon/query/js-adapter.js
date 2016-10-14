@@ -218,7 +218,7 @@ export function getAttributeFilterFunction(predicate) {
   }
 
   if (predicate instanceof StringPredicate) {
-    return (i) => (getValue(i, predicate.attributePath) || '').indexOf(predicate.containsValue) > -1;
+    return (i) => (getValue(i, predicate.attributePath) || '').toLowerCase().indexOf(predicate.containsValue.toLowerCase()) > -1;
   }
 
   if (predicate instanceof DetailPredicate) {
