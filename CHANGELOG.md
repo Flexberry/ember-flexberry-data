@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.22] - 2016-10-15
 ### Added
 - Service `Syncer` now saves changes relationships.
 
