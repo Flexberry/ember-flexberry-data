@@ -543,7 +543,7 @@ export default DS.Store.extend({
     for (let dbName in offlineSchema) {
       let db = new Dexie(dbName);
       for (let version in offlineSchema[dbName]) {
-        db.version(version).stores(offlineSchema[dbName][version]);
+        db.version(+version).stores(offlineSchema[dbName][version]);
       }
 
       db.open().then((db) => { db.close(); });

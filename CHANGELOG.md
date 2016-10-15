@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Update IndexedDB database failed if database version into schema specified as string.
+- Sorting in IndexedDB apply after skip and top.
 
 ## [0.6.2-beta.21] - 2016-10-15
 ### Changed

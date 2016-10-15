@@ -461,6 +461,23 @@ test('adapter | indexeddb | order', (assert) => {
   });
 });
 
+test('adapter | indexeddb | order with skip-top', (assert) => {
+  let data = [
+    { id: 1, Price: 200, Age: 10 },
+    { id: 2, Price: 100, Age: 10 },
+    { id: 3, Price: 900, Age: 15 }
+  ];
+
+  let builder = new QueryBuilder(store, modelName).orderBy('Price asc').skip(1).top(2);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
+  });
+});
+
 test('adapter | indexeddb | order | master field', (assert) => {
   let data = [
     { id: 1, Price: 200, Creator: { Age: 10 } },
