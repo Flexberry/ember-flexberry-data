@@ -1,13 +1,14 @@
 # Change Log
 
 ## [Unreleased]
-### Fixed
-- Update IndexedDB database failed if database version into schema specified as string.
-- Sorting in IndexedDB apply after skip and top.
 
 ## [0.6.2-beta.21] - 2016-10-15
 ### Changed
 - Now we don't replace entire record when sync down. Instead we save only changed properties which are specified in projection for existing records in local store.
+
+### Fixed
+- Update IndexedDB database failed if database version in offline schema was specified as string.
+- Sorting in `indexeddb-adapter` is now applying before skip and top.
 
 ## [0.6.2-beta.20] - 2016-10-14
 ### Added
