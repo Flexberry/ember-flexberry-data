@@ -69,7 +69,8 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
   dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
   if (record.get('id')) {
     var snapshot = record._createSnapshot();
-    return localAdapter.updateOrCreate(localStore, modelType, snapshot).then(function() {
+    let fieldsToUpdate = projection ? projection.attributes : null;
+    return localAdapter.updateOrCreate(localStore, modelType, snapshot, fieldsToUpdate).then(function() {
       dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
       return syncDownRelatedRecords(store, record, localAdapter, localStore, projection, params);
     }).catch((reason) => {

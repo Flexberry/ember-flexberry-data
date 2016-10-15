@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.21] - 2016-10-15
+### Changed
+- Now we don't replace entire record when sync down. Instead we save only changed properties which are specified in projection for existing records in local store.
+
 ## [0.6.2-beta.20] - 2016-10-14
 ### Added
 - Ability to specify option for unloading records from online store when sync down. It's topical for sync down big data. Please add `{ unloadSyncedRecords: true }` as fourth parameter in `syncDown` method calls where needed.
