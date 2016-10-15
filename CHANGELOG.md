@@ -4,6 +4,9 @@
 ### Added
 - Service `Syncer` now saves changes relationships.
 
+### Changed
+- Service `Syncer` select jobs for sync up through query language, this allows select at once 'Unexecuted' and 'Failed' jobs and sort them.
+
 ## [0.6.2-beta.21] - 2016-10-15
 ### Changed
 - Now we don't replace entire record when sync down. Instead we save only changed properties which are specified in projection for existing records in local store.

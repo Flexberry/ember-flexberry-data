@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import Builder from '../query/builder';
+import { SimplePredicate } from '../query/predicate';
 import { reloadLocalRecords, syncDownRelatedRecords } from '../utils/reload-local-records';
 import isModelInstance from '../utils/is-model-instance';
 
@@ -152,17 +153,15 @@ export default Ember.Service.extend({
   /**
   */
   syncUp(continueOnError) {
-    let _this = this;
     let store = Ember.getOwner(this).lookup('service:store');
-    return _this.get('offlineStore').query('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
-      // TODO: Needs sort by `operationTime`.
-      // TODO: After inject query language support, add filter `executionResult` by `Unexecuted` or `Failed`.
-      executionResult: 'Unexecuted',
-    }).then((jobs) => {
-      // TODO: Delete `sortBy` after sort by `operationTime`.
-      jobs = jobs.sortBy('operationTime');
-      return _this._runJobs(store, jobs, continueOnError);
-    });
+    let modelName = 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity';
+    let predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
+      .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
+    let builder = new Builder(store, modelName)
+      .selectByProjection('AuditEntityE')
+      .orderBy('operationTime')
+      .where(predicate);
+    return this.get('offlineStore').query(modelName, builder.build()).then(jobs => this._runJobs(store, jobs, continueOnError));
   },
 
   /**
