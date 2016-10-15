@@ -295,29 +295,27 @@ export default DS.Adapter.extend({
   updateOrCreate(store, type, snapshot, fieldsToUpdate) {
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
-    let updateOrCreateOperation = (db) => {
-      return new Ember.RSVP.Promise((resolve, reject) => {
-        db.table(type.modelName).where(':id').equals(snapshot.id).count().then((count) => {
-          if (!Ember.isNone(fieldsToUpdate) && count > 0) {
-            if (Ember.$.isEmptyObject(fieldsToUpdate)) {
-              resolve();
-            } else {
-              let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-              for (let attrName in hash) {
-                if (hash.hasOwnProperty(attrName) && !fieldsToUpdate.hasOwnProperty(attrName)) {
-                  delete hash[attrName];
-                }
-              }
-
-              return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).update(snapshot.id, hash)).then(resolve, reject);
-            }
+    let updateOrCreateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).where(':id').equals(snapshot.id).count().then((count) => {
+        if (!Ember.isNone(fieldsToUpdate) && count > 0) {
+          if (Ember.$.isEmptyObject(fieldsToUpdate)) {
+            resolve();
           } else {
             let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-            return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).put(hash)).then(resolve, reject);
+            for (let attrName in hash) {
+              if (hash.hasOwnProperty(attrName) && !fieldsToUpdate.hasOwnProperty(attrName)) {
+                delete hash[attrName];
+              }
+            }
+
+            return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).update(snapshot.id, hash)).then(resolve, reject);
           }
-        });
+        } else {
+          let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+          return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).put(hash)).then(resolve, reject);
+        }
       });
-    };
+    });
 
     return dexieService.performOperation(db, updateOrCreateOperation);
   },
