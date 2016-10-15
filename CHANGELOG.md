@@ -4,10 +4,10 @@
 
 ## [0.6.2-beta.22] - 2016-10-15
 ### Added
-- Service `Syncer` now saves changes relationships.
+- `syncer` service now saves changed relationships for sync up process.
 
 ### Changed
-- Service `Syncer` select jobs for sync up through query language, this allows select at once 'Unexecuted' and 'Failed' jobs and sort them.
+- `syncer` service now selects jobs for sync up using query language. This allows select at once 'Unexecuted' and 'Failed' jobs and sort them.
 
 ## [0.6.2-beta.21] - 2016-10-15
 ### Changed
