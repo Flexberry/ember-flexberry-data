@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import Builder from '../query/builder';
+import { SimplePredicate } from '../query/predicate';
 import { reloadLocalRecords, syncDownRelatedRecords } from '../utils/reload-local-records';
 import isModelInstance from '../utils/is-model-instance';
 
@@ -152,17 +153,15 @@ export default Ember.Service.extend({
   /**
   */
   syncUp(continueOnError) {
-    let _this = this;
     let store = Ember.getOwner(this).lookup('service:store');
-    return _this.get('offlineStore').query('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
-      // TODO: Needs sort by `operationTime`.
-      // TODO: After inject query language support, add filter `executionResult` by `Unexecuted` or `Failed`.
-      executionResult: 'Unexecuted',
-    }).then((jobs) => {
-      // TODO: Delete `sortBy` after sort by `operationTime`.
-      jobs = jobs.sortBy('operationTime');
-      return _this._runJobs(store, jobs, continueOnError);
-    });
+    let modelName = 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity';
+    let predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
+      .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
+    let builder = new Builder(store, modelName)
+      .selectByProjection('AuditEntityE')
+      .orderBy('operationTime')
+      .where(predicate);
+    return this.get('offlineStore').query(modelName, builder.build()).then(jobs => this._runJobs(store, jobs, continueOnError));
   },
 
   /**
@@ -233,19 +232,22 @@ export default Ember.Service.extend({
   /**
   */
   _runCreatingJob(store, job) {
-    let attributes = {
-      id: job.get('objectPrimaryKey'),
-    };
-    job.get('auditFields').forEach((field) => {
-      attributes[field.get('field')] = field.get('newValue');
-    });
-    return store.createRecord(job.get('objectType.name'), attributes, true).save().then(() => {
-      job.set('executionResult', 'Выполнено');
-      return job.save();
-    }).catch((/*reason*/) => {
-      // TODO: Resolve conflicts here.
-      job.set('executionResult', 'Ошибка');
-      return job.save();
+    let record = store.peekRecord(job.get('objectType.name'), job.get('objectPrimaryKey'));
+    if (record) {
+      store.unloadRecord(record);
+    }
+
+    record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
+    return this._changesForRecord(store, job).then((changes) => {
+      record.setProperties(changes);
+      return record.save().then(() => {
+        job.set('executionResult', 'Выполнено');
+        return job.save();
+      }).catch((/*reason*/) => {
+        // TODO: Resolve conflicts here.
+        job.set('executionResult', 'Ошибка');
+        return job.save();
+      });
     });
   },
 
@@ -255,16 +257,16 @@ export default Ember.Service.extend({
     let query = this._createQuery(store, job);
     return store.queryRecord(query.modelName, query).then((record) => {
       if (record) {
-        job.get('auditFields').forEach((field) => {
-          record.set(field.get('field'), field.get('newValue'));
-        });
-        return record.save().then(() => {
-          job.set('executionResult', 'Выполнено');
-          return job.save();
-        }).catch((/*reason*/) => {
-          // TODO: Resolve conflicts here.
-          job.set('executionResult', 'Ошибка');
-          return job.save();
+        return this._changesForRecord(store, job).then((changes) => {
+          record.setProperties(changes);
+          return record.save().then(() => {
+            job.set('executionResult', 'Выполнено');
+            return job.save();
+          }).catch((/*reason*/) => {
+            // TODO: Resolve conflicts here.
+            job.set('executionResult', 'Ошибка');
+            return job.save();
+          });
         });
       } else {
         throw new Error('No record is found on server.');
@@ -412,6 +414,35 @@ export default Ember.Service.extend({
 
   /**
   */
+  _changesForRecord(store, job) {
+    return new RSVP.Promise((resolve, reject) => {
+      let promise;
+      let changes = {};
+      job.get('auditFields').forEach((auditField) => {
+        let descriptorField = auditField.get('field').split('@');
+        let field = descriptorField.shift();
+        let type = descriptorField.shift();
+        if (type) {
+          let builder = new Builder(store, type).byId(auditField.get('newValue'));
+          promise = store.queryRecord(type, builder.build()).then((relationship) => {
+            changes[field] = relationship;
+          });
+        } else {
+          changes[field] = auditField.get('newValue');
+        }
+      });
+      if (promise) {
+        promise.then(() => {
+          resolve(changes);
+        }, reject);
+      } else {
+        resolve(changes);
+      }
+    });
+  },
+
+  /**
+  */
   _changesFromRecord(record) {
     let changes = {};
     if (this.get('auditEnabled')) {
@@ -427,6 +458,17 @@ export default Ember.Service.extend({
         }
       });
     }
+
+    let changedRelationships = record.changedBelongsTo();
+    record.eachRelationship((name, descriptor) => {
+      let changedRelationship = changedRelationships[name];
+      if (changedRelationship && descriptor.kind === 'belongsTo') {
+        changes[`${name}@${descriptor.type}`] = [
+          changedRelationship[0] && changedRelationship[0].get('id'),
+          changedRelationship[1] && changedRelationship[1].get('id'),
+        ];
+      }
+    });
 
     return changes;
   },

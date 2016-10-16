@@ -4,6 +4,13 @@
 ### Fixed
 - Small optimization of performance for sync down operation.
 
+## [0.6.2-beta.22] - 2016-10-15
+### Added
+- `syncer` service now saves changed relationships for sync up process.
+
+### Changed
+- `syncer` service now selects jobs for sync up using query language. This allows select at once 'Unexecuted' and 'Failed' jobs and sort them.
+
 ## [0.6.2-beta.21] - 2016-10-15
 ### Changed
 - Now we don't replace entire record when sync down. Instead we save only changed properties which are specified in projection for existing records in local store.
