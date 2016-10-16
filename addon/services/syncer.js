@@ -4,7 +4,7 @@ import { SimplePredicate } from '../query/predicate';
 import { reloadLocalRecords, syncDownRelatedRecords } from '../utils/reload-local-records';
 import isModelInstance from '../utils/is-model-instance';
 
-const { RSVP } = Ember;
+const { RSVP, isNone, isArray, getOwner, get } = Ember;
 
 /**
   @class Syncer
@@ -34,7 +34,7 @@ export default Ember.Service.extend({
   init: function() {
     let _this = this;
 
-    let localStore = Ember.getOwner(this).lookup('store:local');
+    let localStore = getOwner(this).lookup('store:local');
 
     _this.set('offlineStore', localStore);
   },
@@ -61,7 +61,7 @@ export default Ember.Service.extend({
     } else if (isModelInstance(descriptor)) {
       return _this._syncDownRecord(descriptor, reload, projectionName, params);
 
-    } else if (Ember.isArray(descriptor)) {
+    } else if (isArray(descriptor)) {
       let updatedRecords = descriptor.map(function(record) {
         return _this._syncDownRecord(record, reload, projectionName, params);
       });
@@ -96,11 +96,11 @@ export default Ember.Service.extend({
    */
   _syncDownRecord: function(record, reload, projectionName, params) {
     function saveRecordToLocalStore(store, record, projectionName) {
-      let dexieService = Ember.getOwner(this).lookup('service:dexie');
+      let dexieService = getOwner(this).lookup('service:dexie');
       dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
       let modelName = record.constructor.modelName;
       let modelType = store.modelFor(modelName);
-      let projection = Ember.isNone(projectionName) ? null : modelType.projections[projectionName];
+      let projection = isNone(projectionName) ? null : modelType.projections[projectionName];
       let localStore = this.get('offlineStore');
       let localAdapter = localStore.adapterFor(modelName);
       let snapshot = record._createSnapshot();
@@ -133,14 +133,14 @@ export default Ember.Service.extend({
     }
 
     var _this = this;
-    var store = Ember.getOwner(this).lookup('service:store');
+    var store = getOwner(this).lookup('service:store');
     if (reload) {
       let modelName = record.constructor.modelName;
       let options = {
         reload: true,
         useOnlineStore: true
       };
-      options = Ember.isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
+      options = isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
       return store.findRecord(modelName, record.id, options).then(function(reloadedRecord) {
         store.get('onlineStore').unloadRecord(modelName);
         return saveRecordToLocalStore.call(_this, store, reloadedRecord, projectionName);
@@ -153,7 +153,7 @@ export default Ember.Service.extend({
   /**
   */
   syncUp(continueOnError) {
-    let store = Ember.getOwner(this).lookup('service:store');
+    let store = getOwner(this).lookup('service:store');
     let modelName = 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity';
     let predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
       .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
@@ -366,7 +366,7 @@ export default Ember.Service.extend({
   */
   _auditDataFromRecord(record) {
     let _this = this;
-    let userService = Ember.getOwner(_this).lookup('service:user');
+    let userService = getOwner(_this).lookup('service:user');
     let operationType = _this._getOperationType(record.get('dirtyType'));
     return userService.getCurrentUser().then(currentUser => _this._getObjectType(record._createSnapshot().modelName).then(objectType => ({
           objectPrimaryKey: record.get('id'),
@@ -418,7 +418,7 @@ export default Ember.Service.extend({
     return new RSVP.Promise((resolve, reject) => {
       let changes = {};
       let promises = [];
-      let attributes = Ember.get(store.modelFor(job.get('objectType.name')), 'attributes');
+      let attributes = get(store.modelFor(job.get('objectType.name')), 'attributes');
       job.get('auditFields').forEach((auditField) => {
         let descriptorField = auditField.get('field').split('@');
         let field = descriptorField.shift();
