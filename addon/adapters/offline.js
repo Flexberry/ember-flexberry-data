@@ -296,8 +296,8 @@ export default DS.Adapter.extend({
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
     let updateOrCreateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
-      db.table(type.modelName).where(':id').equals(snapshot.id).count().then((count) => {
-        if (!Ember.isNone(fieldsToUpdate) && count > 0) {
+      db.table(type.modelName).get(snapshot.id).then((record) => {
+        if (!Ember.isNone(fieldsToUpdate) && record) {
           if (Ember.$.isEmptyObject(fieldsToUpdate)) {
             resolve();
           } else {
