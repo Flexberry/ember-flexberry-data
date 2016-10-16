@@ -418,6 +418,7 @@ export default Ember.Service.extend({
     return new RSVP.Promise((resolve, reject) => {
       let changes = {};
       let promises = [];
+      let attributes = Ember.get(store.modelFor(job.get('objectType.name')), 'attributes');
       job.get('auditFields').forEach((auditField) => {
         let descriptorField = auditField.get('field').split('@');
         let field = descriptorField.shift();
@@ -428,7 +429,18 @@ export default Ember.Service.extend({
             changes[field] = relationship;
           }));
         } else {
-          changes[field] = auditField.get('newValue');
+          switch (attributes.get(field).type) {
+            case 'number':
+              changes[field] = +auditField.get('newValue');
+              break;
+
+            case 'date':
+              changes[field] = new Date(auditField.get('newValue'));
+              break;
+
+            default:
+              changes[field] = auditField.get('newValue');
+          }
         }
       });
 
