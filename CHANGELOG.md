@@ -1,11 +1,13 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.23] - 2016-10-16
 ### Fixed
 - Small optimization of performance for sync down operation.
-- `syncer` service at restore changes for record wait loading only one last relationship.
-- `syncer` service was not looking at the types of attributes when restore values, now cast for `date` and `number`.
-- Firs run `save` method from `Offline.ModelMixin` and therefore audit field is not filled.
+- `syncer` service waited for loading only one last relationship when restoring changes for record while performing sync up.
+- `syncer` service was not considered types of attributes when restoring values while performing sync up, now it makes casting for `date` and `number` types.
+-  Audit fields was not filled because `save` method of `offline-model` mixin for offline run first (before `save` method of `audit-model` mixin).
 
 ## [0.6.2-beta.22] - 2016-10-15
 ### Added
