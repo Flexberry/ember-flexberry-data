@@ -416,28 +416,25 @@ export default Ember.Service.extend({
   */
   _changesForRecord(store, job) {
     return new RSVP.Promise((resolve, reject) => {
-      let promise;
       let changes = {};
+      let promises = [];
       job.get('auditFields').forEach((auditField) => {
         let descriptorField = auditField.get('field').split('@');
         let field = descriptorField.shift();
         let type = descriptorField.shift();
         if (type) {
           let builder = new Builder(store, type).byId(auditField.get('newValue'));
-          promise = store.queryRecord(type, builder.build()).then((relationship) => {
+          promises.push(store.queryRecord(type, builder.build()).then((relationship) => {
             changes[field] = relationship;
-          });
+          }));
         } else {
           changes[field] = auditField.get('newValue');
         }
       });
-      if (promise) {
-        promise.then(() => {
-          resolve(changes);
-        }, reject);
-      } else {
+
+      RSVP.all(promises).then(() => {
         resolve(changes);
-      }
+      }, reject);
     });
   },
 

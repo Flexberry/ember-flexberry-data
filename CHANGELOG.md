@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Fixed
 - Small optimization of performance for sync down operation.
+- `syncer` service at restore changes for record wait loading only one last relationship.
 
 ## [0.6.2-beta.22] - 2016-10-15
 ### Added
