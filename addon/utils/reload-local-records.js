@@ -72,7 +72,14 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
     let fieldsToUpdate = projection ? projection.attributes : null;
     return localAdapter.updateOrCreate(localStore, modelType, snapshot, fieldsToUpdate).then(function() {
       dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-      return syncDownRelatedRecords(store, record, localAdapter, localStore, projection, params);
+      let offlineGlobals = Ember.getOwner(this).lookup('service:offline-globals');
+      if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
+        return syncDownRelatedRecords(store, record, localAdapter, localStore, projection, params);
+      } else {
+        Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
+          'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
+        return RSVP.resolve();
+      }
     }).catch((reason) => {
       dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
       Ember.Logger.error(reason);

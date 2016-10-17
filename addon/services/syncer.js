@@ -124,7 +124,14 @@ export default Ember.Service.extend({
       } else {
         return localAdapter.updateOrCreate(localStore, snapshot.type, snapshot).then(function() {
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-          return projection ? syncDownRelatedRecords(store, record, localAdapter, localStore, projection) : RSVP.resolve();
+          let offlineGlobals = Ember.getOwner(this).lookup('service:offline-globals');
+          if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
+            return syncDownRelatedRecords(store, record, localAdapter, localStore, projection);
+          } else {
+            Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
+              'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
+            return RSVP.resolve();
+          }
         }).catch((reason) => {
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           Ember.Logger.error(reason);

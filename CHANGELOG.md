@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- `allowSyncDownRelatedRecordsWithoutProjection` option for offline settings. If true then record will be synced down completely, i.e. including with all related records with arbitrary nesting. Otherwise only requested record will be synced down without related records.
 
 ## [0.6.2-beta.24] - 2016-10-17
 ### Fixed
