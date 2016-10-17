@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.24] - 2016-10-17
 ### Fixed
 - When rollback `belongsTo` relationships, if relationship was reset to null then rollback relationship attempts to apply for null.
 - When rollback `belongsTo` relationships, there was no rollback for canonical state of relationship.
