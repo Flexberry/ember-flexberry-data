@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- If method `queryRecord` not find any record, still tries to call `didLoad`.
 
 ## [0.6.2-beta.25] - 2016-10-17
 ### Added

@@ -201,7 +201,10 @@ export default DS.Store.extend({
     let promise = this._super(...arguments);
     return new Ember.RSVP.Promise((resolve, reject) => {
       promise.then((result) => {
-        result.didLoad();
+        if (result) {
+          result.didLoad();
+        }
+
         resolve(result);
       }, reject);
     });
