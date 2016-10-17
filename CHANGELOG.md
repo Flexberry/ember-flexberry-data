@@ -2,9 +2,9 @@
 
 ## [Unreleased]
 ### Fixed
-- At rollback `belongsTo` relationships, if relationship was reset to null, for null attempt to rollback relationship.
-- At rollback `belongsTo` relationships, not rollback for canonical relationship.
-- Not call `rollbackBelongsTo` if model not supported this function.
+- When rollback `belongsTo` relationships, if relationship was reset to null then rollback relationship attempts to apply for null.
+- When rollback `belongsTo` relationships, there was no rollback for canonical state of relationship.
+- If model is not support `rollbackBelongsTo` mehod then it should not be called.
 
 ## [0.6.2-beta.23] - 2016-10-16
 ### Fixed
