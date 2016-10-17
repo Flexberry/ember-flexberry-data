@@ -167,14 +167,13 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Object} Object with changes, empty object if no change.
   */
   changedHasMany() {
-    let _this = this;
     let changedHasMany = {};
-    _this.eachRelationship((key, { kind }) => {
+    this.eachRelationship((key, { kind }) => {
       if (kind === 'hasMany') {
-        if (_this.get(key).filterBy('hasDirtyAttributes', true).length) {
+        if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           changedHasMany[key] = [
-            _this.get(`${key}.canonicalState`).map(internalModel => internalModel.record),
-            _this.get(`${key}.currentState`).map(internalModel => internalModel.record),
+            this.get(`${key}.canonicalState`).map(internalModel => internalModel.record),
+            this.get(`${key}.currentState`).map(internalModel => internalModel.record),
           ];
         }
       }
@@ -189,17 +188,16 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @param {String} [forOnlyKey] If specified, it is rollback invoked for relationship with this key.
   */
   rollbackHasMany(forOnlyKey) {
-    let _this = this;
-    _this.eachRelationship((key, { kind }) => {
+    this.eachRelationship((key, { kind }) => {
       if (kind === 'hasMany' && (!forOnlyKey || forOnlyKey === key)) {
-        if (_this.get(key).filterBy('hasDirtyAttributes', true).length) {
-          [_this.get(`${key}.canonicalState`), _this.get(`${key}.currentState`)].forEach((state, i) => {
+        if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
+          [this.get(`${key}.canonicalState`), this.get(`${key}.currentState`)].forEach((state, i) => {
             let records = state.map(internalModel => internalModel.record);
             records.forEach((record) => {
               record.rollbackAll();
             });
             if (i === 0) {
-              _this.set(key, records);
+              this.set(key, records);
             }
           });
         }
@@ -225,12 +223,11 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Object} Object with changes, empty object if no change.
   */
   changedBelongsTo() {
-    let _this = this;
     let changedBelongsTo = {};
-    _this.eachRelationship((key, { kind }) => {
+    this.eachRelationship((key, { kind }) => {
       if (kind === 'belongsTo') {
-        let current = _this.get(key);
-        let canonical = _this.get('_canonicalBelongsTo')[key] || null;
+        let current = this.get(key);
+        let canonical = this.get(`_canonicalBelongsTo.${key}`) || null;
         if (current !== canonical) {
           changedBelongsTo[key] = [canonical, current];
         }
@@ -246,11 +243,10 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @param {String} [forOnlyKey] If specified, it is rollback invoked for relationship with this key.
   */
   rollbackBelongsTo(forOnlyKey) {
-    let _this = this;
-    _this.eachRelationship((key, { kind, options }) => {
+    this.eachRelationship((key, { kind, options }) => {
       if (kind === 'belongsTo' && (!forOnlyKey || forOnlyKey === key)) {
-        let current = _this.get(key);
-        let canonical = _this.get(`_canonicalBelongsTo.${key}`) || null;
+        let current = this.get(key);
+        let canonical = this.get(`_canonicalBelongsTo.${key}`) || null;
         if (current !== canonical) {
           if (options.inverse && options.inverse !== key) {
             if (current && current.rollbackBelongsTo) {
@@ -262,7 +258,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
             }
           }
 
-          _this.set(key, canonical);
+          this.set(key, canonical);
         }
       }
     });
