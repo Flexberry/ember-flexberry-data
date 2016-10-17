@@ -253,11 +253,11 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
         let canonical = _this.get(`_canonicalBelongsTo.${key}`) || null;
         if (current !== canonical) {
           if (options.inverse && options.inverse !== key) {
-            if (current) {
+            if (current && current.rollbackBelongsTo) {
               current.rollbackBelongsTo(options.inverse);
             }
 
-            if (canonical) {
+            if (canonical && canonical.rollbackBelongsTo) {
               canonical.rollbackBelongsTo(options.inverse);
             }
           }
