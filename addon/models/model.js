@@ -256,6 +256,10 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
             if (current) {
               current.rollbackBelongsTo(options.inverse);
             }
+
+            if (canonical) {
+              canonical.rollbackBelongsTo(options.inverse);
+            }
           }
 
           _this.set(key, canonical);
