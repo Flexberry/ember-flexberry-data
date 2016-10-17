@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- At rollback `belongsTo` relationships, if relationship was reset to null, for null attempt to rollback relationship.
 
 ## [0.6.2-beta.23] - 2016-10-16
 ### Fixed

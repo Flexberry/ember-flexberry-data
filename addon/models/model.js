@@ -250,10 +250,12 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     _this.eachRelationship((key, { kind, options }) => {
       if (kind === 'belongsTo' && (!forOnlyKey || forOnlyKey === key)) {
         let current = _this.get(key);
-        let canonical = _this.get('_canonicalBelongsTo')[key] || null;
+        let canonical = _this.get(`_canonicalBelongsTo.${key}`) || null;
         if (current !== canonical) {
           if (options.inverse && options.inverse !== key) {
-            current.rollbackBelongsTo(options.inverse);
+            if (current) {
+              current.rollbackBelongsTo(options.inverse);
+            }
           }
 
           _this.set(key, canonical);
