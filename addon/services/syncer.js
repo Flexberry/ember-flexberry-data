@@ -243,9 +243,11 @@ export default Ember.Service.extend({
       return record.save().then(() => {
         job.set('executionResult', 'Выполнено');
         return job.save();
-      }).catch((/*reason*/) => {
+      }).catch((reason) => {
+
         // TODO: Resolve conflicts here.
         job.set('executionResult', 'Ошибка');
+        Ember.Logger.error(`Sync up model '${job.get('objectType.name')}' creating job error`, reason, record);
         return job.save();
       });
     });
@@ -262,9 +264,11 @@ export default Ember.Service.extend({
           return record.save().then(() => {
             job.set('executionResult', 'Выполнено');
             return job.save();
-          }).catch((/*reason*/) => {
+          }).catch((reason) => {
+
             // TODO: Resolve conflicts here.
             job.set('executionResult', 'Ошибка');
+            Ember.Logger.error(`Sync up model '${query.modelName}' updating job error`, reason, record);
             return job.save();
           });
         });
@@ -283,9 +287,11 @@ export default Ember.Service.extend({
         return record.destroyRecord().then(() => {
           job.set('executionResult', 'Выполнено');
           return job.save();
-        }).catch((/*reason*/) => {
+        }).catch((reason) => {
+
           // TODO: Resolve conflicts here.
           job.set('executionResult', 'Ошибка');
+          Ember.Logger.error(`Sync up model '${query.modelName}' removing job error`, reason, record);
           return job.save();
         });
       } else {
