@@ -6,6 +6,9 @@
 - When rollback `belongsTo` relationships, there was no rollback for canonical state of relationship.
 - If model is not support `rollbackBelongsTo` mehod then it should not be called.
 
+### Known issues
+- Event `didLoad` fired for model instance only when model loads first time. We added manual triggering of this event to save state, because model instance can be loaded in another projection.
+
 ## [0.6.2-beta.23] - 2016-10-16
 ### Fixed
 - Small optimization of performance for sync down operation.

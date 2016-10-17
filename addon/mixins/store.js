@@ -22,7 +22,15 @@ export default Ember.Mixin.create({
   query(modelName, query) {
     Ember.Logger.debug(`Flexberry Store::query ${modelName}`, query);
 
-    return this._super.apply(this, arguments);
+    let promise = this._super(...arguments);
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      promise.then((results) => {
+        results.forEach((result) => {
+          result.didLoad();
+        });
+        resolve(results);
+      }, reject);
+    });
   },
 
   /**

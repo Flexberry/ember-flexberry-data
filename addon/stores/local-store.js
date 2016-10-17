@@ -169,7 +169,15 @@ export default DS.Store.extend({
   query: function(modelName, query) {
     Ember.Logger.debug(`Flexberry Local Store::query ${modelName}`, query);
 
-    return this._super(...arguments);
+    let promise = this._super(...arguments);
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      promise.then((results) => {
+        results.forEach((result) => {
+          result.didLoad();
+        });
+        resolve(results);
+      }, reject);
+    });
   },
 
   /**
@@ -190,6 +198,12 @@ export default DS.Store.extend({
   queryRecord: function(modelName, query) {
     Ember.Logger.debug(`Flexberry Local Store::queryRecord ${modelName}`, query);
 
-    return this._super(...arguments);
+    let promise = this._super(...arguments);
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      promise.then((result) => {
+        result.didLoad();
+        resolve(result);
+      }, reject);
+    });
   },
 });
