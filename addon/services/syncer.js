@@ -94,7 +94,7 @@ export default Ember.Service.extend({
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
    * @private
    */
-  _syncDownRecord: function(record, reload, projectionName, params) {
+  _syncDownRecord: function(record, reload, projectionName/*, params*/) {
     var _this = this;
 
     function saveRecordToLocalStore(store, record, projectionName) {
@@ -107,13 +107,15 @@ export default Ember.Service.extend({
       let localAdapter = localStore.adapterFor(modelName);
       let snapshot = record._createSnapshot();
       let unloadRecordFromStore = () => {
-        if (params && params.unloadSyncedRecords) {
-          if (store.get('onlineStore')) {
-            store.get('onlineStore').unloadRecord(record);
-          } else {
-            store.unloadRecord(record);
-          }
-        }
+
+        // TODO: Uncomment this after fix bug with load unloaded models.
+        // if (params && params.unloadSyncedRecords) {
+        //   if (store.get('onlineStore')) {
+        //     store.get('onlineStore').unloadRecord(record);
+        //   } else {
+        //     store.unloadRecord(record);
+        //   }
+        // }
       };
 
       if (record.get('isDeleted')) {
@@ -150,7 +152,9 @@ export default Ember.Service.extend({
       };
       options = isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
       return store.findRecord(modelName, record.id, options).then(function(reloadedRecord) {
-        store.get('onlineStore').unloadRecord(modelName);
+
+        // TODO: Uncomment this after fix bug with load unloaded models.
+        // store.get('onlineStore').unloadRecord(modelName);
         return saveRecordToLocalStore.call(_this, store, reloadedRecord, projectionName);
       });
     } else {
@@ -161,6 +165,7 @@ export default Ember.Service.extend({
   /**
   */
   syncUp(continueOnError) {
+    let dexieService = getOwner(this).lookup('service:dexie');
     let store = getOwner(this).lookup('service:store');
     let modelName = 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity';
     let predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
@@ -169,7 +174,10 @@ export default Ember.Service.extend({
       .selectByProjection('AuditEntityE')
       .orderBy('operationTime')
       .where(predicate);
-    return this.get('offlineStore').query(modelName, builder.build()).then(jobs => this._runJobs(store, jobs, continueOnError));
+    return this.get('offlineStore').query(modelName, builder.build()).then((jobs) => {
+      dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
+      return this._runJobs(store, jobs, continueOnError);
+    });
   },
 
   /**
@@ -191,6 +199,8 @@ export default Ember.Service.extend({
   */
   _runJobs(store, jobs, continueOnError, jobCount) {
     let _this = this;
+    let dexieService = getOwner(_this).lookup('service:dexie');
+    dexieService.set('queueSyncUpWorksCount', jobs.get('length'));
     let job = jobs.shiftObject();
     let executedJob = jobCount || 0;
     return new RSVP.Promise((resolve, reject) => {
@@ -207,6 +217,7 @@ export default Ember.Service.extend({
           });
         });
       } else {
+        dexieService.set('queueSyncUpWorksCount', 0);
         resolve(executedJob);
       }
     });
@@ -215,9 +226,11 @@ export default Ember.Service.extend({
   /**
   */
   _endJob(job) {
+    let dexieService = getOwner(this).lookup('service:dexie');
     return new RSVP.Promise((resolve, reject) => {
       if (job.get('executionResult') === 'Выполнено') {
         RSVP.all(job.get('auditFields').map(field => field.destroyRecord())).then(() => {
+          dexieService.set('queueSyncUpCurrentModelName', null);
           resolve(job.destroyRecord());
         });
       } else {
@@ -229,6 +242,9 @@ export default Ember.Service.extend({
   /**
   */
   _runJob(store, job) {
+    let dexieService = getOwner(this).lookup('service:dexie');
+    dexieService.set('queueSyncUpCurrentModelName', job.get('objectType.name'));
+
     switch (job.get('operationType')) {
       case 'INSERT': return this._runCreatingJob(store, job);
       case 'UPDATE': return this._runUpdatingJob(store, job);
@@ -241,11 +257,18 @@ export default Ember.Service.extend({
   */
   _runCreatingJob(store, job) {
     let record = store.peekRecord(job.get('objectType.name'), job.get('objectPrimaryKey'));
-    if (record) {
-      store.unloadRecord(record);
+
+    // TODO: Uncomment this after fix bug with load unloaded models.
+    // if (record) {
+    //   record.rollbackAll();
+    //   store.unloadRecord(record);
+    // }
+
+    if (!record)
+    {
+      record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
     }
 
-    record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
     return this._changesForRecord(store, job).then((changes) => {
       record.setProperties(changes);
       return record.save().then(() => {
