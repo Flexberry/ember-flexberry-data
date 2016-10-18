@@ -160,6 +160,7 @@ export default Ember.Service.extend({
   /**
   */
   syncUp(continueOnError) {
+    let dexieService = getOwner(this).lookup('service:dexie');
     let store = getOwner(this).lookup('service:store');
     let modelName = 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity';
     let predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
@@ -168,7 +169,10 @@ export default Ember.Service.extend({
       .selectByProjection('AuditEntityE')
       .orderBy('operationTime')
       .where(predicate);
-    return this.get('offlineStore').query(modelName, builder.build()).then(jobs => this._runJobs(store, jobs, continueOnError));
+    return this.get('offlineStore').query(modelName, builder.build()).then((jobs) => {
+      dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
+      return this._runJobs(store, jobs, continueOnError);
+    });
   },
 
   /**
@@ -190,6 +194,8 @@ export default Ember.Service.extend({
   */
   _runJobs(store, jobs, continueOnError, jobCount) {
     let _this = this;
+    let dexieService = getOwner(this).lookup('service:dexie');
+    dexieService.set('queueSyncUpWorksCount', jobs.get('length'));
     let job = jobs.shiftObject();
     let executedJob = jobCount || 0;
     return new RSVP.Promise((resolve, reject) => {
@@ -206,6 +212,7 @@ export default Ember.Service.extend({
           });
         });
       } else {
+        dexieService.set('queueSyncUpWorksCount', 0);
         resolve(executedJob);
       }
     });
