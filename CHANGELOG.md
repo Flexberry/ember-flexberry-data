@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Some internal bugs in `syncDown` method of `syncer` service.
 
 ## [0.6.2-beta.26] - 2016-10-18
 ### Fixed
