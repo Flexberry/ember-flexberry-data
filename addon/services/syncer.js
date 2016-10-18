@@ -95,8 +95,10 @@ export default Ember.Service.extend({
    * @private
    */
   _syncDownRecord: function(record, reload, projectionName, params) {
+    var _this = this;
+
     function saveRecordToLocalStore(store, record, projectionName) {
-      let dexieService = getOwner(this).lookup('service:dexie');
+      let dexieService = getOwner(_this).lookup('service:dexie');
       dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
       let modelName = record.constructor.modelName;
       let modelType = store.modelFor(modelName);
@@ -124,9 +126,9 @@ export default Ember.Service.extend({
       } else {
         return localAdapter.updateOrCreate(localStore, snapshot.type, snapshot).then(function() {
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-          let offlineGlobals = Ember.getOwner(this).lookup('service:offline-globals');
+          let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
           if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
-            return syncDownRelatedRecords(store, record, localAdapter, localStore, projection);
+            return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection);
           } else {
             Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
               'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
@@ -139,7 +141,6 @@ export default Ember.Service.extend({
       }
     }
 
-    var _this = this;
     var store = getOwner(this).lookup('service:store');
     if (reload) {
       let modelName = record.constructor.modelName;

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.6.2-beta.27] - 2016-10-18
+### Fixed
+- Some internal bugs in `syncDown` method of `syncer` service.
+
 ## [0.6.2-beta.26] - 2016-10-18
 ### Fixed
 - If `queryRecord` method did not find any record, it still tries to call `didLoad`.
