@@ -25,9 +25,12 @@ export default Ember.Mixin.create({
     let promise = this._super(...arguments);
     return new Ember.RSVP.Promise((resolve, reject) => {
       promise.then((results) => {
-        results.forEach((result) => {
-          result.didLoad();
-        });
+        if (results && Ember.isArray(results)) {
+          results.forEach((result) => {
+            result.didLoad();
+          });
+        }
+
         resolve(results);
       }, reject);
     });
