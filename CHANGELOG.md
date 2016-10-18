@@ -1,6 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.28] - 2016-10-19
+### Added
+- Saving of base models logic for offline.
+
 ### Changed
 - Disable models unloads after sync down and sync up operations in `syncer` service. 
 

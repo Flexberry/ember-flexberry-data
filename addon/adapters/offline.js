@@ -14,6 +14,7 @@ import FilterOperator from '../query/filter-operator';
 import Condition from '../query/condition';
 import { SimplePredicate, ComplexPredicate } from '../query/predicate';
 import Dexie from 'npm:dexie';
+import Information from '../utils/information';
 
 const { RSVP } = Ember;
 
@@ -226,8 +227,8 @@ export default DS.Adapter.extend({
   createRecord(store, type, snapshot) {
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
+    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
     let createOperation = (db) => {
-      let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
       return new RSVP.Promise((resolve, reject) => {
         db.table(type.modelName).add(hash).then((id) => {
           db.table(type.modelName).get(id).then((record) => {
@@ -237,7 +238,9 @@ export default DS.Adapter.extend({
       });
     };
 
-    return dexieService.performQueueOperation(db, createOperation);
+    return dexieService.performQueueOperation(db, createOperation).then(() => {
+      this._createOrUpdateParentModels(store, type, hash);
+    });
   },
 
   /**
@@ -253,8 +256,8 @@ export default DS.Adapter.extend({
   updateRecord(store, type, snapshot) {
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
+    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
     let updateOperation = (db) => {
-      let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
       return new RSVP.Promise((resolve, reject) => {
         db.table(type.modelName).put(hash).then((id) => {
           db.table(type.modelName).get(id).then((record) => {
@@ -264,7 +267,9 @@ export default DS.Adapter.extend({
       });
     };
 
-    return dexieService.performQueueOperation(db, updateOperation);
+    return dexieService.performQueueOperation(db, updateOperation).then(() => {
+      this._createOrUpdateParentModels(store, type, hash);
+    });
   },
 
   /**
@@ -280,7 +285,9 @@ export default DS.Adapter.extend({
   deleteRecord(store, type, snapshot) {
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
-    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id));
+    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id)).then(() => {
+      this._deleteParentModels(store, type, snapshot.id);
+    });
   },
 
   /**
@@ -557,6 +564,39 @@ export default DS.Adapter.extend({
         break;
       default:
         throw new Error(`Unknown kind of projection attribute: ${attr.kind}`);
+    }
+  },
+
+  _createOrUpdateParentModels(store, type, record) {
+    let _this = this;
+    let parentModelName = type._parentModelName;
+    if (parentModelName) {
+      let information = new Information(store);
+      let newHash = {};
+      Ember.merge(newHash, record);
+      for (let attrName in newHash) {
+        if (newHash.hasOwnProperty(attrName) && !information.isExist(parentModelName, attrName)) {
+          delete newHash[attrName];
+        }
+      }
+
+      let dexieService = _this.get('dexieService');
+      let db = dexieService.dexie(_this.get('dbName'), store);
+      dexieService.performQueueOperation(db, (db) => db.table(parentModelName).put(newHash)).then(() => {
+        _this._createOrUpdateParentModels(store, store.modelFor(parentModelName), record);
+      });
+    }
+  },
+
+  _deleteParentModels(store, type, id) {
+    let _this = this;
+    let parentModelName = type._parentModelName;
+    if (parentModelName) {
+      let dexieService = _this.get('dexieService');
+      let db = dexieService.dexie(_this.get('dbName'), store);
+      dexieService.performQueueOperation(db, (db) => db.table(parentModelName).delete(id)).then(() => {
+        _this._deleteParentModels(store, store.modelFor(parentModelName), id);
+      });
     }
   }
 });
