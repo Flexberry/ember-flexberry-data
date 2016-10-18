@@ -141,14 +141,14 @@ export default DS.Store.extend({
       Ember.Logger.debug(`Flexberry Local Store::findRecord using projection '${options.projection}'`);
 
       builder.selectByProjection(options.projection);
-      return this.queryRecord(modelName, builder.build());
+      return this.query(modelName, builder.build()).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
     }
 
     let queryObject = builder.build();
 
     // Now if projection is not specified then only 'id' field will be selected.
     queryObject.select = [];
-    return this.queryRecord(modelName, queryObject);
+    return this.query(modelName, queryObject).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
   },
 
   /**
