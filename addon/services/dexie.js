@@ -43,6 +43,15 @@ export default Ember.Service.extend(Ember.Evented, {
   queueSyncUpTotalWorksCount: 0,
 
   /**
+    Total count of objects that should be synced up on current sync up operation.
+
+    @property queueSyncUpTotalWorksCount
+    @type String
+    @default null
+  */
+  queueSyncUpCurrentModelName: null,
+
+  /**
     Return the only instance of Dexie database with specified schemas.
     Schemas are specified in base store in `offlineSchema` property.
 
