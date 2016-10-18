@@ -228,15 +228,13 @@ export default DS.Adapter.extend({
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-    let createOperation = (db) => {
-      return new RSVP.Promise((resolve, reject) => {
-        db.table(type.modelName).add(hash).then((id) => {
-          db.table(type.modelName).get(id).then((record) => {
-            resolve(record);
-          }).catch(reject);
+    let createOperation = (db) => new RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).add(hash).then((id) => {
+        db.table(type.modelName).get(id).then((record) => {
+          resolve(record);
         }).catch(reject);
-      });
-    };
+      }).catch(reject);
+    });
 
     return dexieService.performQueueOperation(db, createOperation).then(() => {
       this._createOrUpdateParentModels(store, type, hash);
@@ -257,15 +255,13 @@ export default DS.Adapter.extend({
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
     let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-    let updateOperation = (db) => {
-      return new RSVP.Promise((resolve, reject) => {
-        db.table(type.modelName).put(hash).then((id) => {
-          db.table(type.modelName).get(id).then((record) => {
-            resolve(record);
-          }).catch(reject);
+    let updateOperation = (db) => new RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).put(hash).then((id) => {
+        db.table(type.modelName).get(id).then((record) => {
+          resolve(record);
         }).catch(reject);
-      });
-    };
+      }).catch(reject);
+    });
 
     return dexieService.performQueueOperation(db, updateOperation).then(() => {
       this._createOrUpdateParentModels(store, type, hash);
