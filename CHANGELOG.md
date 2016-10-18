@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Disable models unloads after sync down and sync up operations in `syncer` service. 
 
 ## [0.6.2-beta.27] - 2016-10-18
 ### Fixed
