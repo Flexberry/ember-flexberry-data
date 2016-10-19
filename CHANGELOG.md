@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Saving of wrong relationship type for polymorphic belongsTo relationships in offline audit objects.
 
 ## [0.6.2-beta.28] - 2016-10-19
 ### Added

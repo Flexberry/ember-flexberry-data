@@ -506,10 +506,17 @@ export default Ember.Service.extend({
     }
 
     let changedRelationships = record.changedBelongsTo();
+    let snapshot = record._createSnapshot();
     record.eachRelationship((name, descriptor) => {
       let changedRelationship = changedRelationships[name];
       if (changedRelationship && descriptor.kind === 'belongsTo') {
-        changes[`${name}@${descriptor.type}`] = [
+        let relationshipType = descriptor.type;
+        if (descriptor.options && descriptor.options.polymorphic) {
+          let belongsTo = snapshot.belongsTo(descriptor.key);
+          relationshipType = belongsTo.modelName;
+        }
+
+        changes[`${name}@${relationshipType}`] = [
           changedRelationship[0] && changedRelationship[0].get('id'),
           changedRelationship[1] && changedRelationship[1].get('id'),
         ];
