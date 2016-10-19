@@ -392,7 +392,18 @@ Model.reopenClass({
 
     this.projections.set(projectionName, proj);
     return proj;
-  }
+  },
+
+  /**
+   * Parent model type name.
+   *
+   * @property _parentModelName
+   * @type String
+   * @default null
+   * @private
+   * @static
+   */
+  _parentModelName: null
 });
 
 export default Model;
