@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.6.2-beta.30] - 2016-10-21
 ### Added
 - Base model properties:
     - `isSyncingUp` - true if model is syncing up. 
