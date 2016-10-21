@@ -39,6 +39,42 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   validations: {},
 
   /**
+    Flag that indicates sync up process of model is processing.
+
+    @property isSyncingUp
+    @type Boolean
+    @default false
+  */
+  isSyncingUp: false,
+
+  /**
+    Flag that indicates model is created during sync up process.
+
+    @property isCreatedDuringSyncUp
+    @type Boolean
+    @default false
+  */
+  isCreatedDuringSyncUp: false,
+
+  /**
+    Flag that indicates model is updated last time during sync up process.
+
+    @property isCreatedDuringSyncUp
+    @type Boolean
+    @default false
+  */
+  isUpdatedDuringSyncUp: false,
+
+  /**
+    Flag that indicates model is destroyed during sync up process.
+
+    @property isCreatedDuringSyncUp
+    @type Boolean
+    @default false
+  */
+  isDestroyedDuringSyncUp: false,
+
+  /**
     Checks that model satisfies validation rules defined in 'validations' property.
 
     @method validate
@@ -119,6 +155,9 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
           return DS.Model.prototype.save.call(this, options);
         }
       }).then(value => {
+        // Assuming that record is not updated during sync up;
+        this.set('isUpdatedDuringSyncUp', false);
+
         // Model validation was successful (model is valid or deleted),
         // all 'preSave' event promises has been successfully resolved,
         // finally model has been successfully saved,

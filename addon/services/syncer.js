@@ -269,6 +269,9 @@ export default Ember.Service.extend({
       record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
     }
 
+    record.set('isSyncingUp', true);
+    record.set('isCreatedDuringSyncUp', true);
+
     return this._changesForRecord(store, job).then((changes) => {
       record.setProperties(changes);
       return record.save().then(() => {
@@ -280,6 +283,10 @@ export default Ember.Service.extend({
         job.set('executionResult', 'Ошибка');
         Ember.Logger.error(`Sync up model '${job.get('objectType.name')}' creating job error`, reason, record);
         return job.save();
+      }).finally(() => {
+        if (record) {
+          record.set('isSyncingUp', false);
+        }
       });
     });
   },
@@ -290,9 +297,11 @@ export default Ember.Service.extend({
     let query = this._createQuery(store, job);
     return store.queryRecord(query.modelName, query).then((record) => {
       if (record) {
+        record.set('isSyncingUp', true);
         return this._changesForRecord(store, job).then((changes) => {
           record.setProperties(changes);
           return record.save().then(() => {
+            record.set('isUpdatedDuringSyncUp', true);
             job.set('executionResult', 'Выполнено');
             return job.save();
           }).catch((reason) => {
@@ -301,6 +310,10 @@ export default Ember.Service.extend({
             job.set('executionResult', 'Ошибка');
             Ember.Logger.error(`Sync up model '${query.modelName}' updating job error`, reason, record);
             return job.save();
+          }).finally(() => {
+            if (record) {
+              record.set('isSyncingUp', false);
+            }
           });
         });
       } else {
@@ -315,7 +328,9 @@ export default Ember.Service.extend({
     let query = this._createQuery(store, job);
     return store.queryRecord(query.modelName, query).then((record) => {
       if (record) {
+        record.set('isSyncingUp', true);
         return record.destroyRecord().then(() => {
+          record.set('isDestroyedDuringSyncUp', true);
           job.set('executionResult', 'Выполнено');
           return job.save();
         }).catch((reason) => {
@@ -324,6 +339,10 @@ export default Ember.Service.extend({
           job.set('executionResult', 'Ошибка');
           Ember.Logger.error(`Sync up model '${query.modelName}' removing job error`, reason, record);
           return job.save();
+        }).finally(() => {
+          if (record) {
+            record.set('isSyncingUp', false);
+          }
         });
       } else {
         throw new Error('No record is found on server.');

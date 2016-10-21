@@ -1,6 +1,13 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Base model properties:
+    - `isSyncingUp` - true if model is syncing up. 
+    - `isCreatedDuringSyncUp` - true if model is created during sync up process. 
+    - `isUpdatedDuringSyncUp` - true if model is updated last time during sync up process. 
+    - `isDestroyedDuringSyncUp` - true if model is destroyed during sync up process. 
+
 ### Fixed
 - Now we are saving information about model type of polymorphic belongsTo relationships into local store. Setting proper types of polymorphic belongsTo relationships should come in next versions of addon. 
 
