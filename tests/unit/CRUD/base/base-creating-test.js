@@ -7,6 +7,7 @@ export default function baseCreatingTest(store, assert) {
 
   Ember.run(() => {
     initTestData(store)
+
     // With master relationship.
     .then((records) => {
       store.unloadAll();

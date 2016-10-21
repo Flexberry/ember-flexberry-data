@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
-export default function readingComparsionWithNull(store, assert){
+export default function readingComparsionWithNull(store, assert) {
   assert.expect(8);
   let done = assert.async();
 
