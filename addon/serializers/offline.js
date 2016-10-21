@@ -69,7 +69,7 @@ export default DS.JSONSerializer.extend({
   serializePolymorphicType: function(snapshot, json, relationship) {
     let key = relationship.key;
     let belongsTo = snapshot.belongsTo(key);
-    key = this.keyForAttribute ? this.keyForAttribute(key, "serialize") : key;
+    key = this.keyForAttribute ? this.keyForAttribute(key, 'serialize') : key;
 
     if (Ember.isNone(belongsTo)) {
       json['_' + key + '_type'] = null;
