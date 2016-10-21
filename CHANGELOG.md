@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Add some parameters checks for `Builder` and `Information`. 
 
 ## [0.6.2-beta.29] - 2016-10-20
 ### Fixed
