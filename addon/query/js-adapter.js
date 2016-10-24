@@ -158,7 +158,7 @@ export function buildProjection(query) {
  * @param predicate Predicate for filtering array of objects.
  * @returns {Function}
  */
-function buildFilter(predicate) {
+export function buildFilter(predicate) {
   let b1 = predicate instanceof SimplePredicate;
   let b2 = predicate instanceof StringPredicate;
   let b3 = predicate instanceof DetailPredicate;
