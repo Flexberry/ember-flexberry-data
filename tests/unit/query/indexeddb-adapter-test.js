@@ -11,9 +11,21 @@ import startApp from '../../helpers/start-app';
 
 const app = startApp();
 const store = app.__container__.lookup('service:store');
+const dexie = app.__container__.lookup('service:dexie');
 const databasePrefix = 'testDB2';
-const schema = 'id,Name,Surname,Age,Manager.Name';
 const modelName = 'employee';
+const schema = (dbName) => {
+  let object = {};
+  object[dbName] = {
+    1: {
+      employee: 'id,Age,Name,Surname,CountryName,Price,Country,Creator,Manager,*Tags',
+      creator: 'id,Name,Age',
+      country: 'id,Name',
+      tag: 'id,Name,Creator'
+    },
+  };
+  return object;
+};
 
 module('query');
 
@@ -685,8 +697,8 @@ function executeTest(data, query, assert, callback) {
   };
 
   let queryTempDb = () => {
-    let db = new Dexie(dbName);
-    db.version(0.1).stores({ employee: schema });
+    store.set('offlineSchema', schema(dbName));
+    let db = dexie.dexie(dbName, store);
     db.open().then((db) => {
       new IndexedDbAdapter(db).query(query).then((result) => {
         checkResult(result, db);
@@ -722,7 +734,14 @@ function deleteTempDb(dbName) {
  * @returns {Dexie.Promise}
  */
 function createTempDb(dbName, data) {
-  let db = new Dexie(dbName);
-  db.version(0.1).stores({ employee: schema });
-  return db.open().then((db) => db.table(modelName).bulkAdd(data).then(db.close));
+  store.set('offlineSchema', schema(dbName));
+  let db = dexie.dexie(dbName, store);
+  return db.open().then((db) => {
+    let promises = [];
+    for (let table in data) {
+      promises.push(db.table(table).bulkAdd(data[table]));
+    }
+
+    return Dexie.Promise.all(promises).then(db.close);
+  });
 }
