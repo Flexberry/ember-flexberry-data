@@ -1,7 +1,8 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 import { module, test } from 'qunit';
 
-import ODataAdapter from 'ember-flexberry-data/adapters/odata';
+import { Adapter, Projection } from 'ember-flexberry-data';
 
 import startApp from '../../../helpers/start-app';
 import config from '../../../../../dummy/config/environment';
@@ -24,6 +25,8 @@ export default function executeTest(testName, callback) {
 
     const app = startApp();
     const store = app.__container__.lookup('service:store');
+    let onlineStore = DS.Store.reopen(Projection.StoreMixin).create(app.__container__.ownerInjection());
+    store.set('onlineStore', onlineStore);
 
     // Override store.unloadAll method.
     const originalUnloadAll = store.unloadAll;
@@ -38,7 +41,7 @@ export default function executeTest(testName, callback) {
     };
 
     // Define OData-adapter as default adapter for online store.
-    const adapter = ODataAdapter.create(app.__container__.ownerInjection());
+    const adapter = Adapter.Odata.create(app.__container__.ownerInjection());
     Ember.set(adapter, 'host', baseUrl);
     store.get('onlineStore').reopen({
       adapterFor() {

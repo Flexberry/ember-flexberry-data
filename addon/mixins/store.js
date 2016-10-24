@@ -71,9 +71,14 @@ export default Ember.Mixin.create({
       Ember.Logger.debug(`Flexberry Store::findAll using projection '${options.projection}'`);
 
       builder.selectByProjection(options.projection);
+      return this.query(modelName, builder.build());
     }
 
-    return this.query(modelName, builder.build());
+    let queryObject = builder.build();
+
+    // Now if projection is not specified then only 'id' field will be selected.
+    queryObject.select = [];
+    return this.query(modelName, queryObject);
   },
 
   /**
@@ -99,8 +104,13 @@ export default Ember.Mixin.create({
       Ember.Logger.debug(`Flexberry Store::findRecord using projection '${options.projection}'`);
 
       builder.selectByProjection(options.projection);
+      return this.query(modelName, builder.build()).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
     }
 
-    return this.query(modelName, builder.build()).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
+    let queryObject = builder.build();
+
+    // Now if projection is not specified then only 'id' field will be selected.
+    queryObject.select = [];
+    return this.query(modelName, queryObject).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
   }
 });

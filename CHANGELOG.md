@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Wrong projection for reading data used in `findRecord` and `findAll` methods of online `store` mixin if projection was not specified for query.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added

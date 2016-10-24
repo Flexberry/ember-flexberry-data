@@ -2,7 +2,7 @@ import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 export default function readingStoreCommands(store, assert) {
-  assert.expect(4);
+  assert.expect(5);
   let done = assert.async();
 
   Ember.run(() => {
@@ -42,7 +42,6 @@ export default function readingStoreCommands(store, assert) {
     })
 
     // queryRecord.
-    // Not working!
     .then(() => {
       store.unloadAll();
       let builder = new QueryBuilder(store)
