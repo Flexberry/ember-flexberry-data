@@ -690,7 +690,7 @@ function executeTest(data, query, assert, callback) {
     db.open().then((db) => {
       new IndexedDbAdapter(db).query(query).then((result) => {
         checkResult(result, db);
-      }).catch((error, db) => {
+      }).catch((error) => {
         failQuery(error, db);
       });
     });
