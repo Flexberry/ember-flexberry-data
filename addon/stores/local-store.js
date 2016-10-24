@@ -103,15 +103,19 @@ export default DS.Store.extend({
   findAll: function(modelName, options) {
     Ember.Logger.debug(`Flexberry Local Store::findAll ${modelName}`);
 
+    let builder = new QueryBuilder(this, modelName);
     if (options && options.projection) {
       Ember.Logger.debug(`Flexberry Local Store::findAll using projection '${options.projection}'`);
 
-      let builder = new QueryBuilder(this, modelName);
       builder.selectByProjection(options.projection);
       return this.query(modelName, builder.build());
     }
 
-    return this._super(...arguments);
+    let queryObject = builder.build();
+
+    // Now if projection is not specified then only 'id' field will be selected.
+    queryObject.select = [];
+    return this.query(modelName, queryObject);
   },
 
   /**
@@ -165,7 +169,18 @@ export default DS.Store.extend({
   query: function(modelName, query) {
     Ember.Logger.debug(`Flexberry Local Store::query ${modelName}`, query);
 
-    return this._super(...arguments);
+    let promise = this._super(...arguments);
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      promise.then((results) => {
+        if (results && Ember.isArray(results)) {
+          results.forEach((result) => {
+            result.didLoad();
+          });
+        }
+
+        resolve(results);
+      }, reject);
+    });
   },
 
   /**
@@ -186,6 +201,15 @@ export default DS.Store.extend({
   queryRecord: function(modelName, query) {
     Ember.Logger.debug(`Flexberry Local Store::queryRecord ${modelName}`, query);
 
-    return this._super(...arguments);
+    let promise = this._super(...arguments);
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      promise.then((result) => {
+        if (result) {
+          result.didLoad();
+        }
+
+        resolve(result);
+      }, reject);
+    });
   },
 });

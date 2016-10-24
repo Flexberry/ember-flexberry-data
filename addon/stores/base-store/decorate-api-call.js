@@ -38,7 +38,7 @@ export default function decorateAPICall(finderType, superFunc) {
         }
 
         if (Ember.getOwner(_this).lookup('service:offline-globals').get('isSyncDownWhenOnlineEnabled')) {
-          return syncDown(result, false, projectionName);
+          return syncDown(result, false, projectionName, { unloadSyncedRecords: false });
         } else {
           return result;
         }

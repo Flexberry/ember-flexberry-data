@@ -6,7 +6,6 @@ import Ember from 'ember';
 import FilterOperator from './filter-operator';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
-import Condition from './condition';
 import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip } from './js-adapter';
 import Information from '../utils/information';
 
@@ -48,7 +47,7 @@ export default class extends BaseAdapter {
       let table = this._db.table(query.modelName);
 
       updateWhereClause(table, query).toArray().then((data) => {
-        let response = { meta: {}, data: projection(order(topskip(data))) };
+        let response = { meta: {}, data: projection(topskip(order(data))) };
         if (query.count) {
           response.meta.count = data.length;
         }
@@ -118,70 +117,9 @@ function updateWhereClause(table, query) {
     }
   }
 
-  if (predicate instanceof StringPredicate || predicate instanceof DetailPredicate) {
-    return table.filter(getAttributeFilterFunction(predicate));
-  }
-
-  if (predicate instanceof ComplexPredicate) {
-    let filterFunctions = predicate.predicates.map(getAttributeFilterFunction);
-    let collection = table.toCollection();
-    switch (predicate.condition) {
-      case Condition.And:
-        return collection.filter(getComplexFilterFunctionAnd(filterFunctions));
-
-      case Condition.Or:
-        return collection.filter(getComplexFilterFunctionOr(filterFunctions));
-
-      default:
-        throw new Error(`Unsupported condition '${predicate.condition}'.`);
-    }
-
+  if (predicate instanceof StringPredicate || predicate instanceof DetailPredicate || predicate instanceof ComplexPredicate) {
     return table.filter(getAttributeFilterFunction(predicate));
   }
 
   throw new Error(`Unsupported predicate '${predicate}'`);
-}
-
-/**
- * Returns complex filter function for `and` condition.
- * Result function returns `true` if all attribute filter functions returned `true`.
- * Result function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).
- *
- * @param {Function[]} filterFunctions Array of attribute filter functions.
- * @returns {Function} Complex filter function for `or` condition.
- */
-function getComplexFilterFunctionAnd(filterFunctions) {
-  return function (item) {
-    let check = true;
-    for (let funcIndex = 0; funcIndex < filterFunctions.length; funcIndex++) {
-      check &= filterFunctions[funcIndex](item);
-      if (!check) {
-        break;
-      }
-    }
-
-    return check;
-  };
-}
-
-/**
- * Returns complex filter function for `or` condition.
- * Result function returns `true` if at least one attribute filter function returned `true`.
- * Result function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).
- *
- * @param {Function[]} filterFunctions Array of attribute filter functions.
- * @returns {Function} Complex filter function for `or` condition.
- */
-function getComplexFilterFunctionOr(filterFunctions) {
-  return function (item) {
-    let check = false;
-    for (let funcIndex = 0; funcIndex < filterFunctions.length; funcIndex++) {
-      check |= filterFunctions[funcIndex](item);
-      if (check) {
-        break;
-      }
-    }
-
-    return check;
-  };
 }
