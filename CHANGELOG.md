@@ -12,13 +12,13 @@
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added
 - Base model properties:
-    - `isSyncingUp` - true if model is syncing up. 
-    - `isCreatedDuringSyncUp` - true if model is created during sync up process. 
-    - `isUpdatedDuringSyncUp` - true if model is updated last time during sync up process. 
-    - `isDestroyedDuringSyncUp` - true if model is destroyed during sync up process. 
+    - `isSyncingUp` - true if model is syncing up.
+    - `isCreatedDuringSyncUp` - true if model is created during sync up process.
+    - `isUpdatedDuringSyncUp` - true if model is updated last time during sync up process.
+    - `isDestroyedDuringSyncUp` - true if model is destroyed during sync up process.
 
 ### Fixed
-- Now we are saving information about model type of polymorphic belongsTo relationships into local store. Setting proper types of polymorphic belongsTo relationships should come in next versions of addon. 
+- Now we are saving information about model type of polymorphic belongsTo relationships into local store. Setting proper types of polymorphic belongsTo relationships should come in next versions of addon.
 
 ## [0.6.2-beta.29] - 2016-10-20
 ### Fixed
@@ -29,7 +29,7 @@
 - Saving of base models logic for offline (for create/update/delete operations). Now it is not using transactions (will be added in next versions).
 
 ### Changed
-- Disable models unloads after sync down and sync up operations in `syncer` service. 
+- Disable models unloads after sync down and sync up operations in `syncer` service.
 
 ## [0.6.2-beta.27] - 2016-10-18
 ### Fixed
