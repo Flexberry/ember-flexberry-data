@@ -9,11 +9,13 @@ var store;
 var db;
 
 export default function executeTest(testName, callback) {
-  module('CRUD | offline', {
-    setup: function() {
+  module('CRUD | offline-' + testName, {
+    setup: function(assert) {
+      let initDone = assert.async();
+
       App = startApp();
       store = App.__container__.lookup('service:store');
-      let dbName = 'testDB';
+      let dbName = 'testDB' + Math.floor(Math.random() * 9999);
 
       // Override store.unloadAll method.
       const originalUnloadAll = store.unloadAll;
@@ -31,33 +33,44 @@ export default function executeTest(testName, callback) {
       let offlineGlobals = App.__container__.lookup('service:offline-globals');
       offlineGlobals.setOnlineAvailable(false);
 
-      db = new Dexie(dbName);
-      db.version(0.1).stores({
-        'ember-flexberry-dummy-suggestion': 'id,address,text,date,votes,moderated,type,author,editor1,*files,*userVotes,*comments',
-        'ember-flexberry-dummy-suggestion-type': 'id,name,moderated,parent,*localizedTypes',
-        'ember-flexberry-dummy-application-user': 'id,name,eMail,phone1,phone2,phone3,activated,vK,facebook,twitter,birthday,gender,vip,karma',
-        'ember-flexberry-dummy-vote': 'id,suggestion,voteType,applicationUser',
-        'ember-flexberry-dummy-comment': 'id,suggestion,text,votes,moderated,author,*userVotes',
-        'ember-flexberry-dummy-comment-vote': 'id,comment,voteType,applicationUser'
-      });
+      Ember.run(() => {
+        db = new Dexie(dbName);
+        db.version(0.1).stores({
+          'ember-flexberry-dummy-suggestion': 'id,address,text,date,votes,moderated,type,author,editor1,*files,*userVotes,*comments',
+          'ember-flexberry-dummy-suggestion-type': 'id,name,moderated,parent,*localizedTypes',
+          'ember-flexberry-dummy-application-user': 'id,name,eMail,phone1,phone2,phone3,activated,vK,facebook,twitter,birthday,gender,vip,karma',
+          'ember-flexberry-dummy-vote': 'id,suggestion,voteType,applicationUser',
+          'ember-flexberry-dummy-comment': 'id,suggestion,text,votes,moderated,author,*userVotes',
+          'ember-flexberry-dummy-comment-vote': 'id,comment,voteType,applicationUser'
+        });
 
-      db.open().then((db) => {
-        let promises = [];
-        promises.push(db.table('ember-flexberry-dummy-suggestion'));
-        promises.push(db.table('ember-flexberry-dummy-suggestion-type'));
-        promises.push(db.table('ember-flexberry-dummy-application-user'));
-        promises.push(db.table('ember-flexberry-dummy-vote'));
-        promises.push(db.table('ember-flexberry-dummy-comment'));
-        promises.push(db.table('ember-flexberry-dummy-comment-vote'));
-        return new Dexie.Promise.all(promises).then(() => {
-          db.close();
-          return Dexie.Promise.resolve();
+        db.open().then((db) => {
+          let promises = [];
+          promises.push(db.table('ember-flexberry-dummy-suggestion'));
+          promises.push(db.table('ember-flexberry-dummy-suggestion-type'));
+          promises.push(db.table('ember-flexberry-dummy-application-user'));
+          promises.push(db.table('ember-flexberry-dummy-vote'));
+          promises.push(db.table('ember-flexberry-dummy-comment'));
+          promises.push(db.table('ember-flexberry-dummy-comment-vote'));
+          return new Dexie.Promise.all(promises).then(() => {
+            db.close();
+            return Dexie.Promise.resolve();
+          });
+        }).then(() => {
+          initDone();
         });
       });
     },
-    teardown: function() {
-      db.delete();
-      destroyApp(App);
+    teardown: function(assert) {
+      let cleanUpDone = assert.async();
+
+      Ember.run(() => {
+        db.delete().then(() => {
+          destroyApp(App);
+
+          cleanUpDone();
+        });
+      });
     }
   });
 

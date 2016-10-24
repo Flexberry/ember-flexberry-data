@@ -54,7 +54,10 @@ export default function readingStoreCommands(store, assert) {
         assert.equal(record.get('name'), 'User 2', 'queryRecord')
       );
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
 }

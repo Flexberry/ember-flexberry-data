@@ -34,7 +34,10 @@ export default function baseCreatingTest(store, assert) {
         });
       });
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
 }

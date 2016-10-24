@@ -53,7 +53,10 @@ export default function readingRestrictionsOnFields(store, assert) {
         assert.equal(data.get('length'), 2, 'Restrictions on details fields | Length');
       });
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
 }

@@ -61,7 +61,10 @@ export default function readingComparsionWithNull(store, assert) {
         );
       });
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
 }

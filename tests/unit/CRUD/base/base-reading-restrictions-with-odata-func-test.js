@@ -31,7 +31,10 @@ export default function readingRestrictionsOdataFunctions(store, assert) {
         assert.equal(data.get('length'), 1, '< now() | Length');
       });
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
 }

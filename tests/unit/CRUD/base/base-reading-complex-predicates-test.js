@@ -37,7 +37,10 @@ export default function readingComplexPredicates(store, assert) {
         assert.ok(data.every(item => item.get('name') === 'Oleg' && item.get('karma') === 7), `Predicate "and" | Data`);
       });
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
 }

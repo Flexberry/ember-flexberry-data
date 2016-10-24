@@ -40,7 +40,10 @@ export default function readingPredicatesStringPredicates(store, assert) {
         assert.equal(data.get('length'), 0, `Contains mustn't return any records`)
       );
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
 }

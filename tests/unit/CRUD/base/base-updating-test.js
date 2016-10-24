@@ -57,7 +57,10 @@ export default function updating(store, assert) {
       })
       .then(() => records);
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
 }
