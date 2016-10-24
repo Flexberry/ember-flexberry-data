@@ -87,6 +87,50 @@ export default Ember.Service.extend(Ember.Evented, {
       db.version(version).stores(schemas[version]);
     }
 
+    db.tables.forEach((table) => {
+      let TableClass = table.defineClass({});
+      let modelClass = store.modelFor(table.name);
+      let relationshipNames = get(modelClass, 'relationshipNames');
+      let relationshipsByName = get(modelClass, 'relationshipsByName');
+
+      TableClass.prototype.loadRelationships = function(projection) {
+        let promises = [];
+        if (projection && typeof projection === 'string') {
+          projection = get(modelClass, 'projections').get(projection);
+        }
+
+        relationshipNames.hasMany.concat(relationshipNames.belongsTo).forEach((name) => {
+          let relationship = relationshipsByName.get(name);
+          let saveRelationship = (hash) => {
+            if (relationship.options.inverse) {
+              hash[relationship.options.inverse] = null;
+            }
+
+            if (relationship.kind === 'hasMany') {
+              for (let i = 0; i < this[name].length; i++) {
+                if (this[name][i] === hash.id) {
+                  this[name][i] = hash;
+                }
+              }
+            } else if (relationship.kind === 'belongsTo') {
+              this[name] = hash;
+            }
+
+            return hash.loadRelationships(projection && projection.attributes[name]);
+          };
+
+          let inProjection = (!projection || projection.attributes.hasOwnProperty(name));
+          if (!relationship.options.async && this[name] && inProjection) {
+            let ids = isArray(this[name]) ? this[name] : [this[name]];
+            ids.forEach((id) => {
+              promises.push(db.table(relationship.type).get(id, saveRelationship));
+            });
+          }
+        });
+        return Dexie.Promise.all(promises);
+      };
+    });
+
     this.get(`_dexie`)[dbName] = db;
     return db;
   },

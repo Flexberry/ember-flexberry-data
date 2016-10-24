@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - Now `dexie` service can work with multiple DB.
+- Now DB instance received through `dexie` service, instead of objects returns instances of classes that can use `loadRelationships` function.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added
