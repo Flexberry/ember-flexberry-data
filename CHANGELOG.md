@@ -5,6 +5,9 @@
 - Now `dexie` service can work with multiple DB.
 - Now DB instance received through `dexie` service, instead of objects returns instances of classes that can use `loadRelationships` function.
 
+### Changed
+- For loading relationships from offline store uses `loadRelationships` function on each object received from table.
+
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added
 - Base model properties:

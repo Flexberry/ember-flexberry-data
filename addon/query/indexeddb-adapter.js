@@ -8,6 +8,7 @@ import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } f
 import BaseAdapter from './base-adapter';
 import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip } from './js-adapter';
 import Information from '../utils/information';
+import Dexie from 'npm:dexie';
 
 /**
   Class of query language adapter that allows to load data from IndexedDB.
@@ -47,12 +48,14 @@ export default class extends BaseAdapter {
       let table = this._db.table(query.modelName);
 
       updateWhereClause(table, query).toArray().then((data) => {
-        let response = { meta: {}, data: projection(topskip(order(data))) };
-        if (query.count) {
-          response.meta.count = data.length;
-        }
+        Dexie.Promise.all(data.map(i => i.loadRelationships(query.projectionName))).then(() => {
+          let response = { meta: {}, data: projection(topskip(order(data))) };
+          if (query.count) {
+            response.meta.count = data.length;
+          }
 
-        resolve(response);
+          resolve(response);
+        });
       }).catch((error) => {
         reject(error);
       });
