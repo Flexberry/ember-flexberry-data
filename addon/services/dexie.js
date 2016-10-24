@@ -1,10 +1,12 @@
+/**
+  @module ember-flexberry-data
+*/
+
 import Ember from 'ember';
 import Dexie from 'npm:dexie';
 import Queue from '../utils/queue';
 
-/**
-  @module ember-flexberry-data
-*/
+const { isArray, get, merge } = Ember;
 
 /**
   Service for storing [Dexie](https://github.com/dfahlander/Dexie.js) instance for application.
@@ -15,6 +17,14 @@ import Queue from '../utils/queue';
   @public
 */
 export default Ember.Service.extend(Ember.Evented, {
+  /**
+    Contains instances of Dexie.
+
+    @property _dexie
+    @type Object
+  */
+  _dexie: {},
+
   /**
     Count of objects that should be synced down.
 
@@ -66,17 +76,19 @@ export default Ember.Service.extend(Ember.Evented, {
     @return {Dexie} Dexie database.
   */
   dexie(dbName, store, options) {
-    if (!Ember.isNone(this._dexie)) {
-      return this._dexie;
+    let dexie = this.get('_dexie')[dbName];
+    if (dexie instanceof Dexie) {
+      return dexie;
     }
 
-    let db =  new Dexie(dbName, Ember.merge({}, options));
-    let schemas = store.get(`offlineSchema.${dbName}`);
+    let db =  new Dexie(dbName, merge({}, options));
+    let schemas = store.get('offlineSchema')[dbName];
     for (let version in schemas) {
       db.version(version).stores(schemas[version]);
     }
 
-    return this.set('_dexie', db);
+    this.get(`_dexie`)[dbName] = db;
+    return db;
   },
 
   /**
@@ -118,9 +130,6 @@ export default Ember.Service.extend(Ember.Evented, {
       return operation(db);
     }
   },
-
-  /* Dexie instance */
-  _dexie: null,
 
   /* Queue for requests to Dexie */
   _queue: Queue.create()

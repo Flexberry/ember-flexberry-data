@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Now `dexie` service can work with multiple DB.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added
