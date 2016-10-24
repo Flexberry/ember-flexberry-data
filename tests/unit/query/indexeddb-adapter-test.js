@@ -18,11 +18,13 @@ const modelName = 'employee';
 module('query');
 
 test('adapter | indexeddb | without predicate', (assert) => {
-  let data = [
-    { id: 1 },
-    { id: 2 },
-    { id: 3 }
-  ];
+  let data = {
+    employee: [
+      { id: 1 },
+      { id: 2 },
+      { id: 3 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName);
 
@@ -36,11 +38,13 @@ test('adapter | indexeddb | without predicate', (assert) => {
 });
 
 test('adapter | indexeddb | simple predicate | eq', (assert) => {
-  let data = [
-    { id: 1, Name: 'A' },
-    { id: 2, Name: 'B' },
-    { id: 3, Name: 'B' }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A' },
+      { id: 2, Name: 'B' },
+      { id: 3, Name: 'B' },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, 'B');
 
@@ -53,11 +57,13 @@ test('adapter | indexeddb | simple predicate | eq', (assert) => {
 });
 
 test('adapter | indexeddb | simple predicate | eq | null', (assert) => {
-  let data = [
-    { id: 1, Name: 'A' },
-    { id: 2, Name: null },
-    { id: 3, Name: 'B' }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A' },
+      { id: 2, Name: null },
+      { id: 3, Name: 'B' },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, null);
 
@@ -69,11 +75,15 @@ test('adapter | indexeddb | simple predicate | eq | null', (assert) => {
 });
 
 test('adapter | js | simple predicate | eq | master field', function (assert) {
-  let data = [
-    { id: 1, Manager: { Name: 'X' } },
-    { id: 2 },
-    { id: 3, Manager: { Name: 'Y' } }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Manager: 4 },
+      { id: 2 },
+      { id: 3, Manager: 5 },
+      { id: 4, Name: 'X' },
+      { id: 5, Name: 'Y' },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).where('Manager.Name', FilterOperator.Eq, 'Y');
 
@@ -85,11 +95,13 @@ test('adapter | js | simple predicate | eq | master field', function (assert) {
 });
 
 test('adapter | indexeddb | simple predicate | neq', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Neq, 'B');
 
@@ -102,11 +114,13 @@ test('adapter | indexeddb | simple predicate | neq', (assert) => {
 });
 
 test('adapter | indexeddb | simple predicate | le', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Le, 12);
 
@@ -119,11 +133,13 @@ test('adapter | indexeddb | simple predicate | le', (assert) => {
 });
 
 test('adapter | indexeddb | simple predicate | leq', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Leq, 11);
 
@@ -136,11 +152,13 @@ test('adapter | indexeddb | simple predicate | leq', (assert) => {
 });
 
 test('adapter | indexeddb | simple predicate | ge', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Ge, 10);
 
@@ -153,11 +171,13 @@ test('adapter | indexeddb | simple predicate | ge', (assert) => {
 });
 
 test('adapter | indexeddb | simple predicate | geq', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Geq, 11);
 
@@ -170,11 +190,13 @@ test('adapter | indexeddb | simple predicate | geq', (assert) => {
 });
 
 test('adapter | indexeddb | string predicate | contains', (assert) => {
-  let data = [
-    { id: 1, CountryName: 'Argentina' },
-    { id: 2, CountryName: 'Paragwaj' },
-    { id: 3, CountryName: 'Russia' }
-  ];
+  let data = {
+    employee: [
+      { id: 1, CountryName: 'Argentina' },
+      { id: 2, CountryName: 'Paragwaj' },
+      { id: 3, CountryName: 'Russia' },
+    ],
+  };
 
   let sp1 = new StringPredicate('CountryName').contains('i');
   let builder = new QueryBuilder(store, modelName).where(sp1);
@@ -188,11 +210,18 @@ test('adapter | indexeddb | string predicate | contains', (assert) => {
 });
 
 test('adapter | indexeddb | string predicate | contains | master field', (assert) => {
-  let data = [
-    { id: 1, Country: { Name: 'Argentina' } },
-    { id: 2, Country: { Name: 'Paragwaj' } },
-    { id: 3, Country: { Name: 'Russia' } }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Country: 1 },
+      { id: 2, Country: 2 },
+      { id: 3, Country: 3 },
+    ],
+    country: [
+      { id: 1, Name: 'Argentina', },
+      { id: 2, Name: 'Paragwaj', },
+      { id: 3, Name: 'Russia', },
+    ],
+  };
 
   let sp1 = new StringPredicate('Country.Name').contains('i');
   let builder = new QueryBuilder(store, modelName).where(sp1);
@@ -206,11 +235,16 @@ test('adapter | indexeddb | string predicate | contains | master field', (assert
 });
 
 test('adapter | indexeddb | detail predicate | all | simple predicate', (assert) => {
-  let data = [
-    { id: 1, Tags: [{ Name: 'Tag1' }] },
-    { id: 2 },
-    { id: 3 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Tags: [1] },
+      { id: 2 },
+      { id: 3 },
+    ],
+    tag: [
+      { id: 1, Name: 'Tag1' },
+    ],
+  };
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
   let builder = new QueryBuilder(store, modelName).where(dp);
@@ -223,11 +257,19 @@ test('adapter | indexeddb | detail predicate | all | simple predicate', (assert)
 });
 
 test('adapter | indexeddb | detail predicate | all | simple predicate | master field', (assert) => {
-  let data = [
-    { id: 1, Tags: [{ Creator: { Name: 'X' } }] },
-    { id: 2 },
-    { id: 3 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Tags: [1] },
+      { id: 2 },
+      { id: 3 },
+    ],
+    creator: [
+      { id: 1, Name: 'X' },
+    ],
+    tag: [
+      { id: 1, Creator: 1 },
+    ],
+  };
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
   let builder = new QueryBuilder(store, modelName).where(dp);
@@ -240,11 +282,18 @@ test('adapter | indexeddb | detail predicate | all | simple predicate | master f
 });
 
 test('adapter | indexeddb | detail predicate | any | simple predicate', (assert) => {
-  let data = [
-    { id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
-    { id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
-    { id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Tags: [1, 3] },
+      { id: 2, Tags: [3, 2] },
+      { id: 3, Tags: [2, 1] },
+    ],
+    tag: [
+      { id: 1, Name: 'Tag1' },
+      { id: 2, Name: 'Tag2' },
+      { id: 3, Name: 'Tag3' },
+    ],
+  };
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
   let builder = new QueryBuilder(store, modelName).where(dp);
@@ -258,11 +307,23 @@ test('adapter | indexeddb | detail predicate | any | simple predicate', (assert)
 });
 
 test('adapter | indexeddb | detail predicate | any | simple predicate | master field', (assert) => {
-  let data = [
-    { id: 1, Tags: [{ Creator: { Name: 'X' } }, { Creator: { Name: 'Z' } }] },
-    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'Y' } }] },
-    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'X' } }] }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Tags: [1, 3] },
+      { id: 2, Tags: [3, 2] },
+      { id: 3, Tags: [2, 1] },
+    ],
+    creator: [
+      { id: 1, Name: 'X' },
+      { id: 2, Name: 'Y' },
+      { id: 3, Name: 'Z' },
+    ],
+    tag: [
+      { id: 1, Creator: 1 },
+      { id: 2, Creator: 2 },
+      { id: 3, Creator: 3 },
+    ],
+  };
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
   let builder = new QueryBuilder(store, modelName).where(dp);
@@ -276,11 +337,18 @@ test('adapter | indexeddb | detail predicate | any | simple predicate | master f
 });
 
 test('adapter | indexeddb | detail predicate | all | complex predicate', (assert) => {
-  let data = [
-    { id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
-    { id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
-    { id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Tags: [1, 3] },
+      { id: 2, Tags: [3, 2] },
+      { id: 3, Tags: [2, 1] },
+    ],
+    tag: [
+      { id: 1, Name: 'Tag1' },
+      { id: 2, Name: 'Tag2' },
+      { id: 3, Name: 'Tag3' },
+    ],
+  };
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag1');
   let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag3');
@@ -296,11 +364,23 @@ test('adapter | indexeddb | detail predicate | all | complex predicate', (assert
 });
 
 test('adapter | indexeddb | detail predicate | all | complex predicate | master field', (assert) => {
-  let data = [
-    { id: 1, Tags: [{ Creator: { Name: 'X' } }, { Creator: { Name: 'Z' } }] },
-    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'Y' } }] },
-    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'X' } }] }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Tags: [1, 3] },
+      { id: 2, Tags: [3, 2] },
+      { id: 3, Tags: [2, 1] },
+    ],
+    creator: [
+      { id: 1, Name: 'X' },
+      { id: 2, Name: 'Y' },
+      { id: 3, Name: 'Z' },
+    ],
+    tag: [
+      { id: 1, Creator: 1 },
+      { id: 2, Creator: 2 },
+      { id: 3, Creator: 3 },
+    ],
+  };
 
   let sp1 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X');
   let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Z');
@@ -316,11 +396,20 @@ test('adapter | indexeddb | detail predicate | all | complex predicate | master 
 });
 
 test('adapter | indexeddb | detail predicate | any | complex predicate', (assert) => {
-  let data = [
-    { id: 1, Tags: [{ Name: 'Tag4' }, { Name: 'Tag3' }] },
-    { id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag1' }] },
-    { id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag0' }] }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Tags: [4, 3] },
+      { id: 2, Tags: [3, 1] },
+      { id: 3, Tags: [2, 5] },
+    ],
+    tag: [
+      { id: 1, Name: 'Tag1' },
+      { id: 2, Name: 'Tag2' },
+      { id: 3, Name: 'Tag3' },
+      { id: 4, Name: 'Tag4' },
+      { id: 5, Name: 'Tag0' },
+    ],
+  };
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag1');
   let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag2');
@@ -337,11 +426,27 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
 });
 
 test('adapter | indexeddb | detail predicate | any | complex predicate', (assert) => {
-  let data = [
-    { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
-    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
-    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Tags: [5, 3] },
+      { id: 2, Tags: [3, 1] },
+      { id: 3, Tags: [2, 4] },
+    ],
+    creator: [
+      { id: 1, Name: 'X' },
+      { id: 2, Name: 'Y' },
+      { id: 3, Name: 'Z' },
+      { id: 4, Name: 'A' },
+      { id: 5, Name: 'M' },
+    ],
+    tag: [
+      { id: 1, Creator: 1 },
+      { id: 2, Creator: 2 },
+      { id: 3, Creator: 3 },
+      { id: 4, Creator: 4 },
+      { id: 5, Creator: 5 },
+    ],
+  };
 
   let sp1 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X');
   let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Y');
@@ -358,11 +463,13 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
 });
 
 test('adapter | indexeddb | complex predicate | and', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { id: 2, Name: 'A', Surname: 'Y', Age: 10 },
-    { id: 3, Name: 'B', Surname: 'Z', Age: 11 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'A', Surname: 'Y', Age: 10 },
+      { id: 3, Name: 'B', Surname: 'Z', Age: 11 },
+    ],
+  };
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
   let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 10);
@@ -379,11 +486,13 @@ test('adapter | indexeddb | complex predicate | and', (assert) => {
 });
 
 test('adapter | indexeddb | complex predicate | or', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
   let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 12);
@@ -401,11 +510,13 @@ test('adapter | indexeddb | complex predicate | or', (assert) => {
 
 test('adapter | indexeddb | complex predicate | with nested complex predicate', function (assert) {
   // Arrange.
-  let data = [
-    { id: 1,  Name: 'A', Surname: 'X', Age: 10 },
-    { id: 2,  Name: 'B', Surname: 'Y', Age: 11 },
-    { id: 3,  Name: 'C', Surname: 'Z', Age: 12 }
-  ];
+  let data = {
+    employee: [
+      { id: 1,  Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2,  Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3,  Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
   let sp2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Z');
@@ -425,11 +536,13 @@ test('adapter | indexeddb | complex predicate | with nested complex predicate', 
 });
 
 test('adapter | indexeddb | select', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { id: 2, Name: 'A', Surname: 'Y', Age: 11 },
-    { id: 3, Name: 'B', Surname: 'Z', Age: 15 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'A', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'B', Surname: 'Z', Age: 15 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).select('id,Age,Name');
 
@@ -444,11 +557,13 @@ test('adapter | indexeddb | select', (assert) => {
 });
 
 test('adapter | indexeddb | order', (assert) => {
-  let data = [
-    { id: 1, Price: 200, Age: 10 },
-    { id: 2, Price: 100, Age: 10 },
-    { id: 3, Price: 900, Age: 15 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Price: 200, Age: 10 },
+      { id: 2, Price: 100, Age: 10 },
+      { id: 3, Price: 900, Age: 15 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).orderBy('Age desc, Price asc');
 
@@ -462,11 +577,13 @@ test('adapter | indexeddb | order', (assert) => {
 });
 
 test('adapter | indexeddb | order with skip-top', (assert) => {
-  let data = [
-    { id: 1, Price: 200, Age: 10 },
-    { id: 2, Price: 100, Age: 10 },
-    { id: 3, Price: 900, Age: 15 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Price: 200, Age: 10 },
+      { id: 2, Price: 100, Age: 10 },
+      { id: 3, Price: 900, Age: 15 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).orderBy('Price asc').skip(1).top(2);
 
@@ -479,11 +596,17 @@ test('adapter | indexeddb | order with skip-top', (assert) => {
 });
 
 test('adapter | indexeddb | order | master field', (assert) => {
-  let data = [
-    { id: 1, Price: 200, Creator: { Age: 10 } },
-    { id: 2, Price: 100, Creator: { Age: 10 } },
-    { id: 3, Price: 900, Creator: { Age: 15 } }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Price: 200, Creator: 1 },
+      { id: 2, Price: 100, Creator: 1 },
+      { id: 3, Price: 900, Creator: 2 },
+    ],
+    creator: [
+      { id: 1, Age: 10 },
+      { id: 2, Age: 15 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).orderBy('Creator.Age desc, Price asc');
 
@@ -497,11 +620,13 @@ test('adapter | indexeddb | order | master field', (assert) => {
 });
 
 test('adapter | indexeddb | skip-top-count', (assert) => {
-  const data = [
-    { id: 1, Name: 'A', Price: 200, Age: 10 },
-    { id: 2, Name: 'B', Price: 100, Age: 10 },
-    { id: 3, Name: 'C', Price: 900, Age: 15 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Price: 200, Age: 10 },
+      { id: 2, Name: 'B', Price: 100, Age: 10 },
+      { id: 3, Name: 'C', Price: 900, Age: 15 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).select('Name').count().skip(1).top(1);
 
@@ -514,11 +639,13 @@ test('adapter | indexeddb | skip-top-count', (assert) => {
 });
 
 test('adapter | indexeddb | by id', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Price: 200, Age: 10 },
-    { id: 2, Name: 'B', Price: 100, Age: 10 },
-    { id: 3, Name: 'C', Price: 900, Age: 15 }
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Price: 200, Age: 10 },
+      { id: 2, Name: 'B', Price: 100, Age: 10 },
+      { id: 3, Name: 'C', Price: 900, Age: 15 },
+    ],
+  };
 
   let builder = new QueryBuilder(store, modelName).select('Name').byId(1);
 
