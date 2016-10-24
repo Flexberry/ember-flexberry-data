@@ -7,6 +7,7 @@
 
 ### Changed
 - For loading relationships from offline store uses `loadRelationships` function on each object received from table.
+- `indexeddb-adapter` apply filters after loading relationships.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added

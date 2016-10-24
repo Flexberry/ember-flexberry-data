@@ -6,7 +6,7 @@ import Ember from 'ember';
 import FilterOperator from './filter-operator';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
-import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip } from './js-adapter';
+import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip, buildFilter } from './js-adapter';
 import Information from '../utils/information';
 import Dexie from 'npm:dexie';
 
@@ -45,13 +45,15 @@ export default class extends BaseAdapter {
       let order = buildOrder(query);
       let topskip = buildTopSkip(query);
       let projection = buildProjection(query);
+      let filter = query.predicate ? buildFilter(query.predicate) : (data) => data;
       let table = this._db.table(query.modelName);
 
       updateWhereClause(table, query).toArray().then((data) => {
         Dexie.Promise.all(data.map(i => i.loadRelationships(query.projectionName))).then(() => {
-          let response = { meta: {}, data: projection(topskip(order(data))) };
+          let filteredData = filter(data);
+          let response = { meta: {}, data: projection(topskip(order(filteredData))) };
           if (query.count) {
-            response.meta.count = data.length;
+            response.meta.count = filteredData.length;
           }
 
           resolve(response);
@@ -64,14 +66,15 @@ export default class extends BaseAdapter {
 }
 
 /**
- * Builds Dexie `WhereClause` for filtering data.
- * Filtering only with Dexie can applied only for simple cases (for `SimplePredicate`).
- * For complex cases all logic implemened programmatically.
- *
- * @param {Dexie.Table} table Table instance for loading objects.
- * @param {Query} query Query language instance for loading data.
- * @returns {Dexie.Collection|Dexie.Table} Table or collection that can be used with `toArray` method.
- */
+  Builds Dexie `WhereClause` for filtering data.
+  Filtering only with Dexie can applied only for simple cases (for `SimplePredicate`).
+  For complex cases all logic implemened programmatically.
+  If `query.predicate` contains restrictions by relationships, return `table` without restrictions.
+
+  @param {Dexie.Table} table Table instance for loading objects.
+  @param {Query} query Query language instance for loading data.
+  @returns {Dexie.Collection|Dexie.Table} Table or collection that can be used with `toArray` method.
+*/
 function updateWhereClause(table, query) {
   let predicate = query.predicate;
 
@@ -83,14 +86,13 @@ function updateWhereClause(table, query) {
     }
   }
 
-  if (!predicate) {
+  if (!predicate || containsRelationships(predicate)) {
     return table;
   }
 
   if (predicate instanceof SimplePredicate) {
-    let fields = Information.parseAttributePath(predicate.attributePath);
     let value = typeof predicate.value === 'boolean' ? `${predicate.value}` : predicate.value;
-    if (value === null || fields.length > 1) {
+    if (value === null) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
       return table.filter(getAttributeFilterFunction(predicate));
@@ -120,9 +122,38 @@ function updateWhereClause(table, query) {
     }
   }
 
-  if (predicate instanceof StringPredicate || predicate instanceof DetailPredicate || predicate instanceof ComplexPredicate) {
+  if (predicate instanceof StringPredicate || predicate instanceof ComplexPredicate) {
     return table.filter(getAttributeFilterFunction(predicate));
   }
 
   throw new Error(`Unsupported predicate '${predicate}'`);
+}
+
+/**
+  Checks predicate on contains restrictions by relationships.
+
+  @method containsRelationships
+  @param {Query.BasePredicate} predicate
+  @return {Boolean}
+*/
+function containsRelationships(predicate) {
+  if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+    return Information.parseAttributePath(predicate.attributePath).length > 1;
+  }
+
+  if (predicate instanceof DetailPredicate) {
+    return true;
+  }
+
+  if (predicate instanceof ComplexPredicate) {
+    let contains = false;
+    predicate.predicates.forEach((predicate) => {
+      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+        contains = Information.parseAttributePath(predicate.attributePath).length > 1;
+      } else {
+        contains = containsRelationships(predicate);
+      }
+    });
+    return contains;
+  }
 }
