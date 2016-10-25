@@ -1,8 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Add some parameters checks for `builder` and `information` classes.
+
 ### Fixed
-- `syncer` service while performing sync up, now it makes casting for `boolean` type and corrected casting for `null` value of `date` type.
+- `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of `date` type while performing sync up.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added
@@ -14,6 +17,7 @@
 
 ### Fixed
 - Now we are saving information about model type of polymorphic belongsTo relationships into local store. Setting proper types of polymorphic belongsTo relationships should come in next versions of addon. 
+>>>>>>> develop
 
 ## [0.6.2-beta.29] - 2016-10-20
 ### Fixed
