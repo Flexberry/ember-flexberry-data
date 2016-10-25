@@ -86,7 +86,26 @@ test('adapter | indexeddb | simple predicate | eq | null', (assert) => {
   });
 });
 
-test('adapter | js | simple predicate | eq | master field', function (assert) {
+test('adapter | indexeddb | simple predicate | eq | master pk', function (assert) {
+  let data = {
+    employee: [
+      { id: 1, Manager: 3 },
+      { id: 2, Manager: 3 },
+      { id: 3 },
+    ],
+  };
+
+  let builder = new QueryBuilder(store, modelName).where('Manager', FilterOperator.Eq, 3);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+  });
+});
+
+test('adapter | indexeddb | simple predicate | eq | master field', function (assert) {
   let data = {
     employee: [
       { id: 1, Manager: 4 },
