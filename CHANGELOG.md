@@ -5,7 +5,7 @@
 - Add some parameters checks for `builder` and `information` classes.
 
 ### Fixed
-- `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of `date` type while performing sync up.
+- `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of all types while performing sync up.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added
