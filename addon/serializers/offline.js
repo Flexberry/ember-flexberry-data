@@ -66,6 +66,18 @@ export default DS.JSONSerializer.extend({
     }
   },
 
+  serializePolymorphicType: function(snapshot, json, relationship) {
+    let key = relationship.key;
+    let belongsTo = snapshot.belongsTo(key);
+    key = this.keyForAttribute ? this.keyForAttribute(key, 'serialize') : key;
+
+    if (Ember.isNone(belongsTo)) {
+      json['_' + key + '_type'] = null;
+    } else {
+      json['_' + key + '_type'] = belongsTo.modelName;
+    }
+  },
+
   /**
     Normalization method for arrays of objects.
     [More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_normalizeArrayResponse).

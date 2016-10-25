@@ -2,7 +2,22 @@
 
 ## [Unreleased]
 ### Added
-- Add some parameters checks for `Builder` and `Information`. 
+- Add some parameters checks for `builder` and `information` classes.
+
+### Fixed
+- `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of `date` type while performing sync up.
+
+## [0.6.2-beta.30] - 2016-10-21
+### Added
+- Base model properties:
+    - `isSyncingUp` - true if model is syncing up. 
+    - `isCreatedDuringSyncUp` - true if model is created during sync up process. 
+    - `isUpdatedDuringSyncUp` - true if model is updated last time during sync up process. 
+    - `isDestroyedDuringSyncUp` - true if model is destroyed during sync up process. 
+
+### Fixed
+- Now we are saving information about model type of polymorphic belongsTo relationships into local store. Setting proper types of polymorphic belongsTo relationships should come in next versions of addon. 
+>>>>>>> develop
 
 ## [0.6.2-beta.29] - 2016-10-20
 ### Fixed
