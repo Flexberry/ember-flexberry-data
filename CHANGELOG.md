@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `syncer` service while performing sync up, now it makes casting for `boolean` type and corrected casting for `null` value of `date` type.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added
