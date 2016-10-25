@@ -486,6 +486,10 @@ export default Ember.Service.extend({
           }));
         } else {
           switch (attributes.get(field).type) {
+            case 'boolean':
+              changes[field] = !!auditField.get('newValue');
+              break;
+
             case 'number':
               changes[field] = +auditField.get('newValue');
               break;
