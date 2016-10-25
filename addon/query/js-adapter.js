@@ -301,6 +301,11 @@ function getValue(item, attributePath) {
       // Don't return constant null / undefined - we need to distinguish them.
       return search;
     }
+
+    if (typeof search === 'object' && !(search instanceof Array) && !attributes[i + 1]) {
+      // TODO: In fact, it can not only be `id`.
+      return search.id;
+    }
   }
 
   return search;
