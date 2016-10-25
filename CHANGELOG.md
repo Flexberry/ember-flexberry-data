@@ -17,7 +17,6 @@
 
 ### Fixed
 - Now we are saving information about model type of polymorphic belongsTo relationships into local store. Setting proper types of polymorphic belongsTo relationships should come in next versions of addon. 
->>>>>>> develop
 
 ## [0.6.2-beta.29] - 2016-10-20
 ### Fixed
