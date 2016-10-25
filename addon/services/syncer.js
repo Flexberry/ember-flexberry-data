@@ -491,7 +491,8 @@ export default Ember.Service.extend({
               break;
 
             case 'date':
-              changes[field] = new Date(auditField.get('newValue'));
+              let date = auditField.get('newValue');
+              changes[field] = date ? new Date(date) : null;
               break;
 
             default:
