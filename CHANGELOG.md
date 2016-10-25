@@ -2,12 +2,16 @@
 
 ## [Unreleased]
 ### Added
-- Now `dexie` service can work with multiple DB.
-- Now DB instance received through `dexie` service, instead of objects returns instances of classes that can use `loadRelationships` function.
+- Now `dexie` service can work with multiple DBs.
+- Now DB instance received via `dexie` service returns instances of classes that can use `loadRelationships` function.
+- Some parameters checks for `builder` and `information` classes.
 
 ### Changed
-- For loading relationships from offline store uses `loadRelationships` function on each object received from table.
+- Loading relationships in offline mode moved "under" offline adapter layer, i.e. offline adapter now get "full object" at once with embedded objects for embedded relationships.
 - `indexeddb-adapter` apply filters after loading relationships.
+
+### Fixed
+- `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of `date` type while performing sync up.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added

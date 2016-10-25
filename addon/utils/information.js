@@ -141,6 +141,10 @@ class Information {
     for (let i = 0; i < fields.length; i++) {
       if (fields.length - 1 === i) {
         let attributes = Ember.get(model, 'attributes');
+        if (!attributes) {
+          throw new Error(`Attributes not found at model '${modelName}'.`);
+        }
+
         let attribute = attributes.get(fields[i]);
         if (attribute) {
           let transform = Ember.getOwner(this._store).lookup('transform:' + attribute.type);
