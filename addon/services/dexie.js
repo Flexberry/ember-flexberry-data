@@ -107,7 +107,9 @@ export default Ember.Service.extend(Ember.Evented, {
             }
 
             if (relationship.options.inverse) {
-              hash[relationship.options.inverse] = null;
+              if (!projection || !get(projection, `attributes.${name}.attributes.${relationship.options.inverse}`)) {
+                hash[relationship.options.inverse] = null;
+              }
             }
 
             if (relationship.kind === 'hasMany') {
