@@ -5,6 +5,7 @@
 import Ember from 'ember';
 import Dexie from 'npm:dexie';
 import Queue from '../utils/queue';
+import isEmbedded from '../utils/is-embedded';
 
 const { isArray, get, merge } = Ember;
 
@@ -129,7 +130,7 @@ export default Ember.Service.extend(Ember.Evented, {
             delete this[name];
           }
 
-          if (!relationship.options.async && this[name]) {
+          if (this[name] && !relationship.options.async && isEmbedded(store, modelClass, name)) {
             let ids = isArray(this[name]) ? this[name] : [this[name]];
             ids.forEach((id) => {
               promises.push(db.table(relationship.type).get(id, saveRelationship));
