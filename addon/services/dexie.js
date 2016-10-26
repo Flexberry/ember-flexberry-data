@@ -119,8 +119,11 @@ export default Ember.Service.extend(Ember.Evented, {
             return hash.loadRelationships(projection && projection.attributes[name]);
           };
 
-          let inProjection = (!projection || projection.attributes.hasOwnProperty(name));
-          if (!relationship.options.async && this[name] && inProjection) {
+          if (projection && !projection.attributes.hasOwnProperty(name)) {
+            delete this[name];
+          }
+
+          if (!relationship.options.async && this[name]) {
             let ids = isArray(this[name]) ? this[name] : [this[name]];
             ids.forEach((id) => {
               promises.push(db.table(relationship.type).get(id, saveRelationship));
