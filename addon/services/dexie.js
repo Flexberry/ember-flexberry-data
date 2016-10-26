@@ -102,6 +102,10 @@ export default Ember.Service.extend(Ember.Evented, {
         relationshipNames.hasMany.concat(relationshipNames.belongsTo).forEach((name) => {
           let relationship = relationshipsByName.get(name);
           let saveRelationship = (hash) => {
+            if (!hash) {
+              throw new Error(`Not found relationship with key '${this[name]}' in '${relationship.type}' table.`);
+            }
+
             if (relationship.options.inverse) {
               hash[relationship.options.inverse] = null;
             }
