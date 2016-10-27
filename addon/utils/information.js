@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import FlexberryEnum from '../transforms/flexberry-enum';
+
 /**
  * Class for loading metadata about models.
  *
@@ -40,6 +42,48 @@ class Information {
   }
 
   /**
+   Checks if the specified attribute path is an attribute.
+
+   @method isAttribute
+   @param {String} modelName The name of the model.
+   @param {String} attributePath The path to the attribute.
+   @returns {Boolean} True if the specified attribute path is an attribute.
+   @public
+   */
+  isAttribute(modelName, attributePath) {
+    let meta = this.getMeta(modelName, attributePath);
+    return !meta.isMaster && !meta.isDetail;
+  }
+
+  /**
+   Checks if the specified attribute path is a key (i.e. it is an id or belongsTo relationship).
+
+   @method isKey
+   @param {String} modelName The name of the model.
+   @param {String} attributePath The path to the attribute.
+   @returns {Boolean} True if the specified attribute path is a key.
+   @public
+   */
+  isKey(modelName, attributePath) {
+    let meta = this.getMeta(modelName, attributePath);
+    return meta.isKey;
+  }
+
+  /**
+   Checks if the specified attribute path is a relationship.
+
+   @method isRelationship
+   @param {String} modelName The name of the model.
+   @param {String} attributePath The path to the attribute.
+   @returns {Boolean} True if the specified attribute path is a relationship.
+   @public
+   */
+  isRelationship(modelName, attributePath) {
+    let meta = this.getMeta(modelName, attributePath);
+    return meta.isMaster || meta.isDetail;
+  }
+
+  /**
    Checks if the specified attribute path is a master field.
 
    @method isMaster
@@ -73,7 +117,7 @@ class Information {
    @method getType
    @param {String} modelName The name of the model.
    @param {String} attributePath The path to the attribute.
-   @returns {Boolean} The type of the specified attribute path.
+   @returns {String} The type of the specified attribute path.
    @public
    */
   getType(modelName, attributePath) {
@@ -95,12 +139,23 @@ class Information {
     let fields = Information.parseAttributePath(attributePath);
 
     for (let i = 0; i < fields.length; i++) {
-      // console.log(fields[i]);
       if (fields.length - 1 === i) {
         let attributes = Ember.get(model, 'attributes');
+        if (!attributes) {
+          throw new Error(`Attributes not found at model '${modelName}'.`);
+        }
+
         let attribute = attributes.get(fields[i]);
         if (attribute) {
-          return { isMaster: false, isDetail: false, isKey: false, type: attribute.type };
+          let transform = Ember.getOwner(this._store).lookup('transform:' + attribute.type);
+          return {
+            isMaster: false,
+            isDetail: false,
+            isKey: false,
+            isEnum: transform instanceof FlexberryEnum,
+            sourceType: transform.get('sourceType'),
+            type: attribute.type
+          };
         }
 
         let relationships = Ember.get(model, 'relationshipsByName');
@@ -112,6 +167,7 @@ class Information {
             isMaster: isMaster,
             isDetail: isDetail,
             isKey: isMaster,
+            isEnum: false,
             type: relationship.type,
             keyType: 'guid' // TODO: other key types
           };
@@ -122,6 +178,7 @@ class Information {
             isMaster: false,
             isDetail: false,
             isKey: true,
+            isEnum: false,
             type: 'string',
             keyType: 'guid' // TODO: other key types
           };

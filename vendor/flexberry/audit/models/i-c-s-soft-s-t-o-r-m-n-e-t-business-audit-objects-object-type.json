@@ -1,0 +1,34 @@
+﻿{
+  "name": "ICSSoftSTORMNETBusinessAuditObjectsObjectType",
+  "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type",
+  "className": "ObjectType",
+  "parentModelName": null,
+  "parentClassName": null,
+  "attrs": [
+    {
+      "name": "name",
+      "type": "string",
+      "flexberryType": "typeString255",
+      "notNull": true,
+      "defaultValue": ""
+    }
+  ],
+  "belongsTo": [],
+  "hasMany": [],
+  "projections": [
+    {
+      "name": "SearchView",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "",
+          "hidden": false,
+          "index": 0
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    }
+  ]
+}

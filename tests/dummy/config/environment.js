@@ -16,6 +16,19 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
+
+      // Custom property with offline mode settings.
+      offline: {
+        // Flag that indicates whether offline mode in application is enabled or not.
+        offlineEnabled: true,
+
+        // Flag that indicates whether to switch to offline mode when got online connection errors or not.
+        modeSwitchOnErrorsEnabled: false,
+
+        // Flag that indicates whether to sync down all work with records when online or not.
+        // This let user to continue work without online connection.
+        syncDownWhenOnlineEnabled: false
+      }
     }
   };
 
@@ -39,7 +52,9 @@ module.exports = function(environment) {
     ENV.APP.rootElement = '#ember-testing';
 
     // TODO: find proper way to pass arguments to tests
-    ENV.APP.testODataService = process.argv.indexOf('--testODataService') > -1;
+    var testODataServiceURL = process.env.TEST_ODATA_SERVICE_URL;
+    ENV.APP.testODataService = !!testODataServiceURL;
+    ENV.APP.testODataServiceURL = testODataServiceURL;
   }
 
   if (environment === 'production') {

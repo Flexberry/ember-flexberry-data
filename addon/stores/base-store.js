@@ -3,6 +3,8 @@ import DS from 'ember-data';
 import decorateAdapter from './base-store/decorate-adapter';
 import decorateSerializer from './base-store/decorate-serializer';
 import decorateAPICall from './base-store/decorate-api-call';
+import QueryObject from '../query/query-object';
+import Dexie from 'npm:dexie';
 
 /**
   Base class for application store.
@@ -13,6 +15,35 @@ import decorateAPICall from './base-store/decorate-api-call';
   @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
 */
 export default DS.Store.extend({
+  /**
+    Store offline schemas for all databases.
+
+    @property _offlineSchema
+    @type Object
+    @private
+    @default 'Schema of 1 version for internal models addon'
+  */
+  _offlineSchema: {
+    'ember-flexberry-data': {
+      1: {
+        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity':
+          'id,objectPrimaryKey,operationTime,operationType,executionResult,source,serializedField,' +
+          'createTime,creator,editTime,editor,user,objectType,*auditFields',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field':
+          'id,field,caption,oldValue,newValue,mainChange,auditEntity',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type':
+          'id,name',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent':
+          'id,name,login,pwd,isUser,isGroup,isRole,connString,enabled,email,full,read,insert,update,' +
+          'delete,execute,createTime,creator,editTime,editor',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group':
+          'id,createTime,creator,editTime,editor,group,user',
+        'i-c-s-soft-s-t-o-r-m-n-e-t-security-session':
+          'id,userKey,startedAt,lastAccess,closed',
+      },
+    },
+  },
+
   /**
     Store that use for making requests in online mode.
     It can be specified in application that use offline mode support.
@@ -35,13 +66,88 @@ export default DS.Store.extend({
   offlineGlobals: Ember.inject.service('offline-globals'),
 
   /**
+    Set schema for your database.
+
+    @example
+      ```javascript
+      // app/services/store.js
+      ...
+        init() {
+          this.set('offlineSchema', {
+            <name of database>: {
+              <number of version>: {
+                <name of model>: <table definition>,
+              },
+            },
+            dbName: {
+              1: {
+                modelName: 'id,attribute1,attribute2,belongsToRelationship1,belongsToRelationship2,*hasManyRelationship1,*hasManyRelationship2',
+                changedModelName: 'id,attribute1,attribute2',
+                thisModelWillBeRemovedInNextVersion: 'id,attribute1',
+              },
+              2: {
+                newModelName: 'id,attribute1',
+                changedModelName: 'id,attribute1,attribute3,attribute4',
+                thisModelWillBeRemovedInNextVersion: null,
+              },
+            },
+          });
+          return this._super(...arguments);
+        },
+      ...
+      ```
+
+    @property offlineSchema
+    @type Object
+  */
+  offlineSchema: Ember.computed({
+    get() {
+      return this.get('_offlineSchema');
+    },
+    set(key, value) {
+      let offlineSchema = this.get('offlineSchema');
+      for (let db in value) {
+        if (offlineSchema.hasOwnProperty(db)) {
+          for (let version in value[db]) {
+            let schema = offlineSchema[db][version] || {};
+            offlineSchema[db][version] = Ember.merge(schema, value[db][version]);
+          }
+        } else {
+          offlineSchema[db] = value[db];
+        }
+      }
+
+      return this.set('_offlineSchema', offlineSchema);
+    },
+  }),
+
+  /**
+    Add model names that be loaded from offline store.
+
+    @example
+      ```javascript
+      // app/services/store.js
+      ...
+        offlineModels: {
+          myModel: true,
+        },
+      ...
+      ```
+
+    @property offlineModels
+    @type Object
+    @default {}
+  */
+  offlineModels: {},
+
+  /**
     Global instance of {{#crossLink "Syncer"}}{{/crossLink}} class that contains methods to sync model.
 
     @property syncer
     @type Syncer
     @readOnly
   */
-  syncer: null,
+  syncer: Ember.inject.service('syncer'),
 
   /*
     Store initialization.
@@ -56,13 +162,12 @@ export default DS.Store.extend({
       this.set('onlineStore', onlineStore);
     }
 
-    // Set Syncer.
-    let syncer = owner.lookup('syncer:main');
-    this.set('syncer', syncer);
-
     // Set offline store.
     let offlineStore = owner.lookup('store:local');
     this.set('offlineStore', offlineStore);
+    this.set('offlineStore.offlineSchema', this.get('offlineSchema'));
+
+    this._dbInit();
   },
 
   /**
@@ -76,7 +181,9 @@ export default DS.Store.extend({
   */
   findAll(modelName, options) {
     let offlineStore = this.get('offlineStore');
+    let isOfflineModel = this.get(`offlineModels.${modelName}`);
     let useOnlineStore = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
+    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
     let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
     return useOnlineStoreCondition ? this._decorateMethodAndCall('all', 'findAll', arguments, 1) : offlineStore.findAll.apply(offlineStore, arguments);
   },
@@ -94,7 +201,9 @@ export default DS.Store.extend({
    */
   findRecord(modelName, id, options) {
     let offlineStore = this.get('offlineStore');
+    let isOfflineModel = this.get(`offlineModels.${modelName}`);
     let useOnlineStore = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
+    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
     let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
     return useOnlineStoreCondition ? this._decorateMethodAndCall('single', 'findRecord', arguments, 2) : offlineStore.findRecord.apply(offlineStore, arguments);
   },
@@ -124,14 +233,20 @@ export default DS.Store.extend({
     @return {Promise} promise
   */
   query(modelName, query) {
+    // TODO: Method `copy` bewitch `QueryObject` into `Object`.
+    let _query = query instanceof QueryObject ? query : Ember.copy(query);
     let offlineStore = this.get('offlineStore');
-    let useOnlineStore = !Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore) ? query.useOnlineStore : null;
-    if (!Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore)) {
-      delete query.useOnlineStore;
+    let isOfflineModel = this.get(`offlineModels.${modelName}`);
+    let useOnlineStore = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
+    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
+    if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
+      delete _query.useOnlineStore;
     }
 
     let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
-    return useOnlineStoreCondition ? this._decorateMethodAndCall('multiple', 'query', arguments, -1) : offlineStore.query.apply(offlineStore, arguments);
+    return useOnlineStoreCondition ?
+      this._decorateMethodAndCall('multiple', 'query', [modelName, _query], -1) :
+      offlineStore.query.apply(offlineStore, [modelName, _query]);
   },
 
   /**
@@ -143,16 +258,20 @@ export default DS.Store.extend({
     @return {Promise} promise
   */
   queryRecord(modelName, query) {
+    // TODO: Method `copy` bewitch `QueryObject` into `Object`.
+    let _query = query instanceof QueryObject ? query : Ember.copy(query);
     let offlineStore = this.get('offlineStore');
-    let useOnlineStore = !Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore) ? query.useOnlineStore : null;
-    if (!Ember.isEmpty(query) && !Ember.isEmpty(query.useOnlineStore)) {
-      delete query.useOnlineStore;
+    let isOfflineModel = this.get(`offlineModels.${modelName}`);
+    let useOnlineStore = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
+    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
+    if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
+      delete _query.useOnlineStore;
     }
 
     let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
     return useOnlineStoreCondition ?
-           this._decorateMethodAndCall('single', 'queryRecord', arguments, -1) :
-           offlineStore.queryRecord.apply(offlineStore, arguments);
+      this._decorateMethodAndCall('single', 'queryRecord', [modelName, _query], -1) :
+      offlineStore.queryRecord.apply(offlineStore, [modelName, _query]);
   },
 
   /**
@@ -271,6 +390,22 @@ export default DS.Store.extend({
   },
 
   /**
+    This method is called by `record.save`, and gets passed a
+    resolver for the promise that `record.save` returns.
+    It schedules saving to happen at the end of the run loop.
+
+    @method scheduleSave
+    @private
+    @param {InternalModel} internalModel
+    @param {Resolver} resolver
+    @param {Object} options
+    @param {Boolean} [useOnlineStore] Allow to explicitly specify online or offline store using independently of global online status
+  */
+  scheduleSave() {
+    return this._callSuperMethod('scheduleSave', 3, arguments);
+  },
+
+  /**
     This method unloads all records in the store.
     @method unloadAll
     @param {String} modelName
@@ -358,11 +493,60 @@ export default DS.Store.extend({
   _callSuperMethod(methodName, useOnlineStoreParamNum, ...args) {
     let onlineStore = this.get('onlineStore');
     let offlineStore = this.get('offlineStore');
+    let isOfflineModel = this._isOfflineModel(methodName, args[0]);
     let useOnlineStore = (args[0].length - 1) >= useOnlineStoreParamNum ? args[0][useOnlineStoreParamNum] : null;
+    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
     let useOnlineStoreCondition = useOnlineStore || (Ember.isNone(useOnlineStore) && this._isOnline());
     let offlineEnabled = this.get('offlineGlobals.isOfflineEnabled');
     return !offlineEnabled || (offlineEnabled && useOnlineStoreCondition) ?
       onlineStore[methodName].apply(onlineStore, args[0]) :
       offlineStore[methodName].apply(offlineStore, args[0]);
-  }
+  },
+
+  /**
+    Detect `offlineModels` by method name and arguments.
+
+    Support methods:
+    - `createRecord`
+    - `scheduleSave`
+
+    @method _isOfflineModel
+    @private
+    @param {String} methodName
+    @param {Array} methodArguments
+    @return {Boolean}
+  */
+  _isOfflineModel(methodName, methodArguments) {
+    let isOfflineModel;
+    switch (methodName) {
+      case 'createRecord':
+        isOfflineModel = this.get(`offlineModels.${methodArguments[0]}`);
+        return isOfflineModel || null;
+
+      case 'scheduleSave':
+        isOfflineModel = this.get(`offlineModels.${methodArguments[0].modelName}`);
+        return isOfflineModel || null;
+
+      default:
+        return null;
+    }
+  },
+
+  /**
+    Update all databases in accordance with actual schemas.
+
+    @method _dbInit
+    @private
+  */
+  _dbInit() {
+    let offlineSchema = this.get('offlineSchema');
+    for (let dbName in offlineSchema) {
+      let db = new Dexie(dbName);
+      for (let version in offlineSchema[dbName]) {
+        db.version(+version).stores(offlineSchema[dbName][version]);
+      }
+
+      db.open().then((db) => { db.close(); });
+    }
+  },
 });

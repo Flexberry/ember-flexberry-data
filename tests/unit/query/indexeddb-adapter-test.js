@@ -12,274 +12,274 @@ import startApp from '../../helpers/start-app';
 const app = startApp();
 const store = app.__container__.lookup('service:store');
 const databasePrefix = 'testDB2';
-const schema = 'Id,Name,Surname,Age,Manager.Name';
+const schema = 'id,Name,Surname,Age,Manager.Name';
 const modelName = 'employee';
 
 module('query');
 
 test('adapter | indexeddb | without predicate', (assert) => {
   let data = [
-    { Id: 1 },
-    { Id: 2 },
-    { Id: 3 }
+    { id: 1 },
+    { id: 2 },
+    { id: 3 }
   ];
 
   let builder = new QueryBuilder(store, modelName);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 3);
-    assert.equal(result[0].Id, 1);
-    assert.equal(result[1].Id, 2);
-    assert.equal(result[2].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 3);
   });
 });
 
 test('adapter | indexeddb | simple predicate | eq', (assert) => {
   let data = [
-    { Id: 1, Name: 'A' },
-    { Id: 2, Name: 'B' },
-    { Id: 3, Name: 'B' }
+    { id: 1, Name: 'A' },
+    { id: 2, Name: 'B' },
+    { id: 3, Name: 'B' }
   ];
 
   let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, 'B');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 2);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | simple predicate | eq | null', (assert) => {
   let data = [
-    { Id: 1, Name: 'A' },
-    { Id: 2, Name: null },
-    { Id: 3, Name: 'B' }
+    { id: 1, Name: 'A' },
+    { id: 2, Name: null },
+    { id: 3, Name: 'B' }
   ];
 
   let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, null);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Id, 2);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 2);
   });
 });
 
 test('adapter | js | simple predicate | eq | master field', function (assert) {
   let data = [
-    { Id: 1, Manager: { Name: 'X' } },
-    { Id: 2 },
-    { Id: 3, Manager: { Name: 'Y' } }
+    { id: 1, Manager: { Name: 'X' } },
+    { id: 2 },
+    { id: 3, Manager: { Name: 'Y' } }
   ];
 
   let builder = new QueryBuilder(store, modelName).where('Manager.Name', FilterOperator.Eq, 'Y');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 3);
   });
 });
 
 test('adapter | indexeddb | simple predicate | neq', (assert) => {
   let data = [
-    { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { Id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { Id: 3, Name: 'C', Surname: 'Z', Age: 12 }
+    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
   let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Neq, 'B');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 1);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | simple predicate | le', (assert) => {
   let data = [
-    { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { Id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { Id: 3, Name: 'C', Surname: 'Z', Age: 12 }
+    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Le, 12);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 1);
-    assert.equal(result[1].Id, 2);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
   });
 });
 
 test('adapter | indexeddb | simple predicate | leq', (assert) => {
   let data = [
-    { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { Id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { Id: 3, Name: 'C', Surname: 'Z', Age: 12 }
+    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Leq, 11);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 1);
-    assert.equal(result[1].Id, 2);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
   });
 });
 
 test('adapter | indexeddb | simple predicate | ge', (assert) => {
   let data = [
-    { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { Id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { Id: 3, Name: 'C', Surname: 'Z', Age: 12 }
+    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Ge, 10);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 2);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | simple predicate | geq', (assert) => {
   let data = [
-    { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { Id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { Id: 3, Name: 'C', Surname: 'Z', Age: 12 }
+    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
   let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Geq, 11);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 2);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | string predicate | contains', (assert) => {
   let data = [
-    { Id: 1, Country: 'Argentina' },
-    { Id: 2, Country: 'Paragwaj' },
-    { Id: 3, Country: 'Russia' }
+    { id: 1, CountryName: 'Argentina' },
+    { id: 2, CountryName: 'Paragwaj' },
+    { id: 3, CountryName: 'Russia' }
   ];
 
-  let sp1 = new StringPredicate('Country').contains('i');
+  let sp1 = new StringPredicate('CountryName').contains('i');
   let builder = new QueryBuilder(store, modelName).where(sp1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 1);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | string predicate | contains | master field', (assert) => {
   let data = [
-    { Id: 1, Country: { Name: 'Argentina' } },
-    { Id: 2, Country: { Name: 'Paragwaj' } },
-    { Id: 3, Country: { Name: 'Russia' } }
+    { id: 1, Country: { Name: 'Argentina' } },
+    { id: 2, Country: { Name: 'Paragwaj' } },
+    { id: 3, Country: { Name: 'Russia' } }
   ];
 
   let sp1 = new StringPredicate('Country.Name').contains('i');
   let builder = new QueryBuilder(store, modelName).where(sp1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 1);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | detail predicate | all | simple predicate', (assert) => {
   let data = [
-    { Id: 1, Tags: [{ Name: 'Tag1' }] },
-    { Id: 2 },
-    { Id: 3 }
+    { id: 1, Tags: [{ Name: 'Tag1' }] },
+    { id: 2 },
+    { id: 3 }
   ];
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
 test('adapter | indexeddb | detail predicate | all | simple predicate | master field', (assert) => {
   let data = [
-    { Id: 1, Tags: [{ Creator: { Name: 'X' } }] },
-    { Id: 2 },
-    { Id: 3 }
+    { id: 1, Tags: [{ Creator: { Name: 'X' } }] },
+    { id: 2 },
+    { id: 3 }
   ];
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
 test('adapter | indexeddb | detail predicate | any | simple predicate', (assert) => {
   let data = [
-    { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
-    { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
-    { Id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
+    { id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
+    { id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
+    { id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
   ];
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 1);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | detail predicate | any | simple predicate | master field', (assert) => {
   let data = [
-    { Id: 1, Tags: [{ Creator: { Name: 'X' } }, { Creator: { Name: 'Z' } }] },
-    { Id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'Y' } }] },
-    { Id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'X' } }] }
+    { id: 1, Tags: [{ Creator: { Name: 'X' } }, { Creator: { Name: 'Z' } }] },
+    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'Y' } }] },
+    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'X' } }] }
   ];
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 1);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | detail predicate | all | complex predicate', (assert) => {
   let data = [
-    { Id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
-    { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
-    { Id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
+    { id: 1, Tags: [{ Name: 'Tag1' }, { Name: 'Tag3' }] },
+    { id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag2' }] },
+    { id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag1' }] }
   ];
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag1');
@@ -289,17 +289,17 @@ test('adapter | indexeddb | detail predicate | all | complex predicate', (assert
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
 test('adapter | indexeddb | detail predicate | all | complex predicate | master field', (assert) => {
   let data = [
-    { Id: 1, Tags: [{ Creator: { Name: 'X' } }, { Creator: { Name: 'Z' } }] },
-    { Id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'Y' } }] },
-    { Id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'X' } }] }
+    { id: 1, Tags: [{ Creator: { Name: 'X' } }, { Creator: { Name: 'Z' } }] },
+    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'Y' } }] },
+    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'X' } }] }
   ];
 
   let sp1 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X');
@@ -309,17 +309,17 @@ test('adapter | indexeddb | detail predicate | all | complex predicate | master 
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
 test('adapter | indexeddb | detail predicate | any | complex predicate', (assert) => {
   let data = [
-    { Id: 1, Tags: [{ Name: 'Tag4' }, { Name: 'Tag3' }] },
-    { Id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag1' }] },
-    { Id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag0' }] }
+    { id: 1, Tags: [{ Name: 'Tag4' }, { Name: 'Tag3' }] },
+    { id: 2, Tags: [{ Name: 'Tag3' }, { Name: 'Tag1' }] },
+    { id: 3, Tags: [{ Name: 'Tag2' }, { Name: 'Tag0' }] }
   ];
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag1');
@@ -329,18 +329,18 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 2);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | detail predicate | any | complex predicate', (assert) => {
   let data = [
-    { Id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
-    { Id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
-    { Id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] }
+    { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
+    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
+    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] }
   ];
 
   let sp1 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X');
@@ -350,61 +350,61 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
   let builder = new QueryBuilder(store, modelName).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Id, 2);
-    assert.equal(result[1].Id, 3);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | complex predicate | and', (assert) => {
   let data = [
-    { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { Id: 2, Name: 'A', Surname: 'Y', Age: 10 },
-    { Id: 3, Name: 'B', Surname: 'Z', Age: 11 }
+    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+    { id: 2, Name: 'A', Surname: 'Y', Age: 10 },
+    { id: 3, Name: 'B', Surname: 'Z', Age: 11 }
   ];
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
   let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 10);
   let cp1 = new ComplexPredicate(Condition.And, sp1, sp2);
 
-  let builder = new QueryBuilder(store, modelName).where(cp1);
+  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Surname, 'X');
-    assert.equal(result[1].Surname, 'Y');
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].Surname, 'X');
+    assert.equal(result.data[1].Surname, 'Y');
   });
 });
 
 test('adapter | indexeddb | complex predicate | or', (assert) => {
   let data = [
-    { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { Id: 2, Name: 'B', Surname: 'Y', Age: 11 },
-    { Id: 3, Name: 'C', Surname: 'Z', Age: 12 }
+    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+    { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+    { id: 3, Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
   let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 12);
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
 
-  let builder = new QueryBuilder(store, modelName).where(cp1);
+  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 2);
-    assert.equal(result[0].Surname, 'X');
-    assert.equal(result[1].Surname, 'Z');
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].Surname, 'X');
+    assert.equal(result.data[1].Surname, 'Z');
   });
 });
 
 test('adapter | indexeddb | complex predicate | with nested complex predicate', function (assert) {
   // Arrange.
   let data = [
-    { Id: 1,  Name: 'A', Surname: 'X', Age: 10 },
-    { Id: 2,  Name: 'B', Surname: 'Y', Age: 11 },
-    { Id: 3,  Name: 'C', Surname: 'Z', Age: 12 }
+    { id: 1,  Name: 'A', Surname: 'X', Age: 10 },
+    { id: 2,  Name: 'B', Surname: 'Y', Age: 11 },
+    { id: 3,  Name: 'C', Surname: 'Z', Age: 12 }
   ];
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
@@ -415,83 +415,118 @@ test('adapter | indexeddb | complex predicate | with nested complex predicate', 
   let cp2 = new ComplexPredicate(Condition.And, cp1, sp3);
 
   // Act && Assert.
-  let builder = new QueryBuilder(store, modelName).where(cp2);
+  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp2);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Surname, 'Z');
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].Surname, 'Z');
   });
 });
 
 test('adapter | indexeddb | select', (assert) => {
   let data = [
-    { Id: 1, Name: 'A', Surname: 'X', Age: 10 },
-    { Id: 2, Name: 'A', Surname: 'Y', Age: 11 },
-    { Id: 3, Name: 'B', Surname: 'Z', Age: 15 }
+    { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+    { id: 2, Name: 'A', Surname: 'Y', Age: 11 },
+    { id: 3, Name: 'B', Surname: 'Z', Age: 15 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).select('Id,Age,Name');
+  let builder = new QueryBuilder(store, modelName).select('id,Age,Name');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 3);
-    assert.ok(result[0].Id);
-    assert.ok(result[0].Name);
-    assert.ok(result[0].Age);
-    assert.notOk(result[0].Surname);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.ok(result.data[0].id);
+    assert.ok(result.data[0].Name);
+    assert.ok(result.data[0].Age);
+    assert.notOk(result.data[0].Surname);
   });
 });
 
 test('adapter | indexeddb | order', (assert) => {
   let data = [
-    { Id: 1, Price: 200, Age: 10 },
-    { Id: 2, Price: 100, Age: 10 },
-    { Id: 3, Price: 900, Age: 15 }
+    { id: 1, Price: 200, Age: 10 },
+    { id: 2, Price: 100, Age: 10 },
+    { id: 3, Price: 900, Age: 15 }
   ];
 
   let builder = new QueryBuilder(store, modelName).orderBy('Age desc, Price asc');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 3);
-    assert.equal(result[0].Id, 3);
-    assert.equal(result[1].Id, 2);
-    assert.equal(result[2].Id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 3);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 1);
+  });
+});
+
+test('adapter | indexeddb | order with skip-top', (assert) => {
+  let data = [
+    { id: 1, Price: 200, Age: 10 },
+    { id: 2, Price: 100, Age: 10 },
+    { id: 3, Price: 900, Age: 15 }
+  ];
+
+  let builder = new QueryBuilder(store, modelName).orderBy('Price asc').skip(1).top(2);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });
 
 test('adapter | indexeddb | order | master field', (assert) => {
   let data = [
-    { Id: 1, Price: 200, Creator: { Age: 10 } },
-    { Id: 2, Price: 100, Creator: { Age: 10 } },
-    { Id: 3, Price: 900, Creator: { Age: 15 } }
+    { id: 1, Price: 200, Creator: { Age: 10 } },
+    { id: 2, Price: 100, Creator: { Age: 10 } },
+    { id: 3, Price: 900, Creator: { Age: 15 } }
   ];
 
   let builder = new QueryBuilder(store, modelName).orderBy('Creator.Age desc, Price asc');
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 3);
-    assert.equal(result[0].Id, 3);
-    assert.equal(result[1].Id, 2);
-    assert.equal(result[2].Id, 1);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 3);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 1);
   });
 });
 
-test('adapter | indexeddb | skip-top', (assert) => {
+test('adapter | indexeddb | skip-top-count', (assert) => {
   const data = [
-    { Id: 1, Name: 'A', Price: 200, Age: 10 },
-    { Id: 2, Name: 'B', Price: 100, Age: 10 },
-    { Id: 3, Name: 'C', Price: 900, Age: 15 }
+    { id: 1, Name: 'A', Price: 200, Age: 10 },
+    { id: 2, Name: 'B', Price: 100, Age: 10 },
+    { id: 3, Name: 'C', Price: 900, Age: 15 }
   ];
 
-  let builder = new QueryBuilder(store, modelName).skip(1).top(1);
+  let builder = new QueryBuilder(store, modelName).select('Name').count().skip(1).top(1);
 
   executeTest(data, builder.build(), assert, (result) => {
-    assert.ok(result);
-    assert.equal(result.length, 1);
-    assert.equal(result[0].Name, 'B');
+    assert.ok(result.data);
+    assert.equal(result.meta.count, 3);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].Name, 'B');
+  });
+});
+
+test('adapter | indexeddb | by id', (assert) => {
+  let data = [
+    { id: 1, Name: 'A', Price: 200, Age: 10 },
+    { id: 2, Name: 'B', Price: 100, Age: 10 },
+    { id: 3, Name: 'C', Price: 900, Age: 15 }
+  ];
+
+  let builder = new QueryBuilder(store, modelName).select('Name').byId(1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[0].Name, 'A');
   });
 });
 
@@ -507,21 +542,31 @@ function executeTest(data, query, assert, callback) {
   let done = assert.async();
   let dbName = databasePrefix + Math.random();
 
-  let checkResult = (result) => {
+  let checkResult = (result, db) => {
     try {
       callback(result);
     } finally {
+      db.close();
       deleteTempDb(dbName).finally(done);
     }
   };
 
-  let failQuery = (e) => {
-    assert.notOk(true, 'Error in executing query: ' + e);
+  let failQuery = (error, db) => {
+    assert.notOk(true, 'Error in executing query: ' + error);
+    db.close();
     deleteTempDb(dbName).finally(done);
   };
 
   let queryTempDb = () => {
-    new IndexedDbAdapter(dbName).query(query).then(checkResult, failQuery);
+    let db = new Dexie(dbName);
+    db.version(0.1).stores({ employee: schema });
+    db.open().then((db) => {
+      new IndexedDbAdapter(db).query(query).then((result) => {
+        checkResult(result, db);
+      }).catch((error, db) => {
+        failQuery(error, db);
+      });
+    });
   };
 
   let failCreateTempDb = (e) => {
@@ -551,7 +596,6 @@ function deleteTempDb(dbName) {
  */
 function createTempDb(dbName, data) {
   let db = new Dexie(dbName);
-  db.version(1).stores({ employee: schema });
-  db.open();
-  return db.table(modelName).bulkAdd(data).then(db.close);
+  db.version(0.1).stores({ employee: schema });
+  return db.open().then((db) => db.table(modelName).bulkAdd(data).then(db.close));
 }

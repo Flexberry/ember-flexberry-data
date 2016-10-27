@@ -21,7 +21,7 @@ import LocalStore from './stores/local-store';
 import OfflineSerializer from './serializers/offline';
 import OfflineAdapter from './adapters/offline';
 import OfflineGlobalsService from './services/offline-globals';
-import Syncer from './syncer';
+import Syncer from './services/syncer';
 
 import OdataAdapter from './adapters/odata';
 import BaseSerializer from './serializers/base';
@@ -38,12 +38,18 @@ import IndexedDbAdapter from './query/indexeddb-adapter';
 import JsAdapter from './query/js-adapter';
 import QueryOdataAdapter from './query/odata-adapter';
 import OrderByClause from './query/order-by-clause';
+import QueryObject from './query/query-object';
 import { BasePredicate } from './query/predicate';
 import { SimplePredicate } from './query/predicate';
 import { ComplexPredicate }from './query/predicate';
 import { StringPredicate }from './query/predicate';
 import { DetailPredicate } from './query/predicate';
 import { createPredicate } from './query/predicate';
+
+import UserService from './services/user';
+import DexieService from './services/dexie';
+
+import AuditModelMixin from './mixins/audit-model';
 
 /**
   This namespace contains classes to support work in offline mode.
@@ -59,6 +65,7 @@ Offline.Model = OfflineModel;
 Offline.ModelMixin = OfflineModelMixin;
 Offline.GlobalsService = OfflineGlobalsService;
 Offline.Syncer = Syncer;
+Offline.DexieService = DexieService;
 
 /**
   This namespace contains classes and methods for working with projections.
@@ -117,6 +124,7 @@ Query.IndexedDbAdapter = IndexedDbAdapter;
 Query.JsAdapter = JsAdapter;
 Query.OdataAdapter = QueryOdataAdapter;
 Query.OrderByClause = OrderByClause;
+Query.QueryObject = QueryObject;
 Query.BasePredicate = BasePredicate;
 Query.SimplePredicate = SimplePredicate;
 Query.ComplexPredicate = ComplexPredicate;
@@ -134,10 +142,30 @@ Query.createPredicate = createPredicate;
 let Utils = createNamespace();
 Utils.Information = Information;
 
+/**
+  This namespace contains security claseses.
+
+  @class Security
+  @static
+  @public
+*/
+let Security = createNamespace();
+Security.UserService = UserService;
+
+/**
+  This namespace contains audit claseses.
+
+  @class Audit
+  @static
+  @public
+*/
+let Audit = createNamespace();
+Audit.ModelMixin = AuditModelMixin;
+
 function createNamespace() {
   return Ember.Namespace.create({
     VERSION: version
   });
 }
 
-export { Projection, Offline, Adapter, Serializer, Query, Utils };
+export { Projection, Offline, Adapter, Serializer, Query, Utils, Security, Audit };

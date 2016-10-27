@@ -6,7 +6,13 @@ let EmployeeOffline = Offline.Model.extend({
   'First Name': attr('string'),
   'Last Name': attr('string'),
   'Birth Date': attr('date'),
-  manager: DS.belongsTo('employee-offline')
+  Age: attr('number'),
+  Name: attr('string'),
+  Surname: attr('string'),
+  CountryName: attr('string'),
+  Price: attr('decimal'),
+  manager: DS.belongsTo('employee-offline'),
+  externalId: attr('guid')
 });
 
 EmployeeOffline.defineProjection('EmployeeTestProjection', 'employee-offline', {

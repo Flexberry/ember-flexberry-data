@@ -13,6 +13,7 @@ executeTest('reading | restrictions | odata functions', (store, assert) => {
     .then(() => {
       store.unloadAll();
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .selectByProjection('ApplicationUserE')
         .where('birthday', '>', 'now()');
       return runTest(store, builder, (data) => {
         assert.ok(data.get('firstObject.name') === 'User 1', '> now() | Data');
@@ -24,6 +25,7 @@ executeTest('reading | restrictions | odata functions', (store, assert) => {
     .then(() => {
       store.unloadAll();
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .selectByProjection('ApplicationUserE')
         .where('birthday', '<', 'now()');
       return runTest(store, builder, (data) => {
         assert.ok(data.get('firstObject.name') === 'User 2', '< now() | Data');

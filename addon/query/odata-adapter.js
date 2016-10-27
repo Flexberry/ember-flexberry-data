@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
@@ -315,12 +316,18 @@ export default class ODataAdapter extends BaseAdapter {
         } else {
           throw new Error(`Unsupported key type '${meta.keyType}'.`);
         }
-      } else {
-        if (meta.type === 'string') {
-          value = `'${predicate.value}'`;
-        } else {
-          value = predicate.value;
+      } else if (meta.isEnum) {
+        let type = meta.sourceType;
+        if (!type) {
+          Ember.Logger.warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`);
+          type = Ember.String.classify(meta.type);
         }
+
+        value = `${type}'${predicate.value}'`;
+      } else if (meta.type === 'string') {
+        value = `'${predicate.value}'`;
+      } else {
+        value = predicate.value;
       }
     }
 

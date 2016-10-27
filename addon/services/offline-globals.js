@@ -54,6 +54,18 @@ export default Ember.Service.extend(Ember.Evented, {
   isSyncDownWhenOnlineEnabled: true,
 
   /**
+    If true then record will be synced down completely, i.e. including with all related records with arbitrary nesting.
+    Otherwise only requested record will be synced down without related records.
+    If set to true then it may cause errors in case of loops are present in model structure.
+    Gets from application config.
+    @property allowSyncDownRelatedRecordsWithoutProjection
+    @type Boolean
+    @default false
+    @readOnly
+  */
+  allowSyncDownRelatedRecordsWithoutProjection: false,
+
+  /**
     Trigger for "online is available" or "online is unavailable" event.
     Event name: online/offline.
 
@@ -89,9 +101,10 @@ export default Ember.Service.extend(Ember.Evented, {
 
     if (app.offline) {
       //Reading offline settings from application seetings in `environment.js`.
-      this._setOption('isOfflineEnabled', app.offline.offlineEnabled);
-      this._setOption('isModeSwitchOnErrorsEnabled', app.offline.modeSwitchOnErrorsEnabled);
-      this._setOption('isSyncDownWhenOnlineEnabled', app.offline.syncDownWhenOnlineEnabled);
+      this._setOption('isOfflineEnabled', app.offline.offlineEnabled ? true : false);
+      this._setOption('isModeSwitchOnErrorsEnabled', app.offline.modeSwitchOnErrorsEnabled ? true : false);
+      this._setOption('isSyncDownWhenOnlineEnabled', app.offline.syncDownWhenOnlineEnabled ? true : false);
+      this._setOption('allowSyncDownRelatedRecordsWithoutProjection', app.offline.allowSyncDownRelatedRecordsWithoutProjection ? true : false);
     }
 
     //Detect availability of online connection at start of application.

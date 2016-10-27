@@ -1,0 +1,443 @@
+﻿{
+  "name": "ICSSoftSTORMNETSecurityLinkGroup",
+  "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group",
+  "className": "LinkGroup",
+  "parentModelName": null,
+  "parentClassName": null,
+  "attrs": [
+    {
+      "name": "createTime",
+      "type": "date",
+      "flexberryType": "AuditNullableDateTime",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "creator",
+      "type": "string",
+      "flexberryType": "string",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "editTime",
+      "type": "date",
+      "flexberryType": "AuditNullableDateTime",
+      "notNull": false,
+      "defaultValue": ""
+    },
+    {
+      "name": "editor",
+      "type": "string",
+      "flexberryType": "string",
+      "notNull": false,
+      "defaultValue": ""
+    }
+  ],
+  "belongsTo": [
+    {
+      "polymorphic": false,
+      "presence": true,
+      "name": "group",
+      "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "inverse": null
+    },
+    {
+      "polymorphic": false,
+      "presence": true,
+      "name": "user",
+      "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "inverse": null
+    }
+  ],
+  "hasMany": [],
+  "projections": [
+    {
+      "name": "AuditView",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group",
+      "attrs": [],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "Group",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "Имя группы",
+              "hidden": false,
+              "index": 1
+            }
+          ],
+          "index": 0,
+          "caption": "Группа",
+          "name": "group",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        },
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "Имя пользователя",
+              "hidden": false,
+              "index": 3
+            },
+            {
+              "name": "login",
+              "caption": "Логин пользователя",
+              "hidden": false,
+              "index": 4
+            }
+          ],
+          "index": 2,
+          "caption": "Пользователь",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    },
+    {
+      "name": "GetGroupsNameByUserKey",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group",
+      "attrs": [],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [],
+          "index": 0,
+          "caption": "",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        },
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "Group",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "",
+              "hidden": false,
+              "index": 1
+            },
+            {
+              "name": "isGroup",
+              "caption": "",
+              "hidden": false,
+              "index": 2
+            },
+            {
+              "name": "enabled",
+              "caption": "",
+              "hidden": false,
+              "index": 3
+            }
+          ],
+          "index": -1,
+          "caption": "",
+          "name": "group",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    },
+    {
+      "name": "GetUserByUsername",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group",
+      "attrs": [],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "Group",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "",
+              "hidden": false,
+              "index": 0
+            },
+            {
+              "name": "isGroup",
+              "caption": "",
+              "hidden": false,
+              "index": 1
+            },
+            {
+              "name": "enabled",
+              "caption": "",
+              "hidden": false,
+              "index": 2
+            }
+          ],
+          "index": -1,
+          "caption": "",
+          "name": "group",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        },
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [],
+          "index": 3,
+          "caption": "",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    },
+    {
+      "name": "LinkedAgents",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group",
+      "attrs": [],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "Group",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [],
+          "index": 0,
+          "caption": "",
+          "name": "group",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        },
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [],
+          "index": 1,
+          "caption": "",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    },
+    {
+      "name": "SearchLinkGroup",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group",
+      "attrs": [],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "isUser",
+              "caption": "",
+              "hidden": false,
+              "index": 1
+            },
+            {
+              "name": "isGroup",
+              "caption": "",
+              "hidden": false,
+              "index": 2
+            },
+            {
+              "name": "isRole",
+              "caption": "",
+              "hidden": false,
+              "index": 3
+            }
+          ],
+          "index": 0,
+          "caption": "",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        },
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "Group",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "isUser",
+              "caption": "",
+              "hidden": false,
+              "index": 5
+            },
+            {
+              "name": "isGroup",
+              "caption": "",
+              "hidden": false,
+              "index": 6
+            },
+            {
+              "name": "isRole",
+              "caption": "",
+              "hidden": false,
+              "index": 7
+            }
+          ],
+          "index": 4,
+          "caption": "",
+          "name": "group",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_LinkGroupE",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group",
+      "attrs": [],
+      "belongsTo": [
+        {
+          "lookupValue": "Name",
+          "lookupValueField": "name",
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "",
+              "hidden": true,
+              "index": 1
+            }
+          ],
+          "index": 0,
+          "caption": "Пользователь",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        },
+        {
+          "lookupValue": "Name",
+          "lookupValueField": "name",
+          "relationName": "Group",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "",
+              "hidden": true,
+              "index": 3
+            }
+          ],
+          "index": 2,
+          "caption": "Группа",
+          "name": "group",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_LinkGroupL",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group",
+      "attrs": [
+        {
+          "name": "createTime",
+          "caption": "Дата создания",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "creator",
+          "caption": "Создатель",
+          "hidden": false,
+          "index": 5
+        },
+        {
+          "name": "editTime",
+          "caption": "Дата изменения",
+          "hidden": false,
+          "index": 6
+        },
+        {
+          "name": "editor",
+          "caption": "Редактор",
+          "hidden": false,
+          "index": 7
+        }
+      ],
+      "belongsTo": [
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "User",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "Юзер",
+              "hidden": false,
+              "index": 0
+            }
+          ],
+          "index": 2,
+          "caption": "Юзер",
+          "name": "user",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        },
+        {
+          "lookupValue": null,
+          "lookupValueField": null,
+          "relationName": "Group",
+          "belongsTo": [],
+          "hidden": false,
+          "attrs": [
+            {
+              "name": "name",
+              "caption": "Группа",
+              "hidden": false,
+              "index": 1
+            }
+          ],
+          "index": 3,
+          "caption": "Группа",
+          "name": "group",
+          "relatedTo": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+          "inverse": null
+        }
+      ],
+      "hasMany": []
+    }
+  ]
+}
