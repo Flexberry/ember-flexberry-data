@@ -6,6 +6,8 @@
 
 ### Fixed
 - `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of all types while performing sync up.
+- Serializing of attributes that have `boolean`, `number` and `decimal` types when saving offline.
+- Now it is able to save and read `null` value in `boolean` attributes in offline mode.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added
