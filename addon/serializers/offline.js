@@ -66,7 +66,7 @@ export default DS.JSONSerializer.extend({
         } else if (typeof value === 'undefined') {
           json[key] = 'false';
         } else {
-          this._super(snapshot, json, key, attribute);
+          this._super(...arguments);
         }
 
         break;
@@ -79,7 +79,7 @@ export default DS.JSONSerializer.extend({
         }
 
         if (isFinite(value) || typeof value === 'undefined') {
-          this._super(snapshot, json, key, attribute);
+          this._super(...arguments);
         } else {
           throw new Error(`Trying to save '${value}' value of '${key}' field of '${snapshot.modelName}' that should be a decimal`);
         }
@@ -94,7 +94,7 @@ export default DS.JSONSerializer.extend({
         }
 
         if (isFinite(value) || typeof value === 'undefined') {
-          this._super(snapshot, json, key, attribute);
+          this._super(...arguments);
         } else {
           throw new Error(`Trying to save '${value}' value of '${key}' field of '${snapshot.modelName}' that should be a number`);
         }
@@ -102,7 +102,7 @@ export default DS.JSONSerializer.extend({
         break;
 
       default:
-        this._super(snapshot, json, key, attribute);
+        this._super(...arguments);
     }
 
   },
