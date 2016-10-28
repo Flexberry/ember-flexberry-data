@@ -485,22 +485,22 @@ export default Ember.Service.extend({
             changes[field] = relationship;
           }));
         } else {
+          let value = auditField.get('newValue');
           switch (attributes.get(field).type) {
             case 'boolean':
-              changes[field] = !!auditField.get('newValue');
+              changes[field] = value === null ? null : !!value;
               break;
 
             case 'number':
-              changes[field] = +auditField.get('newValue');
+              changes[field] = value === null ? null : +value;
               break;
 
             case 'date':
-              let date = auditField.get('newValue');
-              changes[field] = date ? new Date(date) : null;
+              changes[field] = value === null ? null : new Date(value);
               break;
 
             default:
-              changes[field] = auditField.get('newValue');
+              changes[field] = value;
           }
         }
       });

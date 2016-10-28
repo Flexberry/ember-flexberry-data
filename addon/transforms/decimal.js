@@ -21,6 +21,7 @@ import NumberTransform from 'ember-data/-private/transforms/number';
   ```
 */
 export default NumberTransform.extend({
+
   /**
     Deserializes serialized attribute value.
    */

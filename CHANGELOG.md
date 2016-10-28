@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.0] - 2016-10-27
 ### Added
 - Now `dexie` service can work with multiple DBs.
 - Now DB instance received via `dexie` service returns instances of classes that can use `loadRelationships` function.
@@ -11,7 +13,9 @@
 - `indexeddb-adapter` apply filters after loading relationships.
 
 ### Fixed
-- `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of `date` type while performing sync up.
+- `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of all types while performing sync up.
+- Serializing attributes of `boolean`, `number` and `decimal` types when saving offline.
+- Now it is able to save and read `null` value in `boolean` attributes in offline mode.
 
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added

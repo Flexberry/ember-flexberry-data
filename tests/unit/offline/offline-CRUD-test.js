@@ -168,7 +168,7 @@ test('find all records', function (assert) {
   });
 });
 
-test('query record', function (assert) {
+test('query record via query', function (assert) {
   assert.expect(2);
   var done1 = assert.async();
   run(function () {
@@ -186,6 +186,27 @@ test('query record', function (assert) {
     store.query(modelName, builder.build()).then(function(records) {
       var firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found with query language');
+      done2();
+    });
+  });
+});
+
+test('query record via queryRecord', function (assert) {
+  assert.expect(2);
+  var done1 = assert.async();
+  run(function () {
+    store.queryRecord('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(record) {
+      assert.equal(get(record, 'address'), 'Street, 20', '1 record was found without query language');
+      done1();
+    });
+  });
+
+  var done2 = assert.async();
+  run(function () {
+    let modelName = 'ember-flexberry-dummy-suggestion';
+    let builder = new Query.Builder(store, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
+    store.queryRecord(modelName, builder.build()).then(function(record) {
+      assert.equal(get(record, 'address'), 'Street, 20', '1 record was found with query language');
       done2();
     });
   });
