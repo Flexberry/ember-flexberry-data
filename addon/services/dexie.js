@@ -93,11 +93,23 @@ export default Ember.Service.extend(Ember.Evented, {
       let modelClass = store.modelFor(table.name);
       let relationshipNames = get(modelClass, 'relationshipNames');
       let relationshipsByName = get(modelClass, 'relationshipsByName');
+      let primaryKeyNameFromSerializer = store.serializerFor(table.name).get('primaryKey');
+      let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
 
       TableClass.prototype.loadRelationships = function(projection) {
         let promises = [];
         if (projection && typeof projection === 'string') {
           projection = get(modelClass, 'projections').get(projection);
+        }
+
+        if (projection) {
+          for (let attributeName in this) {
+            if (this.hasOwnProperty(attributeName)) {
+              if (attributeName !== primaryKeyName && !projection.attributes.hasOwnProperty(attributeName)) {
+                delete this[attributeName];
+              }
+            }
+          }
         }
 
         relationshipNames.hasMany.concat(relationshipNames.belongsTo).forEach((name) => {
@@ -125,10 +137,6 @@ export default Ember.Service.extend(Ember.Evented, {
 
             return hash.loadRelationships(projection && projection.attributes[name]);
           };
-
-          if (projection && !projection.attributes.hasOwnProperty(name)) {
-            delete this[name];
-          }
 
           if (this[name] && !relationship.options.async && isEmbedded(store, modelClass, name)) {
             let ids = isArray(this[name]) ? this[name] : [this[name]];
