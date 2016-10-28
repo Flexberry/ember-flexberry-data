@@ -1,8 +1,10 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.1] - 2016-10-28
 ### Fixed
-- Filter by type of boolean value in IndexedDB, if restriction imposed through complex predicate.
+- Filter by boolean value in offline mode, if restriction was passed via complex predicate.
 
 ## [0.7.1-beta.0] - 2016-10-27
 ### Added
