@@ -118,7 +118,7 @@ function updateWhereClause(table, query) {
   }
 
   if (predicate instanceof StringPredicate || predicate instanceof DetailPredicate || predicate instanceof ComplexPredicate) {
-    return table.filter(getAttributeFilterFunction(predicate));
+    return table.filter(getAttributeFilterFunction(predicate, { booleanAsString: true }));
   }
 
   throw new Error(`Unsupported predicate '${predicate}'`);
