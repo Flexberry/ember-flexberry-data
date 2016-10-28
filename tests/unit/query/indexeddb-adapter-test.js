@@ -408,14 +408,17 @@ test('adapter | indexeddb | complex predicate | with boolean value', (assert) =>
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
   let sp2 = new SimplePredicate('Active', FilterOperator.Eq, true);
-  let cp1 = new ComplexPredicate(Condition.And, sp1, sp2);
+  let sp3 = new SimplePredicate('Active', FilterOperator.Eq, 'false');
+  let cp1 = new ComplexPredicate(Condition.Or, sp2, sp3);
+  let cp2 = new ComplexPredicate(Condition.And, sp1, cp1);
 
-  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp1);
+  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp2);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
-    assert.equal(result.data.length, 1);
+    assert.equal(result.data.length, 2);
     assert.equal(result.data[0].Surname, 'X');
+    assert.equal(result.data[1].Surname, 'Y');
   });
 });
 
