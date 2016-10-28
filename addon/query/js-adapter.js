@@ -186,31 +186,38 @@ function buildFilter(predicate) {
 }
 
 /**
- * Returns function for checkign single object using predicate.
- *
- * @param {Query.BasePredicate} predicate Predicate for an attribute.
- * @returns {Function} Function for checkign single object.
- */
-export function getAttributeFilterFunction(predicate) {
+  Returns function for checkign single object using predicate.
+
+  @param {Query.BasePredicate} predicate Predicate for an attribute.
+  @param {Object} [options] Object with options.
+  @param {Object} [options.booleanAsString] If this option set as `true` and type of `predicate.value` equals boolean, convert value to string.
+  @returns {Function} Function for checkign single object.
+*/
+export function getAttributeFilterFunction(predicate, options) {
   if (predicate instanceof SimplePredicate) {
+    let value = predicate.value;
+    if (options && options.booleanAsString && typeof value === 'boolean') {
+      value = `${value}`;
+    }
+
     switch (predicate.operator) {
       case FilterOperator.Eq:
-        return (i) => getValue(i, predicate.attributePath) === predicate.value;
+        return (i) => getValue(i, predicate.attributePath) === value;
 
       case FilterOperator.Neq:
-        return (i) => getValue(i, predicate.attributePath) !== predicate.value;
+        return (i) => getValue(i, predicate.attributePath) !== value;
 
       case FilterOperator.Le:
-        return (i) => getValue(i, predicate.attributePath) < predicate.value;
+        return (i) => getValue(i, predicate.attributePath) < value;
 
       case FilterOperator.Leq:
-        return (i) => getValue(i, predicate.attributePath) <= predicate.value;
+        return (i) => getValue(i, predicate.attributePath) <= value;
 
       case FilterOperator.Ge:
-        return (i) => getValue(i, predicate.attributePath) > predicate.value;
+        return (i) => getValue(i, predicate.attributePath) > value;
 
       case FilterOperator.Geq:
-        return (i) => getValue(i, predicate.attributePath) >= predicate.value;
+        return (i) => getValue(i, predicate.attributePath) >= value;
 
       default:
         throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
@@ -249,7 +256,7 @@ export function getAttributeFilterFunction(predicate) {
   }
 
   if (predicate instanceof ComplexPredicate) {
-    let filterFunctions = predicate.predicates.map(getAttributeFilterFunction);
+    let filterFunctions = predicate.predicates.map(predicate => getAttributeFilterFunction(predicate, options));
     switch (predicate.condition) {
       case Condition.And:
         return function (i) {
