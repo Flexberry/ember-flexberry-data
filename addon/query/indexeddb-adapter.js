@@ -44,13 +44,15 @@ export default class extends BaseAdapter {
     return new Ember.RSVP.Promise((resolve, reject) => {
       let order = buildOrder(query);
       let topskip = buildTopSkip(query);
+      let projection = buildProjection(query);
       let filter = query.predicate ? buildFilter(query.predicate) : (data) => data;
       let table = this._db.table(query.modelName);
+      let proj = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
       updateWhereClause(table, query).toArray().then((data) => {
-        Dexie.Promise.all(data.map(i => i.loadRelationships(query.projectionName))).then(() => {
+        Dexie.Promise.all(data.map(i => i.loadRelationships(proj))).then(() => {
           let filteredData = filter(data);
-          let response = { meta: {}, data: topskip(order(filteredData)) };
+          let response = { meta: {}, data: projection(topskip(order(filteredData))) };
           if (query.count) {
             response.meta.count = filteredData.length;
           }
