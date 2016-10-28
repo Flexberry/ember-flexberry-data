@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Filter by type of boolean value in IndexedDB, if restriction imposed through complex predicate.
 
 ## [0.7.1-beta.0] - 2016-10-27
 ### Added

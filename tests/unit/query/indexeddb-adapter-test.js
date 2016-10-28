@@ -399,6 +399,29 @@ test('adapter | indexeddb | complex predicate | or', (assert) => {
   });
 });
 
+test('adapter | indexeddb | complex predicate | with boolean value', (assert) => {
+  let data = [
+    { id: 1, Name: 'A', Surname: 'X', Active: 'true' },
+    { id: 2, Name: 'A', Surname: 'Y', Active: 'false' },
+    { id: 3, Name: 'B', Surname: 'Z', Active: 'true' },
+  ];
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
+  let sp2 = new SimplePredicate('Active', FilterOperator.Eq, true);
+  let sp3 = new SimplePredicate('Active', FilterOperator.Eq, 'false');
+  let cp1 = new ComplexPredicate(Condition.Or, sp2, sp3);
+  let cp2 = new ComplexPredicate(Condition.And, sp1, cp1);
+
+  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp2);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].Surname, 'X');
+    assert.equal(result.data[1].Surname, 'Y');
+  });
+});
+
 test('adapter | indexeddb | complex predicate | with nested complex predicate', function (assert) {
   // Arrange.
   let data = [
