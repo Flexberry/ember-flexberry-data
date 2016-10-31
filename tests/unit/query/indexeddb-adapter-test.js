@@ -18,7 +18,7 @@ const schema = (dbName) => {
   let object = {};
   object[dbName] = {
     1: {
-      employee: 'id,Age,Name,Surname,CountryName,Price,Country,Creator,Manager,*Tags',
+      employee: 'id,Age,Name,Surname,CountryName,Price,Active,Country,Creator,Manager,*Tags',
       creator: 'id,Name,Age',
       country: 'id,Name',
       tag: 'id,Name,Creator'
@@ -540,11 +540,13 @@ test('adapter | indexeddb | complex predicate | or', (assert) => {
 });
 
 test('adapter | indexeddb | complex predicate | with boolean value', (assert) => {
-  let data = [
-    { id: 1, Name: 'A', Surname: 'X', Active: 'true' },
-    { id: 2, Name: 'A', Surname: 'Y', Active: 'false' },
-    { id: 3, Name: 'B', Surname: 'Z', Active: 'true' },
-  ];
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Active: 'true' },
+      { id: 2, Name: 'A', Surname: 'Y', Active: 'false' },
+      { id: 3, Name: 'B', Surname: 'Z', Active: 'true' },
+    ],
+  };
 
   let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
   let sp2 = new SimplePredicate('Active', FilterOperator.Eq, true);
