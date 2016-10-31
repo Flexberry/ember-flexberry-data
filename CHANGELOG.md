@@ -1,14 +1,18 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.2] - 2016-10-31
 ### Added
 - Now `dexie` service can work with multiple DBs.
-- Now DB instance received via `dexie` service returns instances of classes that can use `loadRelationships` function.
+- Now hashes received via `dexie` service have `loadRelationships` method that can be used for replacing ids with hashes when reading synchronous relationships.
 - Some parameters checks for `builder` and `information` classes.
 
-### Changed
-- Loading relationships in offline mode moved "under" offline adapter layer, i.e. offline adapter now get "full object" at once with embedded objects for embedded relationships.
-- `indexeddb-adapter` apply filters after loading relationships.
+### Fixed
+- Loading relationships in offline mode moved "under" offline adapter layer, i.e. offline adapter now get "full object" at once with embedded objects for embedded relationships. So now fixed:
+    - `indexeddb-adapter` apply filters after loading relationships. This allows to filter data by master and detail model's proprties.
+    - There is no relationships that "disappear" unexpectedly after reading data.
+    - Improved performance for reading data in offline mode (but for some cases improving performance is still required).
 
 ## [0.7.1-beta.1] - 2016-10-28
 ### Fixed
