@@ -51,8 +51,17 @@ export default class extends BaseAdapter {
 
       updateWhereClause(table, query).toArray().then((data) => {
         Dexie.Promise.all(data.map(i => i.loadRelationships(proj))).then(() => {
-          let filteredData = filter(data);
-          let response = { meta: {}, data: projection(topskip(order(filteredData))) };
+          let filteredData = data;
+          if (containsRelationships(query.predicate)) {
+            filteredData = filter(data);
+          }
+
+          let responseData = topskip(order(filteredData));
+          if (!proj) {
+            responseData = projection(responseData);
+          }
+
+          let response = { meta: {}, data: responseData };
           if (query.count) {
             response.meta.count = filteredData.length;
           }

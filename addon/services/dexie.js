@@ -98,21 +98,32 @@ export default Ember.Service.extend(Ember.Evented, {
 
       TableClass.prototype.loadRelationships = function(projection) {
         let promises = [];
+        let relationshipsToIterate = Ember.A();
+
         if (projection && typeof projection === 'string') {
           projection = get(modelClass, 'projections').get(projection);
         }
 
         if (projection) {
+          // Killing two birds with one stone.
           for (let attributeName in this) {
             if (this.hasOwnProperty(attributeName)) {
               if (attributeName !== primaryKeyName && !projection.attributes.hasOwnProperty(attributeName)) {
                 delete this[attributeName];
               }
+
+              if (projection.attributes.hasOwnProperty(attributeName) &&
+              (projection.attributes[attributeName].kind === 'belongsTo' || projection.attributes[attributeName].kind === 'hasMany')) {
+                relationshipsToIterate.pushObject(attributeName);
+              }
             }
           }
+        } else {
+          relationshipsToIterate.pushObjects(relationshipNames.belongsTo);
+          relationshipsToIterate.pushObjects(relationshipNames.hasMany);
         }
 
-        relationshipNames.hasMany.concat(relationshipNames.belongsTo).forEach((name) => {
+        relationshipsToIterate.forEach((name) => {
           let relationship = relationshipsByName.get(name);
           let saveRelationship = (hash) => {
             if (!hash) {

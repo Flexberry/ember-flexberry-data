@@ -195,6 +195,10 @@ export function buildFilter(predicate, options) {
   @returns {Function} Function for checkign single object.
 */
 export function getAttributeFilterFunction(predicate, options) {
+  if (!predicate) {
+    return (i) => i;
+  }
+
   if (predicate instanceof SimplePredicate) {
     let value = predicate.value;
     if (options && options.booleanAsString && typeof value === 'boolean') {
