@@ -153,23 +153,24 @@ export function buildProjection(query) {
 }
 
 /**
- * Builds function for filtering array of objects using predicate.
- *
- * @param predicate Predicate for filtering array of objects.
- * @returns {Function}
- */
-export function buildFilter(predicate) {
+  Builds function for filtering array of objects using predicate.
+
+  @param predicate Predicate for filtering array of objects.
+  @param {Object} [options] Object with options for transfer `getAttributeFilterFunction` function.
+  @return {Function}
+*/
+export function buildFilter(predicate, options) {
   let b1 = predicate instanceof SimplePredicate;
   let b2 = predicate instanceof StringPredicate;
   let b3 = predicate instanceof DetailPredicate;
 
   if (b1 || b2 || b3) {
-    let filterFunction = getAttributeFilterFunction(predicate);
+    let filterFunction = getAttributeFilterFunction(predicate, options);
     return getFilterFunctionAnd([filterFunction]);
   }
 
   if (predicate instanceof ComplexPredicate) {
-    let filterFunctions = predicate.predicates.map(getAttributeFilterFunction);
+    let filterFunctions = predicate.predicates.map(predicate => getAttributeFilterFunction(predicate, options));
     switch (predicate.condition) {
       case Condition.And:
         return getFilterFunctionAnd(filterFunctions);
@@ -229,7 +230,7 @@ export function getAttributeFilterFunction(predicate, options) {
   }
 
   if (predicate instanceof DetailPredicate) {
-    let detailFilter = buildFilter(predicate.predicate);
+    let detailFilter = buildFilter(predicate.predicate, options);
     if (predicate.isAll) {
       return function (i) {
         let detail = getValue(i, predicate.detailPath);
