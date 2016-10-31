@@ -1,8 +1,6 @@
 # Change Log
 
 ## [Unreleased]
-
-## [0.7.1-beta.0] - 2016-10-27
 ### Added
 - Now `dexie` service can work with multiple DBs.
 - Now DB instance received via `dexie` service returns instances of classes that can use `loadRelationships` function.
@@ -12,6 +10,11 @@
 - Loading relationships in offline mode moved "under" offline adapter layer, i.e. offline adapter now get "full object" at once with embedded objects for embedded relationships.
 - `indexeddb-adapter` apply filters after loading relationships.
 
+## [0.7.1-beta.1] - 2016-10-28
+### Fixed
+- Filter by boolean value in offline mode, if restriction was passed via complex predicate.
+
+## [0.7.1-beta.0] - 2016-10-27
 ### Fixed
 - `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of all types while performing sync up.
 - Serializing attributes of `boolean`, `number` and `decimal` types when saving offline.
