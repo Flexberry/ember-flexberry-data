@@ -39,6 +39,42 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   validations: {},
 
   /**
+    Flag that indicates sync up process of model is processing.
+
+    @property isSyncingUp
+    @type Boolean
+    @default false
+  */
+  isSyncingUp: false,
+
+  /**
+    Flag that indicates model is created during sync up process.
+
+    @property isCreatedDuringSyncUp
+    @type Boolean
+    @default false
+  */
+  isCreatedDuringSyncUp: false,
+
+  /**
+    Flag that indicates model is updated last time during sync up process.
+
+    @property isCreatedDuringSyncUp
+    @type Boolean
+    @default false
+  */
+  isUpdatedDuringSyncUp: false,
+
+  /**
+    Flag that indicates model is destroyed during sync up process.
+
+    @property isCreatedDuringSyncUp
+    @type Boolean
+    @default false
+  */
+  isDestroyedDuringSyncUp: false,
+
+  /**
     Checks that model satisfies validation rules defined in 'validations' property.
 
     @method validate
@@ -119,6 +155,9 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
           return DS.Model.prototype.save.call(this, options);
         }
       }).then(value => {
+        // Assuming that record is not updated during sync up;
+        this.set('isUpdatedDuringSyncUp', false);
+
         // Model validation was successful (model is valid or deleted),
         // all 'preSave' event promises has been successfully resolved,
         // finally model has been successfully saved,
@@ -167,14 +206,13 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Object} Object with changes, empty object if no change.
   */
   changedHasMany() {
-    let _this = this;
     let changedHasMany = {};
-    _this.eachRelationship((key, { kind }) => {
+    this.eachRelationship((key, { kind }) => {
       if (kind === 'hasMany') {
-        if (_this.get(key).filterBy('hasDirtyAttributes', true).length) {
+        if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           changedHasMany[key] = [
-            _this.get(`${key}.canonicalState`).map(internalModel => internalModel.record),
-            _this.get(`${key}.currentState`).map(internalModel => internalModel.record),
+            this.get(`${key}.canonicalState`).map(internalModel => internalModel.record),
+            this.get(`${key}.currentState`).map(internalModel => internalModel.record),
           ];
         }
       }
@@ -189,17 +227,16 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @param {String} [forOnlyKey] If specified, it is rollback invoked for relationship with this key.
   */
   rollbackHasMany(forOnlyKey) {
-    let _this = this;
-    _this.eachRelationship((key, { kind }) => {
+    this.eachRelationship((key, { kind }) => {
       if (kind === 'hasMany' && (!forOnlyKey || forOnlyKey === key)) {
-        if (_this.get(key).filterBy('hasDirtyAttributes', true).length) {
-          [_this.get(`${key}.canonicalState`), _this.get(`${key}.currentState`)].forEach((state, i) => {
+        if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
+          [this.get(`${key}.canonicalState`), this.get(`${key}.currentState`)].forEach((state, i) => {
             let records = state.map(internalModel => internalModel.record);
             records.forEach((record) => {
               record.rollbackAll();
             });
             if (i === 0) {
-              _this.set(key, records);
+              this.set(key, records);
             }
           });
         }
@@ -225,12 +262,11 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Object} Object with changes, empty object if no change.
   */
   changedBelongsTo() {
-    let _this = this;
     let changedBelongsTo = {};
-    _this.eachRelationship((key, { kind }) => {
+    this.eachRelationship((key, { kind }) => {
       if (kind === 'belongsTo') {
-        let current = _this.get(key);
-        let canonical = _this.get('_canonicalBelongsTo')[key] || null;
+        let current = this.get(key);
+        let canonical = this.get(`_canonicalBelongsTo.${key}`) || null;
         if (current !== canonical) {
           changedBelongsTo[key] = [canonical, current];
         }
@@ -246,17 +282,22 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @param {String} [forOnlyKey] If specified, it is rollback invoked for relationship with this key.
   */
   rollbackBelongsTo(forOnlyKey) {
-    let _this = this;
-    _this.eachRelationship((key, { kind, options }) => {
+    this.eachRelationship((key, { kind, options }) => {
       if (kind === 'belongsTo' && (!forOnlyKey || forOnlyKey === key)) {
-        let current = _this.get(key);
-        let canonical = _this.get('_canonicalBelongsTo')[key] || null;
+        let current = this.get(key);
+        let canonical = this.get(`_canonicalBelongsTo.${key}`) || null;
         if (current !== canonical) {
           if (options.inverse && options.inverse !== key) {
-            current.rollbackBelongsTo(options.inverse);
+            if (current && current.rollbackBelongsTo) {
+              current.rollbackBelongsTo(options.inverse);
+            }
+
+            if (canonical && canonical.rollbackBelongsTo) {
+              canonical.rollbackBelongsTo(options.inverse);
+            }
           }
 
-          _this.set(key, canonical);
+          this.set(key, canonical);
         }
       }
     });
@@ -390,7 +431,18 @@ Model.reopenClass({
 
     this.projections.set(projectionName, proj);
     return proj;
-  }
+  },
+
+  /**
+   * Parent model type name.
+   *
+   * @property _parentModelName
+   * @type String
+   * @default null
+   * @private
+   * @static
+   */
+  _parentModelName: null
 });
 
 export default Model;

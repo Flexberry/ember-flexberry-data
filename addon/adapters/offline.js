@@ -4,7 +4,6 @@
 
 import Ember from 'ember';
 import DS from 'ember-data';
-import isAsync from '../utils/is-async';
 import isObject from '../utils/is-object';
 import generateUniqueId from '../utils/generate-unique-id';
 import IndexedDBAdapter from '../query/indexeddb-adapter';
@@ -14,6 +13,7 @@ import FilterOperator from '../query/filter-operator';
 import Condition from '../query/condition';
 import { SimplePredicate, ComplexPredicate } from '../query/predicate';
 import Dexie from 'npm:dexie';
+import Information from '../utils/information';
 
 const { RSVP } = Ember;
 
@@ -193,21 +193,8 @@ export default DS.Adapter.extend({
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
     let queryOperation = (db) => {
-      let idba = new IndexedDBAdapter(db);
       let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
-      return idba.query(queryObject).then(records => new RSVP.Promise((resolve, reject) => {
-        let promises = Ember.A();
-        for (let i = 0; i < records.data.length; i++) {
-          let record = records.data[i];
-          promises.pushObject(this._completeLoadRecord(store, type, record, projection, originType));
-        }
-
-        RSVP.all(promises).then(() => {
-          resolve(records);
-        }).catch((reason) => {
-          reject(reason);
-        });
-      }));
+      return new IndexedDBAdapter(db).query(queryObject);
     };
 
     return dexieService.performOperation(db, queryOperation);
@@ -226,18 +213,18 @@ export default DS.Adapter.extend({
   createRecord(store, type, snapshot) {
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
-    let createOperation = (db) => {
-      let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-      return new RSVP.Promise((resolve, reject) => {
-        db.table(type.modelName).add(hash).then((id) => {
-          db.table(type.modelName).get(id).then((record) => {
-            resolve(record);
-          }).catch(reject);
+    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+    let createOperation = (db) => new RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).add(hash).then((id) => {
+        db.table(type.modelName).get(id).then((record) => {
+          resolve(record);
         }).catch(reject);
-      });
-    };
+      }).catch(reject);
+    });
 
-    return dexieService.performQueueOperation(db, createOperation);
+    return dexieService.performQueueOperation(db, createOperation).then(() => {
+      this._createOrUpdateParentModels(store, type, hash);
+    });
   },
 
   /**
@@ -253,22 +240,18 @@ export default DS.Adapter.extend({
   updateRecord(store, type, snapshot) {
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
-    let updateOperation = (db) => {
-      let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-      return new RSVP.Promise((resolve, reject) => {
-        db.table(type.modelName).update(hash.id, hash).then((result) => {
-          if (result === 1) {
-            db.table(type.modelName).get(hash.id).then((record) => {
-              resolve(record);
-            }).catch(reject);
-          } else {
-            reject(new Error('Not updated.'));
-          }
+    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+    let updateOperation = (db) => new RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).put(hash).then((id) => {
+        db.table(type.modelName).get(id).then((record) => {
+          resolve(record);
         }).catch(reject);
-      });
-    };
+      }).catch(reject);
+    });
 
-    return dexieService.performQueueOperation(db, updateOperation);
+    return dexieService.performQueueOperation(db, updateOperation).then(() => {
+      this._createOrUpdateParentModels(store, type, hash);
+    });
   },
 
   /**
@@ -284,22 +267,46 @@ export default DS.Adapter.extend({
   deleteRecord(store, type, snapshot) {
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
-    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id));
+    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id)).then(() => {
+      this._deleteParentModels(store, type, snapshot.id);
+    });
   },
 
   /**
-    Create record if her not exist, or update record.
+    Create record if it does not exist, or update changed fields of record.
 
     @param {DS.Store} store
     @param {DS.Model} type
     @param {DS.Snapshot} snapshot
+    @param {Object} fieldsToUpdate
     @return {Promise}
   */
-  updateOrCreate(store, type, snapshot) {
+  updateOrCreate(store, type, snapshot, fieldsToUpdate) {
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
-    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).put(hash));
+    let updateOrCreateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).get(snapshot.id).then((record) => {
+        if (!Ember.isNone(fieldsToUpdate) && record) {
+          if (Ember.$.isEmptyObject(fieldsToUpdate)) {
+            resolve();
+          } else {
+            let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+            for (let attrName in hash) {
+              if (hash.hasOwnProperty(attrName) && !fieldsToUpdate.hasOwnProperty(attrName)) {
+                delete hash[attrName];
+              }
+            }
+
+            return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).update(snapshot.id, hash)).then(resolve, reject);
+          }
+        } else {
+          let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+          return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).put(hash)).then(resolve, reject);
+        }
+      });
+    });
+
+    return dexieService.performOperation(db, updateOrCreateOperation);
   },
 
   /**
@@ -388,157 +395,36 @@ export default DS.Adapter.extend({
     return null;
   },
 
-  /**
-    Completes loading record for given projection.
-
-    @method _completeLoadingRecord
-    @param {subclass of DS.Store} store Store to use for complete loading record.
-    @param {subclass of DS.Model} type Model type.
-    @param {Object} record Main record loaded by adapter.
-    @param {Object} [projection] Projection for complete loading of record.
-    @param {subclass of DS.Model} [originType] Type of model that referencing to main record's model type.
-    @return {Object} Completely loaded record with all properties
-                     include relationships corresponds to given projection
-    @private
-  */
-  _completeLoadRecord: function(store, type, record, projection, originType) {
-    let promises = Ember.A();
-    if (!Ember.isNone(projection) && projection.attributes) {
-      let attributes = projection.attributes;
-      for (let attrName in attributes) {
-        if (attributes.hasOwnProperty(attrName)) {
-          this._replaceIdToHash(store, type, record, attributes, attrName, promises);
+  _createOrUpdateParentModels(store, type, record) {
+    let _this = this;
+    let parentModelName = type._parentModelName;
+    if (parentModelName) {
+      let information = new Information(store);
+      let newHash = {};
+      Ember.merge(newHash, record);
+      for (let attrName in newHash) {
+        if (newHash.hasOwnProperty(attrName) && !information.isExist(parentModelName, attrName)) {
+          delete newHash[attrName];
         }
       }
-    } else {
-      let relationshipNames = Ember.get(type, 'relationshipNames');
-      let allRelationshipNames = Ember.A().concat(relationshipNames.belongsTo, relationshipNames.hasMany);
-      let relationshipsByName = Ember.get(type, 'relationshipsByName');
-      let originTypeModelName = !Ember.isNone(originType) ? originType.modelName : '';
-      allRelationshipNames.forEach(function(attrName) {
-        // Avoid loops formed by inverse attributes.
-        let possibleInverseType = store.modelFor(relationshipsByName.get(attrName).type);
-        let relationshipsByNameOfPossibleInverseType = Ember.get(possibleInverseType, 'relationshipsByName');
-        let inverseAttribute = relationshipsByName.get(attrName).options.inverse;
-        let possibleInverseTypeMeta = !Ember.isNone(inverseAttribute) ? relationshipsByNameOfPossibleInverseType.get(inverseAttribute) : null;
-        if ((Ember.isNone(possibleInverseTypeMeta) || relationshipsByName.get(attrName).type !== originTypeModelName) && !Ember.isEmpty(record[attrName])) {
-          this._replaceIdToHash(store, type, record, relationshipsByName, attrName, promises);
-        }
-      }, this);
+
+      let dexieService = _this.get('dexieService');
+      let db = dexieService.dexie(_this.get('dbName'), store);
+      dexieService.performQueueOperation(db, (db) => db.table(parentModelName).put(newHash)).then(() => {
+        _this._createOrUpdateParentModels(store, store.modelFor(parentModelName), record);
+      });
     }
-
-    return RSVP.all(promises).then(() => {
-      let relationshipNames = Ember.get(type, 'relationshipNames');
-      let belongsTo = relationshipNames.belongsTo;
-      for (let i = 0; i < belongsTo.length; i++) {
-        let relationshipName = belongsTo[i];
-        if (!isAsync(type, relationshipName) && !isObject(record[relationshipName])) {
-          record[relationshipName] = null;
-        }
-      }
-
-      let hasMany = relationshipNames.hasMany;
-      for (let i = 0; i < hasMany.length; i++) {
-        let relationshipName = hasMany[i];
-        if (!Ember.isArray(record[relationshipName])) {
-          record[relationshipName] = [];
-        } else {
-          if (!isAsync(type, relationshipName)) {
-            let hasUnloadedObjects = false;
-            for (let j = 0; j < record[relationshipName].length; j++) {
-              if (!isObject(record[relationshipName][j])) {
-                hasUnloadedObjects = true;
-              }
-            }
-
-            if (hasUnloadedObjects) {
-              record[relationshipName] = [];
-            }
-          }
-        }
-      }
-
-      return record;
-    });
   },
 
-  _loadRelatedRecord(store, type, id, proj, originType) {
-    let modelName = proj.modelName ? proj.modelName : proj.type;
-    let builder = new QueryBuilder(store, modelName);
-    builder.byId(id);
-
-    if (proj && proj.modelName) {
-      let attrNames = 'id';
-      let attrs = proj.attributes;
-      for (let key in attrs) {
-        if (attrs.hasOwnProperty(key) && !Ember.isNone(attrs[key].kind)) {
-          attrNames += ',' + key;
-        }
-      }
-
-      builder.select(attrNames);
-    }
-
-    let query = builder.build();
-    if (Ember.$.isEmptyObject(builder._select)) {
-      // Now if projection is not specified then only 'id' field will be selected.
-      query.select = [];
-    }
-
-    query.originType = originType;
-    if (proj && proj.modelName) {
-      query.projection = proj;
-    }
-
-    return this.queryRecord(store, type, query);
-  },
-
-  _replaceIdToHash(store, type,  record, attributes, attrName, promises) {
-    let attr = attributes.hasOwnProperty(attrName) ? attributes[attrName] : attributes.get(attrName);
-    let modelName = attr.modelName ? attr.modelName : attr.type;
-    let relatedModelType = (attr.kind === 'belongsTo' || attr.kind === 'hasMany') ? store.modelFor(modelName) : null;
-    switch (attr.kind) {
-      case 'attr':
-        break;
-      case 'belongsTo':
-        if (!isAsync(type, attrName)) {
-          // let primaryKeyName = this.serializer.get('primaryKey');
-          let id = record[attrName];
-          if (!Ember.isNone(id) && (!isObject(id))) {
-            promises.pushObject(this._loadRelatedRecord(store, relatedModelType, id, attr, type).then((relatedRecord) => {
-              delete record[attrName];
-              record[attrName] = relatedRecord;
-            }));
-          }
-        }
-
-        break;
-      case 'hasMany':
-        if (!isAsync(type, attrName)) {
-          if (Ember.isArray(record[attrName])) {
-            let ids = Ember.copy(record[attrName]);
-            delete record[attrName];
-            record[attrName] = [];
-            let pushToRecordArray = (relatedRecord) => {
-              record[attrName].push(relatedRecord);
-            };
-
-            for (var i = 0; i < ids.length; i++) {
-              let id = ids[i];
-              if (!isObject(id)) {
-                promises.pushObject(this._loadRelatedRecord(store, relatedModelType, id, attr, type).then(pushToRecordArray));
-              } else {
-                pushToRecordArray(id);
-              }
-            }
-          } else {
-            record[attrName] = [];
-          }
-        }
-
-        break;
-      default:
-        throw new Error(`Unknown kind of projection attribute: ${attr.kind}`);
+  _deleteParentModels(store, type, id) {
+    let _this = this;
+    let parentModelName = type._parentModelName;
+    if (parentModelName) {
+      let dexieService = _this.get('dexieService');
+      let db = dexieService.dexie(_this.get('dbName'), store);
+      dexieService.performQueueOperation(db, (db) => db.table(parentModelName).delete(id)).then(() => {
+        _this._deleteParentModels(store, store.modelFor(parentModelName), id);
+      });
     }
   }
 });

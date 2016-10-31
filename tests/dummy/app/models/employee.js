@@ -11,6 +11,7 @@ let Employee = Projection.Model.extend({
   Surname: attr('string'),
   CountryName: attr('string'),
   Price: attr('decimal'),
+  Active: attr('boolean'),
   Country: DS.belongsTo('country'),
   Creator: DS.belongsTo('creator'),
   Manager: DS.belongsTo('employee'),

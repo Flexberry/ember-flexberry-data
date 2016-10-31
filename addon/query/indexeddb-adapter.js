@@ -6,9 +6,9 @@ import Ember from 'ember';
 import FilterOperator from './filter-operator';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
-import Condition from './condition';
-import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip } from './js-adapter';
+import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip, buildFilter } from './js-adapter';
 import Information from '../utils/information';
+import Dexie from 'npm:dexie';
 
 /**
   Class of query language adapter that allows to load data from IndexedDB.
@@ -45,15 +45,29 @@ export default class extends BaseAdapter {
       let order = buildOrder(query);
       let topskip = buildTopSkip(query);
       let projection = buildProjection(query);
+      let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
       let table = this._db.table(query.modelName);
+      let proj = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
       updateWhereClause(table, query).toArray().then((data) => {
-        let response = { meta: {}, data: projection(order(topskip(data))) };
-        if (query.count) {
-          response.meta.count = data.length;
-        }
+        Dexie.Promise.all(data.map(i => i.loadRelationships(proj))).then(() => {
+          let filteredData = data;
+          if (containsRelationships(query.predicate)) {
+            filteredData = filter(data);
+          }
 
-        resolve(response);
+          let responseData = topskip(order(filteredData));
+          if (!proj) {
+            responseData = projection(responseData);
+          }
+
+          let response = { meta: {}, data: responseData };
+          if (query.count) {
+            response.meta.count = filteredData.length;
+          }
+
+          resolve(response);
+        });
       }).catch((error) => {
         reject(error);
       });
@@ -62,14 +76,15 @@ export default class extends BaseAdapter {
 }
 
 /**
- * Builds Dexie `WhereClause` for filtering data.
- * Filtering only with Dexie can applied only for simple cases (for `SimplePredicate`).
- * For complex cases all logic implemened programmatically.
- *
- * @param {Dexie.Table} table Table instance for loading objects.
- * @param {Query} query Query language instance for loading data.
- * @returns {Dexie.Collection|Dexie.Table} Table or collection that can be used with `toArray` method.
- */
+  Builds Dexie `WhereClause` for filtering data.
+  Filtering only with Dexie can applied only for simple cases (for `SimplePredicate`).
+  For complex cases all logic implemened programmatically.
+  If `query.predicate` contains restrictions by relationships, return `table` without restrictions.
+
+  @param {Dexie.Table} table Table instance for loading objects.
+  @param {Query} query Query language instance for loading data.
+  @returns {Dexie.Collection|Dexie.Table} Table or collection that can be used with `toArray` method.
+*/
 function updateWhereClause(table, query) {
   let predicate = query.predicate;
 
@@ -81,14 +96,13 @@ function updateWhereClause(table, query) {
     }
   }
 
-  if (!predicate) {
+  if (!predicate || containsRelationships(predicate)) {
     return table;
   }
 
   if (predicate instanceof SimplePredicate) {
-    let fields = Information.parseAttributePath(predicate.attributePath);
     let value = typeof predicate.value === 'boolean' ? `${predicate.value}` : predicate.value;
-    if (value === null || fields.length > 1) {
+    if (value === null) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
       return table.filter(getAttributeFilterFunction(predicate));
@@ -118,70 +132,38 @@ function updateWhereClause(table, query) {
     }
   }
 
-  if (predicate instanceof StringPredicate || predicate instanceof DetailPredicate) {
-    return table.filter(getAttributeFilterFunction(predicate));
-  }
-
-  if (predicate instanceof ComplexPredicate) {
-    let filterFunctions = predicate.predicates.map(getAttributeFilterFunction);
-    let collection = table.toCollection();
-    switch (predicate.condition) {
-      case Condition.And:
-        return collection.filter(getComplexFilterFunctionAnd(filterFunctions));
-
-      case Condition.Or:
-        return collection.filter(getComplexFilterFunctionOr(filterFunctions));
-
-      default:
-        throw new Error(`Unsupported condition '${predicate.condition}'.`);
-    }
-
-    return table.filter(getAttributeFilterFunction(predicate));
+  if (predicate instanceof StringPredicate || predicate instanceof ComplexPredicate) {
+    return table.filter(getAttributeFilterFunction(predicate, { booleanAsString: true }));
   }
 
   throw new Error(`Unsupported predicate '${predicate}'`);
 }
 
 /**
- * Returns complex filter function for `and` condition.
- * Result function returns `true` if all attribute filter functions returned `true`.
- * Result function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).
- *
- * @param {Function[]} filterFunctions Array of attribute filter functions.
- * @returns {Function} Complex filter function for `or` condition.
- */
-function getComplexFilterFunctionAnd(filterFunctions) {
-  return function (item) {
-    let check = true;
-    for (let funcIndex = 0; funcIndex < filterFunctions.length; funcIndex++) {
-      check &= filterFunctions[funcIndex](item);
-      if (!check) {
-        break;
+  Checks predicate on contains restrictions by relationships.
+
+  @method containsRelationships
+  @param {Query.BasePredicate} predicate
+  @return {Boolean}
+*/
+function containsRelationships(predicate) {
+  if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+    return Information.parseAttributePath(predicate.attributePath).length > 1;
+  }
+
+  if (predicate instanceof DetailPredicate) {
+    return true;
+  }
+
+  if (predicate instanceof ComplexPredicate) {
+    let contains = false;
+    predicate.predicates.forEach((predicate) => {
+      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+        contains = Information.parseAttributePath(predicate.attributePath).length > 1;
+      } else {
+        contains = containsRelationships(predicate);
       }
-    }
-
-    return check;
-  };
-}
-
-/**
- * Returns complex filter function for `or` condition.
- * Result function returns `true` if at least one attribute filter function returned `true`.
- * Result function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).
- *
- * @param {Function[]} filterFunctions Array of attribute filter functions.
- * @returns {Function} Complex filter function for `or` condition.
- */
-function getComplexFilterFunctionOr(filterFunctions) {
-  return function (item) {
-    let check = false;
-    for (let funcIndex = 0; funcIndex < filterFunctions.length; funcIndex++) {
-      check |= filterFunctions[funcIndex](item);
-      if (check) {
-        break;
-      }
-    }
-
-    return check;
-  };
+    });
+    return contains;
+  }
 }

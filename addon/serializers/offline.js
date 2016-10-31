@@ -39,7 +39,7 @@ export default DS.JSONSerializer.extend({
       if (type === 'boolean') {
         let attributeKey = this.keyForAttribute(key, 'deserialize');
         if (typeof hash[attributeKey] === 'string') {
-          attributes[key] = hash[attributeKey] === 'true' ? true : false;
+          attributes[key] = hash[attributeKey] === 'true' ? true : hash[attributeKey] === null ? null : false;
         }
       }
     });
@@ -59,10 +59,63 @@ export default DS.JSONSerializer.extend({
   */
   serializeAttribute(snapshot, json, key, attribute) {
     let value = snapshot.attr(key);
-    if (attribute.type === 'boolean' && typeof value === 'boolean') {
-      json[key] = `${value}`;
+    switch (attribute.type) {
+      case 'boolean':
+        if (typeof value === 'boolean') {
+          json[key] = `${value}`;
+        } else if (typeof value === 'undefined') {
+          json[key] = 'false';
+        } else {
+          this._super(...arguments);
+        }
+
+        break;
+
+      case 'decimal':
+
+        //Value should be a decimal number
+        if (typeof value === 'string') {
+          value = +(value.replace(',', '.'));
+        }
+
+        if (isFinite(value) || typeof value === 'undefined') {
+          this._super(...arguments);
+        } else {
+          throw new Error(`Trying to save '${value}' value of '${key}' field of '${snapshot.modelName}' that should be a decimal`);
+        }
+
+        break;
+
+      case 'number':
+
+        //Value should be a number
+        if (typeof value === 'string') {
+          value = +value;
+        }
+
+        if (isFinite(value) || typeof value === 'undefined') {
+          this._super(...arguments);
+        } else {
+          throw new Error(`Trying to save '${value}' value of '${key}' field of '${snapshot.modelName}' that should be a number`);
+        }
+
+        break;
+
+      default:
+        this._super(...arguments);
+    }
+
+  },
+
+  serializePolymorphicType: function(snapshot, json, relationship) {
+    let key = relationship.key;
+    let belongsTo = snapshot.belongsTo(key);
+    key = this.keyForAttribute ? this.keyForAttribute(key, 'serialize') : key;
+
+    if (Ember.isNone(belongsTo)) {
+      json['_' + key + '_type'] = null;
     } else {
-      this._super(snapshot, json, key, attribute);
+      json['_' + key + '_type'] = belongsTo.modelName;
     }
   },
 
