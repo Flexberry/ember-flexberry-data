@@ -45,7 +45,7 @@ export default class extends BaseAdapter {
       let order = buildOrder(query);
       let topskip = buildTopSkip(query);
       let projection = buildProjection(query);
-      let filter = query.predicate ? buildFilter(query.predicate) : (data) => data;
+      let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
       let table = this._db.table(query.modelName);
       let proj = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
