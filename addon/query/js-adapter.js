@@ -153,23 +153,24 @@ export function buildProjection(query) {
 }
 
 /**
- * Builds function for filtering array of objects using predicate.
- *
- * @param predicate Predicate for filtering array of objects.
- * @returns {Function}
- */
-function buildFilter(predicate) {
+  Builds function for filtering array of objects using predicate.
+
+  @param predicate Predicate for filtering array of objects.
+  @param {Object} [options] Object with options for transfer `getAttributeFilterFunction` function.
+  @return {Function}
+*/
+export function buildFilter(predicate, options) {
   let b1 = predicate instanceof SimplePredicate;
   let b2 = predicate instanceof StringPredicate;
   let b3 = predicate instanceof DetailPredicate;
 
   if (b1 || b2 || b3) {
-    let filterFunction = getAttributeFilterFunction(predicate);
+    let filterFunction = getAttributeFilterFunction(predicate, options);
     return getFilterFunctionAnd([filterFunction]);
   }
 
   if (predicate instanceof ComplexPredicate) {
-    let filterFunctions = predicate.predicates.map(getAttributeFilterFunction);
+    let filterFunctions = predicate.predicates.map(predicate => getAttributeFilterFunction(predicate, options));
     switch (predicate.condition) {
       case Condition.And:
         return getFilterFunctionAnd(filterFunctions);
@@ -194,6 +195,10 @@ function buildFilter(predicate) {
   @returns {Function} Function for checkign single object.
 */
 export function getAttributeFilterFunction(predicate, options) {
+  if (!predicate) {
+    return (i) => i;
+  }
+
   if (predicate instanceof SimplePredicate) {
     let value = predicate.value;
     if (options && options.booleanAsString && typeof value === 'boolean') {
@@ -229,7 +234,7 @@ export function getAttributeFilterFunction(predicate, options) {
   }
 
   if (predicate instanceof DetailPredicate) {
-    let detailFilter = buildFilter(predicate.predicate);
+    let detailFilter = buildFilter(predicate.predicate, options);
     if (predicate.isAll) {
       return function (i) {
         let detail = getValue(i, predicate.detailPath);
@@ -307,6 +312,11 @@ function getValue(item, attributePath) {
     if (!search) {
       // Don't return constant null / undefined - we need to distinguish them.
       return search;
+    }
+
+    if (typeof search === 'object' && !(search instanceof Array) && !attributes[i + 1]) {
+      // TODO: In fact, it can not only be `id`.
+      return search.id;
     }
   }
 
