@@ -60,13 +60,14 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
   let _this = this;
   let dexieService = Ember.getOwner(store).lookup('service:dexie');
   let unloadRecordFromStore = () => {
-    if (params && params.unloadSyncedRecords) {
-      if (store.get('onlineStore')) {
-        store.get('onlineStore').unloadRecord(record);
-      } else {
-        store.unloadRecord(record);
-      }
-    }
+    // TODO: Uncomment this after fix bug with load unloaded models.
+    // if (params && params.unloadSyncedRecords) {
+    //   if (store.get('onlineStore')) {
+    //     store.get('onlineStore').unloadRecord(record);
+    //   } else {
+    //     store.unloadRecord(record);
+    //   }
+    // }
   };
 
   dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);

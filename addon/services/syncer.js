@@ -94,7 +94,7 @@ export default Ember.Service.extend({
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
    * @private
    */
-  _syncDownRecord: function(record, reload, projectionName/*, params*/) {
+  _syncDownRecord: function(record, reload, projectionName, params) {
     var _this = this;
 
     function saveRecordToLocalStore(store, record, projectionName) {
@@ -130,7 +130,7 @@ export default Ember.Service.extend({
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
           if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
-            return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection);
+            return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection, params);
           } else {
             Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
               'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
