@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 ### Added
-- Error default handlers in `syncer` service, override [`resolveServerError`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L207) and [`resolveNotFoundRecord`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L252) methods for add custom logic.
+- Error default handlers in `syncer` service, override [`resolveServerError`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L222) and [`resolveNotFoundRecord`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L259) methods for add custom logic.
 
 ### Breaking changes
 - Change arguments for `syncUp` method from `syncer` service, first parameter can be array jobs for execute, object with options for sync is second parameter.
