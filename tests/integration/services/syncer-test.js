@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 import Dexie from 'npm:dexie';
 import { moduleFor, test } from 'ember-qunit';
 import { Adapter, Query, } from 'ember-flexberry-data';
@@ -233,6 +234,91 @@ if (config.APP.testODataService) {
                     .byId(user.get('id'));
                   return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
                     assert.notOk(onlineRecord, 'SuperMan is gone.');
+                  });
+                });
+              });
+            });
+          });
+        });
+      }).finally(done);
+    });
+  });
+
+  test('sync up with server error', function(assert) {
+    runTest(App, 2, assert, (store, syncer, done) => {
+      // Not cast value and throw error.
+      store.modelFor('ember-flexberry-dummy-application-user').reopen({
+        vip: DS.attr('string'),
+      });
+
+      store.get('offlineGlobals').setOnlineAvailable(false);
+      return store.createRecord('ember-flexberry-dummy-application-user', {
+        name: 'SuperMan',
+        eMail: 'super.man@example.com',
+        vip: 'invalid',
+      }).save().then((user) => {
+        store.get('offlineGlobals').setOnlineAvailable(true);
+        return syncer.syncUp().catch((rejectedJob) => {
+          assert.equal(rejectedJob.get('executionResult'), 'Ошибка', 'Job not executed.');
+          let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+            .selectByProjection('ApplicationUserE')
+            .byId(user.get('id'));
+          return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
+            assert.notOk(onlineRecord, 'SuperMan is not there.');
+          });
+        });
+      }).finally(done);
+    });
+  });
+
+  test('sync up with not found record', function(assert) {
+    runTest(App, 3, assert, (store, syncer, done) => {
+      store.createRecord('ember-flexberry-dummy-application-user', {
+        name: 'Man',
+        eMail: 'man@example.com',
+      }).save().then((user) => {
+        let id = user.get('id');
+        return syncer.syncDown(user).then(() => {
+          store.get('offlineGlobals').setOnlineAvailable(false);
+          let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+            .selectByProjection('ApplicationUserE')
+            .byId(id);
+          return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
+            offlineRecord.set('name', 'SuperMan');
+            offlineRecord.set('eMail', 'super.man@example.com');
+            return offlineRecord.save().then(() => {
+              store.get('offlineGlobals').setOnlineAvailable(true);
+              let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+                .selectByProjection('ApplicationUserE')
+                .byId(id);
+              return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
+                assert.notEqual(onlineRecord.get('name'), 'SuperMan', `He was still an ordinary person.`);
+                return onlineRecord.destroyRecord().then(() => {
+                  let options = { continueOnError: true };
+                  return syncer.syncUp(null, options).then((result) => {
+                    assert.equal(result, 0, 'He never managed to become a SuperMan.');
+                    let query = new Query.Builder(store, 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity')
+                      .select('id,objectPrimaryKey,operationType,executionResult,objectType,auditFields')
+                      .where('objectPrimaryKey', 'eq', id).build();
+                    return store.queryRecord(query.modelName, query).then((auditEntity) => {
+                      assert.deepEqual({
+                        objectPrimaryKey: auditEntity.get('objectPrimaryKey'),
+                        operationType: auditEntity.get('operationType'),
+                        executionResult: auditEntity.get('executionResult'),
+                        objectType: auditEntity.get('objectType.name'),
+                        changesCount: auditEntity.get('auditFields.length'),
+                        name: auditEntity.get('auditFields').shiftObject().get('newValue'),
+                        email: auditEntity.get('auditFields').shiftObject().get('newValue'),
+                      }, {
+                        objectPrimaryKey: id,
+                        operationType: 'UPDATE',
+                        executionResult: 'Не выполнено',
+                        objectType: 'ember-flexberry-dummy-application-user',
+                        changesCount: 4,
+                        name: 'SuperMan',
+                        email: 'super.man@example.com',
+                      }, 'But we remember him.');
+                    });
                   });
                 });
               });
