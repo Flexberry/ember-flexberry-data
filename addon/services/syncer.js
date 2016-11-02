@@ -373,7 +373,10 @@ export default Ember.Service.extend({
           if (auditData.operationType === 'DELETE' && auditEntity.get('operationType') === 'INSERT') {
             return auditEntity.destroyRecord();
           } else {
-            delete auditData.operationType;
+            if (auditEntity.get('operationType') === 'INSERT') {
+              delete auditData.operationType;
+            }
+
             auditEntity.setProperties(auditData);
             return auditEntity.save();
           }
