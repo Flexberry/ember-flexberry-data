@@ -134,34 +134,32 @@ if (config.APP.testODataService) {
       store.createRecord('ember-flexberry-dummy-application-user', {
         name: 'Man',
         eMail: 'man@example.com',
-      }).save().then((user) => {
-        return syncer.syncDown(user).then(() => {
-          store.get('offlineGlobals').setOnlineAvailable(false);
-          let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
-            .selectByProjection('ApplicationUserE')
-            .byId(user.get('id'));
-          return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
-            offlineRecord.set('name', 'SuperMan');
-            return offlineRecord.save().then((offlineRecord) => {
-              offlineRecord.set('eMail', 'super.man@example.com');
-              return offlineRecord.save().then(() => {
-                store.get('offlineGlobals').setOnlineAvailable(true);
-                return syncer.syncUp().then((result) => {
-                  assert.equal(result, 2, 'Two operations were executed.');
-                  let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
-                    .selectByProjection('ApplicationUserE')
-                    .byId(user.get('id'));
-                  return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
-                    assert.equal(onlineRecord.get('name'), 'SuperMan', `Now he's SuperMan.`);
-                    assert.equal(onlineRecord.get('eMail'), 'super.man@example.com', 'Now he has a new email address.');
-                    return new Ember.RSVP.resolve(onlineRecord);
-                  });
+      }).save().then(user => syncer.syncDown(user).then(() => {
+        store.get('offlineGlobals').setOnlineAvailable(false);
+        let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+          .selectByProjection('ApplicationUserE')
+          .byId(user.get('id'));
+        return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
+          offlineRecord.set('name', 'SuperMan');
+          return offlineRecord.save().then((offlineRecord) => {
+            offlineRecord.set('eMail', 'super.man@example.com');
+            return offlineRecord.save().then(() => {
+              store.get('offlineGlobals').setOnlineAvailable(true);
+              return syncer.syncUp().then((result) => {
+                assert.equal(result, 2, 'Two operations were executed.');
+                let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+                  .selectByProjection('ApplicationUserE')
+                  .byId(user.get('id'));
+                return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
+                  assert.equal(onlineRecord.get('name'), 'SuperMan', `Now he's SuperMan.`);
+                  assert.equal(onlineRecord.get('eMail'), 'super.man@example.com', 'Now he has a new email address.');
+                  return new Ember.RSVP.resolve(onlineRecord);
                 });
               });
             });
           });
         });
-      }).then(user => user.destroyRecord()).finally(done);
+      })).then(user => user.destroyRecord()).finally(done);
     });
   });
 
@@ -179,20 +177,18 @@ if (config.APP.testODataService) {
         return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
           offlineRecord.set('name', 'SuperMan');
           offlineRecord.set('eMail', 'super.man@example.com');
-          return offlineRecord.save().then((offlineRecord) => {
-            return offlineRecord.destroyRecord().then(() => {
-              store.get('offlineGlobals').setOnlineAvailable(true);
-              return syncer.syncUp().then((result) => {
-                assert.equal(result, 1, 'Only one operation was executed.');
-                let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
-                  .selectByProjection('ApplicationUserE')
-                  .byId(user.get('id'));
-                return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
-                  assert.notOk(onlineRecord, 'SuperMan is gone.');
-                });
+          return offlineRecord.save().then(offlineRecord => offlineRecord.destroyRecord().then(() => {
+            store.get('offlineGlobals').setOnlineAvailable(true);
+            return syncer.syncUp().then((result) => {
+              assert.equal(result, 1, 'Only one operation was executed.');
+              let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+                .selectByProjection('ApplicationUserE')
+                .byId(user.get('id'));
+              return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
+                assert.notOk(onlineRecord, 'SuperMan is gone.');
               });
             });
-          });
+          }));
         });
       })).finally(done);
     });
@@ -211,20 +207,18 @@ if (config.APP.testODataService) {
         return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
           offlineRecord.set('name', 'SuperMan');
           offlineRecord.set('eMail', 'super.man@example.com');
-          return offlineRecord.save().then((offlineRecord) => {
-            return offlineRecord.destroyRecord().then(() => {
-              store.get('offlineGlobals').setOnlineAvailable(true);
-              return syncer.syncUp().then((result) => {
-                assert.equal(result, 2, 'Two operations were executed.');
-                let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
-                  .selectByProjection('ApplicationUserE')
-                  .byId(user.get('id'));
-                return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
-                  assert.notOk(onlineRecord, 'SuperMan is gone.');
-                });
+          return offlineRecord.save().then(offlineRecord => offlineRecord.destroyRecord().then(() => {
+            store.get('offlineGlobals').setOnlineAvailable(true);
+            return syncer.syncUp().then((result) => {
+              assert.equal(result, 2, 'Two operations were executed.');
+              let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+                .selectByProjection('ApplicationUserE')
+                .byId(user.get('id'));
+              return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
+                assert.notOk(onlineRecord, 'SuperMan is gone.');
               });
             });
-          });
+          }));
         });
       })).finally(done);
     });
