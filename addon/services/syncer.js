@@ -163,20 +163,32 @@ export default Ember.Service.extend({
   },
 
   /**
+    Start sync up process.
+
+    @method syncUp
+    @param {Ember.Array} [jobs] Array instances of `auditEntity` model for sync up.
+    @param {Object} [options] Object with options for sync up.
+    @param {Boolean} [options.continueOnError] If `true` continue sync up if an error occurred.
+    @return {Promise}
   */
-  syncUp(continueOnError) {
-    let dexieService = getOwner(this).lookup('service:dexie');
+  syncUp(jobs, options) {
+    let builder;
+    let predicate;
     let store = getOwner(this).lookup('service:store');
+    let dexieService = getOwner(this).lookup('service:dexie');
     let modelName = 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity';
-    let predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
-      .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
-    let builder = new Builder(store, modelName)
-      .selectByProjection('AuditEntityE')
-      .orderBy('operationTime')
-      .where(predicate);
-    return this.get('offlineStore').query(modelName, builder.build()).then((jobs) => {
+    if (!jobs) {
+      predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
+        .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
+      builder = new Builder(store, modelName)
+        .selectByProjection('AuditEntityE')
+        .orderBy('operationTime')
+        .where(predicate);
+    }
+
+    return (jobs ? RSVP.resolve(jobs) : this.get('offlineStore').query(modelName, builder.build())).then((jobs) => {
       dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
-      return this._runJobs(store, jobs, continueOnError);
+      return this._runJobs(store, jobs, options && options.continueOnError);
     });
   },
 
