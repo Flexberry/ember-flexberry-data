@@ -303,7 +303,7 @@ export default Ember.Service.extend({
               reject(reason);
             }
           });
-        });
+        }, reject);
       } else {
         dexieService.set('queueSyncUpWorksCount', 0);
         resolve(executedJob);
@@ -320,7 +320,7 @@ export default Ember.Service.extend({
         RSVP.all(job.get('auditFields').map(field => field.destroyRecord())).then(() => {
           dexieService.set('queueSyncUpCurrentModelName', null);
           resolve(job.destroyRecord());
-        });
+        }, reject);
       } else {
         reject(job);
       }
