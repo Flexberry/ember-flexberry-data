@@ -183,14 +183,9 @@ export default Ember.Service.extend({
   /**
   */
   createJob(record) {
-    let _this = this;
     return new RSVP.Promise((resolve, reject) => {
-      _this._createAuditEntity(record).then((auditEntity) => {
-        _this._createAuditFields(auditEntity, record).then((auditEntity) => {
-          resolve(auditEntity);
-        }).catch((reason) => {
-          reject(reason);
-        });
+      this._createAuditEntity(record).then((auditEntity) => {
+        this._createAuditFields(auditEntity, record).then(resolve, reject);
       });
     });
   },
