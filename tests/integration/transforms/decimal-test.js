@@ -16,6 +16,7 @@ moduleFor('transform:decimal', 'Integration | Transform | decimal', {
     App = startApp();
     App.register('model:testModel', TestModel);
     store = App.__container__.lookup('service:store');
+    store.set('onlineStore', DS.Store.create(App.__container__.ownerInjection()));
   },
 
   afterEach: function () {
