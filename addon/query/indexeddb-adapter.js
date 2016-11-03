@@ -42,7 +42,7 @@ export default class extends BaseAdapter {
   */
   query(query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      let isBad = containsRelationships(query.predicate);
+      let isBadQuery = containsRelationships(query);
       let order = buildOrder(query);
       let topskip = buildTopSkip(query);
       let projection = buildProjection(query);
@@ -50,14 +50,14 @@ export default class extends BaseAdapter {
       let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
       let proj = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
-      (isBad ? table : updateWhereClause(table, query)).toArray().then((data) => {
+      (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
         let length = data.length;
-        if (!isBad) {
+        if (!isBadQuery) {
           data = topskip(order(data));
         }
 
         Dexie.Promise.all(data.map(i => i.loadRelationships(proj))).then(() => {
-          if (isBad) {
+          if (isBadQuery) {
             data = filter(data);
             length = data.length;
             data = topskip(order(data));
@@ -145,30 +145,46 @@ function updateWhereClause(table, query) {
 }
 
 /**
-  Checks predicate on contains restrictions by relationships.
+  Checks query on contains restrictions by relationships.
 
   @method containsRelationships
-  @param {Query.BasePredicate} predicate
+  @param {QueryObject} query
   @return {Boolean}
 */
-function containsRelationships(predicate) {
-  if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
-    return Information.parseAttributePath(predicate.attributePath).length > 1;
-  }
-
-  if (predicate instanceof DetailPredicate) {
-    return true;
-  }
-
-  if (predicate instanceof ComplexPredicate) {
-    let contains = false;
-    predicate.predicates.forEach((predicate) => {
-      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
-        contains = Information.parseAttributePath(predicate.attributePath).length > 1;
-      } else {
-        contains = containsRelationships(predicate);
-      }
-    });
+function containsRelationships(query) {
+  let contains = false;
+  if (!query) {
     return contains;
   }
+
+  if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate) {
+    contains = Information.parseAttributePath(query.predicate.attributePath).length > 1;
+  }
+
+  if (query.predicate instanceof DetailPredicate) {
+    contains = true;
+  }
+
+  if (query.predicate instanceof ComplexPredicate) {
+    query.predicate.predicates.forEach((predicate) => {
+      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+        contains = Information.parseAttributePath(predicate.attributePath).length > 1;
+      } else if (predicate instanceof DetailPredicate) {
+        contains = true;
+      } else {
+        contains = containsRelationships({ predicate });
+      }
+    });
+  }
+
+  if (query && query.order) {
+    for (let i = 0; i < query.order.length; i++) {
+      let attributePath = query.order.attribute(i).name;
+      if (Information.parseAttributePath(attributePath).length > 1) {
+        contains = true;
+      }
+    }
+  }
+
+  return contains;
 }
