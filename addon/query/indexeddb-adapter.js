@@ -42,28 +42,34 @@ export default class extends BaseAdapter {
   */
   query(query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
+      let isBad = containsRelationships(query.predicate);
       let order = buildOrder(query);
       let topskip = buildTopSkip(query);
       let projection = buildProjection(query);
-      let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
       let table = this._db.table(query.modelName);
+      let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
       let proj = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
-      updateWhereClause(table, query).toArray().then((data) => {
+      (isBad ? table : updateWhereClause(table, query)).toArray().then((data) => {
+        let length = data.length;
+        if (!isBad) {
+          data = topskip(order(data));
+        }
+
         Dexie.Promise.all(data.map(i => i.loadRelationships(proj))).then(() => {
-          let filteredData = data;
-          if (containsRelationships(query.predicate)) {
-            filteredData = filter(data);
+          if (isBad) {
+            data = filter(data);
+            length = data.length;
+            data = topskip(order(data));
           }
 
-          let responseData = topskip(order(filteredData));
           if (!proj) {
-            responseData = projection(responseData);
+            data = projection(data);
           }
 
-          let response = { meta: {}, data: responseData };
+          let response = { meta: {}, data: data };
           if (query.count) {
-            response.meta.count = filteredData.length;
+            response.meta.count = length;
           }
 
           resolve(response);
@@ -79,7 +85,6 @@ export default class extends BaseAdapter {
   Builds Dexie `WhereClause` for filtering data.
   Filtering only with Dexie can applied only for simple cases (for `SimplePredicate`).
   For complex cases all logic implemened programmatically.
-  If `query.predicate` contains restrictions by relationships, return `table` without restrictions.
 
   @param {Dexie.Table} table Table instance for loading objects.
   @param {Query} query Query language instance for loading data.
@@ -96,7 +101,7 @@ function updateWhereClause(table, query) {
     }
   }
 
-  if (!predicate || containsRelationships(predicate)) {
+  if (!predicate) {
     return table;
   }
 
