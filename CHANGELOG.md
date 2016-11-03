@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Optimized loading relationships from IndexedDB, if query not contains restriction by relationships, only data for end loading relationships.
 
 ## [0.7.1-beta.2] - 2016-10-31
 ### Added

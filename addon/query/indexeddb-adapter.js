@@ -42,35 +42,39 @@ export default class extends BaseAdapter {
   */
   query(query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
+      let isBadQuery = containsRelationships(query);
       let order = buildOrder(query);
       let topskip = buildTopSkip(query);
-      let projection = buildProjection(query);
-      let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
+      let jsProjection = buildProjection(query);
       let table = this._db.table(query.modelName);
-      let proj = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
+      let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
+      let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
-      updateWhereClause(table, query).toArray().then((data) => {
-        Dexie.Promise.all(data.map(i => i.loadRelationships(proj))).then(() => {
-          let filteredData = data;
-          if (containsRelationships(query.predicate)) {
-            filteredData = filter(data);
+      (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
+        let length = data.length;
+        if (!isBadQuery) {
+          data = topskip(order(data));
+        }
+
+        Dexie.Promise.all(data.map(i => i.loadRelationships(projection))).then(() => {
+          if (isBadQuery) {
+            data = filter(data);
+            length = data.length;
+            data = topskip(order(data));
           }
 
-          let responseData = topskip(order(filteredData));
-          if (!proj) {
-            responseData = projection(responseData);
+          if (!projection) {
+            data = jsProjection(data);
           }
 
-          let response = { meta: {}, data: responseData };
+          let response = { meta: {}, data: data };
           if (query.count) {
-            response.meta.count = filteredData.length;
+            response.meta.count = length;
           }
 
           resolve(response);
-        });
-      }).catch((error) => {
-        reject(error);
-      });
+        }, reject);
+      }, reject);
     });
   }
 }
@@ -79,7 +83,6 @@ export default class extends BaseAdapter {
   Builds Dexie `WhereClause` for filtering data.
   Filtering only with Dexie can applied only for simple cases (for `SimplePredicate`).
   For complex cases all logic implemened programmatically.
-  If `query.predicate` contains restrictions by relationships, return `table` without restrictions.
 
   @param {Dexie.Table} table Table instance for loading objects.
   @param {Query} query Query language instance for loading data.
@@ -96,7 +99,7 @@ function updateWhereClause(table, query) {
     }
   }
 
-  if (!predicate || containsRelationships(predicate)) {
+  if (!predicate) {
     return table;
   }
 
@@ -140,30 +143,46 @@ function updateWhereClause(table, query) {
 }
 
 /**
-  Checks predicate on contains restrictions by relationships.
+  Checks query on contains restrictions by relationships.
 
   @method containsRelationships
-  @param {Query.BasePredicate} predicate
+  @param {QueryObject} query
   @return {Boolean}
 */
-function containsRelationships(predicate) {
-  if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
-    return Information.parseAttributePath(predicate.attributePath).length > 1;
-  }
-
-  if (predicate instanceof DetailPredicate) {
-    return true;
-  }
-
-  if (predicate instanceof ComplexPredicate) {
-    let contains = false;
-    predicate.predicates.forEach((predicate) => {
-      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
-        contains = Information.parseAttributePath(predicate.attributePath).length > 1;
-      } else {
-        contains = containsRelationships(predicate);
-      }
-    });
+function containsRelationships(query) {
+  let contains = false;
+  if (!query) {
     return contains;
   }
+
+  if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate) {
+    contains = Information.parseAttributePath(query.predicate.attributePath).length > 1;
+  }
+
+  if (query.predicate instanceof DetailPredicate) {
+    contains = true;
+  }
+
+  if (query.predicate instanceof ComplexPredicate) {
+    query.predicate.predicates.forEach((predicate) => {
+      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+        contains = Information.parseAttributePath(predicate.attributePath).length > 1;
+      } else if (predicate instanceof DetailPredicate) {
+        contains = true;
+      } else {
+        contains = containsRelationships({ predicate });
+      }
+    });
+  }
+
+  if (query && query.order) {
+    for (let i = 0; i < query.order.length; i++) {
+      let attributePath = query.order.attribute(i).name;
+      if (Information.parseAttributePath(attributePath).length > 1) {
+        contains = true;
+      }
+    }
+  }
+
+  return contains;
 }
