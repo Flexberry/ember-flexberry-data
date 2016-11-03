@@ -1,12 +1,14 @@
 # Change Log
 
-## [Unreleased]
+## [0.7.1-beta.3] - 2016-11-03
 ### Added
-- Error default handlers in `syncer` service, override [`resolveServerError`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L222) and [`resolveNotFoundRecord`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L259) methods for add custom logic.
+- Default error handlers in `syncer` service. Override [`resolveServerError`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L222) and [`resolveNotFoundRecord`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L259) methods to add custom logic.
 
 ### Changed
-- Optimized loading relationships from IndexedDB, if query not contains restriction by relationships, only data for end loading relationships.
-- Change arguments for `syncUp` method from `syncer` service, first parameter can be array jobs for execute, object with options for sync is second parameter. **Important**. This changes are breaking!
+- Changed arguments for `syncUp` method of `syncer` service, first parameter now can be and array of jobs for execute, object with options for sync is second parameter now. **Important**. This changes are breaking!
+
+### Fixed
+- Optimized performance of loading relationships from IndexedDB.
 
 ## [0.7.1-beta.2] - 2016-10-31
 ### Added
