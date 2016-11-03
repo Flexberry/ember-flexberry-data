@@ -65,6 +65,22 @@ test('adapter | js | simple predicate | eq | null', (assert) => {
   assert.equal(result[0].id, 2);
 });
 
+test('adapter | js | simple predicate | eq | master pk', function (assert) {
+  const data = [
+    { id: 1, Manager: { id: 1 } },
+    { id: 2 },
+    { id: 3, Manager: { id: 3 } }
+  ];
+
+  let builder = new QueryBuilder(store, 'customer').where('Manager', FilterOperator.Eq, 3);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].id, 3);
+});
+
 test('adapter | js | simple predicate | eq | master field', function (assert) {
   const data = [
     { id: 1, Manager: { Name: 'X' } },

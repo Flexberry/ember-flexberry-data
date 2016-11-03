@@ -183,6 +183,10 @@ export default class Builder extends BaseBuilder {
     if (this._projectionName) {
       let model = this._store.modelFor(this._modelName);
       let projection = model.projections.get(this._projectionName);
+      if (!projection) {
+        throw new Error(`Projection ${this._projectionName} for model ${this._modelName} is not specified`);
+      }
+
       tree = this._getQueryTreeByProjection(projection);
     } else {
       tree = this._getQueryBySelect();

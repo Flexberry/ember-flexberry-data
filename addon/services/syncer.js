@@ -94,7 +94,7 @@ export default Ember.Service.extend({
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
    * @private
    */
-  _syncDownRecord: function(record, reload, projectionName/*, params*/) {
+  _syncDownRecord: function(record, reload, projectionName, params) {
     var _this = this;
 
     function saveRecordToLocalStore(store, record, projectionName) {
@@ -130,7 +130,7 @@ export default Ember.Service.extend({
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
           if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
-            return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection);
+            return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection, params);
           } else {
             Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
               'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
@@ -163,34 +163,122 @@ export default Ember.Service.extend({
   },
 
   /**
+    Start sync up process.
+
+    @method syncUp
+    @param {Ember.Array} [jobs] Array instances of `auditEntity` model for sync up.
+    @param {Object} [options] Object with options for sync up.
+    @param {Boolean} [options.continueOnError] If `true` continue sync up if an error occurred.
+    @return {Promise}
   */
-  syncUp(continueOnError) {
-    let dexieService = getOwner(this).lookup('service:dexie');
+  syncUp(jobs, options) {
+    let builder;
+    let predicate;
     let store = getOwner(this).lookup('service:store');
+    let dexieService = getOwner(this).lookup('service:dexie');
     let modelName = 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity';
-    let predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
-      .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
-    let builder = new Builder(store, modelName)
-      .selectByProjection('AuditEntityE')
-      .orderBy('operationTime')
-      .where(predicate);
-    return this.get('offlineStore').query(modelName, builder.build()).then((jobs) => {
+    if (!jobs) {
+      predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
+        .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
+      builder = new Builder(store, modelName)
+        .selectByProjection('AuditEntityE')
+        .orderBy('operationTime')
+        .where(predicate);
+    }
+
+    return (jobs ? RSVP.resolve(jobs) : this.get('offlineStore').query(modelName, builder.build())).then((jobs) => {
       dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
-      return this._runJobs(store, jobs, continueOnError);
+      return this._runJobs(store, jobs, options && options.continueOnError);
     });
+  },
+
+  /**
+    This method is called when a sync process if at attempt create, update or delete record, server error return.
+    Default behavior: Marked `job` as 'Ошибка', execute further when called `syncUp` method.
+
+    @example
+      ```javascript
+      // app/services/syncer.js
+      import { Offline } from 'ember-flexberry-data';
+
+      export default Offline.Syncer.extend({
+        ...
+        resolveServerError(job, error) {
+          let _this = this;
+          return new Ember.RSVP.Promise((resolve, reject) => {
+            // Here `error.status` as example, as if user not authorized on server.
+            if (error.status === 401) {
+              // As if `auth` function authorize user.
+              auth().then(() => {
+                _this.syncUp(Ember.A([job])).then(() => {
+                  job.set('executionResult', 'Выполнено');
+                  resolve(job.save());
+                }, reject);
+              }, reject);
+            } else {
+              job.set('executionResult', 'Ошибка');
+              resolve(job.save());
+            }
+          });
+        },
+        ...
+      });
+
+      ```
+
+    @method resolveServerError
+    @param {subclass of DS.Model} job Instance of `auditEntity` model when restore which error occurred.
+    @param {Object} error
+    @return {Promise} Promise that resolves updated job.
+  */
+  resolveServerError(job, error) {
+    Ember.Logger.debug(`Error sync up:'${job.get('operationType')}' - '${job.get('objectType.name')}:${job.get('objectPrimaryKey')}'.`, error);
+    job.set('executionResult', 'Ошибка');
+    return job.save();
+  },
+
+  /**
+    This method is called when a sync process not found record on server for delete or update.
+    Default behavior: Marked `job` as 'Не выполнено', not delete and not execute further when called `syncUp` method.
+
+    @example
+      ```javascript
+      // app/services/syncer.js
+      import { Offline } from 'ember-flexberry-data';
+
+      export default Offline.Syncer.extend({
+        ...
+        resolveNotFoundRecord(job) {
+          if (job.get('operationType') === 'UPDATE') {
+            // It will be executed when next called `syncUp` method.
+            job.set('executionResult', 'Ошибка');
+          } else if (job.get('operationType') === 'DELETE') {
+            // It will be immediately delete and not never executed.
+            job.set('executionResult', 'Выполнено');
+          }
+
+          return job.save();
+        },
+        ...
+      });
+
+      ```
+
+    @method resolveNotFoundRecord
+    @param {subclass of DS.Model} job Instance of `auditEntity` model when restore which error occurred.
+    @return {Promise} Promise that resolves updated job.
+  */
+  resolveNotFoundRecord(job) {
+    job.set('executionResult', 'Не выполнено');
+    return job.save();
   },
 
   /**
   */
   createJob(record) {
-    let _this = this;
     return new RSVP.Promise((resolve, reject) => {
-      _this._createAuditEntity(record).then((auditEntity) => {
-        _this._createAuditFields(auditEntity, record).then((auditEntity) => {
-          resolve(auditEntity);
-        }).catch((reason) => {
-          reject(reason);
-        });
+      this._createAuditEntity(record).then((auditEntity) => {
+        this._createAuditFields(auditEntity, record).then(resolve, reject);
       });
     });
   },
@@ -215,7 +303,7 @@ export default Ember.Service.extend({
               reject(reason);
             }
           });
-        });
+        }, reject);
       } else {
         dexieService.set('queueSyncUpWorksCount', 0);
         resolve(executedJob);
@@ -232,7 +320,7 @@ export default Ember.Service.extend({
         RSVP.all(job.get('auditFields').map(field => field.destroyRecord())).then(() => {
           dexieService.set('queueSyncUpCurrentModelName', null);
           resolve(job.destroyRecord());
-        });
+        }, reject);
       } else {
         reject(job);
       }
@@ -277,13 +365,7 @@ export default Ember.Service.extend({
       return record.save().then(() => {
         job.set('executionResult', 'Выполнено');
         return job.save();
-      }).catch((reason) => {
-
-        // TODO: Resolve conflicts here.
-        job.set('executionResult', 'Ошибка');
-        Ember.Logger.error(`Sync up model '${job.get('objectType.name')}' creating job error`, reason, record);
-        return job.save();
-      }).finally(() => {
+      }).catch(reason => this.resolveServerError(job, reason)).finally(() => {
         if (record) {
           record.set('isSyncingUp', false);
         }
@@ -304,20 +386,14 @@ export default Ember.Service.extend({
             record.set('isUpdatedDuringSyncUp', true);
             job.set('executionResult', 'Выполнено');
             return job.save();
-          }).catch((reason) => {
-
-            // TODO: Resolve conflicts here.
-            job.set('executionResult', 'Ошибка');
-            Ember.Logger.error(`Sync up model '${query.modelName}' updating job error`, reason, record);
-            return job.save();
-          }).finally(() => {
+          }).catch(reason => this.resolveServerError(job, reason)).finally(() => {
             if (record) {
               record.set('isSyncingUp', false);
             }
           });
         });
       } else {
-        throw new Error('No record is found on server.');
+        return this.resolveNotFoundRecord(job);
       }
     });
   },
@@ -333,19 +409,13 @@ export default Ember.Service.extend({
           record.set('isDestroyedDuringSyncUp', true);
           job.set('executionResult', 'Выполнено');
           return job.save();
-        }).catch((reason) => {
-
-          // TODO: Resolve conflicts here.
-          job.set('executionResult', 'Ошибка');
-          Ember.Logger.error(`Sync up model '${query.modelName}' removing job error`, reason, record);
-          return job.save();
-        }).finally(() => {
+        }).catch(reason => this.resolveServerError(job, reason)).finally(() => {
           if (record) {
             record.set('isSyncingUp', false);
           }
         });
       } else {
-        throw new Error('No record is found on server.');
+        return this.resolveNotFoundRecord(job);
       }
     });
   },
@@ -378,7 +448,10 @@ export default Ember.Service.extend({
           if (auditData.operationType === 'DELETE' && auditEntity.get('operationType') === 'INSERT') {
             return auditEntity.destroyRecord();
           } else {
-            delete auditData.operationType;
+            if (auditEntity.get('operationType') === 'INSERT') {
+              delete auditData.operationType;
+            }
+
             auditEntity.setProperties(auditData);
             return auditEntity.save();
           }
@@ -485,17 +558,22 @@ export default Ember.Service.extend({
             changes[field] = relationship;
           }));
         } else {
+          let value = auditField.get('newValue');
           switch (attributes.get(field).type) {
+            case 'boolean':
+              changes[field] = value === null ? null : !!value;
+              break;
+
             case 'number':
-              changes[field] = +auditField.get('newValue');
+              changes[field] = value === null ? null : +value;
               break;
 
             case 'date':
-              changes[field] = new Date(auditField.get('newValue'));
+              changes[field] = value === null ? null : new Date(value);
               break;
 
             default:
-              changes[field] = auditField.get('newValue');
+              changes[field] = value;
           }
         }
       });

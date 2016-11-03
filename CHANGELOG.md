@@ -4,16 +4,48 @@
 ### Fixed
 - Wrong projection for reading data used in `findRecord` and `findAll` methods of online `store` mixin if projection was not specified for query.
 
+## [0.7.1-beta.3] - 2016-11-03
+### Added
+- Default error handlers in `syncer` service. Override [`resolveServerError`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L222) and [`resolveNotFoundRecord`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L259) methods to add custom logic.
+
+### Changed
+- Changed arguments for `syncUp` method of `syncer` service, first parameter now can be and array of jobs for execute, object with options for sync is second parameter now. **Important**. This changes are breaking!
+
+### Fixed
+- Optimized performance of loading relationships from IndexedDB.
+
+## [0.7.1-beta.2] - 2016-10-31
+### Added
+- Now `dexie` service can work with multiple DBs.
+- Now hashes received via `dexie` service have `loadRelationships` method that can be used for replacing ids with hashes when reading synchronous relationships.
+- Some parameters checks for `builder` and `information` classes.
+
+### Fixed
+- Loading relationships in offline mode moved "under" offline adapter layer, i.e. offline adapter now get "full object" at once with embedded objects for embedded relationships. So now fixed:
+    - `indexeddb-adapter` apply filters after loading relationships. This allows to filter data by master and detail model's proprties.
+    - There is no relationships that "disappear" unexpectedly after reading data.
+    - Improved performance for reading data in offline mode (but for some cases improving performance is still required).
+
+## [0.7.1-beta.1] - 2016-10-28
+### Fixed
+- Filter by boolean value in offline mode, if restriction was passed via complex predicate.
+
+## [0.7.1-beta.0] - 2016-10-27
+### Fixed
+- `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of all types while performing sync up.
+- Serializing attributes of `boolean`, `number` and `decimal` types when saving offline.
+- Now it is able to save and read `null` value in `boolean` attributes in offline mode.
+
 ## [0.6.2-beta.30] - 2016-10-21
 ### Added
 - Base model properties:
-    - `isSyncingUp` - true if model is syncing up. 
-    - `isCreatedDuringSyncUp` - true if model is created during sync up process. 
-    - `isUpdatedDuringSyncUp` - true if model is updated last time during sync up process. 
-    - `isDestroyedDuringSyncUp` - true if model is destroyed during sync up process. 
+    - `isSyncingUp` - true if model is syncing up.
+    - `isCreatedDuringSyncUp` - true if model is created during sync up process.
+    - `isUpdatedDuringSyncUp` - true if model is updated last time during sync up process.
+    - `isDestroyedDuringSyncUp` - true if model is destroyed during sync up process.
 
 ### Fixed
-- Now we are saving information about model type of polymorphic belongsTo relationships into local store. Setting proper types of polymorphic belongsTo relationships should come in next versions of addon. 
+- Now we are saving information about model type of polymorphic belongsTo relationships into local store. Setting proper types of polymorphic belongsTo relationships should come in next versions of addon.
 
 ## [0.6.2-beta.29] - 2016-10-20
 ### Fixed
@@ -24,7 +56,7 @@
 - Saving of base models logic for offline (for create/update/delete operations). Now it is not using transactions (will be added in next versions).
 
 ### Changed
-- Disable models unloads after sync down and sync up operations in `syncer` service. 
+- Disable models unloads after sync down and sync up operations in `syncer` service.
 
 ## [0.6.2-beta.27] - 2016-10-18
 ### Fixed

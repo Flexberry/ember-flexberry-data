@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import isEmbedded from './is-embedded';
 
 var RSVP = Ember.RSVP;
 
@@ -59,13 +60,14 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
   let _this = this;
   let dexieService = Ember.getOwner(store).lookup('service:dexie');
   let unloadRecordFromStore = () => {
-    if (params && params.unloadSyncedRecords) {
-      if (store.get('onlineStore')) {
-        store.get('onlineStore').unloadRecord(record);
-      } else {
-        store.unloadRecord(record);
-      }
-    }
+    // TODO: Uncomment this after fix bug with load unloaded models.
+    // if (params && params.unloadSyncedRecords) {
+    //   if (store.get('onlineStore')) {
+    //     store.get('onlineStore').unloadRecord(record);
+    //   } else {
+    //     store.unloadRecord(record);
+    //   }
+    // }
   };
 
   dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
@@ -110,13 +112,6 @@ function createLocalRecords(store, localAdapter, localStore, modelType, records,
 
 export function syncDownRelatedRecords(store, mainRecord, localAdapter, localStore, projection, params) {
   let _this = this;
-
-  function isEmbedded(store, modelType, relationshipName) {
-    var serializerAttrs = store.serializerFor(modelType.modelName).get('attrs');
-    return serializerAttrs[relationshipName] &&
-    ((serializerAttrs[relationshipName].deserialize && serializerAttrs[relationshipName].deserialize === 'records') ||
-    (serializerAttrs[relationshipName].embedded && serializerAttrs[relationshipName].embedded === 'always'));
-  }
 
   function isAsync(modelType, relationshipName) {
     return Ember.get(modelType, 'relationshipsByName').get(relationshipName).options.async;
