@@ -45,10 +45,10 @@ export default class extends BaseAdapter {
       let isBadQuery = containsRelationships(query);
       let order = buildOrder(query);
       let topskip = buildTopSkip(query);
-      let projection = buildProjection(query);
+      let jsProjection = buildProjection(query);
       let table = this._db.table(query.modelName);
       let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
-      let proj = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
+      let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
       (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
         let length = data.length;
@@ -56,15 +56,15 @@ export default class extends BaseAdapter {
           data = topskip(order(data));
         }
 
-        Dexie.Promise.all(data.map(i => i.loadRelationships(proj))).then(() => {
+        Dexie.Promise.all(data.map(i => i.loadRelationships(projection))).then(() => {
           if (isBadQuery) {
             data = filter(data);
             length = data.length;
             data = topskip(order(data));
           }
 
-          if (!proj) {
-            data = projection(data);
+          if (!projection) {
+            data = jsProjection(data);
           }
 
           let response = { meta: {}, data: data };
