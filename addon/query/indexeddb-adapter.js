@@ -73,10 +73,8 @@ export default class extends BaseAdapter {
           }
 
           resolve(response);
-        });
-      }).catch((error) => {
-        reject(error);
-      });
+        }, reject);
+      }, reject);
     });
   }
 }
