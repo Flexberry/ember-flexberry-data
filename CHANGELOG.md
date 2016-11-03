@@ -1,5 +1,7 @@
 # Change Log
 
+## [Unreleased]
+
 ## [0.7.1-beta.3] - 2016-11-03
 ### Added
 - Default error handlers in `syncer` service. Override [`resolveServerError`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L222) and [`resolveNotFoundRecord`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L259) methods to add custom logic.
