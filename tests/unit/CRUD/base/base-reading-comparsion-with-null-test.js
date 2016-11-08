@@ -1,8 +1,7 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from './execute-odata-CRUD-test';
 
-executeTest('reading | comparsion with null', (store, assert) => {
+export default function readingComparsionWithNull(store, assert) {
   assert.expect(8);
   let done = assert.async();
 
@@ -62,10 +61,13 @@ executeTest('reading | comparsion with null', (store, assert) => {
         );
       });
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
-});
+}
 
 function initTestData(store) {
   return Ember.RSVP.Promise.all([

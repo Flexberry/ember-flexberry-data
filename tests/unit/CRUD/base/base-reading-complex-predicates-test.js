@@ -1,9 +1,8 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
-import executeTest from './execute-odata-CRUD-test';
 
-executeTest('reading | predicates | complex predicates', (store, assert) => {
+export default function readingComplexPredicates(store, assert) {
   assert.expect(4);
   let done = assert.async();
 
@@ -38,10 +37,13 @@ executeTest('reading | predicates | complex predicates', (store, assert) => {
         assert.ok(data.every(item => item.get('name') === 'Oleg' && item.get('karma') === 7), `Predicate "and" | Data`);
       });
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
-});
+}
 
 function initTestData(store) {
   return Ember.RSVP.Promise.all([

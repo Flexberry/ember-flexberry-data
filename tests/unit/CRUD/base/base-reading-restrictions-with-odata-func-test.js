@@ -1,8 +1,7 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from './execute-odata-CRUD-test';
 
-executeTest('reading | restrictions | odata functions', (store, assert) => {
+export default function readingRestrictionsOdataFunctions(store, assert) {
   assert.expect(4);
   let done = assert.async();
 
@@ -32,10 +31,13 @@ executeTest('reading | restrictions | odata functions', (store, assert) => {
         assert.equal(data.get('length'), 1, '< now() | Length');
       });
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
-});
+}
 
 function initTestData(store) {
   let tomorrowDate = new Date();

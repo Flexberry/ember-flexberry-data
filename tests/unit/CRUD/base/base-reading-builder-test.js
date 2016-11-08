@@ -1,8 +1,7 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from './execute-odata-CRUD-test';
 
-executeTest('reading | builder functions', (store, assert) => {
+export default function readingBuilderFunctions(store, assert) {
   assert.expect(10);
   let done = assert.async();
 
@@ -104,10 +103,13 @@ executeTest('reading | builder functions', (store, assert) => {
       );
 
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
-});
+}
 
 function initTestData(store) {
   return Ember.RSVP.Promise.all([

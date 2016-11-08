@@ -2,9 +2,8 @@ import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
-import executeTest from './execute-odata-CRUD-test';
 
-executeTest('reading | predicates | simple predicates | operators', (store, assert) => {
+export default function readingPredicatesSimplePredicatesOperators(store, assert) {
   assert.expect(24);
   let done = assert.async();
 
@@ -121,10 +120,13 @@ executeTest('reading | predicates | simple predicates | operators', (store, asse
         }
       );
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
-});
+}
 
 function initTestData(store) {
   return Ember.RSVP.Promise.all([
@@ -162,4 +164,3 @@ function runTest(store, builders, messages, callback) {
     .then((data2) => callback(data2, messages[1]));
   });
 }
-

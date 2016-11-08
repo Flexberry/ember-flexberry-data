@@ -96,7 +96,10 @@ export default Ember.Service.extend(Ember.Evented, {
       let primaryKeyNameFromSerializer = store.serializerFor(table.name).get('primaryKey');
       let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
 
-      TableClass.prototype.loadRelationships = function(projection) {
+      TableClass.prototype.loadByProjection = function(projection, extend) {
+        Ember.warn('The next version is planned to change the behavior ' +
+          'of loading data from offline store, without specify attributes ' +
+          'and relationships will be loaded only their own object attributes.', projection, { id: 'Dexie.loadByProjection' });
         let promises = [];
         let relationshipsToIterate = Ember.A();
 
@@ -107,13 +110,17 @@ export default Ember.Service.extend(Ember.Evented, {
         if (projection) {
           // Killing two birds with one stone.
           for (let attributeName in this) {
-            if (this.hasOwnProperty(attributeName)) {
-              if (attributeName !== primaryKeyName && !projection.attributes.hasOwnProperty(attributeName)) {
+            if (attributeName !== primaryKeyName && this.hasOwnProperty(attributeName)) {
+              if (!projection.attributes.hasOwnProperty(attributeName) && (!extend || !extend.hasOwnProperty(attributeName))) {
                 delete this[attributeName];
               }
 
               if (projection.attributes.hasOwnProperty(attributeName) &&
               (projection.attributes[attributeName].kind === 'belongsTo' || projection.attributes[attributeName].kind === 'hasMany')) {
+                relationshipsToIterate.pushObject(attributeName);
+              }
+
+              if (extend && extend.hasOwnProperty(attributeName) && relationshipsByName.get(attributeName)) {
                 relationshipsToIterate.pushObject(attributeName);
               }
             }
@@ -146,7 +153,7 @@ export default Ember.Service.extend(Ember.Evented, {
               this[name] = hash;
             }
 
-            return hash.loadRelationships(projection && projection.attributes[name]);
+            return hash.loadByProjection(projection && projection.attributes[name], extend && extend[name]);
           };
 
           if (this[name] && !relationship.options.async && isEmbedded(store, modelClass, name)) {

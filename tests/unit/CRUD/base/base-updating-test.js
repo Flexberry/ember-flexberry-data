@@ -1,8 +1,7 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from './execute-odata-CRUD-test';
 
-executeTest('updating', (store, assert) => {
+export default function updating(store, assert) {
   assert.expect(2);
   let done = assert.async();
 
@@ -58,10 +57,13 @@ executeTest('updating', (store, assert) => {
       })
       .then(() => records);
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
-});
+}
 
 function initTestData(store) {
   // Parent type

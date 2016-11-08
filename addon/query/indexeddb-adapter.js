@@ -56,7 +56,7 @@ export default class extends BaseAdapter {
           data = topskip(order(data));
         }
 
-        Dexie.Promise.all(data.map(i => i.loadRelationships(projection))).then(() => {
+        Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => {
           if (isBadQuery) {
             data = filter(data);
             length = data.length;
@@ -143,6 +143,47 @@ function updateWhereClause(table, query) {
 }
 
 /**
+  Returns object with attributes that necessary include in projection for loading.
+
+  @method extendProjection
+  @param {QueryObject} query
+  @return {Object}
+*/
+function extendProjection(query) {
+  let extend = {};
+  if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate) {
+    let path = '';
+    Information.parseAttributePath(query.predicate.attributePath).forEach((attribute) => {
+      Ember.set(extend, `${path}${attribute}`, {});
+      path += `${attribute}.`;
+    });
+  }
+
+  if (query.predicate instanceof DetailPredicate) {
+    extend[query.predicate.detailPath] = extendProjection(query.predicate);
+  }
+
+  if (query.predicate instanceof ComplexPredicate) {
+    query.predicate.predicates.forEach((predicate) => {
+      Ember.merge(extend, extendProjection({ predicate }));
+    });
+  }
+
+  if (query.order) {
+    for (let i = 0; i < query.order.length; i++) {
+      let path = '';
+      let attributePath = Information.parseAttributePath(query.order.attribute(i).name);
+      for (let i = 0; i < attributePath.length; i++) {
+        Ember.set(extend, `${path}${attributePath[i]}`, {});
+        path += `${attributePath[i]}.`;
+      }
+    }
+  }
+
+  return extend;
+}
+
+/**
   Checks query on contains restrictions by relationships.
 
   @method containsRelationships
@@ -151,31 +192,23 @@ function updateWhereClause(table, query) {
 */
 function containsRelationships(query) {
   let contains = false;
-  if (!query) {
-    return contains;
-  }
-
   if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate) {
     contains = Information.parseAttributePath(query.predicate.attributePath).length > 1;
   }
 
   if (query.predicate instanceof DetailPredicate) {
-    contains = true;
+    return true;
   }
 
   if (query.predicate instanceof ComplexPredicate) {
     query.predicate.predicates.forEach((predicate) => {
-      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
-        contains = Information.parseAttributePath(predicate.attributePath).length > 1;
-      } else if (predicate instanceof DetailPredicate) {
+      if (containsRelationships({ predicate })) {
         contains = true;
-      } else {
-        contains = containsRelationships({ predicate });
       }
     });
   }
 
-  if (query && query.order) {
+  if (query.order) {
     for (let i = 0; i < query.order.length; i++) {
       let attributePath = query.order.attribute(i).name;
       if (Information.parseAttributePath(attributePath).length > 1) {

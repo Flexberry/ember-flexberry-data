@@ -1,9 +1,8 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import { DetailPredicate, StringPredicate } from 'ember-flexberry-data/query/predicate';
-import executeTest from './execute-odata-CRUD-test';
 
-executeTest('reading | restrictions | on fields', (store, assert) => {
+export default function readingRestrictionsOnFields(store, assert) {
   assert.expect(6);
   let done = assert.async();
 
@@ -54,10 +53,13 @@ executeTest('reading | restrictions | on fields', (store, assert) => {
         assert.equal(data.get('length'), 2, 'Restrictions on details fields | Length');
       });
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
-});
+}
 
 function initTestData(store) {
   // Attrs for creating suggestion.
@@ -123,6 +125,9 @@ function initTestData(store) {
         }).save()
       ])
 
+      // It is necessary to fill 'detail' at 'master' in offline.
+      .then((comments) => store._isOnline() ? Ember.RSVP.resolve(comments) : sug.save().then(() => Ember.RSVP.resolve(comments)))
+
       // Creating votes.
       .then((comments) =>
         Ember.RSVP.Promise.all([
@@ -147,6 +152,9 @@ function initTestData(store) {
             comment: comments[2]
           }).save()
         ])
+
+        // It is necessary to fill 'detail' at 'master' in offline.
+        .then(() => Ember.RSVP.all(store._isOnline() ? [] : comments.map(comment => comment.save())))
 
         .then(() =>
           new  Ember.RSVP.Promise((resolve) =>

@@ -1,9 +1,8 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from './execute-odata-CRUD-test';
 
-executeTest('reading | store commands', (store, assert) => {
-  assert.expect(4);
+export default function readingStoreCommands(store, assert) {
+  assert.expect(5);
   let done = assert.async();
 
   Ember.run(() => {
@@ -43,7 +42,6 @@ executeTest('reading | store commands', (store, assert) => {
     })
 
     // queryRecord.
-    // Not working!
     .then(() => {
       store.unloadAll();
       let builder = new QueryBuilder(store)
@@ -55,10 +53,13 @@ executeTest('reading | store commands', (store, assert) => {
         assert.equal(record.get('name'), 'User 2', 'queryRecord')
       );
     })
-    .catch(e => console.log(e, e.message))
+    .catch((e) => {
+      console.log(e, e.message);
+      throw e;
+    })
     .finally(done);
   });
-});
+}
 
 function initTestData(store) {
   return Ember.RSVP.Promise.all([

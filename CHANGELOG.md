@@ -1,6 +1,12 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- At query for IndexedDB if attribute or relationship by which impose restriction, not include in projection, it will be added to selection.
+
+### Fixed
+- Wrong projection for reading data used in `findRecord` and `findAll` methods of online `store` mixin if projection was not specified for query.
+- Search relationships in query with `containsRelationships` function could give false results.
 
 ## [0.7.1-beta.3] - 2016-11-03
 ### Added
