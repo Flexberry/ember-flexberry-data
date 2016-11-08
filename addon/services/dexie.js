@@ -97,9 +97,6 @@ export default Ember.Service.extend(Ember.Evented, {
       let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
 
       TableClass.prototype.loadByProjection = function(projection, extend) {
-        Ember.warn('The next version is planned to change the behavior ' +
-          'of loading data from offline store, without specify attributes ' +
-          'and relationships will be loaded only their own object attributes.', projection, { id: 'Dexie.loadByProjection' });
         let promises = [];
         let relationshipsToIterate = Ember.A();
 
