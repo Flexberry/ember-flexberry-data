@@ -42,39 +42,115 @@ export default class extends BaseAdapter {
   */
   query(query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      let isBadQuery = containsRelationships(query);
-      let order = buildOrder(query);
-      let topskip = buildTopSkip(query);
-      let jsProjection = buildProjection(query);
       let table = this._db.table(query.modelName);
-      let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
-      let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
+      let complexQuery = containsRelationships(query);
+      let fastQuery = !complexQuery && (!query.order || (query.order.length <= 1 && !query.predicate));
+      if (fastQuery) {
+        let offset = query.skip;
+        let limit = query.top;
 
-      (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
-        let length = data.length;
-        if (!isBadQuery) {
-          data = topskip(order(data));
+        table = updateWhereClause(table, query);
+
+        if (table instanceof this._db.Table) {
+          if (query.order.length === 1 && query.order.attribute(0).direction === 'asc') {
+            let orderBy = query.order.attribute(0).name;
+
+            table = table.orderBy(orderBy);
+
+          } else if (query.order.length === 0) {
+            // TODO: Skip sorting.
+          } else {
+            let orderDesc = query.order.attribute(0).direction === 'desc';
+            if (orderDesc) {
+              table = table.reverse(); // TODO: table already Collection.
+            }
+            // TODO: convert into collection, sort it and continue.
+          }
+
+          // TODO: this work if no filter and simply sort by one field.
+          if (offset) {
+            table = table.offset(offset);
+          }
+
+          if (limit) {
+            table = table.limit(limit);
+          }
+
+          table.toArray().then((data) => {
+            let length = data.length;
+
+            let response = { meta: {}, data: data };
+            if (query.count) {
+              response.meta.count = length; // TODO: wrong count (need total count without skip-top).
+            }
+
+            resolve(response);
+          }, reject).catch((error) => {reject(error);});
+        } else {
+          if (query.order) {
+            // TODO: need get orderBy variable from query for one or more fields.
+            let orderBy;
+            table = table.sortBy(orderBy);
+          } else {
+            if (offset) {
+              table = table.offset(offset);
+            }
+
+            if (limit) {
+              table = table.limit(limit);
+            }
+
+            table = table.toArray();
+          }
+
+          table.then(data => {
+
+            // TODO: if this is result of sortBy() Promise need apply top-skip.
+            let length = data.length; // TODO: if was called toArray, then that count is wrong (need total count without skip-top).
+
+            let response = { meta: {}, data: data };
+            if (query.count) {
+              response.meta.count = length;
+            }
+
+            resolve(response);
+          }, reject).catch((error) => {reject(error);});
         }
+      } else {
+        let isBadQuery = containsRelationships(query);
+        let order = buildOrder(query);
+        let topskip = buildTopSkip(query);
+        let jsProjection = buildProjection(query);
+        let table = this._db.table(query.modelName);
+        let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
+        let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
-        Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => {
-          if (isBadQuery) {
-            data = filter(data);
-            length = data.length;
+        (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
+          let length = data.length;
+          if (!isBadQuery) {
             data = topskip(order(data));
           }
 
-          if (!projection) {
-            data = jsProjection(data);
-          }
+          Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => {
+            if (isBadQuery) {
+              data = filter(data);
+              length = data.length;
+              data = topskip(order(data));
+            }
 
-          let response = { meta: {}, data: data };
-          if (query.count) {
-            response.meta.count = length;
-          }
+            if (!projection) {
+              data = jsProjection(data);
+            }
 
-          resolve(response);
+            let response = { meta: {}, data: data };
+            if (query.count) {
+              response.meta.count = length;
+            }
+
+            resolve(response);
+          }, reject);
         }, reject);
-      }, reject);
+      }
     });
   }
 }
