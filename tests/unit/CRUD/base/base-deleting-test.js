@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
+import { DetailPredicate } from 'ember-flexberry-data/query/predicate';
 
 export default function deleting(store, assert) {
   assert.expect(4);
@@ -14,8 +15,19 @@ export default function deleting(store, assert) {
       let voteId = records.votes[0];
       return store.findRecord('ember-flexberry-dummy-comment-vote', voteId)
       .then((vote) => {
-        vote.deleteRecord();
-        return vote.save();
+        // In offline when delete 'detail' need to update 'master'.
+        if (store._isOnline()) {
+          vote.deleteRecord();
+          return vote.save();
+        } else {
+          let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment')
+            .selectByProjection('CommentE')
+            .where(new DetailPredicate('userVotes').any('id', 'eq', voteId));
+          return store.queryRecord('ember-flexberry-dummy-comment', builder.build()).then((comment) => {
+            vote.deleteRecord();
+            return Ember.RSVP.all([comment.save(), vote.save()]);
+          });
+        }
       })
 
       .then(() => {
@@ -46,7 +58,9 @@ export default function deleting(store, assert) {
         let comment = comments.get('firstObject');
         let vote = comment.get('userVotes').find(item => item.get('id') === records.votes[1]);
         vote.deleteRecord();
-        return vote.save();
+
+        // In offline when delete 'detail' need to update 'master'.
+        return store._isOnline() ? vote.save() : Ember.RSVP.all([comment.save(), vote.save()]);
       })
 
       .then(() => {
@@ -85,7 +99,9 @@ export default function deleting(store, assert) {
       .then((comments) => {
         let vote = comments.get('firstObject.userVotes.firstObject');
         vote.deleteRecord();
-        return vote.save();
+
+        // In offline when delete 'detail' need to update 'master'.
+        return store._isOnline() ? vote.save() : Ember.RSVP.all([comments.get('firstObject').save(), vote.save()]);
       })
 
       .then(() => {
@@ -178,6 +194,9 @@ function initTestData(store) {
         suggestion: sug,
       }).save()
 
+      // It is necessary to fill 'detail' at 'master' in offline.
+      .then((commentItem) => store._isOnline() ? Ember.RSVP.resolve(commentItem) : sug.save().then(() => Ember.RSVP.resolve(commentItem)))
+
       // Creating votes.
       .then((commentItem) =>
         Ember.RSVP.Promise.all([
@@ -196,6 +215,9 @@ function initTestData(store) {
             comment: commentItem
           }).save()
         ])
+
+        // It is necessary to fill 'detail' at 'master' in offline.
+        .then((votes) => store._isOnline() ? Ember.RSVP.resolve(votes) : commentItem.save().then(() => Ember.RSVP.resolve(votes)))
 
         // Returns.
         .then((votes) =>

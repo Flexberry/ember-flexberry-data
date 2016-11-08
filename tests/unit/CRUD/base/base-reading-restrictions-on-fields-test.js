@@ -125,6 +125,9 @@ function initTestData(store) {
         }).save()
       ])
 
+      // It is necessary to fill 'detail' at 'master' in offline.
+      .then((comments) => store._isOnline() ? Ember.RSVP.resolve(comments) : sug.save().then(() => Ember.RSVP.resolve(comments)))
+
       // Creating votes.
       .then((comments) =>
         Ember.RSVP.Promise.all([
@@ -149,6 +152,9 @@ function initTestData(store) {
             comment: comments[2]
           }).save()
         ])
+
+        // It is necessary to fill 'detail' at 'master' in offline.
+        .then(() => Ember.RSVP.all(store._isOnline() ? [] : comments.map(comment => comment.save())))
 
         .then(() =>
           new  Ember.RSVP.Promise((resolve) =>

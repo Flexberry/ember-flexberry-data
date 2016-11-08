@@ -68,11 +68,17 @@ function initTestData(store) {
         suggestion: sug,
       }).save()
 
+      // It is necessary to fill 'detail' at 'master' in offline.
+      .then((comment) => store._isOnline() ? Ember.RSVP.resolve(comment) : sug.save().then(() => Ember.RSVP.resolve(comment)))
+
       .then((comment) =>
         store.createRecord('ember-flexberry-dummy-comment-vote', {
           applicationUser: user,
           comment: comment
         }).save()
+
+        // It is necessary to fill 'detail' at 'master' in offline.
+        .then((vote) => store._isOnline() ? Ember.RSVP.resolve(vote) : comment.save().then(() => Ember.RSVP.resolve(vote)))
 
         .then((vote) =>
           new Ember.RSVP.Promise((resolve) =>
