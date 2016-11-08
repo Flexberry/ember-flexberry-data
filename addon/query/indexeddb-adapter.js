@@ -56,7 +56,7 @@ export default class extends BaseAdapter {
           data = topskip(order(data));
         }
 
-        Dexie.Promise.all(data.map(i => i.loadRelationships(projection))).then(() => {
+        Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => {
           if (isBadQuery) {
             data = filter(data);
             length = data.length;
@@ -140,6 +140,47 @@ function updateWhereClause(table, query) {
   }
 
   throw new Error(`Unsupported predicate '${predicate}'`);
+}
+
+/**
+  Returns object with attributes that necessary include in projection for loading.
+
+  @method extendProjection
+  @param {QueryObject} query
+  @return {Object}
+*/
+function extendProjection(query) {
+  let extend = {};
+  if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate) {
+    let path = '';
+    Information.parseAttributePath(query.predicate.attributePath).forEach((attribute) => {
+      Ember.set(extend, `${path}${attribute}`, {});
+      path += `${attribute}.`;
+    });
+  }
+
+  if (query.predicate instanceof DetailPredicate) {
+    extend[query.predicate.detailPath] = extendProjection(query.predicate);
+  }
+
+  if (query.predicate instanceof ComplexPredicate) {
+    query.predicate.predicates.forEach((predicate) => {
+      Ember.merge(extend, extendProjection({ predicate }));
+    });
+  }
+
+  if (query.order) {
+    for (let i = 0; i < query.order.length; i++) {
+      let path = '';
+      let attributePath = Information.parseAttributePath(query.order.attribute(i).name);
+      for (let i = 0; i < attributePath.length; i++) {
+        Ember.set(extend, `${path}${attributePath[i]}`, {});
+        path += `${attributePath[i]}.`;
+      }
+    }
+  }
+
+  return extend;
 }
 
 /**
