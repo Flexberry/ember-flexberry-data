@@ -151,31 +151,23 @@ function updateWhereClause(table, query) {
 */
 function containsRelationships(query) {
   let contains = false;
-  if (!query) {
-    return contains;
-  }
-
   if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate) {
     contains = Information.parseAttributePath(query.predicate.attributePath).length > 1;
   }
 
   if (query.predicate instanceof DetailPredicate) {
-    contains = true;
+    return true;
   }
 
   if (query.predicate instanceof ComplexPredicate) {
     query.predicate.predicates.forEach((predicate) => {
-      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
-        contains = Information.parseAttributePath(predicate.attributePath).length > 1;
-      } else if (predicate instanceof DetailPredicate) {
+      if (containsRelationships({ predicate })) {
         contains = true;
-      } else {
-        contains = containsRelationships({ predicate });
       }
     });
   }
 
-  if (query && query.order) {
+  if (query.order) {
     for (let i = 0; i < query.order.length; i++) {
       let attributePath = query.order.attribute(i).name;
       if (Information.parseAttributePath(attributePath).length > 1) {
