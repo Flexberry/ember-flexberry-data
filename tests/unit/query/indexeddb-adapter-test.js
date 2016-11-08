@@ -651,6 +651,63 @@ test('adapter | indexeddb | order with skip-top', (assert) => {
   });
 });
 
+module('performance');
+
+test('adapter | indexeddb | no filter, order asc, skip, top', (assert) => {
+  let data = getPerformanceTestData(15000, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+  .orderBy('Price asc')
+  .skip(5000)
+  .top(20)
+  .select('id,Price');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 20);
+    assert.ok(result.data[0].Price <= result.data[19].Price);
+  });
+});
+
+test('adapter | indexeddb | filter, no order, skip, top', (assert) => {
+  let data = getPerformanceTestData(15000, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+    .where('Price', FilterOperator.Geq, 7500)
+    .skip(5000)
+    .top(20)
+    .select('id,Price');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 20);
+    assert.ok(result.data[10].Price >= 7500);
+  });
+});
+
+test('adapter | indexeddb | filter, order asc, no skip, no top', (assert) => {
+  let data = getPerformanceTestData(15000, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+    .where('Price', FilterOperator.Geq, 7500)
+    .orderBy('Price asc')
+    .select('id,Price');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
+    assert.ok(result.data);
+    assert.ok(result.data[10].Price >= 7500);
+    assert.ok(result.data[0].Price <= result.data[19].Price);
+  });
+});
+
+module('query masters');
+
 test('adapter | indexeddb | order | master field', (assert) => {
   let data = {
     employee: [
@@ -725,9 +782,9 @@ function executeTest(data, query, assert, callback) {
   let done = assert.async();
   let dbName = databasePrefix + Math.random();
 
-  let checkResult = (result, db) => {
+  let checkResult = (result, db, startExecTime) => {
     try {
-      callback(result);
+      callback(result, startExecTime);
     } finally {
       db.close();
       deleteTempDb(dbName).finally(done);
@@ -744,8 +801,9 @@ function executeTest(data, query, assert, callback) {
     store.set('offlineSchema', schema(dbName));
     let db = dexie.dexie(dbName, store);
     db.open().then((db) => {
+      let startExecTime = performance.now();
       new IndexedDbAdapter(db).query(query).then((result) => {
-        checkResult(result, db);
+        checkResult(result, db, startExecTime);
       }).catch((error) => {
         failQuery(error, db);
       });
@@ -788,4 +846,35 @@ function createTempDb(dbName, data) {
 
     return Dexie.Promise.all(promises).then(db.close);
   });
+}
+
+/**
+ * Creates temp data for IndexedDB database.
+ *
+ * @param {Number} count Count of creating objects.
+ * @param {QUnit.Assert} assert
+ * @returns {Object[]} data Objects for temp database.
+ */
+function getPerformanceTestData(count, assert) {
+  let creatingStartTime = performance.now();
+  let data = {
+    employee: [
+      { id: 1, Price: 200, Age: 10, Name: 'Felix' },
+      { id: 2, Price: 100, Age: 10, Name: 'Edward' },
+      { id: 3, Price: 900, Age: 15, Name: 'George' },
+    ]
+  };
+  for (let i = 4; i <= count; i++)
+  {
+    data.employee.push({
+      id: i,
+      Price: 200 + Math.floor(Math.random() * count),
+      Age: 10 + Math.floor(Math.random() * 99),
+      Name: `King of Kongo Ololong ${Math.floor(Math.random() * count)}`
+    });
+  }
+
+  let creatingEndTime = performance.now();
+  assert.ok(true, `${Math.round(creatingEndTime - creatingStartTime)} ms construct ${data.employee.length} objects time`);
+  return data;
 }
