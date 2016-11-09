@@ -30,9 +30,7 @@ export default Ember.Object.extend({
     const queueKey = this._queue.length;
 
     this._queue[queueKey] = new Ember.RSVP.Promise((resolve, reject) => {
-      this._queue[queueKey - 1].then(() => {
-        return callback(resolve, reject);
-      }).catch((reason) => {
+      this._queue[queueKey - 1].then(() => callback(resolve, reject)).catch((reason) => {
         Ember.Logger.error(reason);
         if (this.get('continueOnError')) {
           resolve();
