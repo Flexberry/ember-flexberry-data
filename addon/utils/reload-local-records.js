@@ -108,8 +108,8 @@ function createLocalRecords(store, localAdapter, localStore, modelType, records,
   let recordsCount = records.get('length');
   let accumulatedRecordsCount = 0;
   let createdRecordsPromises = records.map(function(record) {
-    return _this._syncDownQueue.attach((resolve, reject) => {
-      return createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params).then(() => {
+    return _this._syncDownQueue.attach((resolve, reject) =>
+      createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params).then(() => {
         accumulatedRecordsCount++;
         if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
           localAdapter.bulkUpdateOrCreate(localStore, true, false).then(() => {
@@ -118,8 +118,7 @@ function createLocalRecords(store, localAdapter, localStore, modelType, records,
         } else {
           resolve(record);
         }
-      }, reject);
-    });
+      }, reject));
   });
   return RSVP.all(createdRecordsPromises);
 }

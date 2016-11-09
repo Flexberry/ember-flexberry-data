@@ -82,11 +82,9 @@ export default Ember.Service.extend({
 
     } else if (isModelInstance(descriptor)) {
       let store = getOwner(this).lookup('service:store');
-      return _this._syncDownQueue.attach((resolve, reject) => {
-        return _this._syncDownRecord(store, descriptor, reload, projectionName, params).then(() => {
-          bulkUpdateOrCreateCall(descriptor, resolve, reject);
-        }, reject);
-      });
+      return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, descriptor, reload, projectionName, params).then(() => {
+        bulkUpdateOrCreateCall(descriptor, resolve, reject);
+      }, reject));
     } else if (isArray(descriptor)) {
       let store = getOwner(this).lookup('service:store');
       let recordsCount =  descriptor.get ? descriptor.get('length') : descriptor.length;
