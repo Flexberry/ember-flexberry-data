@@ -1,8 +1,9 @@
 import Ember from 'ember';
 import Builder from '../query/builder';
 import { SimplePredicate } from '../query/predicate';
-import { reloadLocalRecords, syncDownRelatedRecords } from '../utils/reload-local-records';
+import { reloadLocalRecords, createLocalRecord } from '../utils/reload-local-records';
 import isModelInstance from '../utils/is-model-instance';
+import Queue from '../utils/queue';
 
 const { RSVP, isNone, isArray, getOwner, get } = Ember;
 
@@ -12,6 +13,9 @@ const { RSVP, isNone, isArray, getOwner, get } = Ember;
   @extends Ember.Object
 */
 export default Ember.Service.extend({
+  /* Queue of promises for syncDown */
+  _syncDownQueue: Queue.create(),
+
   /**
     Store that use for making requests in offline mode.
     By default it is set to global instane of {{#crossLink "LocalStore"}}{{/crossLink}} class.
@@ -20,6 +24,15 @@ export default Ember.Service.extend({
     @type <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
   */
   offlineStore: undefined,
+
+  /**
+    Number of "main" records (include related records for relationships) that should be accumulated before bulk operation will be performed.
+
+    @property numberOfRecordsForPerformingBulkOperations
+    @type Number
+    @default 10
+  */
+  numberOfRecordsForPerformingBulkOperations: 10,
 
   /**
   */
@@ -50,25 +63,45 @@ export default Ember.Service.extend({
    * @param {Object} [params] Additional parameters for syncing down.
    * @param {Query.QueryObject} [params.queryObject] QueryObject instance to make query if descriptor is a typeName.
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
-   * @return {Promie}
+   * @return {Promise}
    */
   syncDown: function(descriptor, reload, projectionName, params) {
     let _this = this;
+
+    let bulkUpdateOrCreateCall = (record, resolve, reject) => {
+      let localStore = _this.get('offlineStore');
+      let modelName = record.constructor.modelName;
+      let localAdapter = localStore.adapterFor(modelName);
+      return localAdapter.bulkUpdateOrCreate(localStore, true, false).then(() => {
+        resolve(record);
+      }, reject);
+    };
 
     if (typeof descriptor === 'string') {
       return reloadLocalRecords.call(this, descriptor, reload, projectionName, params);
 
     } else if (isModelInstance(descriptor)) {
-      return _this._syncDownRecord(descriptor, reload, projectionName, params);
-
+      let store = getOwner(this).lookup('service:store');
+      return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, descriptor, reload, projectionName, params).then(() =>
+        bulkUpdateOrCreateCall(descriptor, resolve, reject), reject));
     } else if (isArray(descriptor)) {
+      let store = getOwner(this).lookup('service:store');
+      let recordsCount =  descriptor.get ? descriptor.get('length') : descriptor.length;
+      let accumulatedRecordsCount = 0;
       let updatedRecords = descriptor.map(function(record) {
-        return _this._syncDownRecord(record, reload, projectionName, params);
+        return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, record, reload, projectionName, params).then(() => {
+          accumulatedRecordsCount++;
+          if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
+            return bulkUpdateOrCreateCall(record, resolve, reject);
+          } else {
+            resolve(record);
+          }
+        }, reject));
       });
       return RSVP.all(updatedRecords);
 
     } else {
-      throw new Error('Input can only be a string, a DS.Model or an array of DS.Model, but is ' + descriptor);
+      throw new Error('Input for sync down can only be a string, a DS.Model or an array of DS.Model, but is ' + descriptor);
     }
   },
 
@@ -86,6 +119,7 @@ export default Ember.Service.extend({
    * Saves data to local store.
    *
    * @method _syncDownRecord
+   * @param {DS.Store or Subclass} store Store of application.
    * @param {DS.Model} record Record to save in local store.
    * @param {Boolean} [reload] If set to true then syncer perform remote reload for data, otherwise data will get from the store.
    * @param {String} [projectionName] Name of projection for remote reload of data. If not set then all properties of record, except navigation properties, will be read.
@@ -94,56 +128,30 @@ export default Ember.Service.extend({
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
    * @private
    */
-  _syncDownRecord: function(record, reload, projectionName, params) {
+  _syncDownRecord: function(store, record, reload, projectionName, params) {
     var _this = this;
 
     function saveRecordToLocalStore(store, record, projectionName) {
-      let dexieService = getOwner(_this).lookup('service:dexie');
-      dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
       let modelName = record.constructor.modelName;
       let modelType = store.modelFor(modelName);
       let projection = isNone(projectionName) ? null : modelType.projections[projectionName];
       let localStore = this.get('offlineStore');
       let localAdapter = localStore.adapterFor(modelName);
-      let snapshot = record._createSnapshot();
-      let unloadRecordFromStore = () => {
-
-        // TODO: Uncomment this after fix bug with load unloaded models.
-        // if (params && params.unloadSyncedRecords) {
-        //   if (store.get('onlineStore')) {
-        //     store.get('onlineStore').unloadRecord(record);
-        //   } else {
-        //     store.unloadRecord(record);
-        //   }
-        // }
-      };
 
       if (record.get('isDeleted')) {
+        let snapshot = record._createSnapshot();
         return localAdapter.deleteRecord(localStore, snapshot.type, snapshot).then(() => {
+          let dexieService = getOwner(_this).lookup('service:dexie');
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
+          return record;
         }).catch((reason) => {
-          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           Ember.Logger.error(reason);
-        }).finally(unloadRecordFromStore);
+        });
       } else {
-        return localAdapter.updateOrCreate(localStore, snapshot.type, snapshot).then(function() {
-          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-          let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
-          if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
-            return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection, params);
-          } else {
-            Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
-              'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
-            return RSVP.resolve();
-          }
-        }).catch((reason) => {
-          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-          Ember.Logger.error(reason);
-        }).finally(unloadRecordFromStore);
+        return createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params);
       }
     }
 
-    var store = getOwner(this).lookup('service:store');
     if (reload) {
       let modelName = record.constructor.modelName;
       let options = {
@@ -151,11 +159,15 @@ export default Ember.Service.extend({
         useOnlineStore: true
       };
       options = isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
-      return store.findRecord(modelName, record.id, options).then(function(reloadedRecord) {
+      return new Ember.RSVP.Promise((resolve, reject) => {
+        store.findRecord(modelName, record.id, options).then(function(reloadedRecord) {
 
-        // TODO: Uncomment this after fix bug with load unloaded models.
-        // store.get('onlineStore').unloadRecord(modelName);
-        return saveRecordToLocalStore.call(_this, store, reloadedRecord, projectionName);
+          // TODO: Uncomment this after fix bug with load unloaded models.
+          // store.get('onlineStore').unloadRecord(reloadedRecord);
+          saveRecordToLocalStore.call(_this, store, reloadedRecord, projectionName).then(() => {
+            resolve(record);
+          }, reject);
+        });
       });
     } else {
       return saveRecordToLocalStore.call(_this, store, record, projectionName);

@@ -8,6 +8,10 @@ module.exports = function(defaults) {
       enabled: true,
       esnext: true,
       configPath: './.jscsrc'
+    },
+
+    babel: {
+      includePolyfill: true
     }
   });
 
