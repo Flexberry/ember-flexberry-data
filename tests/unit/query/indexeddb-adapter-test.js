@@ -653,6 +653,19 @@ test('adapter | indexeddb | order with skip-top', (assert) => {
 
 module('performance');
 
+test('adapter | indexeddb | no filter, no order, no skip, no top', (assert) => {
+  let data = getPerformanceTestData(15000, assert);
+
+  let builder = new QueryBuilder(store, modelName).select('id,Price,Name');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 15000);
+  });
+});
+
 test('adapter | indexeddb | no filter, order asc, skip, top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
@@ -668,6 +681,22 @@ test('adapter | indexeddb | no filter, order asc, skip, top', (assert) => {
     assert.ok(result.data);
     assert.equal(result.data.length, 20);
     assert.ok(result.data[0].Price <= result.data[19].Price);
+  });
+});
+
+test('adapter | indexeddb | no filter, order desc, no skip, no top', (assert) => {
+  let data = getPerformanceTestData(15000, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+  .orderBy('Price desc')
+  .select('id,Price');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 15000);
+    assert.ok(result.data[0].Price >= result.data[19].Price);
   });
 });
 
@@ -694,15 +723,50 @@ test('adapter | indexeddb | filter, order asc, no skip, no top', (assert) => {
 
   let builder = new QueryBuilder(store, modelName)
     .where('Price', FilterOperator.Geq, 7500)
-    .orderBy('Price asc')
-    .select('id,Price');
+    .orderBy('Name asc')
+    .select('id,Price,Name');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
     assert.ok(result.data);
     assert.ok(result.data[10].Price >= 7500);
-    assert.ok(result.data[0].Price <= result.data[19].Price);
+    assert.ok(result.data[0].Name <= result.data[19].Name);
+  });
+});
+
+test('adapter | indexeddb | filter, order desc, no skip, no top', (assert) => {
+  let data = getPerformanceTestData(15000, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+    .where('Price', FilterOperator.Geq, 7500)
+    .orderBy('Name desc')
+    .select('id,Price,Name');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
+    assert.ok(result.data);
+    assert.ok(result.data[10].Price >= 7500);
+    assert.ok(result.data[0].Name >= result.data[19].Name);
+  });
+});
+
+test('adapter | indexeddb | filter, many order asc desc, no skip, no top', (assert) => {
+  let data = getPerformanceTestData(15000, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+    .where('Price', FilterOperator.Geq, 7500)
+    .orderBy('Age asc,Name desc')
+    .select('id,Age,Name,Price');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
+    assert.ok(result.data);
+    assert.ok(result.data[10].Price >= 7500);
+    assert.ok(result.data[0].Age <= result.data[19].Age);
+    assert.ok(result.data[0].Name >= result.data[1].Name);
   });
 });
 

@@ -44,7 +44,7 @@ export default class extends BaseAdapter {
     return new Ember.RSVP.Promise((resolve, reject) => {
       let table = this._db.table(query.modelName);
       let complexQuery = containsRelationships(query);
-      let fastQuery = !complexQuery && (!query.order || (query.order.length <= 1 && !query.predicate));
+      let fastQuery = !complexQuery;
       if (fastQuery) {
         let offset = query.skip;
         let limit = query.top;
@@ -52,20 +52,23 @@ export default class extends BaseAdapter {
         table = updateWhereClause(table, query);
 
         if (table instanceof this._db.Table) {
-          if (query.order.length === 1 && query.order.attribute(0).direction === 'asc') {
+          // Go this way if filter is empty.
+          if (query.order && query.order.length === 1 && query.order.attribute(0).direction === 'asc') {
+            // Go this way if filter is empty and used asc order by one attribute.
             let orderBy = query.order.attribute(0).name;
 
-            table = table.orderBy(orderBy);
-
-          } else if (query.order.length === 0) {
-            // TODO: Skip sorting.
-          } else {
+            table = table.orderBy(orderBy); // Now table is Collection.
+          } else if (query.order) {
+            // Go this way if many order attrs or desc sorting.
+            // TODO: support many order attrs.
             let orderDesc = query.order.attribute(0).direction === 'desc';
             if (orderDesc) {
-              table = table.reverse(); // TODO: table already Collection.
+              table = table.reverse(); // Now table is Collection.
             }
-            // TODO: convert into collection, sort it and continue.
+            // TODO: convert into collection, sort it and continue. Optimize by convert top-skip.
           }
+
+          //TODO: check query without filter and order.
 
           // TODO: this work if no filter and simply sort by one field.
           if (offset) {
@@ -87,10 +90,46 @@ export default class extends BaseAdapter {
             resolve(response);
           }, reject).catch((error) => {reject(error);});
         } else {
+          // Go this way if used simple filter.
           if (query.order) {
-            // TODO: need get orderBy variable from query for one or more fields.
             let orderBy;
-            table = table.sortBy(orderBy);
+            if (query.order.length === 1) {
+              if (query.order.attribute(0).direction === 'desc') {
+                table = table.reverse(); // TODO: Optimize by convert top-skip.
+              }
+
+              orderBy = query.order.attribute(0).name;
+              table = table.sortBy(orderBy);
+            } else {
+              let sortFunc = function(a) {
+                  let len = query.order.length;
+
+                  let singleSort = function(a, b, i) {
+                    if (i === undefined) {
+                      i = 0;
+                    }
+
+                    if (i >= len) {
+                      return 0;
+                    }
+
+                    let attrName = query.order.attribute(i).name;
+                    let direction = query.order.attribute(i).direction;
+                    i = i + 1;
+
+                    if (direction === 'asc') {
+                      return a[attrName] < b[attrName] ? -1 : a[attrName] > b[attrName] ? 1 : singleSort(a, b, i);
+                    } else {
+                      return a[attrName] > b[attrName] ? -1 : a[attrName] < b[attrName] ? 1 : singleSort(a, b, i);
+                    }
+                  };
+
+                  return a.sort(singleSort);
+                };
+
+              table = table.toArray(sortFunc);
+            }
+
           } else {
             if (offset) {
               table = table.offset(offset);
@@ -120,14 +159,14 @@ export default class extends BaseAdapter {
         let isBadQuery = containsRelationships(query);
         let order = buildOrder(query);
         let topskip = buildTopSkip(query);
-        let jsProjection = buildProjection(query);
+        let jsProjection = buildProjection(query); // TODO: проблема с проекциями - если проекция задана через select, то loadByProjection не вызовется для такого случая.
         let table = this._db.table(query.modelName);
         let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
         let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
-        Ember.warn('The next version is planned to change the behavior ' +
-          'of loading data from offline store, without specify attributes ' +
-          'and relationships will be loaded only their own object attributes.', projection, { id: 'IndexedDBAdapter.query' });
+        // Ember.warn('The next version is planned to change the behavior ' +
+        //   'of loading data from offline store, without specify attributes ' +
+        //   'and relationships will be loaded only their own object attributes.', projection, { id: 'IndexedDBAdapter.query' });
 
         (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
           let length = data.length;
