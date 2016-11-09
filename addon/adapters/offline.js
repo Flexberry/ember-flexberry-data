@@ -25,6 +25,9 @@ const { RSVP } = Ember;
   @extends <a href="http://emberjs.com/api/data/classes/DS.Adapter.html">DS.Adapter</a>
 */
 export default DS.Adapter.extend({
+  /* Map of hashes for bulk operations */
+  _hashesToStore: Ember.Map.create(),
+
   /**
     If you would like your adapter to use a custom serializer you can set the defaultSerializer property to be the name of the custom serializer.
     [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#property_defaultSerializer).
@@ -222,9 +225,7 @@ export default DS.Adapter.extend({
       }).catch(reject);
     });
 
-    return dexieService.performQueueOperation(db, createOperation).then(() => {
-      this._createOrUpdateParentModels(store, type, hash);
-    });
+    return dexieService.performQueueOperation(db, createOperation).then(() => this._createOrUpdateParentModels(store, type, hash));
   },
 
   /**
@@ -249,9 +250,7 @@ export default DS.Adapter.extend({
       }).catch(reject);
     });
 
-    return dexieService.performQueueOperation(db, updateOperation).then(() => {
-      this._createOrUpdateParentModels(store, type, hash);
-    });
+    return dexieService.performQueueOperation(db, updateOperation).then(() => this._createOrUpdateParentModels(store, type, hash));
   },
 
   /**
@@ -267,14 +266,14 @@ export default DS.Adapter.extend({
   deleteRecord(store, type, snapshot) {
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
-    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id)).then(() => {
-      this._deleteParentModels(store, type, snapshot.id);
-    });
+    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id)).then(() =>
+      this._deleteParentModels(store, type, snapshot.id));
   },
 
   /**
     Create record if it does not exist, or update changed fields of record.
 
+    @method updateOrCreate
     @param {DS.Store} store
     @param {DS.Model} type
     @param {DS.Snapshot} snapshot
@@ -303,10 +302,119 @@ export default DS.Adapter.extend({
           let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
           return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).put(hash)).then(resolve, reject);
         }
-      });
+      }).catch(reject);
     });
 
     return dexieService.performOperation(db, updateOrCreateOperation);
+  },
+
+  /**
+    Stores record's hash for performing bulk operaion with {{#crossLink "Adapter.Offline/bulkUpdateOrCreate:method"}} method.
+
+    @method addHashForBulkUpdateOrCreate
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {DS.Snapshot} snapshot
+    @param {Object} fieldsToUpdate
+    @return {Promise}
+  */
+  addHashForBulkUpdateOrCreate(store, type, snapshot, fieldsToUpdate) {
+    let _this = this;
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let addHashForBulkOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).get(snapshot.id).then((record) => {
+        if (!Ember.isNone(fieldsToUpdate) && record) {
+          if (!Ember.$.isEmptyObject(fieldsToUpdate)) {
+            let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+            for (let attrName in hash) {
+              if (hash.hasOwnProperty(attrName) && !fieldsToUpdate.hasOwnProperty(attrName)) {
+                delete hash[attrName];
+              }
+            }
+
+            Ember.merge(record, hash);
+            _this._storeHashForBulkOperation(type.modelName, record);
+          } else {
+            dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
+          }
+        } else {
+          let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+          _this._storeHashForBulkOperation(type.modelName, hash);
+        }
+
+        resolve();
+      }).catch(reject);
+    });
+
+    return dexieService.performOperation(db, addHashForBulkOperation);
+  },
+
+  /**
+    Performing bulk operaion with previously stored hashes.
+
+    @method bulkUpdateOrCreate
+    @param {DS.Store} store
+    @param {Boolean} replaceIfExist If set to `true` then hashes will be replaced in store if they already exist
+    @param {Boolean} clearHashesOnTransactionFail If set to `true` then previously stored hashes will be cleared if transaction with bulk operations fails
+    @return {Promise}
+  */
+  bulkUpdateOrCreate(store, replaceIfExist, clearHashesOnTransactionFail) {
+    let _this = this;
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let numberOfRecordsToStore = 0;
+    let bulkUpdateOrCreateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
+      if (_this._hashesToStore.size === 0) {
+        resolve();
+      } else {
+        let tableNames = _this._hashesToStore._keys.toArray();
+        db.transaction('rw', tableNames, function* () {
+          for (let i = 0; i < tableNames.length; i++) {
+            let tableName = tableNames[i];
+            let arrayOfHashes = _this._hashesToStore.get(tableName);
+            numberOfRecordsToStore += arrayOfHashes ? arrayOfHashes.length : 0;
+            if (replaceIfExist) {
+              yield db.table(tableName).bulkPut(arrayOfHashes ? arrayOfHashes : {});
+            } else {
+              yield db.table(tableName).bulkAdd(arrayOfHashes ? arrayOfHashes : {});
+            }
+          }
+        }).then(() => {
+          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
+          _this._hashesToStore.clear();
+          resolve();
+        }).catch((err) => {
+          if (clearHashesOnTransactionFail) {
+            Ember.Logger.warn('Some data loss while performing sync down records!');
+            dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
+            _this._hashesToStore.clear();
+          }
+
+          reject(err);
+        });
+      }
+    });
+
+    return dexieService.performQueueOperation(db, bulkUpdateOrCreateOperation);
+  },
+
+  /**
+    Stores hash for performing bulk operaion into map.
+
+    @method _storeHashForBulkOperation
+    @param {String} modelName
+    @param {Object} hash
+    @private
+  */
+  _storeHashForBulkOperation(modelName, hash) {
+    let arrayOfHashes = this._hashesToStore.get(modelName);
+    if (!arrayOfHashes) {
+      arrayOfHashes = [];
+    }
+
+    arrayOfHashes.push(hash);
+    this._hashesToStore.set(modelName, arrayOfHashes);
   },
 
   /**
@@ -410,9 +518,10 @@ export default DS.Adapter.extend({
 
       let dexieService = _this.get('dexieService');
       let db = dexieService.dexie(_this.get('dbName'), store);
-      dexieService.performQueueOperation(db, (db) => db.table(parentModelName).put(newHash)).then(() => {
-        _this._createOrUpdateParentModels(store, store.modelFor(parentModelName), record);
-      });
+      return dexieService.performQueueOperation(db, (db) => db.table(parentModelName).put(newHash)).then(() =>
+        _this._createOrUpdateParentModels(store, store.modelFor(parentModelName), record));
+    } else {
+      return Ember.RSVP.resolve();
     }
   },
 
@@ -422,9 +531,10 @@ export default DS.Adapter.extend({
     if (parentModelName) {
       let dexieService = _this.get('dexieService');
       let db = dexieService.dexie(_this.get('dbName'), store);
-      dexieService.performQueueOperation(db, (db) => db.table(parentModelName).delete(id)).then(() => {
-        _this._deleteParentModels(store, store.modelFor(parentModelName), id);
-      });
+      return dexieService.performQueueOperation(db, (db) => db.table(parentModelName).delete(id)).then(() =>
+        _this._deleteParentModels(store, store.modelFor(parentModelName), id));
+    } else {
+      return Ember.RSVP.resolve();
     }
   }
 });

@@ -7,6 +7,10 @@ module.exports = function(defaults) {
     jscsOptions: {
       enabled: true,
       esnext: true
+    },
+
+    babel: {
+      includePolyfill: true
     }
   });
 
