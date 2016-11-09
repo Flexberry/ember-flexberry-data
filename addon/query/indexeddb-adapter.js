@@ -125,6 +125,10 @@ export default class extends BaseAdapter {
         let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
         let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
+        Ember.warn('The next version is planned to change the behavior ' +
+          'of loading data from offline store, without specify attributes ' +
+          'and relationships will be loaded only their own object attributes.', projection, { id: 'IndexedDBAdapter.query' });
+
         (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
           let length = data.length;
           if (!isBadQuery) {
