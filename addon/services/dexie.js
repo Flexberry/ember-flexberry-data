@@ -18,6 +18,9 @@ const { isArray, get, merge } = Ember;
   @public
 */
 export default Ember.Service.extend(Ember.Evented, {
+  /* Queue for requests to Dexie */
+  _queue: Queue.create(),
+
   /**
     Contains instances of Dexie.
 
@@ -177,17 +180,17 @@ export default Ember.Service.extend(Ember.Evented, {
     @return {Promise} Promise for added to queue operation.
   */
   performQueueOperation(db, operation) {
-    return this._queue.attach((resolve, reject) => {
+    return this._queue.attach((resolve) => {
       if (!db.isOpen()) {
-        db.open().then((db) => {
+        return db.open().then((db) => {
           operation(db).then(() => {
             resolve();
-          }).catch(reject);
-        }).catch(reject);
+          });
+        });
       } else {
-        operation(db).then(() => {
+        return operation(db).then(() => {
           resolve();
-        }).catch(reject);
+        });
       }
     });
   },
@@ -206,8 +209,5 @@ export default Ember.Service.extend(Ember.Evented, {
     } else {
       return operation(db);
     }
-  },
-
-  /* Queue for requests to Dexie */
-  _queue: Queue.create()
+  }
 });
