@@ -7,6 +7,8 @@
 ### Fixed
 - Wrong projection for reading data used in `findRecord` and `findAll` methods of online `store` mixin if projection was not specified for query.
 - Searching presence of relationships in query with `containsRelationships` method of `indexeddb-adapter` could return wrong results.
+- Optimized performance of `syncDown` method of `syncer` service.
+- Optimized performance of different operations with data in addon by setting some factories as singletons. It optimizes performance of lookup operation for particular factory because new instance of factory class is not creating.
 
 ## [0.7.1-beta.3] - 2016-11-03
 ### Added
