@@ -770,6 +770,27 @@ test('adapter | indexeddb | filter, many order asc desc, no skip, no top', (asse
   });
 });
 
+test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) => {
+  let data = getPerformanceTestData(15000, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+    .where('Price', FilterOperator.Geq, 7500)
+    .orderBy('Age asc,Name desc')
+    .skip(5000)
+    .top(20)
+    .select('id,Age,Name,Price');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
+    assert.ok(result.data);
+    assert.equal(result.data.length, 20);
+    assert.ok(result.data[10].Price >= 7500);
+    assert.ok(result.data[0].Age <= result.data[19].Age);
+    assert.ok(result.data[0].Name >= result.data[1].Name);
+  });
+});
+
 module('query masters');
 
 test('adapter | indexeddb | order | master field', (assert) => {

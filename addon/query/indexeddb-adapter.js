@@ -51,26 +51,15 @@ export default class extends BaseAdapter {
 
         table = updateWhereClause(table, query);
 
-        if (table instanceof this._db.Table) {
-          // Go this way if filter is empty.
+        if (table instanceof this._db.Table && (!query.order || (query.order && query.order.length === 1 && query.order.attribute(0).direction === 'asc'))) {
+          // Go this way if filter is empty and simply sort by one field.
           if (query.order && query.order.length === 1 && query.order.attribute(0).direction === 'asc') {
             // Go this way if filter is empty and used asc order by one attribute.
             let orderBy = query.order.attribute(0).name;
 
             table = table.orderBy(orderBy); // Now table is Collection.
-          } else if (query.order) {
-            // Go this way if many order attrs or desc sorting.
-            // TODO: support many order attrs.
-            let orderDesc = query.order.attribute(0).direction === 'desc';
-            if (orderDesc) {
-              table = table.reverse(); // Now table is Collection.
-            }
-            // TODO: convert into collection, sort it and continue. Optimize by convert top-skip.
           }
 
-          //TODO: check query without filter and order.
-
-          // TODO: this work if no filter and simply sort by one field.
           if (offset) {
             table = table.offset(offset);
           }
@@ -91,45 +80,40 @@ export default class extends BaseAdapter {
           }, reject).catch((error) => {reject(error);});
         } else {
           // Go this way if used simple filter.
+          if (table instanceof this._db.Table) {
+            table = table.toCollection();
+          }
+
+          let skipTopApplyed = false;
+
           if (query.order) {
-            let orderBy;
-            if (query.order.length === 1) {
-              if (query.order.attribute(0).direction === 'desc') {
-                table = table.reverse(); // TODO: Optimize by convert top-skip.
-              }
+            let sortFunc = function(a) {
+                let len = query.order.length;
 
-              orderBy = query.order.attribute(0).name;
-              table = table.sortBy(orderBy);
-            } else {
-              let sortFunc = function(a) {
-                  let len = query.order.length;
+                let singleSort = function(a, b, i) {
+                  if (i === undefined) {
+                    i = 0;
+                  }
 
-                  let singleSort = function(a, b, i) {
-                    if (i === undefined) {
-                      i = 0;
-                    }
+                  if (i >= len) {
+                    return 0;
+                  }
 
-                    if (i >= len) {
-                      return 0;
-                    }
+                  let attrName = query.order.attribute(i).name;
+                  let direction = query.order.attribute(i).direction;
+                  i = i + 1;
 
-                    let attrName = query.order.attribute(i).name;
-                    let direction = query.order.attribute(i).direction;
-                    i = i + 1;
-
-                    if (direction === 'asc') {
-                      return a[attrName] < b[attrName] ? -1 : a[attrName] > b[attrName] ? 1 : singleSort(a, b, i);
-                    } else {
-                      return a[attrName] > b[attrName] ? -1 : a[attrName] < b[attrName] ? 1 : singleSort(a, b, i);
-                    }
-                  };
-
-                  return a.sort(singleSort);
+                  if (direction === 'asc') {
+                    return a[attrName] < b[attrName] ? -1 : a[attrName] > b[attrName] ? 1 : singleSort(a, b, i);
+                  } else {
+                    return a[attrName] > b[attrName] ? -1 : a[attrName] < b[attrName] ? 1 : singleSort(a, b, i);
+                  }
                 };
 
-              table = table.toArray(sortFunc);
-            }
+                return a.sort(singleSort);
+              };
 
+            table = table.toArray(sortFunc);
           } else {
             if (offset) {
               table = table.offset(offset);
@@ -139,13 +123,21 @@ export default class extends BaseAdapter {
               table = table.limit(limit);
             }
 
+            skipTopApplyed = true;
             table = table.toArray();
           }
 
           table.then(data => {
-
-            // TODO: if this is result of sortBy() Promise need apply top-skip.
             let length = data.length; // TODO: if was called toArray, then that count is wrong (need total count without skip-top).
+
+            // if this is result of sortBy() Promise need apply top-skip.
+            if (!skipTopApplyed) {
+              let topskip = buildTopSkip(query);
+              data = topskip(data);
+            } else {
+              // TODO: get real count;
+              length = 0;
+            }
 
             let response = { meta: {}, data: data };
             if (query.count) {
@@ -159,7 +151,7 @@ export default class extends BaseAdapter {
         let isBadQuery = containsRelationships(query);
         let order = buildOrder(query);
         let topskip = buildTopSkip(query);
-        let jsProjection = buildProjection(query); // TODO: проблема с проекциями - если проекция задана через select, то loadByProjection не вызовется для такого случая.
+        let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
         let table = this._db.table(query.modelName);
         let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
         let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
@@ -174,6 +166,7 @@ export default class extends BaseAdapter {
             data = topskip(order(data));
           }
 
+          // TODO: Optimize calls extendProjection - enough one call.
           Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => {
             if (isBadQuery) {
               data = filter(data);
