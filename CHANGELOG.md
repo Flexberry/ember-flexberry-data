@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.4] - 2016-11-09
 ### Changed
 - It is not necessary now to add attribute or relationship to projection if it is needed for building restriction.
 
