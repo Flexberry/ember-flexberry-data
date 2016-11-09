@@ -56,7 +56,7 @@ export function reloadLocalRecords(type, reload, projectionName, params) {
   }
 }
 
-function createLocalRecord(store, localAdapter, localStore, modelType, record, projection, params) {
+export function createLocalRecord(store, localAdapter, localStore, modelType, record, projection, params) {
   let _this = this;
   let dexieService = Ember.getOwner(store).lookup('service:dexie');
   let unloadRecordFromStore = () => {
@@ -74,20 +74,21 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
   if (record.get('id')) {
     var snapshot = record._createSnapshot();
     let fieldsToUpdate = projection ? projection.attributes : null;
-    return localAdapter.updateOrCreate(localStore, modelType, snapshot, fieldsToUpdate).then(function() {
-      dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
+    return new Ember.RSVP.Promise((resolve, reject) => localAdapter.addHashForBulkUpdateOrCreate(localStore, modelType, snapshot, fieldsToUpdate).then(() => {
       let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
       if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
-        return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection, params);
+        return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection, params).then(() => {
+          resolve(record);
+        }, reject);
       } else {
         Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
           'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
-        return RSVP.resolve();
+        resolve(record);
       }
     }).catch((reason) => {
-      dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
       Ember.Logger.error(reason);
-    }).finally(unloadRecordFromStore);
+      reject(reason);
+    }).finally(unloadRecordFromStore));
   } else {
     var recordName = record.constructor && record.constructor.modelName;
     var warnMessage = 'Record ' + recordName + ' does not have an id, therefor we can not create it locally: ';
@@ -96,18 +97,28 @@ function createLocalRecord(store, localAdapter, localStore, modelType, record, p
 
     Ember.Logger.warn(warnMessage, recordData);
 
-    dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-
-    return RSVP.resolve();
+    return RSVP.resolve(record);
   }
 }
 
 function createLocalRecords(store, localAdapter, localStore, modelType, records, projection, params) {
   let _this = this;
-  var createdRecords = records.map(function(record) {
-    return createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params);
+  let recordsCount = records.get('length');
+  let accumulatedRecordsCount = 0;
+  let createdRecordsPromises = records.map(function(record) {
+    return _this._syncDownQueue.attach((resolve, reject) =>
+      createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params).then(() => {
+        accumulatedRecordsCount++;
+        if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
+          return localAdapter.bulkUpdateOrCreate(localStore, true, false).then(() => {
+            resolve(record);
+          }, reject);
+        } else {
+          resolve(record);
+        }
+      }, reject));
   });
-  return RSVP.all(createdRecords);
+  return RSVP.all(createdRecordsPromises);
 }
 
 export function syncDownRelatedRecords(store, mainRecord, localAdapter, localStore, projection, params) {
