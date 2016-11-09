@@ -1,12 +1,12 @@
 # Change Log
 
 ## [Unreleased]
-### Added
-- At query for IndexedDB if attribute or relationship by which impose restriction, not include in projection, it will be added to selection.
+### Changed
+- It is not necessary now to add attribute or relationship to projection if it is needed for building restriction.
 
 ### Fixed
 - Wrong projection for reading data used in `findRecord` and `findAll` methods of online `store` mixin if projection was not specified for query.
-- Search relationships in query with `containsRelationships` function could give false results.
+- Searching presence of relationships in query with `containsRelationships` method of `indexeddb-adapter` could return wrong results.
 
 ## [0.7.1-beta.3] - 2016-11-03
 ### Added
