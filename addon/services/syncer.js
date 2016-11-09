@@ -72,7 +72,7 @@ export default Ember.Service.extend({
       let localStore = _this.get('offlineStore');
       let modelName = record.constructor.modelName;
       let localAdapter = localStore.adapterFor(modelName);
-      localAdapter.bulkUpdateOrCreate(localStore, true, false).then(() => {
+      return localAdapter.bulkUpdateOrCreate(localStore, true, false).then(() => {
         resolve(record);
       }, reject);
     };
@@ -82,24 +82,21 @@ export default Ember.Service.extend({
 
     } else if (isModelInstance(descriptor)) {
       let store = getOwner(this).lookup('service:store');
-      return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, descriptor, reload, projectionName, params).then(() => {
-        bulkUpdateOrCreateCall(descriptor, resolve, reject);
-      }, reject));
+      return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, descriptor, reload, projectionName, params).then(() =>
+        bulkUpdateOrCreateCall(descriptor, resolve, reject), reject));
     } else if (isArray(descriptor)) {
       let store = getOwner(this).lookup('service:store');
       let recordsCount =  descriptor.get ? descriptor.get('length') : descriptor.length;
       let accumulatedRecordsCount = 0;
       let updatedRecords = descriptor.map(function(record) {
-        return _this._syncDownQueue.attach((resolve, reject) => {
-          return _this._syncDownRecord(store, record, reload, projectionName, params).then(() => {
-            accumulatedRecordsCount++;
-            if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
-              bulkUpdateOrCreateCall(record, resolve, reject);
-            } else {
-              resolve(record);
-            }
-          }, reject);
-        });
+        return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, record, reload, projectionName, params).then(() => {
+          accumulatedRecordsCount++;
+          if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
+            return bulkUpdateOrCreateCall(record, resolve, reject);
+          } else {
+            resolve(record);
+          }
+        }, reject));
       });
       return RSVP.all(updatedRecords);
 

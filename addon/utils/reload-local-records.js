@@ -74,23 +74,21 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
   if (record.get('id')) {
     var snapshot = record._createSnapshot();
     let fieldsToUpdate = projection ? projection.attributes : null;
-    return new Ember.RSVP.Promise((resolve, reject) => {
-      localAdapter.addHashForBulkUpdateOrCreate(localStore, modelType, snapshot, fieldsToUpdate).then(() => {
-        let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
-        if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
-          syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection, params).then(() => {
-            resolve(record);
-          }, reject);
-        } else {
-          Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
-            'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
+    return new Ember.RSVP.Promise((resolve, reject) => localAdapter.addHashForBulkUpdateOrCreate(localStore, modelType, snapshot, fieldsToUpdate).then(() => {
+      let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
+      if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
+        return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection, params).then(() => {
           resolve(record);
-        }
-      }).catch((reason) => {
-        Ember.Logger.error(reason);
-        reject(reason);
-      }).finally(unloadRecordFromStore);
-    });
+        }, reject);
+      } else {
+        Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
+          'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
+        resolve(record);
+      }
+    }).catch((reason) => {
+      Ember.Logger.error(reason);
+      reject(reason);
+    }).finally(unloadRecordFromStore));
   } else {
     var recordName = record.constructor && record.constructor.modelName;
     var warnMessage = 'Record ' + recordName + ' does not have an id, therefor we can not create it locally: ';
@@ -112,7 +110,7 @@ function createLocalRecords(store, localAdapter, localStore, modelType, records,
       createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params).then(() => {
         accumulatedRecordsCount++;
         if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
-          localAdapter.bulkUpdateOrCreate(localStore, true, false).then(() => {
+          return localAdapter.bulkUpdateOrCreate(localStore, true, false).then(() => {
             resolve(record);
           }, reject);
         } else {
