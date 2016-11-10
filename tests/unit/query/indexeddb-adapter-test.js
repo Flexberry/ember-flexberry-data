@@ -660,9 +660,9 @@ test('adapter | indexeddb | no filter, no order, no skip, no top', (assert) => {
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
-    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
-    assert.ok(result.data);
-    assert.equal(result.data.length, 15000);
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, 15000, 'Loading 15000 objects');
   });
 });
 
@@ -677,10 +677,10 @@ test('adapter | indexeddb | no filter, order asc, skip, top', (assert) => {
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
-    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
-    assert.ok(result.data);
-    assert.equal(result.data.length, 20);
-    assert.ok(result.data[0].Price <= result.data[19].Price);
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, 20, 'Loading 20 objects');
+    assert.ok(result.data[0].Price <= result.data[19].Price, 'Check ordering by Price');
   });
 });
 
@@ -693,10 +693,10 @@ test('adapter | indexeddb | no filter, order desc, no skip, no top', (assert) =>
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
-    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
-    assert.ok(result.data);
-    assert.equal(result.data.length, 15000);
-    assert.ok(result.data[0].Price >= result.data[19].Price);
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, 15000, 'Loading 15000 objects');
+    assert.ok(result.data[0].Price >= result.data[19].Price, 'Check ordering by Price');
   });
 });
 
@@ -711,10 +711,10 @@ test('adapter | indexeddb | filter, no order, skip, top', (assert) => {
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
-    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
-    assert.ok(result.data);
-    assert.equal(result.data.length, 20);
-    assert.ok(result.data[10].Price >= 7500);
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, 20, 'Loading 20 objects');
+    assert.ok(result.data[10].Price >= 7500, 'Check filter apply');
   });
 });
 
@@ -728,10 +728,10 @@ test('adapter | indexeddb | filter, order asc, no skip, no top', (assert) => {
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
-    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
-    assert.ok(result.data);
-    assert.ok(result.data[10].Price >= 7500);
-    assert.ok(result.data[0].Name <= result.data[19].Name);
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.ok(result.data[10].Price >= 7500, 'Check filter apply');
+    assert.ok(result.data[0].Name <= result.data[19].Name, 'Check ordering by Name');
   });
 });
 
@@ -745,10 +745,10 @@ test('adapter | indexeddb | filter, order desc, no skip, no top', (assert) => {
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
-    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
-    assert.ok(result.data);
-    assert.ok(result.data[10].Price >= 7500);
-    assert.ok(result.data[0].Name >= result.data[19].Name);
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.ok(result.data[10].Price >= 7500, 'Check filter apply');
+    assert.ok(result.data[0].Name >= result.data[19].Name, 'Check ordering by Name');
   });
 });
 
@@ -762,11 +762,11 @@ test('adapter | indexeddb | filter, many order asc desc, no skip, no top', (asse
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
-    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
-    assert.ok(result.data);
-    assert.ok(result.data[10].Price >= 7500);
-    assert.ok(result.data[0].Age <= result.data[19].Age);
-    assert.ok(result.data[0].Name >= result.data[1].Name);
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.ok(result.data[10].Price >= 7500, 'Check filter apply');
+    assert.ok(result.data[0].Age <= result.data[19].Age, 'Check ordering by Age');
+    assert.ok(result.data[0].Name >= result.data[1].Name, 'Check ordering by Name');
   });
 });
 
@@ -782,12 +782,12 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
-    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
-    assert.ok(result.data);
-    assert.equal(result.data.length, 20);
-    assert.ok(result.data[10].Price >= 7500);
-    assert.ok(result.data[0].Age <= result.data[19].Age);
-    assert.ok(result.data[0].Name >= result.data[1].Name);
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, 20, 'Loading 20 objects');
+    assert.ok(result.data[10].Price >= 7500, 'Check filter apply');
+    assert.ok(result.data[0].Age <= result.data[19].Age, 'Check ordering by Age');
+    assert.ok(result.data[0].Name >= result.data[1].Name, 'Check ordering by Name');
   });
 });
 
