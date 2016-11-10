@@ -66,6 +66,19 @@ export default Ember.Service.extend(Ember.Evented, {
   queueSyncUpCurrentModelName: null,
 
   /**
+    Allows to enable or disable continuation of performing CRUD operations in queue if error occurs.
+
+    @property queueContinueOnError
+    @type Boolean
+    @default true
+  */
+  queueContinueOnError: true,
+
+  init() {
+    this.get('_queue').set('continueOnError', this.get('queueContinueOnError'));
+  },
+
+  /**
     Return the only instance of Dexie database with specified schemas.
     Schemas are specified in base store in `offlineSchema` property.
 
