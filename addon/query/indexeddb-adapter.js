@@ -52,9 +52,9 @@ export default class extends BaseAdapter {
 
         table = updateWhereClause(table, query);
 
-        if (table instanceof this._db.Table && (!query.order || (query.order && query.order.length === 1 && query.order.attribute(0).direction === 'asc'))) {
+        if (table instanceof this._db.Table && (!query.order || (query.order && query.order.length === 1 && query.order.attribute(0).direction !== 'desc'))) {
           // Go this way if filter is empty and simply sort by one field.
-          if (query.order && query.order.length === 1 && query.order.attribute(0).direction === 'asc') {
+          if (query.order) {
             // Go this way if filter is empty and used asc order by one attribute.
             let orderBy = query.order.attribute(0).name;
 
@@ -71,6 +71,11 @@ export default class extends BaseAdapter {
 
           table.toArray().then((data) => {
             Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => { // TODO: loadByProjection need rewrite.
+              if (!projection) {
+                let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
+                data = jsProjection(data);
+              }
+
               let length = data.length;
 
               let response = { meta: {}, data: data };
@@ -162,6 +167,11 @@ export default class extends BaseAdapter {
             }
 
             Dexie.Promise.all(promises).then(() => {
+              if (!projection) {
+                let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
+                data = jsProjection(data);
+              }
+
               let response = { meta: {}, data: data };
               if (query.count) {
                 response.meta.count = length;
