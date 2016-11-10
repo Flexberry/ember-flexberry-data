@@ -44,6 +44,7 @@ export default class extends BaseAdapter {
     return new Ember.RSVP.Promise((resolve, reject) => {
       let table = this._db.table(query.modelName);
       let complexQuery = containsRelationships(query);
+      let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
       let fastQuery = !complexQuery;
       if (fastQuery) {
         let offset = query.skip;
@@ -69,15 +70,26 @@ export default class extends BaseAdapter {
           }
 
           table.toArray().then((data) => {
-            let length = data.length;
+            Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => { // TODO: loadByProjection need rewrite.
+              let length = data.length;
 
-            let response = { meta: {}, data: data };
-            if (query.count) {
-              response.meta.count = length; // TODO: wrong count (need total count without skip-top).
-            }
-
-            resolve(response);
-          }, reject).catch((error) => {reject(error);});
+              let response = { meta: {}, data: data };
+              if (query.count) {
+                if (!offset && !limit) {
+                  response.meta.count = length;
+                  resolve(response);
+                } else {
+                  let fullTable = updateWhereClause(this._db.table(query.modelName), query);
+                  fullTable.count().then((count) => {
+                    response.meta.count = count;
+                    resolve(response);
+                  }, reject);
+                }
+              } else {
+                resolve(response);
+              }
+            }, reject);
+          }, reject);
         } else {
           // Go this way if used simple filter.
           if (table instanceof this._db.Table) {
@@ -128,27 +140,39 @@ export default class extends BaseAdapter {
           }
 
           table.then(data => {
-            let length = data.length; // TODO: if was called toArray, then that count is wrong (need total count without skip-top).
+            let length = data.length;
+            let countPromise;
 
             // if this is result of sortBy() Promise need apply top-skip.
             if (!skipTopApplyed) {
               let topskip = buildTopSkip(query);
               data = topskip(data);
             } else {
-              // TODO: get real count;
-              length = 0;
+              if (query.count && (offset || limit)) {
+                let fullTable = updateWhereClause(this._db.table(query.modelName), query);
+                countPromise = fullTable.count().then((count) => {
+                  length = count;
+                }, reject);
+              }
             }
 
-            let response = { meta: {}, data: data };
-            if (query.count) {
-              response.meta.count = length;
+            let promises = data.map(i => i.loadByProjection(projection, extendProjection(query)));
+            if (countPromise) {
+              promises.push(countPromise);
             }
 
-            resolve(response);
-          }, reject).catch((error) => {reject(error);});
+            Dexie.Promise.all(promises).then(() => {
+              let response = { meta: {}, data: data };
+              if (query.count) {
+                response.meta.count = length;
+              }
+
+              resolve(response);
+            }, reject);
+          }, reject);
         }
       } else {
-        let isBadQuery = containsRelationships(query);
+        let isBadQuery = complexQuery;
         let order = buildOrder(query);
         let topskip = buildTopSkip(query);
         let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
@@ -167,6 +191,8 @@ export default class extends BaseAdapter {
           }
 
           // TODO: Optimize calls extendProjection - enough one call.
+          // loadByProjection call with query, projection already was processed into select and expand.
+          // Builder.build will process extending Projection.
           Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => {
             if (isBadQuery) {
               data = filter(data);
