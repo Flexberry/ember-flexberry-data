@@ -659,7 +659,7 @@ test('adapter | indexeddb | no filter, no order, no skip, no top', (assert) => {
   let builder = new QueryBuilder(store, modelName).select('id,Price,Name');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
-    let endExecTime = performance.now();
+    let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
     assert.ok(result.data);
     assert.equal(result.data.length, 15000);
@@ -676,7 +676,7 @@ test('adapter | indexeddb | no filter, order asc, skip, top', (assert) => {
   .select('id,Price');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
-    let endExecTime = performance.now();
+    let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
     assert.ok(result.data);
     assert.equal(result.data.length, 20);
@@ -692,7 +692,7 @@ test('adapter | indexeddb | no filter, order desc, no skip, no top', (assert) =>
   .select('id,Price');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
-    let endExecTime = performance.now();
+    let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
     assert.ok(result.data);
     assert.equal(result.data.length, 15000);
@@ -710,7 +710,7 @@ test('adapter | indexeddb | filter, no order, skip, top', (assert) => {
     .select('id,Price');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
-    let endExecTime = performance.now();
+    let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
     assert.ok(result.data);
     assert.equal(result.data.length, 20);
@@ -727,7 +727,7 @@ test('adapter | indexeddb | filter, order asc, no skip, no top', (assert) => {
     .select('id,Price,Name');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
-    let endExecTime = performance.now();
+    let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
     assert.ok(result.data);
     assert.ok(result.data[10].Price >= 7500);
@@ -744,7 +744,7 @@ test('adapter | indexeddb | filter, order desc, no skip, no top', (assert) => {
     .select('id,Price,Name');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
-    let endExecTime = performance.now();
+    let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
     assert.ok(result.data);
     assert.ok(result.data[10].Price >= 7500);
@@ -761,7 +761,7 @@ test('adapter | indexeddb | filter, many order asc desc, no skip, no top', (asse
     .select('id,Age,Name,Price');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
-    let endExecTime = performance.now();
+    let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
     assert.ok(result.data);
     assert.ok(result.data[10].Price >= 7500);
@@ -781,7 +781,7 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
     .select('id,Age,Name,Price');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
-    let endExecTime = performance.now();
+    let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time`);
     assert.ok(result.data);
     assert.equal(result.data.length, 20);
@@ -886,7 +886,7 @@ function executeTest(data, query, assert, callback) {
     store.set('offlineSchema', schema(dbName));
     let db = dexie.dexie(dbName, store);
     db.open().then((db) => {
-      let startExecTime = performance.now();
+      let startExecTime = window.performance.now();
       new IndexedDbAdapter(db).query(query).then((result) => {
         checkResult(result, db, startExecTime);
       }).catch((error) => {
@@ -941,7 +941,7 @@ function createTempDb(dbName, data) {
  * @returns {Object[]} data Objects for temp database.
  */
 function getPerformanceTestData(count, assert) {
-  let creatingStartTime = performance.now();
+  let creatingStartTime = window.performance.now();
   let data = {
     employee: [
       { id: 1, Price: 200, Age: 10, Name: 'Felix' },
@@ -959,7 +959,7 @@ function getPerformanceTestData(count, assert) {
     });
   }
 
-  let creatingEndTime = performance.now();
+  let creatingEndTime = window.performance.now();
   assert.ok(true, `${Math.round(creatingEndTime - creatingStartTime)} ms construct ${data.employee.length} objects time`);
   return data;
 }
