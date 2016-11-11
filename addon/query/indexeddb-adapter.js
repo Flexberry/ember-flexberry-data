@@ -45,6 +45,7 @@ export default class extends BaseAdapter {
       let table = this._db.table(query.modelName);
       let complexQuery = containsRelationships(query);
       let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
+      let extendedProjection = extendProjection(query);
       let fastQuery = !complexQuery;
       if (fastQuery) {
         let offset = query.skip;
@@ -70,7 +71,7 @@ export default class extends BaseAdapter {
           }
 
           table.toArray().then((data) => {
-            Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => { // TODO: loadByProjection need rewrite.
+            Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendedProjection))).then(() => { // TODO: loadByProjection need rewrite.
               if (!projection) {
                 let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
                 data = jsProjection(data);
@@ -161,7 +162,7 @@ export default class extends BaseAdapter {
               }
             }
 
-            let promises = data.map(i => i.loadByProjection(projection, extendProjection(query)));
+            let promises = data.map(i => i.loadByProjection(projection, extendedProjection));
             if (countPromise) {
               promises.push(countPromise);
             }
@@ -190,9 +191,9 @@ export default class extends BaseAdapter {
         let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
         let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
-        // Ember.warn('The next version is planned to change the behavior ' +
-        //   'of loading data from offline store, without specify attributes ' +
-        //   'and relationships will be loaded only their own object attributes.', projection, { id: 'IndexedDBAdapter.query' });
+        Ember.warn('The next version is planned to change the behavior ' +
+          'of loading data from offline store, without specify attributes ' +
+          'and relationships will be loaded only their own object attributes.', projection, { id: 'IndexedDBAdapter.query' });
 
         (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
           let length = data.length;
@@ -200,10 +201,9 @@ export default class extends BaseAdapter {
             data = topskip(order(data));
           }
 
-          // TODO: Optimize calls extendProjection - enough one call.
-          // loadByProjection call with query, projection already was processed into select and expand.
+          // TODO: loadByProjection call with query, projection already was processed into select and expand.
           // Builder.build will process extending Projection.
-          Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => {
+          Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendedProjection))).then(() => {
             if (isBadQuery) {
               data = filter(data);
               length = data.length;
