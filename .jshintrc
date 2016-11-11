@@ -4,6 +4,9 @@
     "window",
     "-Promise"
   ],
+  "globals": {
+    "performance": true
+  },
   "browser": true,
   "boss": true,
   "curly": true,

@@ -42,43 +42,187 @@ export default class extends BaseAdapter {
   */
   query(query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      let isBadQuery = containsRelationships(query);
-      let order = buildOrder(query);
-      let topskip = buildTopSkip(query);
-      let jsProjection = buildProjection(query);
       let table = this._db.table(query.modelName);
-      let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
+      let complexQuery = containsRelationships(query);
       let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
+      let extendedProjection = extendProjection(query);
+      let fastQuery = !complexQuery;
+      if (fastQuery) {
+        let offset = query.skip;
+        let limit = query.top;
 
-      Ember.warn('The next version is planned to change the behavior ' +
-        'of loading data from offline store, without specify attributes ' +
-        'and relationships will be loaded only their own object attributes.', projection, { id: 'IndexedDBAdapter.query' });
+        table = updateWhereClause(table, query);
 
-      (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
-        let length = data.length;
-        if (!isBadQuery) {
-          data = topskip(order(data));
+        if (table instanceof this._db.Table && (!query.order || (query.order && query.order.length === 1 && query.order.attribute(0).direction !== 'desc'))) {
+          // Go this way if filter is empty and simply sort by one field.
+          if (query.order) {
+            // Go this way if filter is empty and used asc order by one attribute.
+            let orderBy = query.order.attribute(0).name;
+
+            table = table.orderBy(orderBy); // Now table is Collection.
+          }
+
+          if (offset) {
+            table = table.offset(offset);
+          }
+
+          if (limit) {
+            table = table.limit(limit);
+          }
+
+          table.toArray().then((data) => {
+            Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendedProjection))).then(() => { // TODO: loadByProjection need rewrite.
+              if (!projection) {
+                let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
+                data = jsProjection(data);
+              }
+
+              let length = data.length;
+
+              let response = { meta: {}, data: data };
+              if (query.count) {
+                if (!offset && !limit) {
+                  response.meta.count = length;
+                  resolve(response);
+                } else {
+                  let fullTable = updateWhereClause(this._db.table(query.modelName), query);
+                  fullTable.count().then((count) => {
+                    response.meta.count = count;
+                    resolve(response);
+                  }, reject);
+                }
+              } else {
+                resolve(response);
+              }
+            }, reject);
+          }, reject);
+        } else {
+          // Go this way if used simple filter.
+          if (table instanceof this._db.Table) {
+            table = table.toCollection();
+          }
+
+          let skipTopApplyed = false;
+
+          if (query.order) {
+            let sortFunc = function(a) {
+                let len = query.order.length;
+
+                let singleSort = function(a, b, i) {
+                  if (i === undefined) {
+                    i = 0;
+                  }
+
+                  if (i >= len) {
+                    return 0;
+                  }
+
+                  let attrName = query.order.attribute(i).name;
+                  let direction = query.order.attribute(i).direction;
+                  i = i + 1;
+
+                  if (direction === 'asc') {
+                    return a[attrName] < b[attrName] ? -1 : a[attrName] > b[attrName] ? 1 : singleSort(a, b, i);
+                  } else {
+                    return a[attrName] > b[attrName] ? -1 : a[attrName] < b[attrName] ? 1 : singleSort(a, b, i);
+                  }
+                };
+
+                return a.sort(singleSort);
+              };
+
+            table = table.toArray(sortFunc);
+          } else {
+            if (offset) {
+              table = table.offset(offset);
+            }
+
+            if (limit) {
+              table = table.limit(limit);
+            }
+
+            skipTopApplyed = true;
+            table = table.toArray();
+          }
+
+          table.then(data => {
+            let length = data.length;
+            let countPromise;
+
+            // if this is result of sortBy() Promise need apply top-skip.
+            if (!skipTopApplyed) {
+              let topskip = buildTopSkip(query);
+              data = topskip(data);
+            } else {
+              if (query.count && (offset || limit)) {
+                let fullTable = updateWhereClause(this._db.table(query.modelName), query);
+                countPromise = fullTable.count().then((count) => {
+                  length = count;
+                }, reject);
+              }
+            }
+
+            let promises = data.map(i => i.loadByProjection(projection, extendedProjection));
+            if (countPromise) {
+              promises.push(countPromise);
+            }
+
+            Dexie.Promise.all(promises).then(() => {
+              if (!projection) {
+                let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
+                data = jsProjection(data);
+              }
+
+              let response = { meta: {}, data: data };
+              if (query.count) {
+                response.meta.count = length;
+              }
+
+              resolve(response);
+            }, reject);
+          }, reject);
         }
+      } else {
+        let isBadQuery = complexQuery;
+        let order = buildOrder(query);
+        let topskip = buildTopSkip(query);
+        let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
+        let table = this._db.table(query.modelName);
+        let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
+        let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
-        Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendProjection(query)))).then(() => {
-          if (isBadQuery) {
-            data = filter(data);
-            length = data.length;
+        Ember.warn('The next version is planned to change the behavior ' +
+          'of loading data from offline store, without specify attributes ' +
+          'and relationships will be loaded only their own object attributes.', projection, { id: 'IndexedDBAdapter.query' });
+
+        (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
+          let length = data.length;
+          if (!isBadQuery) {
             data = topskip(order(data));
           }
 
-          if (!projection) {
-            data = jsProjection(data);
-          }
+          // TODO: loadByProjection call with query, projection already was processed into select and expand.
+          // Builder.build will process extending Projection.
+          Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendedProjection))).then(() => {
+            if (isBadQuery) {
+              data = filter(data);
+              length = data.length;
+              data = topskip(order(data));
+            }
 
-          let response = { meta: {}, data: data };
-          if (query.count) {
-            response.meta.count = length;
-          }
+            if (!projection) {
+              data = jsProjection(data);
+            }
 
-          resolve(response);
+            let response = { meta: {}, data: data };
+            if (query.count) {
+              response.meta.count = length;
+            }
+
+            resolve(response);
+          }, reject);
         }, reject);
-      }, reject);
+      }
     });
   }
 }
