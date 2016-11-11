@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Optimized performance of query for loading offline data from IndexedDB for simple predicate and ordering by own object properties.
 
 ## [0.7.1-beta.4] - 2016-11-09
 ### Changed
