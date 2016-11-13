@@ -19,7 +19,7 @@ const schema = (dbName) => {
   object[dbName] = {
     1: {
       employee: 'id,Age,Name,Surname,CountryName,Price,Active,Country,Creator,Manager,*Tags',
-      creator: 'id,Name,Age',
+      creator: 'id,Name,Age,Country',
       country: 'id,Name',
       tag: 'id,Name,Creator'
     },
@@ -791,6 +791,27 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
   });
 });
 
+module('Performance joins');
+
+test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (assert) => {
+  let data = getJoinsPerformanceTestData(15000, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+    .where('Price', FilterOperator.Geq, 7500)
+    .orderBy('Country.Name desc,Age asc,Name desc')
+    .skip(5000)
+    .top(20)
+    .select('id,Age,Name,Price,Country.Name');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = window.performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, 20, 'Loading 20 objects');
+    assert.ok(result.data[10].Price >= 7500, 'Check filter apply');
+  });
+});
+
 module('query masters');
 
 test('adapter | indexeddb | order | master field', (assert) => {
@@ -956,6 +977,61 @@ function getPerformanceTestData(count, assert) {
       Price: 200 + Math.floor(Math.random() * count),
       Age: 10 + Math.floor(Math.random() * 99),
       Name: `King of Kongo Ololong ${Math.floor(Math.random() * count)}`
+    });
+  }
+
+  let creatingEndTime = window.performance.now();
+  assert.ok(true, `${Math.round(creatingEndTime - creatingStartTime)} ms construct ${data.employee.length} objects time`);
+  return data;
+}
+
+/**
+ * Creates temp data for IndexedDB database.
+ *
+ * @param {Number} count Count of creating objects.
+ * @param {QUnit.Assert} assert
+ * @returns {Object[]} data Objects for temp database.
+ */
+function getJoinsPerformanceTestData(count, assert) {
+  let creatingStartTime = window.performance.now();
+
+  let data = {
+    employee: [
+      { id: 1, Price: 200, Age: 10, Name: 'Felix', Creator: 1, Country: 1 },
+      { id: 2, Price: 100, Age: 10, Name: 'Edward', Creator: 1, Country: 1 },
+      { id: 3, Price: 900, Age: 15, Name: 'George', Creator: 2, Country: 1 }
+    ],
+    creator: [
+      { id: 1, Age: 10, Name: 'Felix', Country: 1 },
+      { id: 2, Age: 15, Name: 'Felix', Country: 1 },
+      { id: 3, Age: 15, Name: 'Felix', Country: 1 }
+    ],
+    country: [
+      { id: 1, Name: 'Austria' },
+      { id: 2, Name: 'Australia' },
+      { id: 3, Name: 'Belgium' },
+    ]
+  };
+
+  for (let i = 4; i <= count; i++)
+  {
+    data.employee.push({
+      id: i,
+      Price: 200 + Math.floor(Math.random() * count),
+      Age: 10 + Math.floor(Math.random() * 99),
+      Name: `King of Kongo Ololong ${Math.floor(Math.random() * count)}`,
+      Creator: Math.floor(Math.random() * 3) > 1 ? Math.floor(Math.random() * count) : null,
+      Country: Math.floor(Math.random() * 3) > 1 ? Math.floor(Math.random() * count) : null
+    });
+    data.creator.push({
+      id: i,
+      Age: 10 + Math.floor(Math.random() * 99),
+      Name: `Felix ${Math.floor(Math.random() * count)}`,
+      Country: Math.floor(Math.random() * 3) > 1 ? Math.floor(Math.random() * count) : null
+    });
+    data.country.push({
+      id: i,
+      Name: `Country number .${Math.floor(Math.random() * count)} at Mars`
     });
   }
 
