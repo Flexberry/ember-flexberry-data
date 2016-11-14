@@ -369,15 +369,15 @@ export default DS.Adapter.extend({
         resolve();
       } else {
         let tableNames = _this._hashesToStore._keys.toArray();
-        db.transaction('rw', tableNames, function* () {
+        db.transaction('rw', tableNames, () => {
           for (let i = 0; i < tableNames.length; i++) {
             let tableName = tableNames[i];
             let arrayOfHashes = _this._hashesToStore.get(tableName);
             numberOfRecordsToStore += arrayOfHashes ? arrayOfHashes.length : 0;
             if (replaceIfExist) {
-              yield db.table(tableName).bulkPut(arrayOfHashes ? arrayOfHashes : {});
+              db.table(tableName).bulkPut(arrayOfHashes ? arrayOfHashes : {});
             } else {
-              yield db.table(tableName).bulkAdd(arrayOfHashes ? arrayOfHashes : {});
+              db.table(tableName).bulkAdd(arrayOfHashes ? arrayOfHashes : {});
             }
           }
         }).then(() => {
