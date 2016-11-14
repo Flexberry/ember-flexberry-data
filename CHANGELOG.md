@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.5] - 2016-11-15
 ### Fixed
 - Optimized performance of query for loading offline data from IndexedDB for simple predicate and ordering by own object properties.
 - Now `syncDown` operation performing without `yield` operator. So performance of building app was increased.
