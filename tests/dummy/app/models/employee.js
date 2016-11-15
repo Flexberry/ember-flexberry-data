@@ -31,4 +31,19 @@ Employee.defineProjection('EmployeeTestProjection', 'employee', {
   })
 });
 
+Employee.defineProjection('TestJoins', 'employee', {
+  Age: Projection.attr('Age'),
+  Name: Projection.attr('Name'),
+  Price: Projection.attr('Price'),
+  Country: Projection.belongsTo('country', 'Country', {
+    Name: Projection.attr('Name')
+  }),
+  Creator: Projection.belongsTo('creator', 'Creator', {
+    Name: Projection.attr('Name'),
+    Country: Projection.belongsTo('country', 'Country', {
+      Name: Projection.attr('Name')
+    }),
+  }),
+});
+
 export default Employee;
