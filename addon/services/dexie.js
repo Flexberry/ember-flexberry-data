@@ -128,12 +128,9 @@ export default Ember.Service.extend(Ember.Evented, {
                 delete this[attributeName];
               }
 
-              if (projection.attributes.hasOwnProperty(attributeName) &&
-              (projection.attributes[attributeName].kind === 'belongsTo' || projection.attributes[attributeName].kind === 'hasMany')) {
-                relationshipsToIterate.pushObject(attributeName);
-              }
-
-              if (extend && extend.hasOwnProperty(attributeName) && relationshipsByName.get(attributeName)) {
+              if ((projection.attributes.hasOwnProperty(attributeName) &&
+                (projection.attributes[attributeName].kind === 'belongsTo' || projection.attributes[attributeName].kind === 'hasMany')) ||
+                (extend && extend.hasOwnProperty(attributeName) && relationshipsByName.get(attributeName))) {
                 relationshipsToIterate.pushObject(attributeName);
               }
             }
