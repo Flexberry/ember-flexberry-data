@@ -6,6 +6,7 @@ import IndexedDbAdapter from 'ember-flexberry-data/query/indexeddb-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
+import { LoadDataWithJoins } from 'ember-flexberry-data/query/joins-dexie-addon';
 
 import startApp from '../../helpers/start-app';
 
@@ -671,7 +672,7 @@ test('adapter | indexeddb | no filter, order asc, skip, top', (assert) => {
 
   let builder = new QueryBuilder(store, modelName)
   .orderBy('Price asc')
-  .skip(5000)
+  .skip(1000)
   .top(20)
   .select('id,Price');
 
@@ -684,8 +685,26 @@ test('adapter | indexeddb | no filter, order asc, skip, top', (assert) => {
   });
 });
 
+test('adapter | indexeddb | no filter, order asc, no skip, no top', (assert) => {
+  let count = 15000;
+  let data = getPerformanceTestData(count, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+  .orderBy('Price asc')
+  .select('id,Price');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = window.performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, count, `Loading ${count} objects`);
+    assert.ok(result.data[0].Price <= result.data[19].Price, 'Check ordering by Price');
+  });
+});
+
 test('adapter | indexeddb | no filter, order desc, no skip, no top', (assert) => {
-  let data = getPerformanceTestData(15000, assert);
+  let count = 15000;
+  let data = getPerformanceTestData(count, assert);
 
   let builder = new QueryBuilder(store, modelName)
   .orderBy('Price desc')
@@ -695,7 +714,7 @@ test('adapter | indexeddb | no filter, order desc, no skip, no top', (assert) =>
     let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
     assert.ok(result.data, 'Data exists');
-    assert.equal(result.data.length, 15000, 'Loading 15000 objects');
+    assert.equal(result.data.length, count, `Loading ${count} objects`);
     assert.ok(result.data[0].Price >= result.data[19].Price, 'Check ordering by Price');
   });
 });
@@ -705,7 +724,7 @@ test('adapter | indexeddb | filter, no order, skip, top', (assert) => {
 
   let builder = new QueryBuilder(store, modelName)
     .where('Price', FilterOperator.Geq, 7500)
-    .skip(5000)
+    .skip(1000)
     .top(20)
     .select('id,Price');
 
@@ -776,7 +795,7 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
   let builder = new QueryBuilder(store, modelName)
     .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Age asc,Name desc')
-    .skip(5000)
+    .skip(1000)
     .top(20)
     .select('id,Age,Name,Price');
 
@@ -787,28 +806,29 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
     assert.equal(result.data.length, 20, 'Loading 20 objects');
     assert.ok(result.data[10].Price >= 7500, 'Check filter apply');
     assert.ok(result.data[0].Age <= result.data[19].Age, 'Check ordering by Age');
-    assert.ok(result.data[0].Name >= result.data[1].Name, 'Check ordering by Name');
+    assert.ok(result.data[0].Name >= result.data[1].Name || !result.data[0].Name || !result.data[1].Name, 'Check ordering by Name');
   });
 });
 
 module('Performance joins');
 
 test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (assert) => {
-  let data = getJoinsPerformanceTestData(15000, assert);
+  let count = 15000;
+  let data = getJoinsPerformanceTestData(count, assert);
 
   let builder = new QueryBuilder(store, modelName)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, count / 2)
     .orderBy('Country.Name desc,Age asc,Name desc')
-    .skip(5000)
+    .skip(count / 10)
     .top(20)
-    .select('id,Age,Name,Price,Country.Name');
+    .selectByProjection('TestJoins');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
     assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
     assert.ok(result.data, 'Data exists');
     assert.equal(result.data.length, 20, 'Loading 20 objects');
-    assert.ok(result.data[10].Price >= 7500, 'Check filter apply');
+    assert.ok(result.data[10].Price >= count / 2, 'Check filter apply');
   });
 });
 
@@ -974,9 +994,9 @@ function getPerformanceTestData(count, assert) {
   {
     data.employee.push({
       id: i,
-      Price: 200 + Math.floor(Math.random() * count),
-      Age: 10 + Math.floor(Math.random() * 99),
-      Name: `King of Kongo Ololong ${Math.floor(Math.random() * count)}`
+      Price: Math.floor(Math.random() * 9) > 3 ? 200 + Math.floor(Math.random() * count) : null,
+      Age:  Math.floor(Math.random() * 9) > 1 ? 10 + Math.floor(Math.random() * 99) : null,
+      Name:  Math.floor(Math.random() * 9) > 1 ? `King of Kongo Ololong ${Math.floor(Math.random() * count)}` : null
     });
   }
 
@@ -1017,17 +1037,17 @@ function getJoinsPerformanceTestData(count, assert) {
   {
     data.employee.push({
       id: i,
-      Price: 200 + Math.floor(Math.random() * count),
+      Price: Math.floor(Math.random() * 9) > 3 ? 200 + Math.floor(Math.random() * count) : null,
       Age: 10 + Math.floor(Math.random() * 99),
       Name: `King of Kongo Ololong ${Math.floor(Math.random() * count)}`,
-      Creator: Math.floor(Math.random() * 3) > 1 ? Math.floor(Math.random() * count) : null,
-      Country: Math.floor(Math.random() * 3) > 1 ? Math.floor(Math.random() * count) : null
+      Creator: Math.floor(Math.random() * 9) > 3 ? Math.floor(Math.random() * count) : null,
+      Country: Math.floor(Math.random() * 9) > 3 ? Math.floor(Math.random() * count) : null
     });
     data.creator.push({
       id: i,
       Age: 10 + Math.floor(Math.random() * 99),
       Name: `Felix ${Math.floor(Math.random() * count)}`,
-      Country: Math.floor(Math.random() * 3) > 1 ? Math.floor(Math.random() * count) : null
+      Country: Math.floor(Math.random() * 9) > 3 ? Math.floor(Math.random() * count) : null
     });
     data.country.push({
       id: i,

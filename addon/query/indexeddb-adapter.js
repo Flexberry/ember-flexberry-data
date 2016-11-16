@@ -53,15 +53,8 @@ export default class extends BaseAdapter {
 
         table = updateWhereClause(table, query);
 
-        if (table instanceof this._db.Table && (!query.order || (query.order && query.order.length === 1 && query.order.attribute(0).direction !== 'desc'))) {
-          // Go this way if filter is empty and simply sort by one field.
-          if (query.order) {
-            // Go this way if filter is empty and used asc order by one attribute.
-            let orderBy = query.order.attribute(0).name;
-
-            table = table.orderBy(orderBy); // Now table is Collection.
-          }
-
+        if (table instanceof this._db.Table && !query.order) {
+          // Go this way if filter is empty and no sorting.
           if (offset) {
             table = table.offset(offset);
           }
@@ -182,6 +175,140 @@ export default class extends BaseAdapter {
             }, reject);
           }, reject);
         }
+      } else if (false) {
+        let table = this._db.table(query.modelName);
+
+        // TODO: получим сырой массив данных, который содержит и свои и мастеровые свойства в объектах.
+        //let joinedData = table.LoadDataWithJoins(query);
+
+        table.toArray().then((data) => {
+          // Отсортируем массив по id мастера.
+          let masterField = 'Country';
+          let singleSort = function(a, b) {
+            return a[masterField] < b[masterField] ? -1 : a[masterField] > b[masterField] ? 1 : 0;
+          };
+
+          data.sort(singleSort);
+
+          let masterName = 'country';
+          let masterTable = this._db.table(masterName);
+          masterTable.toArray().then((masterData) => {
+            // оба массива у нас есть и они отсортированы как надо, теперь бежим по ним, сопоставляя данные из одного в другой.
+            let masterIndex = 0;
+            let dataLength = data.length;
+            for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
+              let masterKey = data[dataIndex][masterField];
+              if (!masterKey) {
+                continue;
+              }
+
+              let moveMastersForvard = true;
+              while (moveMastersForvard) {
+                let masterDataValue = masterData[masterIndex];
+                if (masterKey > masterDataValue.id) {
+                  masterIndex++;
+                } else if (masterKey < masterDataValue.id) {
+                  let error = new Error(`Data constraint error. Not found object type '${masterName}' with id ${masterKey}.`);
+                  reject(error);
+                  break;
+                }
+
+                if (masterKey === masterDataValue.id) {
+                  data[dataIndex][masterField] = masterDataValue;
+                  moveMastersForvard = false;
+                  continue;
+                }
+              }
+            }
+          }, reject).then(() => {
+            // TODO: возможна оптимизация, если используется тот же массив мастеров, что уже был вычитан.
+            // Теперь свяжем Creator
+            masterField = 'Creator';
+            data.sort(singleSort);
+
+            let masterName = 'creator';
+            let masterTable = this._db.table(masterName);
+            masterTable.toArray().then((masterData) => {
+              // Сначала для этого мастера заполним его мастеров.
+              // А тут Creator.Country
+              masterField = 'Country';
+              masterData.sort(singleSort);
+
+              let masterMasterName = 'country';
+              let masterMasterTable = this._db.table(masterMasterName);
+              masterMasterTable.toArray().then((masterMasterData) => {
+                // оба массива у нас есть и они отсортированы как надо, теперь бежим по ним, сопоставляя данные из одного в другой.
+                let masterIndex = 0;
+                let dataLength = masterData.length;
+                for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
+                  let masterKey = masterData[dataIndex][masterField];
+                  if (!masterKey) {
+                    continue;
+                  }
+
+                  let moveMastersForvard = true;
+                  while (moveMastersForvard) {
+                    let masterDataValue = masterMasterData[masterIndex];
+                    if (masterKey > masterDataValue.id) {
+                      masterIndex++;
+                    } else if (masterKey < masterDataValue.id) {
+                      let error = new Error(`Data constraint error. Not found object type '${masterMasterName}' with id ${masterKey}.`);
+                      reject(error);
+                      break;
+                    }
+
+                    if (masterKey === masterDataValue.id) {
+                      masterData[dataIndex][masterField] = masterDataValue;
+                      moveMastersForvard = false;
+                      continue;
+                    }
+                  }
+                }
+              }, reject).then(() => {
+
+                // Отсортируем таблицу мастера по pk.
+                masterField = 'id';
+                masterData.sort(singleSort);
+                masterField = 'Creator';
+
+                // оба массива у нас есть и они отсортированы как надо, теперь бежим по ним, сопоставляя данные из одного в другой.
+                let masterIndex = 0;
+                let dataLength = data.length;
+                for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
+                  let masterKey = data[dataIndex][masterField];
+                  if (!masterKey) {
+                    continue;
+                  }
+
+                  let moveMastersForvard = true;
+                  while (moveMastersForvard) {
+                    let masterDataValue = masterData[masterIndex];
+                    if (masterKey > masterDataValue.id) {
+                      masterIndex++;
+                    } else if (masterKey < masterDataValue.id) {
+                      let error = new Error(`Data constraint error. Not found object type '${masterName}' with id ${masterKey}.`);
+                      reject(error);
+                      break;
+                    }
+
+                    if (masterKey === masterDataValue.id) {
+                      data[dataIndex][masterField] = masterDataValue;
+                      moveMastersForvard = false;
+                      continue;
+                    }
+                  }
+                }
+              }, reject).then(() => {
+                let response = { meta: {}, data: data };
+                if (query.count) {
+                  response.meta.count = length;
+                }
+
+                resolve(response);
+              });
+            });
+          });
+        }, reject);
       } else {
         let isBadQuery = complexQuery;
         let order = buildOrder(query);
