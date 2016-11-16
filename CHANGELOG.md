@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Duplicate relationship for loading in `loadByProjection` method into `dexie` service.
 
 ## [0.7.1-beta.5] - 2016-11-15
 ### Fixed
