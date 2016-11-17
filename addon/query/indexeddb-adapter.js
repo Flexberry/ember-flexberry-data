@@ -53,15 +53,8 @@ export default class extends BaseAdapter {
 
         table = updateWhereClause(table, query);
 
-        if (table instanceof this._db.Table && (!query.order || (query.order && query.order.length === 1 && query.order.attribute(0).direction !== 'desc'))) {
+        if (table instanceof this._db.Table && !query.order) {
           // Go this way if filter is empty and simply sort by one field.
-          if (query.order) {
-            // Go this way if filter is empty and used asc order by one attribute.
-            let orderBy = query.order.attribute(0).name;
-
-            table = table.orderBy(orderBy); // Now table is Collection.
-          }
-
           if (offset) {
             table = table.offset(offset);
           }
@@ -121,7 +114,7 @@ export default class extends BaseAdapter {
                   let direction = query.order.attribute(i).direction;
                   i = i + 1;
 
-                  if (direction === 'asc') {
+                  if (!direction || direction === 'asc') {
                     return a[attrName] < b[attrName] ? -1 : a[attrName] > b[attrName] ? 1 : singleSort(a, b, i);
                   } else {
                     return a[attrName] > b[attrName] ? -1 : a[attrName] < b[attrName] ? 1 : singleSort(a, b, i);
