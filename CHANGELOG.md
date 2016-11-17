@@ -1,8 +1,14 @@
 # Change Log
 
 ## [Unreleased]
-### Changed
+### Fixed
+- Duplicate relationship for loading in `loadByProjection` method into `dexie` service.
+- Incorrect data retrieving from offline storage for case with single order by field without any filter.
+
+## [0.7.1-beta.5] - 2016-11-15
+### Fixed
 - Optimized performance of query for loading offline data from IndexedDB for simple predicate and ordering by own object properties.
+- Now `syncDown` operation performing without `yield` operator. So performance of building app was increased.
 
 ## [0.7.1-beta.4] - 2016-11-09
 ### Changed

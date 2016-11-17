@@ -114,7 +114,7 @@ export default class extends BaseAdapter {
                   let direction = query.order.attribute(i).direction;
                   i = i + 1;
 
-                  if (direction === 'asc') {
+                  if (!direction || direction === 'asc') {
                     return a[attrName] < b[attrName] ? -1 : a[attrName] > b[attrName] ? 1 : singleSort(a, b, i);
                   } else {
                     return a[attrName] > b[attrName] ? -1 : a[attrName] < b[attrName] ? 1 : singleSort(a, b, i);

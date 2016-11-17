@@ -35,6 +35,15 @@ export default Ember.Service.extend({
   numberOfRecordsForPerformingBulkOperations: 10,
 
   /**
+    Allows to enable or disable continuation of syncing down if error occurs.
+
+    @property queueContinueOnError
+    @type Boolean
+    @default true
+  */
+  queueContinueOnError: true,
+
+  /**
   */
   auditEnabled: true,
 
@@ -50,6 +59,7 @@ export default Ember.Service.extend({
     let localStore = getOwner(this).lookup('store:local');
 
     _this.set('offlineStore', localStore);
+    _this.get('_syncDownQueue').set('continueOnError', _this.get('queueContinueOnError'));
   },
 
   /**
