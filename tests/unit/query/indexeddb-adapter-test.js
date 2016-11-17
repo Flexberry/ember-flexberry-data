@@ -684,6 +684,23 @@ test('adapter | indexeddb | no filter, order asc, skip, top', (assert) => {
   });
 });
 
+test('adapter | indexeddb | no filter, order asc, no skip, no top', (assert) => {
+  let count = 15000;
+  let data = getPerformanceTestData(count, assert);
+
+  let builder = new QueryBuilder(store, modelName)
+  .orderBy('Price asc')
+  .select('id,Price');
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = window.performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, count, `Loading ${count} objects`);
+    assert.ok(result.data[0].Price <= result.data[19].Price, 'Check ordering by Price');
+  });
+});
+
 test('adapter | indexeddb | no filter, order desc, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
