@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Now when save model instance not replaced `store`, it helps to avoid various errors, including errors when using `unloadRecord` and `unloadAll` methods.
 
 ## [0.7.1-beta.6] - 2016-11-18
 ### Fixed
