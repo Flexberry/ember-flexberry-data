@@ -528,7 +528,7 @@ export default DS.Store.extend({
     let offlineSchema = this.get('offlineSchema');
     let dexieService = this.get('dexieService');
     for (let dbName in offlineSchema) {
-      dexieService.dexie(dbName, this);
+      dexieService.dexie(dbName, this.get('offlineStore'));
     }
   },
 });
