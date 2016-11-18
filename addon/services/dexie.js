@@ -106,13 +106,14 @@ export default Ember.Service.extend(Ember.Evented, {
 
     db.tables.forEach((table) => {
       let TableClass = table.defineClass({});
-      let modelClass = store.modelFor(table.name);
-      let relationshipNames = get(modelClass, 'relationshipNames');
-      let relationshipsByName = get(modelClass, 'relationshipsByName');
-      let primaryKeyNameFromSerializer = store.serializerFor(table.name).get('primaryKey');
-      let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
 
       TableClass.prototype.loadByProjection = function(projection, extend) {
+        let modelClass = store.modelFor(table.name);
+        let relationshipNames = get(modelClass, 'relationshipNames');
+        let relationshipsByName = get(modelClass, 'relationshipsByName');
+        let primaryKeyNameFromSerializer = store.serializerFor(table.name).get('primaryKey');
+        let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
+
         let promises = [];
         let relationshipsToIterate = Ember.A();
 
