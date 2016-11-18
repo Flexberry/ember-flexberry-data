@@ -6,7 +6,6 @@ import IndexedDbAdapter from 'ember-flexberry-data/query/indexeddb-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
-import { LoadDataWithJoins } from 'ember-flexberry-data/query/joins-dexie-addon';
 
 import startApp from '../../helpers/start-app';
 
