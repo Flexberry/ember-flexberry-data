@@ -176,55 +176,67 @@ export default class extends BaseAdapter {
           }, reject);
         }
       } else if (false) {
-        let table = this._db.table(query.modelName);
 
-        // TODO: получим сырой массив данных, который содержит и свои и мастеровые свойства в объектах.
-        //let joinedData = table.LoadDataWithJoins(query);
-
-        table.toArray().then((data) => {
-          // Отсортируем массив по id мастера.
-          let masterField = 'Country';
+        // Sorting array by `sortField` and asc.
+        let sortData = function(data, sortField) {
           let singleSort = function(a, b) {
-            return a[masterField] < b[masterField] ? -1 : a[masterField] > b[masterField] ? 1 : 0;
+            return a[sortField] < b[sortField] ? -1 : a[sortField] > b[sortField] ? 1 : 0;
           };
 
           data.sort(singleSort);
+        };
+
+        // Joining array `data` on field `masterField` with array `masterData` of objects `masterTypeName`. Array `data` must be ordered by `masterField`, array `masterData` must be ordered by id. Function do not use recursive calls.
+        let joinSortedDataArrays = function(data, masterField, masterData, masterTypeName) {
+          let masterIndex = 0;
+          let dataLength = data.length;
+          for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
+            let masterKey = data[dataIndex][masterField];
+            if (!masterKey) {
+              continue;
+            }
+
+            let moveMastersForvard = true;
+            while (moveMastersForvard) {
+              let masterDataValue = masterData[masterIndex];
+              if (masterKey > masterDataValue.id) {
+                masterIndex++;
+              } else if (masterKey < masterDataValue.id) {
+                let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}.`);
+                reject(error);
+                break;
+              }
+
+              if (masterKey === masterDataValue.id) {
+                data[dataIndex][masterField] = masterDataValue;
+                moveMastersForvard = false;
+                continue;
+              }
+            }
+          }
+        };
+
+        let table = this._db.table(query.modelName);
+
+        // TODO: Разберём представление по мастерам.
+
+        // TODO: добавим слияние для детейловых связей в представлениях.
+
+        // TODO: получим сырой массив данных, который содержит и свои и мастеровые свойства в объектах.
+        table.toArray().then((data) => {
+          // Отсортируем массив по id мастера.
+          let masterField = 'Country';
+          sortData(data, masterField);
 
           let masterName = 'country';
           let masterTable = this._db.table(masterName);
           masterTable.toArray().then((masterData) => {
-            // оба массива у нас есть и они отсортированы как надо, теперь бежим по ним, сопоставляя данные из одного в другой.
-            let masterIndex = 0;
-            let dataLength = data.length;
-            for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
-              let masterKey = data[dataIndex][masterField];
-              if (!masterKey) {
-                continue;
-              }
-
-              let moveMastersForvard = true;
-              while (moveMastersForvard) {
-                let masterDataValue = masterData[masterIndex];
-                if (masterKey > masterDataValue.id) {
-                  masterIndex++;
-                } else if (masterKey < masterDataValue.id) {
-                  let error = new Error(`Data constraint error. Not found object type '${masterName}' with id ${masterKey}.`);
-                  reject(error);
-                  break;
-                }
-
-                if (masterKey === masterDataValue.id) {
-                  data[dataIndex][masterField] = masterDataValue;
-                  moveMastersForvard = false;
-                  continue;
-                }
-              }
-            }
+            joinSortedDataArrays(data, masterField, masterData, masterName);
           }, reject).then(() => {
             // TODO: возможна оптимизация, если используется тот же массив мастеров, что уже был вычитан.
             // Теперь свяжем Creator
             masterField = 'Creator';
-            data.sort(singleSort);
+            sortData(data, masterField);
 
             let masterName = 'creator';
             let masterTable = this._db.table(masterName);
@@ -232,72 +244,21 @@ export default class extends BaseAdapter {
               // Сначала для этого мастера заполним его мастеров.
               // А тут Creator.Country
               masterField = 'Country';
-              masterData.sort(singleSort);
+              sortData(masterData, masterField);
 
               let masterMasterName = 'country';
               let masterMasterTable = this._db.table(masterMasterName);
               masterMasterTable.toArray().then((masterMasterData) => {
-                // оба массива у нас есть и они отсортированы как надо, теперь бежим по ним, сопоставляя данные из одного в другой.
-                let masterIndex = 0;
-                let dataLength = masterData.length;
-                for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
-                  let masterKey = masterData[dataIndex][masterField];
-                  if (!masterKey) {
-                    continue;
-                  }
-
-                  let moveMastersForvard = true;
-                  while (moveMastersForvard) {
-                    let masterDataValue = masterMasterData[masterIndex];
-                    if (masterKey > masterDataValue.id) {
-                      masterIndex++;
-                    } else if (masterKey < masterDataValue.id) {
-                      let error = new Error(`Data constraint error. Not found object type '${masterMasterName}' with id ${masterKey}.`);
-                      reject(error);
-                      break;
-                    }
-
-                    if (masterKey === masterDataValue.id) {
-                      masterData[dataIndex][masterField] = masterDataValue;
-                      moveMastersForvard = false;
-                      continue;
-                    }
-                  }
-                }
+                joinSortedDataArrays(masterData, masterField, masterMasterData, masterMasterName);
               }, reject).then(() => {
 
                 // Отсортируем таблицу мастера по pk.
                 masterField = 'id';
-                masterData.sort(singleSort);
+                sortData(masterData, masterField);
+
                 masterField = 'Creator';
 
-                // оба массива у нас есть и они отсортированы как надо, теперь бежим по ним, сопоставляя данные из одного в другой.
-                let masterIndex = 0;
-                let dataLength = data.length;
-                for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
-                  let masterKey = data[dataIndex][masterField];
-                  if (!masterKey) {
-                    continue;
-                  }
-
-                  let moveMastersForvard = true;
-                  while (moveMastersForvard) {
-                    let masterDataValue = masterData[masterIndex];
-                    if (masterKey > masterDataValue.id) {
-                      masterIndex++;
-                    } else if (masterKey < masterDataValue.id) {
-                      let error = new Error(`Data constraint error. Not found object type '${masterName}' with id ${masterKey}.`);
-                      reject(error);
-                      break;
-                    }
-
-                    if (masterKey === masterDataValue.id) {
-                      data[dataIndex][masterField] = masterDataValue;
-                      moveMastersForvard = false;
-                      continue;
-                    }
-                  }
-                }
+                joinSortedDataArrays(data, masterField, masterData, masterName);
               }, reject).then(() => {
                 let response = { meta: {}, data: data };
                 if (query.count) {
