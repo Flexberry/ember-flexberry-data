@@ -175,10 +175,10 @@ export default class extends BaseAdapter {
             }, reject);
           }, reject);
         }
-      } else if (false) {
+      } else if (true) {
 
-        // Sorting array by `sortField` and asc.
         let sortData = function(data, sortField) {
+          // Sorting array by `sortField` and asc.
           let singleSort = function(a, b) {
             return a[sortField] < b[sortField] ? -1 : a[sortField] > b[sortField] ? 1 : 0;
           };
@@ -186,8 +186,8 @@ export default class extends BaseAdapter {
           data.sort(singleSort);
         };
 
-        // Joining array `data` on field `masterField` with array `masterData` of objects `masterTypeName`. Array `data` must be ordered by `masterField`, array `masterData` must be ordered by id. Function do not use recursive calls.
         let joinSortedDataArrays = function(data, masterField, masterData, masterTypeName) {
+          // Joining array `data` on field `masterField` with array `masterData` of objects `masterTypeName`. Array `data` must be ordered by `masterField`, array `masterData` must be ordered by id. Function do not use recursive calls.
           let masterIndex = 0;
           let dataLength = data.length;
           for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
@@ -216,8 +216,69 @@ export default class extends BaseAdapter {
           }
         };
 
+        /* Алгоритм.
+        * 1. Строим структуру, которая будет описывать как мы обходим дерево.
+        * 2. Читаем листья самого максимального уровня N с сортировкой по id, складываем результаты в массив массивов с доп. информацией: тип данных, как отсортированы, путь и уровень.
+        * 3. Читаем ветки и листья уровня N-1, если это ещё не ствол.
+        * 4. Если дошли до последних веток уровня 1, где 0 - это ствол, берём первую ветку и с сортировкой по соответствующему ей полю читаем ствол.
+        * 5. Берём все ветки уровня 1 и пересортировывая ствол сливаем их со стволом.
+        */
+
+        let queryTree = {
+          currentDeepLevel: 1, // Текущий уровень вложенности expand-ов. По мере слияния будет сокращаться.
+          root: {
+            modelName: query.modelName,
+            select: query.select, // TODO: include extend props. Clone this object.
+            data: null,
+            sorting: null,
+            deepLevel: 1,
+            expand: null
+          }
+        };
+
+        // будем ходить по expand-ам и сливать с предыдущим уровнем те мастера, у которых нет своих экспандов. делать это надо в цикле, пока не доберёмся до ствола.
+        let expand = query.expand;
+        if (expand) {
+          let scanExpand = function(exp, parent, deepLevel) {
+            if (!exp) {
+              return;
+            }
+
+            let masterPropNames = Object.keys(exp);
+            let length = masterPropNames.length;
+            let masterDeepLevel = deepLevel + 1;
+            for (let i = 0; i < length; i++) {
+              let masterPropName = masterPropNames[i];
+              // TODO: если !relationship.options.async && isEmbedded(store, modelClass, name) то джойним. добавить для expand-а async и isEmbedded и сохранить в структурке relationship.
+              // TODO: получить из query.
+              let master = {
+                propNameInParent: masterPropName,
+                modelName: null, // TODO: get model name for master. Для всех expand-ов в Builder.build() добавлять поле с указанием имени типа мастера, именем первичного ключа в объекте.
+                select: exp[masterPropName].select,
+                data: null,
+                sorting: null,
+                deepLevel: masterDeepLevel,
+                expand: null,
+                parent: parent
+              };
+              if (!parent.expand) {
+                parent.expand = [];
+              }
+
+              parent.expand.push(master);
+              scanExpand(exp[masterPropName].expand, master, masterDeepLevel);
+              if (masterDeepLevel > queryTree.currentDeepLevel) {
+                queryTree.currentDeepLevel = masterDeepLevel;
+              }
+            }
+          };
+
+          scanExpand(expand, queryTree.root, 1);
+        }
+
         let table = this._db.table(query.modelName);
 
+        // select, expand и extend разберём.
         // TODO: Разберём представление по мастерам.
 
         // TODO: добавим слияние для детейловых связей в представлениях.
