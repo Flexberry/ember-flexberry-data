@@ -4,7 +4,6 @@ import decorateAdapter from './base-store/decorate-adapter';
 import decorateSerializer from './base-store/decorate-serializer';
 import decorateAPICall from './base-store/decorate-api-call';
 import QueryObject from '../query/query-object';
-import Dexie from 'npm:dexie';
 
 /**
   Base class for application store.
