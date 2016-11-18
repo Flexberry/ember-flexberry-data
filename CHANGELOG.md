@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.6] - 2016-11-18
 ### Fixed
 - Duplicate relationships for loading in `loadByProjection` method in `dexie` service.
 - Incorrect data retrieving from offline storage for case with single order by field without any filter.
