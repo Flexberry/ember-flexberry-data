@@ -367,18 +367,11 @@ export default Ember.Service.extend({
   */
   _runCreatingJob(store, job) {
     let record = store.peekRecord(job.get('objectType.name'), job.get('objectPrimaryKey'));
-
-    // TODO: Uncomment this after fix bug with load unloaded models.
-    // if (record) {
-    //   record.rollbackAll();
-    //   store.unloadRecord(record);
-    // }
-
-    if (!record)
-    {
-      record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
+    if (record) {
+      store.unloadRecord(record);
     }
 
+    record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
     record.set('isSyncingUp', true);
     record.set('isCreatedDuringSyncUp', true);
 
