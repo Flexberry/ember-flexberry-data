@@ -166,6 +166,23 @@ export default DS.JSONSerializer.extend({
   },
 
   /*
+    Returns a polymorphic relationship formatted as a JSON-API "relationship object".
+    See http://jsonapi.org/format/#document-resource-object-relationships
+  */
+  extractPolymorphicRelationship(relationshipModelName, relationshipHash, relationshipOptions) {
+    let key = relationshipOptions.key ? relationshipOptions.key : relationshipOptions.relationshipKey;
+    let typeField = '_' + key + '_type';
+    if (relationshipOptions.resourceHash.hasOwnProperty(typeField)) {
+      relationshipHash.type = relationshipOptions.resourceHash[typeField];
+      delete relationshipOptions.resourceHash[typeField];
+    } else {
+      relationshipHash.type = relationshipModelName;
+    }
+
+    return relationshipHash;
+  },
+
+  /*
     Check if the given hasMany relationship should be serialized.
   */
   _shouldSerializeHasMany(snapshot, key, relationship) {
