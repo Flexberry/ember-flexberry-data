@@ -1,9 +1,13 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.6] - 2016-11-18
 ### Fixed
-- Duplicate relationship for loading in `loadByProjection` method into `dexie` service.
+- Duplicate relationships for loading in `loadByProjection` method in `dexie` service.
 - Incorrect data retrieving from offline storage for case with single order by field without any filter.
+- Now we are setting proper types of polymorphic belongsTo relationships in offline mode.
+- Application loading performance.
 
 ## [0.7.1-beta.5] - 2016-11-15
 ### Fixed

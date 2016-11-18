@@ -4,7 +4,6 @@ import decorateAdapter from './base-store/decorate-adapter';
 import decorateSerializer from './base-store/decorate-serializer';
 import decorateAPICall from './base-store/decorate-api-call';
 import QueryObject from '../query/query-object';
-import Dexie from 'npm:dexie';
 
 /**
   Base class for application store.
@@ -148,6 +147,14 @@ export default DS.Store.extend({
     @readOnly
   */
   syncer: Ember.inject.service('syncer'),
+
+  /**
+    Instance of dexie service.
+
+    @property dexieService
+    @type Offline.DexieService
+  */
+  dexieService: Ember.inject.service('dexie'),
 
   /*
     Store initialization.
@@ -540,13 +547,9 @@ export default DS.Store.extend({
   */
   _dbInit() {
     let offlineSchema = this.get('offlineSchema');
+    let dexieService = this.get('dexieService');
     for (let dbName in offlineSchema) {
-      let db = new Dexie(dbName);
-      for (let version in offlineSchema[dbName]) {
-        db.version(+version).stores(offlineSchema[dbName][version]);
-      }
-
-      db.open().then((db) => { db.close(); });
+      dexieService.dexie(dbName, this);
     }
   },
 });

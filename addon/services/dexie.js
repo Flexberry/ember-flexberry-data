@@ -106,13 +106,14 @@ export default Ember.Service.extend(Ember.Evented, {
 
     db.tables.forEach((table) => {
       let TableClass = table.defineClass({});
-      let modelClass = store.modelFor(table.name);
-      let relationshipNames = get(modelClass, 'relationshipNames');
-      let relationshipsByName = get(modelClass, 'relationshipsByName');
-      let primaryKeyNameFromSerializer = store.serializerFor(table.name).get('primaryKey');
-      let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
 
       TableClass.prototype.loadByProjection = function(projection, extend) {
+        let modelClass = store.modelFor(table.name);
+        let relationshipNames = get(modelClass, 'relationshipNames');
+        let relationshipsByName = get(modelClass, 'relationshipsByName');
+        let primaryKeyNameFromSerializer = store.serializerFor(table.name).get('primaryKey');
+        let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
+
         let promises = [];
         let relationshipsToIterate = Ember.A();
 
@@ -124,7 +125,17 @@ export default Ember.Service.extend(Ember.Evented, {
           // Killing two birds with one stone.
           for (let attributeName in this) {
             if (attributeName !== primaryKeyName && this.hasOwnProperty(attributeName)) {
-              if (!projection.attributes.hasOwnProperty(attributeName) && (!extend || !extend.hasOwnProperty(attributeName))) {
+              let attrIsNotPolymorphicRelationshipType = true;
+              if (attributeName.length > 5 && attributeName[0] === '_' && attributeName.slice(-5) === '_type') {
+                let possibleRelationshipName = attributeName.slice(1, -5);
+                let relationship = relationshipsByName.get(possibleRelationshipName);
+                if (relationship && relationship.options.polymorphic) {
+                  attrIsNotPolymorphicRelationshipType = false;
+                }
+              }
+
+              if (!projection.attributes.hasOwnProperty(attributeName) &&
+                (!extend || !extend.hasOwnProperty(attributeName)) && attrIsNotPolymorphicRelationshipType) {
                 delete this[attributeName];
               }
 
