@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.8] - 2016-11-20
 ### Fixed
 - Validation errors could break syncing up if model was updated in offline mode.
 
