@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Optimizing performance for sync down operation.
 
 ## [0.7.1-beta.8] - 2016-11-20
 ### Fixed
