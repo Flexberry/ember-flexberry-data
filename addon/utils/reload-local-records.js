@@ -59,15 +59,9 @@ export function reloadLocalRecords(type, reload, projectionName, params) {
 export function createLocalRecord(store, localAdapter, localStore, modelType, record, projection, params) {
   let _this = this;
   let dexieService = Ember.getOwner(store).lookup('service:dexie');
-  let unloadRecordFromStore = () => {
-    if (params && params.unloadSyncedRecords) {
-      if (store.get('onlineStore')) {
-        store.get('onlineStore').unloadRecord(record);
-      } else {
-        store.unloadRecord(record);
-      }
-    }
-  };
+  if (params && params.unloadSyncedRecords) {
+    _this.get('_recordsToUnload').pushObject(record);
+  }
 
   dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
   if (record.get('id')) {
@@ -87,7 +81,7 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
     }).catch((reason) => {
       Ember.Logger.error(reason);
       reject(reason);
-    }).finally(unloadRecordFromStore));
+    }));
   } else {
     var recordName = record.constructor && record.constructor.modelName;
     var warnMessage = 'Record ' + recordName + ' does not have an id, therefor we can not create it locally: ';
@@ -117,7 +111,7 @@ function createLocalRecords(store, localAdapter, localStore, modelType, records,
         }
       }, reject));
   });
-  return RSVP.all(createdRecordsPromises);
+  return RSVP.all(createdRecordsPromises).then(() => _this._unloadRecordsAfterSyncDown(store, params));
 }
 
 export function syncDownRelatedRecords(store, mainRecord, localAdapter, localStore, projection, params) {
@@ -165,11 +159,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
         } else {
           if (isEmbedded(store, modelType, belongToName)) {
             var relatedRecord = mainRecord.get(belongToName);
-            if (!Ember.isNone(relatedRecord)) {
-              promises.pushObject(
-                createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[belongToName])
-              );
-            }
+            createRelatedBelongsToRecordFunction(relatedRecord);
           }
         }
       }
@@ -189,7 +179,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
         } else {
           if (isEmbedded(store, modelType, hasManyName)) {
             var relatedRecords = mainRecord.get(hasManyName);
-            promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[hasManyName]));
+            createRelatedHasManyRecordsFunction(relatedRecords);
           }
         }
       }

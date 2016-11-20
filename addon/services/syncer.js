@@ -16,6 +16,9 @@ export default Ember.Service.extend({
   /* Queue of promises for syncDown */
   _syncDownQueue: Queue.create(),
 
+  /* Array of records to be unloaded after syncing down */
+  _recordsToUnload: null,
+
   /**
     Store that use for making requests in offline mode.
     By default it is set to global instane of {{#crossLink "LocalStore"}}{{/crossLink}} class.
@@ -60,6 +63,7 @@ export default Ember.Service.extend({
 
     _this.set('offlineStore', localStore);
     _this.get('_syncDownQueue').set('continueOnError', _this.get('queueContinueOnError'));
+    _this.set('_recordsToUnload', Ember.A());
   },
 
   /**
@@ -78,6 +82,8 @@ export default Ember.Service.extend({
   syncDown: function(descriptor, reload, projectionName, params) {
     let _this = this;
 
+    _this.get('_recordsToUnload').clear();
+
     let bulkUpdateOrCreateCall = (record, resolve, reject) => {
       let localStore = _this.get('offlineStore');
       let modelName = record.constructor.modelName;
@@ -93,7 +99,7 @@ export default Ember.Service.extend({
     } else if (isModelInstance(descriptor)) {
       let store = getOwner(this).lookup('service:store');
       return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, descriptor, reload, projectionName, params).then(() =>
-        bulkUpdateOrCreateCall(descriptor, resolve, reject), reject));
+        bulkUpdateOrCreateCall(descriptor, resolve, reject), reject).then(() => _this._unloadRecordsAfterSyncDown(store, params)));
     } else if (isArray(descriptor)) {
       let store = getOwner(this).lookup('service:store');
       let recordsCount =  descriptor.get ? descriptor.get('length') : descriptor.length;
@@ -108,7 +114,7 @@ export default Ember.Service.extend({
           }
         }, reject));
       });
-      return RSVP.all(updatedRecords);
+      return RSVP.all(updatedRecords).then(() => _this._unloadRecordsAfterSyncDown(store, params));
 
     } else {
       throw new Error('Input for sync down can only be a string, a DS.Model or an array of DS.Model, but is ' + descriptor);
@@ -648,4 +654,28 @@ export default Ember.Service.extend({
     query.useOnlineStore = true;
     return query;
   },
+
+  /**
+  */
+  _unloadRecordsAfterSyncDown(store, params) {
+    if (params && params.unloadSyncedRecords && this.get('_recordsToUnload.length') > 0) {
+      this.get('_recordsToUnload').forEach((record) => {
+        if (record.get('hasDirtyAttributes')) {
+          record.rollbackAttributes();
+        }
+
+        if (!record.get('isDeleted')) {
+          if (store.get('onlineStore')) {
+            store.get('onlineStore').unloadRecord(record);
+          } else {
+            store.unloadRecord(record);
+          }
+        }
+      }, this);
+
+      this.get('_recordsToUnload').clear();
+    }
+
+    return Ember.RSVP.resolve();
+  }
 });
