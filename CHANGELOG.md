@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.7.1-beta.7] - 2016-11-18
+### Fixed
+- Wrong store instance was connected with internal model, it causes errors when `unloadRecord` and `unloadAll` methods of store were called.
+- Wrong store instance was used for loading relationships in offline mode, it causes errors when syncing up.
+
 ## [0.7.1-beta.6] - 2016-11-18
 ### Fixed
 - Duplicate relationships for loading in `loadByProjection` method in `dexie` service.

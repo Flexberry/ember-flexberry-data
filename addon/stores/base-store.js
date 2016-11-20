@@ -397,22 +397,6 @@ export default DS.Store.extend({
   },
 
   /**
-    This method is called by `record.save`, and gets passed a
-    resolver for the promise that `record.save` returns.
-    It schedules saving to happen at the end of the run loop.
-
-    @method scheduleSave
-    @private
-    @param {InternalModel} internalModel
-    @param {Resolver} resolver
-    @param {Object} options
-    @param {Boolean} [useOnlineStore] Allow to explicitly specify online or offline store using independently of global online status
-  */
-  scheduleSave() {
-    return this._callSuperMethod('scheduleSave', 3, arguments);
-  },
-
-  /**
     This method unloads all records in the store.
     @method unloadAll
     @param {String} modelName
@@ -515,7 +499,6 @@ export default DS.Store.extend({
 
     Support methods:
     - `createRecord`
-    - `scheduleSave`
 
     @method _isOfflineModel
     @private
@@ -528,10 +511,6 @@ export default DS.Store.extend({
     switch (methodName) {
       case 'createRecord':
         isOfflineModel = this.get(`offlineModels.${methodArguments[0]}`);
-        return isOfflineModel || null;
-
-      case 'scheduleSave':
-        isOfflineModel = this.get(`offlineModels.${methodArguments[0].modelName}`);
         return isOfflineModel || null;
 
       default:
@@ -549,7 +528,7 @@ export default DS.Store.extend({
     let offlineSchema = this.get('offlineSchema');
     let dexieService = this.get('dexieService');
     for (let dbName in offlineSchema) {
-      dexieService.dexie(dbName, this);
+      dexieService.dexie(dbName, this.get('offlineStore'));
     }
   },
 });
