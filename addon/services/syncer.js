@@ -63,7 +63,7 @@ export default Ember.Service.extend({
 
     _this.set('offlineStore', localStore);
     _this.get('_syncDownQueue').set('continueOnError', _this.get('queueContinueOnError'));
-    _this.set('_recordsToUnload', Ember.A());
+    _this.set('_recordsToUnload', []);
   },
 
   /**
@@ -82,7 +82,7 @@ export default Ember.Service.extend({
   syncDown: function(descriptor, reload, projectionName, params) {
     let _this = this;
 
-    _this.get('_recordsToUnload').clear();
+    _this.set('_recordsToUnload', []);
 
     let bulkUpdateOrCreateCall = (record, resolve, reject) => {
       let localStore = _this.get('offlineStore');
@@ -658,8 +658,10 @@ export default Ember.Service.extend({
   /**
   */
   _unloadRecordsAfterSyncDown(store, params) {
-    if (params && params.unloadSyncedRecords && this.get('_recordsToUnload.length') > 0) {
-      this.get('_recordsToUnload').forEach((record) => {
+    let recordsToUnload = this.get('_recordsToUnload');
+    if (params && params.unloadSyncedRecords && recordsToUnload.length > 0) {
+      for (let i = 0; i < recordsToUnload.length; i++) {
+        let record = recordsToUnload[i];
         if (record.get('hasDirtyAttributes')) {
           record.rollbackAttributes();
         }
@@ -671,9 +673,9 @@ export default Ember.Service.extend({
             store.unloadRecord(record);
           }
         }
-      }, this);
+      }
 
-      this.get('_recordsToUnload').clear();
+      this.set('_recordsToUnload', []);
     }
 
     return Ember.RSVP.resolve();

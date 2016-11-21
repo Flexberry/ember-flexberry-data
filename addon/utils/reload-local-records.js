@@ -60,7 +60,7 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
   let _this = this;
   let dexieService = Ember.getOwner(store).lookup('service:dexie');
   if (params && params.unloadSyncedRecords) {
-    _this.get('_recordsToUnload').pushObject(record);
+    _this.get('_recordsToUnload').push(record);
   }
 
   dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
