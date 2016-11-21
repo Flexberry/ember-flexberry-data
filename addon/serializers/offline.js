@@ -29,7 +29,7 @@ export default DS.JSONSerializer.extend({
     [More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_extractAttributes).
 
     @method extractAttributes
-    @param {DS.Model} model
+    @param {Object} model
     @param {Object} hash
     @return {Object}
   */
@@ -37,7 +37,7 @@ export default DS.JSONSerializer.extend({
     let attributes = this._super(...arguments);
     model.eachAttribute((key, { type }) => {
       if (type === 'boolean') {
-        let attributeKey = this.keyForAttribute(key, 'deserialize');
+        let attributeKey = this.keyForAttribute ? this.keyForAttribute(key, 'deserialize') : key;
         if (typeof hash[attributeKey] === 'string') {
           attributes[key] = hash[attributeKey] === 'true' ? true : hash[attributeKey] === null ? null : false;
         }
@@ -58,13 +58,15 @@ export default DS.JSONSerializer.extend({
     @param {Object} attribute
   */
   serializeAttribute(snapshot, json, key, attribute) {
+    let attributeKey = this.keyForAttribute ? this.keyForAttribute(key, 'serialize') : key;
+
     let value = snapshot.attr(key);
     switch (attribute.type) {
       case 'boolean':
         if (typeof value === 'boolean') {
-          json[key] = `${value}`;
+          json[attributeKey] = `${value}`;
         } else if (typeof value === 'undefined') {
-          json[key] = 'false';
+          json[attributeKey] = 'false';
         } else {
           this._super(...arguments);
         }
