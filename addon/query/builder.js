@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseBuilder from './base-builder';
@@ -5,6 +6,7 @@ import OrderByClause from './order-by-clause';
 import QueryObject from './query-object';
 import { createPredicate } from './predicate';
 import Information from '../utils/information';
+import isEmbedded from '../utils/is-embedded';
 
 /**
  * Class of builder for query.
@@ -187,9 +189,9 @@ export default class Builder extends BaseBuilder {
         throw new Error(`Projection ${this._projectionName} for model ${this._modelName} is not specified`);
       }
 
-      tree = this._getQueryTreeByProjection(projection);
+      tree = this._getQueryTreeByProjection(projection, model, this._modelName);
     } else {
-      tree = this._getQueryBySelect();
+      tree = this._getQueryBySelect(); // TODO: support query metadata like _getQueryTreeByProjection.
     }
 
     // Merge, don't replace.
@@ -245,10 +247,14 @@ export default class Builder extends BaseBuilder {
     }
   }
 
-  _getQueryTreeByProjection(projection) {
+  _getQueryTreeByProjection(projection, model, modelName, relationshipProps) {
+    let primaryKeyNameFromSerializer = this._store.serializerFor(modelName).get('primaryKey');
     let tree = {
       select: ['id'],
-      expand: {}
+      expand: {},
+      modelName: modelName,
+      primaryKeyName: primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id',
+      relationship: relationshipProps
     };
 
     let attributes = projection.attributes;
@@ -260,10 +266,19 @@ export default class Builder extends BaseBuilder {
             tree.select.push(attrName);
             break;
 
-          case 'hasMany':
+          case 'hasMany': // TODO: Check hasMany relations metadata.
           case 'belongsTo':
+            let relationshipsByName = Ember.get(model, 'relationshipsByName');
+            let relationship = relationshipsByName.get(attrName);
+            let relatedModel = this._store.modelFor(relationship.type);
+            let ralatedModelName = relationship.type;
+
+            let relationshipProps = {
+              async: relationship.options.async,
+              isEmbedded: true // TODO: isEmbedded(this._store, modelName, attrName)
+            };
             tree.select.push(attrName);
-            tree.expand[attrName] = this._getQueryTreeByProjection(attr);
+            tree.expand[attrName] = this._getQueryTreeByProjection(attr, relatedModel, ralatedModelName, relationshipProps);
             break;
 
           default:

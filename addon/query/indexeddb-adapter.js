@@ -253,7 +253,8 @@ export default class extends BaseAdapter {
               // TODO: получить из query.
               let master = {
                 propNameInParent: masterPropName,
-                modelName: null, // TODO: get model name for master. Для всех expand-ов в Builder.build() добавлять поле с указанием имени типа мастера, именем первичного ключа в объекте.
+                modelName: exp[masterPropName].modelName,
+                primaryKeyName: exp[masterPropName].primaryKeyName,
                 select: exp[masterPropName].select,
                 data: null,
                 sorting: null,
