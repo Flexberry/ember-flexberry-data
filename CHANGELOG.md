@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- `syncDownTime` property of model is setting now when performing sync down operation.
+
 ### Fixed
 - Optimizing performance for sync down operation.
 - Unloading synced records from online store after sync down operation.

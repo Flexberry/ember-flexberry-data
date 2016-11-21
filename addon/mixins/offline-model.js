@@ -25,7 +25,7 @@ export default Ember.Mixin.create({
   /**
     Date and time of last sync down of model.
 
-    @property editTime
+    @property syncDownTime
     @type Date
   */
   syncDownTime: DS.attr('date'),

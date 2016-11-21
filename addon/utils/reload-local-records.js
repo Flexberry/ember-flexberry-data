@@ -65,6 +65,8 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
 
   dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
   if (record.get('id')) {
+    // TODO: if record from online store should not be unloaded then it will have dirty attribute.
+    record.set('syncDownTime', new Date());
     var snapshot = record._createSnapshot();
     let fieldsToUpdate = projection ? projection.attributes : null;
     return new Ember.RSVP.Promise((resolve, reject) => localAdapter.addHashForBulkUpdateOrCreate(localStore, modelType, snapshot, fieldsToUpdate).then(() => {
