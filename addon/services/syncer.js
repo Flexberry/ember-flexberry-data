@@ -647,9 +647,18 @@ export default Ember.Service.extend({
   /**
   */
   _createQuery(store, job) {
-    let builder = new Builder(store)
-      .from(job.get('objectType.name'))
-      .byId(job.get('objectPrimaryKey'));
+    //TODO: Get projection for sync up from generated list of projections for models.
+    let modelName = job.get('objectType.name');
+    let modelClass = store.modelFor(modelName);
+    let projectionName = modelName.indexOf('-') > -1 ? modelName.substring(modelName.indexOf('-') + 1) : modelName;
+    projectionName = projectionName.camelize().capitalize() + 'E';
+
+    let builder = new Builder(store).from(modelName);
+    if (modelClass.projections && modelClass.projections.get(projectionName)) {
+      builder = builder.selectByProjection(projectionName);
+    }
+
+    builder = builder.byId(job.get('objectPrimaryKey'));
     let query = builder.build();
     query.useOnlineStore = true;
     return query;

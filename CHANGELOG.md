@@ -7,6 +7,7 @@
 ### Fixed
 - Optimizing performance for sync down operation.
 - Unloading synced records from online store after sync down operation.
+- Relationships of model are not reset now when syncing up after changing model in offline mode.
 
 ## [0.7.1-beta.8] - 2016-11-20
 ### Fixed
