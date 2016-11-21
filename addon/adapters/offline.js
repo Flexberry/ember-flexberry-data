@@ -333,8 +333,21 @@ export default DS.Adapter.extend({
               }
             }
 
-            Ember.merge(record, hash);
-            _this._storeHashForBulkOperation(type.modelName, record);
+            // Merge record with hash and store it to local store only if hash contains some changes for record.
+            let needChangeRecord = false;
+            for (let attrName in hash) {
+              if (hash.hasOwnProperty(attrName) && (!record[attrName] || record[attrName] !== hash[attrName])) {
+                needChangeRecord = true;
+                break;
+              }
+            }
+
+            if (needChangeRecord) {
+              Ember.merge(record, hash);
+              _this._storeHashForBulkOperation(type.modelName, record);
+            } else {
+              dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
+            }
           } else {
             dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           }

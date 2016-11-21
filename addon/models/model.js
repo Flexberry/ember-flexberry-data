@@ -142,9 +142,11 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     options = Ember.merge({ softSave: false }, options || {});
 
     return new Ember.RSVP.Promise((resolve, reject) => {
-      this.validate({
-        validateDeleted: false
-      }).then(() => this.beforeSave(options)).then(() => {
+      // If we are updating while syncing up then checking of validation rules should be skipped
+      // because they can be violated by unfilled fields of model.
+      let promise = this.get('isSyncingUp') && this.get('dirtyType') === 'updated' ?
+        Ember.RSVP.resolve() : this.validate({ validateDeleted: false });
+      promise.then(() => this.beforeSave(options)).then(() => {
         // Call to base class 'save' method with right context.
         // The problem is that call to current save method will be already finished,
         // and traditional _this._super will point to something else, but not to DS.Model 'save' method,

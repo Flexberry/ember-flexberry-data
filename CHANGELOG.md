@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+## [0.7.1-beta.9] - 2016-11-21
+### Added
+- `syncDownTime` property of model is setting now when performing sync down operation.
+
+### Fixed
+- Optimizing performance for sync down operation.
+- Unloading synced records from online store after sync down operation.
+- Relationships of model are not reset now when syncing up after changing model in offline mode.
+
+## [0.7.1-beta.8] - 2016-11-20
+### Fixed
+- Validation errors could break syncing up if model was updated in offline mode.
+
 ## [0.7.1-beta.7] - 2016-11-18
 ### Fixed
 - Wrong store instance was connected with internal model, it causes errors when `unloadRecord` and `unloadAll` methods of store were called.
