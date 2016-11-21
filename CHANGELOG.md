@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.9] - 2016-11-21
 ### Added
 - `syncDownTime` property of model is setting now when performing sync down operation.
 
