@@ -317,7 +317,7 @@ export default class extends BaseAdapter {
                 }
 
                 // А если промисов выше не было добавлено?
-                loadPromises.push(new Dexie.Promise((resolve, reject) => resolve()));
+               //loadPromises.push(new Dexie.Promise((resolve, reject) => resolve()));
 
                 Dexie.Promise.all(loadPromises).then(() => {
                   // join
@@ -369,17 +369,21 @@ export default class extends BaseAdapter {
                   if (promises) {
                     Ember.RSVP.all(promises).then(() => resolve(), reject);
                   }
+                } else {
+                  resolve();
                 }
-
-                resolve();
               }
             });
           };
 
           let joinQueue = Queue.create();
 
-          for (let i = queryTree.currentDeepLevel; i > 1; i--) {
+          let attachScanDeepLevelToQueue = (i) => {
             joinQueue.attach((queryItemResolve, queryItemReject) => scanDeepLevel(queryTree.root, i).then(queryItemResolve, queryItemReject));
+          };
+
+          for (let i = queryTree.currentDeepLevel; i > 1; i--) {
+            attachScanDeepLevelToQueue(i);
           }
 
           joinQueue.attach((queryItemResolve, queryItemReject) => {
