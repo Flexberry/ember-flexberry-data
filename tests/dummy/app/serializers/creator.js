@@ -2,7 +2,7 @@ import ApplicationSerializer from './application';
 
 export default ApplicationSerializer.extend({
   attrs: {
-    Country: { deserialize: 'records' },
+    Country: { serialize: 'odata-id', deserialize: 'records' },
   },
 
   /**

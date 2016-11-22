@@ -812,6 +812,9 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
 module('Performance joins');
 
 test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (assert) => {
+  const offlineGlobals = app.__container__.lookup('service:offline-globals');
+  offlineGlobals.setOnlineAvailable(false);
+
   let count = 15000;
   let data = getJoinsPerformanceTestData(count, assert);
 

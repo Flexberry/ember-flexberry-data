@@ -3,5 +3,6 @@ import { Serializer } from 'ember-flexberry-data';
 
 export default Serializer.Offline.extend(DS.EmbeddedRecordsMixin, {
   attrs: {
+    Country: { serialize: 'id', deserialize: 'records' }
   }
 });
