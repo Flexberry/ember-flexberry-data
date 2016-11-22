@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.10] - 2016-11-22
 ### Fixed
 - Passing version number of wrong type to Dexie. That causes error when trying to upgrade IndexedDB database vesion.
 
