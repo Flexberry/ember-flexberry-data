@@ -178,6 +178,7 @@ export default class extends BaseAdapter {
           }, reject);
         }
       } else if (true) {
+        // TODO: remove if statement.
 
         let sortData = function(data, sortField) {
           // Sorting array by `sortField` and asc.
@@ -226,16 +227,18 @@ export default class extends BaseAdapter {
         * 5. Берём все ветки уровня 1 и пересортировывая ствол сливаем их со стволом.
         */
 
+        // TODO: apply projection extending.
+
+        let currentQueryTreeDeepLevel = 0;
+
         let queryTree = {
-          currentDeepLevel: 1, // Текущий уровень вложенности expand-ов. По мере слияния будет сокращаться.
-          root: {
-            modelName: query.modelName,
-            select: query.select, // TODO: include extend props. Clone this object.
-            data: null,
-            sorting: null,
-            deepLevel: 1,
-            expand: null
-          }
+          modelName: query.modelName,
+          primaryKeyName: query.primaryKeyName,
+          select: query.select, // TODO: include extend props. Clone this object.
+          data: null,
+          sorting: null,
+          deepLevel: 0,
+          expand: null
         };
 
         // будем ходить по expand-ам и сливать с предыдущим уровнем те мастера, у которых нет своих экспандов. делать это надо в цикле, пока не доберёмся до ствола.
@@ -270,25 +273,19 @@ export default class extends BaseAdapter {
 
               parent.expand.push(master);
               scanExpand(exp[masterPropName].expand, master, masterDeepLevel);
-              if (masterDeepLevel > queryTree.currentDeepLevel) {
-                queryTree.currentDeepLevel = masterDeepLevel;
+              if (masterDeepLevel > currentQueryTreeDeepLevel) {
+                currentQueryTreeDeepLevel = masterDeepLevel;
               }
             }
           };
 
-          scanExpand(expand, queryTree.root, 1);
+          scanExpand(expand, queryTree, 0);
         }
 
         let table = _this._db.table(query.modelName);
 
-        // select, expand и extend разберём.
-        // TODO: Разберём представление по мастерам.
-
-        // TODO: добавим слияние для детейловых связей в представлениях.
-
-        // TODO: получим сырой массив данных, который содержит и свои и мастеровые свойства в объектах.
         table.toArray().then((data) => {
-          queryTree.root.data = data;
+          queryTree.data = data;
 
           // Найдём текущий уровень вложенности и смерджим его с parent.
           let scanDeepLevel = function(node, deepLevel) {
@@ -316,22 +313,21 @@ export default class extends BaseAdapter {
                   loadPromises.push(loadPromise);
                 }
 
-                // А если промисов выше не было добавлено?
-               //loadPromises.push(new Dexie.Promise((resolve, reject) => resolve()));
-
                 Dexie.Promise.all(loadPromises).then(() => {
-                  // join
-                  // сортируем parent по id мастера, если не отсортирован ранее таким образом.
+                  // Remove unused in projection fields.
+                  // node.select М.б. удалять их уже в выходном массиве? Будет быстрее.
+
                   if (node.parent.sorting !== node.propNameInParent) {
                     sortData(node.parent.data, node.propNameInParent);
+                    node.parent.sorting = node.propNameInParent;
                   }
 
-                  // сортируем node.data по id, если не отсортирован ранее таким образом.
                   if (node.sorting !== node.primaryKeyName) {
                     sortData(node.data, node.primaryKeyName);
+                    node.sorting = node.primaryKeyName;
                   }
 
-                  joinSortedDataArrays(data, node.propNameInParent, node.data, node.modelName);
+                  joinSortedDataArrays(node.parent.data, node.propNameInParent, node.data, node.modelName);
 
                   // Remove node from parent.expand.
                   let masters = Object.keys(node.parent.expand);
@@ -377,17 +373,37 @@ export default class extends BaseAdapter {
           };
 
           let joinQueue = Queue.create();
+          joinQueue.set('continueOnError', false);
 
           let attachScanDeepLevelToQueue = (i) => {
-            joinQueue.attach((queryItemResolve, queryItemReject) => scanDeepLevel(queryTree.root, i).then(queryItemResolve, queryItemReject));
+            joinQueue.attach((queryItemResolve, queryItemReject) => scanDeepLevel(queryTree, i).then(queryItemResolve, queryItemReject));
           };
 
-          for (let i = queryTree.currentDeepLevel; i > 1; i--) {
+          // Scan query tree from leafs to root.
+          for (let i = currentQueryTreeDeepLevel; i > 0; i--) {
             attachScanDeepLevelToQueue(i);
           }
 
           joinQueue.attach((queryItemResolve, queryItemReject) => {
-            resolve();
+            // TODO: filter, order, skip, top.
+            let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
+
+            let order = buildOrder(query);
+            let topskip = buildTopSkip(query);
+
+            queryTree.data = filter(queryTree.data);
+            let length = queryTree.data.length;
+            queryTree.data = topskip(order(queryTree.data));
+
+            let jsProjection = buildProjection(query);
+            queryTree.data = jsProjection(queryTree.data);
+
+            let response = { meta: {}, data: queryTree.data };
+            if (query.count) {
+              response.meta.count = length;
+            }
+
+            resolve(response);
             queryItemResolve();
           });
         }, reject);
