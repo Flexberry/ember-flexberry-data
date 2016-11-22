@@ -9,6 +9,7 @@ import BaseAdapter from './base-adapter';
 import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip, buildFilter } from './js-adapter';
 import Information from '../utils/information';
 import Dexie from 'npm:dexie';
+import Queue from '../utils/queue';
 
 /**
   Class of query language adapter that allows to load data from IndexedDB.
@@ -42,7 +43,8 @@ export default class extends BaseAdapter {
   */
   query(query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      let table = this._db.table(query.modelName);
+      let _this = this;
+      let table = _this._db.table(query.modelName);
       let complexQuery = containsRelationships(query);
       let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
       let extendedProjection = extendProjection(query);
@@ -53,7 +55,7 @@ export default class extends BaseAdapter {
 
         table = updateWhereClause(table, query);
 
-        if (table instanceof this._db.Table && !query.order) {
+        if (table instanceof _this._db.Table && !query.order) {
           // Go this way if filter is empty and no sorting.
           if (offset) {
             table = table.offset(offset);
@@ -78,7 +80,7 @@ export default class extends BaseAdapter {
                   response.meta.count = length;
                   resolve(response);
                 } else {
-                  let fullTable = updateWhereClause(this._db.table(query.modelName), query);
+                  let fullTable = updateWhereClause(_this._db.table(query.modelName), query);
                   fullTable.count().then((count) => {
                     response.meta.count = count;
                     resolve(response);
@@ -148,7 +150,7 @@ export default class extends BaseAdapter {
               data = topskip(data);
             } else {
               if (query.count && (offset || limit)) {
-                let fullTable = updateWhereClause(this._db.table(query.modelName), query);
+                let fullTable = updateWhereClause(_this._db.table(query.modelName), query);
                 countPromise = fullTable.count().then((count) => {
                   length = count;
                 }, reject);
@@ -277,7 +279,7 @@ export default class extends BaseAdapter {
           scanExpand(expand, queryTree.root, 1);
         }
 
-        let table = this._db.table(query.modelName);
+        let table = _this._db.table(query.modelName);
 
         // select, expand и extend разберём.
         // TODO: Разберём представление по мастерам.
@@ -286,50 +288,103 @@ export default class extends BaseAdapter {
 
         // TODO: получим сырой массив данных, который содержит и свои и мастеровые свойства в объектах.
         table.toArray().then((data) => {
-          // Отсортируем массив по id мастера.
-          let masterField = 'Country';
-          sortData(data, masterField);
+          queryTree.root.data = data;
 
-          let masterName = 'country';
-          let masterTable = this._db.table(masterName);
-          masterTable.toArray().then((masterData) => {
-            joinSortedDataArrays(data, masterField, masterData, masterName);
-          }, reject).then(() => {
-            // TODO: возможна оптимизация, если используется тот же массив мастеров, что уже был вычитан.
-            // Теперь свяжем Creator
-            masterField = 'Creator';
-            sortData(data, masterField);
-
-            let masterName = 'creator';
-            let masterTable = this._db.table(masterName);
-            masterTable.toArray().then((masterData) => {
-              // Сначала для этого мастера заполним его мастеров.
-              // А тут Creator.Country
-              masterField = 'Country';
-              sortData(masterData, masterField);
-
-              let masterMasterName = 'country';
-              let masterMasterTable = this._db.table(masterMasterName);
-              masterMasterTable.toArray().then((masterMasterData) => {
-                joinSortedDataArrays(masterData, masterField, masterMasterData, masterMasterName);
-              }, reject).then(() => {
-
-                // Отсортируем таблицу мастера по pk.
-                masterField = 'id';
-                sortData(masterData, masterField);
-
-                masterField = 'Creator';
-
-                joinSortedDataArrays(data, masterField, masterData, masterName);
-              }, reject).then(() => {
-                let response = { meta: {}, data: data };
-                if (query.count) {
-                  response.meta.count = length;
+          // Найдём текущий уровень вложенности и смерджим его с parent.
+          let scanDeepLevel = function(node, deepLevel) {
+            return new Ember.RSVP.Promise((resolve, reject) => {
+              if (node.deepLevel === deepLevel) {
+                // Load and join data.
+                let loadPromises = [];
+                if (!node.data) {
+                  // Load data.
+                  let nodeTable = _this._db.table(node.modelName);
+                  let loadPromise = nodeTable.toArray().then((data) => {
+                    node.data = data;
+                    node.sorting = node.primaryKeyName;
+                  }, reject);
+                  loadPromises.push(loadPromise);
                 }
 
-                resolve(response);
-              });
+                if (!node.parent.data) {
+                  // Load parent data.
+                  let nodeTable = _this._db.table(node.parent.modelName);
+                  let loadPromise = nodeTable.toArray().then((data) => {
+                    node.parent.data = data;
+                    node.parent.sorting = node.parent.primaryKeyName;
+                  }, reject);
+                  loadPromises.push(loadPromise);
+                }
+
+                // А если промисов выше не было добавлено?
+                loadPromises.push(new Dexie.Promise((resolve, reject) => resolve()));
+
+                Dexie.Promise.all(loadPromises).then(() => {
+                  // join
+                  // сортируем parent по id мастера, если не отсортирован ранее таким образом.
+                  if (node.parent.sorting !== node.propNameInParent) {
+                    sortData(node.parent.data, node.propNameInParent);
+                  }
+
+                  // сортируем node.data по id, если не отсортирован ранее таким образом.
+                  if (node.sorting !== node.primaryKeyName) {
+                    sortData(node.data, node.primaryKeyName);
+                  }
+
+                  joinSortedDataArrays(data, node.propNameInParent, node.data, node.modelName);
+
+                  // Remove node from parent.expand.
+                  let masters = Object.keys(node.parent.expand);
+                  let mastersCount = masters.length;
+                  let masterName;
+                  let masterFound = false;
+                  for (let i = 0; i < mastersCount; i++) {
+                    masterName = masters[i];
+                    if (node.parent.expand[masterName].propNameInParent === node.propNameInParent) {
+                      masterFound = true;
+                      break;
+                    }
+                  }
+
+                  if (masterFound) {
+                    delete node.parent.expand[masterName];
+                  }
+
+                  resolve();
+                }, reject);
+              } else {
+                if (node.expand) {
+                  let masters = Object.keys(node.expand);
+                  let mastersCount = masters.length;
+                  let promises = null;
+                  for (let i = 0; i < mastersCount; i++) {
+                    if (!promises) {
+                      promises = [];
+                    }
+
+                    let masterName = masters[i];
+                    promises.push(scanDeepLevel(node.expand[masterName], deepLevel));
+                  }
+
+                  if (promises) {
+                    Ember.RSVP.all(promises).then(() => resolve(), reject);
+                  }
+                }
+
+                resolve();
+              }
             });
+          };
+
+          let joinQueue = Queue.create();
+
+          for (let i = queryTree.currentDeepLevel; i > 1; i--) {
+            joinQueue.attach((queryItemResolve, queryItemReject) => scanDeepLevel(queryTree.root, i).then(queryItemResolve, queryItemReject));
+          }
+
+          joinQueue.attach((queryItemResolve, queryItemReject) => {
+            resolve();
+            queryItemResolve();
           });
         }, reject);
       } else {
