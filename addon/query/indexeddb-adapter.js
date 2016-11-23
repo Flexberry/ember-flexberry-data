@@ -189,12 +189,25 @@ export default class extends BaseAdapter {
           data.sort(singleSort);
         };
 
-        let joinSortedDataArrays = function(data, masterField, masterData, masterTypeName) {
+        let getDetailsHashMap = function(data, primaryKeyName) {
+          let ret = Ember.Map.create();
+          let dataLength = data.length;
+          for (let i = 0; i < dataLength; i++) {
+            let obj = data[i];
+            let key = obj[primaryKeyName];
+            ret.set(key, obj);
+          }
+
+          return ret;
+        };
+
+        let joinSortedDataArrays = function(data, masterFieldName, masterData, masterPrimaryKeyName, masterTypeName) {
           // Joining array `data` on field `masterField` with array `masterData` of objects `masterTypeName`. Array `data` must be ordered by `masterField`, array `masterData` must be ordered by id. Function do not use recursive calls.
           let masterIndex = 0;
           let dataLength = data.length;
+          let masterDataLength = masterData.length;
           for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
-            let masterKey = data[dataIndex][masterField];
+            let masterKey = data[dataIndex][masterFieldName];
             if (!masterKey) {
               continue;
             }
@@ -202,20 +215,57 @@ export default class extends BaseAdapter {
             let moveMastersForvard = true;
             while (moveMastersForvard) {
               let masterDataValue = masterData[masterIndex];
-              if (masterKey > masterDataValue.id) {
+
+              // TODO: Check if Debug Mode build then use this.
+              // if (!masterDataValue.hasOwnProperty(masterPrimaryKeyName)) {
+              //   let error = new Error(`Metadata consistance error. ` +
+              //   `Not found property '${masterPrimaryKeyName}' in type '${masterTypeName}'.`);
+              //   reject(error);
+              //   break;
+              // }
+
+              if (masterKey > masterDataValue[masterPrimaryKeyName] && masterIndex < masterDataLength) {
                 masterIndex++;
-              } else if (masterKey < masterDataValue.id) {
+              } else if (masterKey < masterDataValue[masterPrimaryKeyName] || masterIndex >= masterDataLength) {
                 let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}.`);
                 reject(error);
                 break;
               }
 
-              if (masterKey === masterDataValue.id) {
-                data[dataIndex][masterField] = masterDataValue;
+              if (masterKey === masterDataValue[masterPrimaryKeyName]) {
+                data[dataIndex][masterFieldName] = masterDataValue;
                 moveMastersForvard = false;
                 continue;
               }
             }
+          }
+        };
+
+        let joinHasManyData = function(data, detailFieldName, detailsData, detailsTypeName) {
+          // Joining array `data` on field `masterField` with hash map `detailsData` of objects `detailsTypeName`. Function do not use recursive calls.
+          let dataLength = data.length;
+          for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
+            let detailsKeys = data[dataIndex][detailFieldName];
+            if (!detailsKeys) {
+              continue;
+            }
+
+            let detailsKeysLength = detailsKeys.length;
+            let detailsObjects = [];
+            for (let i = 0; i < detailsKeysLength; i++) {
+              let detailKey = detailsKeys[i];
+              let detailObj = detailsData.get(detailKey);
+
+              if (!detailObj) {
+                let error = new Error(`Data constraint error. Not found object type '${detailsTypeName}' with id ${detailKey}.`);
+                reject(error);
+                break;
+              }
+
+              detailsObjects.push(detailObj);
+            }
+
+            data[dataIndex][detailFieldName] = detailsObjects;
           }
         };
 
@@ -265,7 +315,8 @@ export default class extends BaseAdapter {
                 sorting: null,
                 deepLevel: masterDeepLevel,
                 expand: null,
-                parent: parent
+                parent: parent,
+                relationType: exp[masterPropName].relationship.type
               };
               if (!parent.expand) {
                 parent.expand = [];
@@ -314,20 +365,24 @@ export default class extends BaseAdapter {
                 }
 
                 Dexie.Promise.all(loadPromises).then(() => {
-                  // Remove unused in projection fields.
-                  // node.select М.б. удалять их уже в выходном массиве? Будет быстрее.
+                  if (node.relationType === 'belongsTo') {
+                    if (node.parent.sorting !== node.propNameInParent) {
+                      sortData(node.parent.data, node.propNameInParent);
+                      node.parent.sorting = node.propNameInParent;
+                    }
 
-                  if (node.parent.sorting !== node.propNameInParent) {
-                    sortData(node.parent.data, node.propNameInParent);
-                    node.parent.sorting = node.propNameInParent;
+                    if (node.sorting !== node.primaryKeyName) {
+                      sortData(node.data, node.primaryKeyName);
+                      node.sorting = node.primaryKeyName;
+                    }
+
+                    joinSortedDataArrays(node.parent.data, node.propNameInParent, node.data, node.primaryKeyName, node.modelName);
+
+                  } else {
+                    joinHasManyData(node.parent.data, node.propNameInParent,
+                      getDetailsHashMap(node.data, node.primaryKeyName),
+                      node.modelName);
                   }
-
-                  if (node.sorting !== node.primaryKeyName) {
-                    sortData(node.data, node.primaryKeyName);
-                    node.sorting = node.primaryKeyName;
-                  }
-
-                  joinSortedDataArrays(node.parent.data, node.propNameInParent, node.data, node.modelName);
 
                   // Remove node from parent.expand.
                   let masters = Object.keys(node.parent.expand);
