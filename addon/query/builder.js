@@ -200,6 +200,7 @@ export default class Builder extends BaseBuilder {
     let select = Object.keys(uniqSelect);
 
     let expand = tree.expand;
+    let primaryKeyName = tree.primaryKeyName; // TODO: Set primaryKeyName field in query as it does for modelName.
 
     return new QueryObject(
       this._modelName,
@@ -275,7 +276,8 @@ export default class Builder extends BaseBuilder {
 
             let relationshipProps = {
               async: relationship.options.async,
-              isEmbedded: true // TODO: isEmbedded(this._store, modelName, attrName)
+              isEmbedded: true, // TODO: isEmbedded(this._store, modelName, attrName)
+              type: attr.kind
             };
             tree.select.push(attrName);
             tree.expand[attrName] = this._getQueryTreeByProjection(attr, relatedModel, ralatedModelName, relationshipProps);
