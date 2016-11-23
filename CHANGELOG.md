@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Querying records by fields of `date` type with query language in offline mode.
 
 ## [0.7.1-beta.10] - 2016-11-22
 ### Fixed
