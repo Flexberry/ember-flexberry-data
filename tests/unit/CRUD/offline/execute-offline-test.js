@@ -13,18 +13,6 @@ export default function executeTest(testName, callback) {
       store = App.__container__.lookup('service:store');
       let dbName = 'testDB' + Math.floor(Math.random() * 9999);
 
-      // Override store.unloadAll method.
-      const originalUnloadAll = store.unloadAll;
-      store.unloadAll = function() {
-        originalUnloadAll.apply(store, arguments);
-
-        // Clean up type maps otherwise internal models won't be cleaned from stores,
-        // and it will cause some exceptions related to store's internal-models statuses.
-        Ember.A([store, store.get('onlineStore'), store.get('offlineStore')]).forEach((s) => {
-          Ember.set(s, 'typeMaps', {});
-        });
-      };
-
       let offlineSchema = {};
       offlineSchema[dbName] = {
         1: store.get('offlineSchema.TestDB')['0.1'],
@@ -47,5 +35,5 @@ export default function executeTest(testName, callback) {
     }
   });
 
-  test(testName, (assert) => callback(store, assert));
+  test(testName, (assert) => callback(store, assert, App));
 }
