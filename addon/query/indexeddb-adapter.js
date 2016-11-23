@@ -37,10 +37,11 @@ export default class extends BaseAdapter {
     Loads data from IndexedDB.
 
     @method query
-    @param {QueryObject} QueryObject instance to the adapter.
+    @param {DS.Store or subclass} store Store instance to the adapter.
+    @param {QueryObject} query QueryObject instance to the adapter.
     @return {Promise} Promise with loaded data.
   */
-  query(query) {
+  query(store, query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
       let table = this._db.table(query.modelName);
       let complexQuery = containsRelationships(query);
@@ -51,7 +52,7 @@ export default class extends BaseAdapter {
         let offset = query.skip;
         let limit = query.top;
 
-        table = updateWhereClause(table, query);
+        table = updateWhereClause(store, table, query);
 
         if (table instanceof this._db.Table && !query.order) {
           // Go this way if filter is empty and simply sort by one field.
@@ -78,7 +79,7 @@ export default class extends BaseAdapter {
                   response.meta.count = length;
                   resolve(response);
                 } else {
-                  let fullTable = updateWhereClause(this._db.table(query.modelName), query);
+                  let fullTable = updateWhereClause(store, this._db.table(query.modelName), query);
                   fullTable.count().then((count) => {
                     response.meta.count = count;
                     resolve(response);
@@ -148,7 +149,7 @@ export default class extends BaseAdapter {
               data = topskip(data);
             } else {
               if (query.count && (offset || limit)) {
-                let fullTable = updateWhereClause(this._db.table(query.modelName), query);
+                let fullTable = updateWhereClause(store, this._db.table(query.modelName), query);
                 countPromise = fullTable.count().then((count) => {
                   length = count;
                 }, reject);
@@ -188,7 +189,7 @@ export default class extends BaseAdapter {
           'of loading data from offline store, without specify attributes ' +
           'and relationships will be loaded only their own object attributes.', projection, { id: 'IndexedDBAdapter.query' });
 
-        (isBadQuery ? table : updateWhereClause(table, query)).toArray().then((data) => {
+        (isBadQuery ? table : updateWhereClause(store, table, query)).toArray().then((data) => {
           let length = data.length;
           if (!isBadQuery) {
             data = topskip(order(data));
@@ -225,11 +226,12 @@ export default class extends BaseAdapter {
   Filtering only with Dexie can applied only for simple cases (for `SimplePredicate`).
   For complex cases all logic implemened programmatically.
 
+  @param {Dexie.Table} store Store instance.
   @param {Dexie.Table} table Table instance for loading objects.
   @param {Query} query Query language instance for loading data.
   @returns {Dexie.Collection|Dexie.Table} Table or collection that can be used with `toArray` method.
 */
-function updateWhereClause(table, query) {
+function updateWhereClause(store, table, query) {
   let predicate = query.predicate;
 
   if (query.id) {
@@ -245,7 +247,24 @@ function updateWhereClause(table, query) {
   }
 
   if (predicate instanceof SimplePredicate) {
-    let value = typeof predicate.value === 'boolean' ? `${predicate.value}` : predicate.value;
+    let information = new Information(store);
+    let attrType = information.getType(query.modelName, predicate.attributePath);
+    let value;
+    switch (attrType) {
+      case 'boolean':
+        value = typeof predicate.value === 'boolean' ? `${predicate.value}` : predicate.value;
+        break;
+
+      case 'date':
+        let dateTransform = Ember.getOwner(store).lookup('transform:date');
+        let moment = Ember.getOwner(store).lookup('service:moment');
+        value = dateTransform.serialize(moment.moment(predicate.value).toDate());
+        break;
+
+      default:
+        value = predicate.value;
+    }
+
     if (value === null) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153

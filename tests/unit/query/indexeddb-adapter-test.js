@@ -904,7 +904,7 @@ function executeTest(data, query, assert, callback) {
     let db = dexie.dexie(dbName, store);
     db.open().then((db) => {
       let startExecTime = window.performance.now();
-      new IndexedDbAdapter(db).query(query).then((result) => {
+      new IndexedDbAdapter(db).query(store, query).then((result) => {
         checkResult(result, db, startExecTime);
       }).catch((error) => {
         failQuery(error, db);
