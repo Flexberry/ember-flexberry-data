@@ -101,7 +101,7 @@ export default Ember.Service.extend(Ember.Evented, {
     let db =  new Dexie(dbName, merge({}, options));
     let schemas = store.get('offlineSchema')[dbName];
     for (let version in schemas) {
-      db.version(version).stores(schemas[version]);
+      db.version(+version).stores(schemas[version]);
     }
 
     db.tables.forEach((table) => {

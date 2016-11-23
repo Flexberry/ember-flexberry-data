@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.7.1-beta.10] - 2016-11-22
+### Fixed
+- Passing version number of wrong type to Dexie. That causes error when trying to upgrade IndexedDB database vesion.
+
 ## [0.7.1-beta.9] - 2016-11-21
 ### Added
 - `syncDownTime` property of model is setting now when performing sync down operation.
