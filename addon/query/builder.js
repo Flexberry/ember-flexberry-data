@@ -331,9 +331,9 @@ export default class Builder extends BaseBuilder {
   _getExtendedProjection() {
     let extend = [];
     let existKeys = Object.keys(this._select);
-    let scanPredicates = function(predicate) {
+    let scanPredicates = function(predicate, detailPath) {
       if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
-        let path = '';
+        let path = detailPath ? detailPath + '.' : '';
         Information.parseAttributePath(predicate.attributePath).forEach((attribute) => {
           let key = `${path}${attribute}`;
           if (existKeys.indexOf(key) === -1) {
@@ -345,12 +345,12 @@ export default class Builder extends BaseBuilder {
       }
 
       if (predicate instanceof DetailPredicate) {
-        extend[predicate.detailPath] = scanPredicates(predicate.predicate);
+        scanPredicates(predicate.predicate, predicate.detailPath);
       }
 
       if (predicate instanceof ComplexPredicate) {
         predicate.predicates.forEach((innerPredicate) => {
-          Ember.merge(extend, scanPredicates({ innerPredicate }));
+          scanPredicates({ innerPredicate });
         });
       }
     };
