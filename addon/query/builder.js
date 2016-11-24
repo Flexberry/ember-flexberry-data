@@ -350,7 +350,7 @@ export default class Builder extends BaseBuilder {
 
       if (predicate instanceof ComplexPredicate) {
         predicate.predicates.forEach((innerPredicate) => {
-          scanPredicates({ innerPredicate });
+          scanPredicates(innerPredicate, detailPath);
         });
       }
     };
