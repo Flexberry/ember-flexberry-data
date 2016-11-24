@@ -9,12 +9,14 @@ import Condition from 'ember-flexberry-data/query/condition';
 
 import startApp from '../../helpers/start-app';
 
-const app = startApp();
-const store = app.__container__.lookup('service:store');
-const dexie = app.__container__.lookup('service:dexie');
-const databasePrefix = 'testDB2';
-const modelName = 'employee';
-const schema = (dbName) => {
+const appIndexedbAdapterTest = startApp();
+const storeIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:store');
+const dexieIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:dexie');
+const offlineGlobalsIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:offline-globals');
+offlineGlobalsIndexedbAdapterTest.setOnlineAvailable(false);
+const databasePrefixIndexedbAdapterTest = 'testDBIAT';
+const modelNameIndexedbAdapterTest = 'employee';
+const schemaIndexedbAdapterTest = (dbName) => {
   let object = {};
   object[dbName] = {
     1: {
@@ -27,7 +29,7 @@ const schema = (dbName) => {
   return object;
 };
 
-module('query');
+module('indexeddb-adapter-test query');
 
 test('adapter | indexeddb | without predicate', (assert) => {
   let data = {
@@ -38,7 +40,7 @@ test('adapter | indexeddb | without predicate', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -58,7 +60,7 @@ test('adapter | indexeddb | simple predicate | eq', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, 'B');
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Name', FilterOperator.Eq, 'B');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -77,7 +79,7 @@ test('adapter | indexeddb | simple predicate | eq | null', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Eq, null);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Name', FilterOperator.Eq, null);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -95,7 +97,7 @@ test('adapter | indexeddb | simple predicate | eq | master pk', function (assert
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).where('Manager', FilterOperator.Eq, 3);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Manager', FilterOperator.Eq, 3);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -116,7 +118,7 @@ test('adapter | indexeddb | simple predicate | eq | master field', function (ass
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).where('Manager.Name', FilterOperator.Eq, 'Y');
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Manager.Name', FilterOperator.Eq, 'Y');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -134,7 +136,7 @@ test('adapter | indexeddb | simple predicate | neq', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).where('Name', FilterOperator.Neq, 'B');
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Name', FilterOperator.Neq, 'B');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -153,7 +155,7 @@ test('adapter | indexeddb | simple predicate | le', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Le, 12);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Age', FilterOperator.Le, 12);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -172,7 +174,7 @@ test('adapter | indexeddb | simple predicate | leq', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Leq, 11);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Age', FilterOperator.Leq, 11);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -191,7 +193,7 @@ test('adapter | indexeddb | simple predicate | ge', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Ge, 10);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Age', FilterOperator.Ge, 10);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -210,7 +212,7 @@ test('adapter | indexeddb | simple predicate | geq', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).where('Age', FilterOperator.Geq, 11);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Age', FilterOperator.Geq, 11);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -230,7 +232,7 @@ test('adapter | indexeddb | string predicate | contains', (assert) => {
   };
 
   let sp1 = new StringPredicate('CountryName').contains('i');
-  let builder = new QueryBuilder(store, modelName).where(sp1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(sp1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -255,7 +257,7 @@ test('adapter | indexeddb | string predicate | contains | master field', (assert
   };
 
   let sp1 = new StringPredicate('Country.Name').contains('i');
-  let builder = new QueryBuilder(store, modelName).where(sp1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(sp1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -278,7 +280,7 @@ test('adapter | indexeddb | detail predicate | all | simple predicate', (assert)
   };
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
-  let builder = new QueryBuilder(store, modelName).where(dp);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -303,7 +305,7 @@ test('adapter | indexeddb | detail predicate | all | simple predicate | master f
   };
 
   let dp = new DetailPredicate('Tags').all(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
-  let builder = new QueryBuilder(store, modelName).where(dp);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -327,7 +329,7 @@ test('adapter | indexeddb | detail predicate | any | simple predicate', (assert)
   };
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
-  let builder = new QueryBuilder(store, modelName).where(dp);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -357,7 +359,7 @@ test('adapter | indexeddb | detail predicate | any | simple predicate | master f
   };
 
   let dp = new DetailPredicate('Tags').any(new SimplePredicate('Creator.Name', FilterOperator.Eq, 'X'));
-  let builder = new QueryBuilder(store, modelName).where(dp);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -385,7 +387,7 @@ test('adapter | indexeddb | detail predicate | all | complex predicate', (assert
   let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag3');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').all(cp1);
-  let builder = new QueryBuilder(store, modelName).where(dp);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -417,7 +419,7 @@ test('adapter | indexeddb | detail predicate | all | complex predicate | master 
   let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Z');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').all(cp1);
-  let builder = new QueryBuilder(store, modelName).where(dp);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -446,7 +448,7 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
   let sp2 = new SimplePredicate('Name', FilterOperator.Eq, 'Tag2');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').any(cp1);
-  let builder = new QueryBuilder(store, modelName).where(dp);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -483,7 +485,7 @@ test('adapter | indexeddb | detail predicate | any | complex predicate', (assert
   let sp2 = new SimplePredicate('Creator.Name', FilterOperator.Eq, 'Y');
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
   let dp = new DetailPredicate('Tags').any(cp1);
-  let builder = new QueryBuilder(store, modelName).where(dp);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -506,7 +508,7 @@ test('adapter | indexeddb | complex predicate | and', (assert) => {
   let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 10);
   let cp1 = new ComplexPredicate(Condition.And, sp1, sp2);
 
-  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('Surname').where(cp1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -529,7 +531,7 @@ test('adapter | indexeddb | complex predicate | or', (assert) => {
   let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 12);
   let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
 
-  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('Surname').where(cp1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -554,7 +556,7 @@ test('adapter | indexeddb | complex predicate | with boolean value', (assert) =>
   let cp1 = new ComplexPredicate(Condition.Or, sp2, sp3);
   let cp2 = new ComplexPredicate(Condition.And, sp1, cp1);
 
-  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp2);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('Surname').where(cp2);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -582,7 +584,7 @@ test('adapter | indexeddb | complex predicate | with nested complex predicate', 
   let cp2 = new ComplexPredicate(Condition.And, cp1, sp3);
 
   // Act && Assert.
-  let builder = new QueryBuilder(store, modelName).select('Surname').where(cp2);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('Surname').where(cp2);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -600,7 +602,7 @@ test('adapter | indexeddb | select', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).select('id,Age,Name');
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('id,Age,Name');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -621,7 +623,7 @@ test('adapter | indexeddb | order', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).orderBy('Age desc, Price asc');
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).orderBy('Age desc, Price asc');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -641,7 +643,7 @@ test('adapter | indexeddb | order with skip-top', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).orderBy('Price asc').skip(1).top(2);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).orderBy('Price asc').skip(1).top(2);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -651,12 +653,12 @@ test('adapter | indexeddb | order with skip-top', (assert) => {
   });
 });
 
-module('performance');
+module('indexeddb-adapter-test performance');
 
 test('adapter | indexeddb | no filter, no order, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
-  let builder = new QueryBuilder(store, modelName).select('id,Price,Name');
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('id,Price,Name');
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {
     let endExecTime = window.performance.now();
@@ -669,7 +671,7 @@ test('adapter | indexeddb | no filter, no order, no skip, no top', (assert) => {
 test('adapter | indexeddb | no filter, order asc, skip, top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
   .orderBy('Price asc')
   .skip(1000)
   .top(20)
@@ -688,7 +690,7 @@ test('adapter | indexeddb | no filter, order asc, no skip, no top', (assert) => 
   let count = 15000;
   let data = getPerformanceTestData(count, assert);
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
   .orderBy('Price asc')
   .select('id,Price');
 
@@ -705,7 +707,7 @@ test('adapter | indexeddb | no filter, order desc, no skip, no top', (assert) =>
   let count = 15000;
   let data = getPerformanceTestData(count, assert);
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
   .orderBy('Price desc')
   .select('id,Price');
 
@@ -721,7 +723,7 @@ test('adapter | indexeddb | no filter, order desc, no skip, no top', (assert) =>
 test('adapter | indexeddb | filter, no order, skip, top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
     .where('Price', FilterOperator.Geq, 7500)
     .skip(1000)
     .top(20)
@@ -739,7 +741,7 @@ test('adapter | indexeddb | filter, no order, skip, top', (assert) => {
 test('adapter | indexeddb | filter, order asc, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
     .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Name asc')
     .select('id,Price,Name');
@@ -756,7 +758,7 @@ test('adapter | indexeddb | filter, order asc, no skip, no top', (assert) => {
 test('adapter | indexeddb | filter, order desc, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
     .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Name desc')
     .select('id,Price,Name');
@@ -773,7 +775,7 @@ test('adapter | indexeddb | filter, order desc, no skip, no top', (assert) => {
 test('adapter | indexeddb | filter, many order asc desc, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
     .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Age asc,Name desc')
     .select('id,Age,Name,Price');
@@ -791,7 +793,7 @@ test('adapter | indexeddb | filter, many order asc desc, no skip, no top', (asse
 test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
     .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Age asc,Name desc')
     .skip(1000)
@@ -809,16 +811,13 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
   });
 });
 
-module('Performance joins');
+module('indexeddb-adapter-test joins performance');
 
 test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (assert) => {
-  const offlineGlobals = app.__container__.lookup('service:offline-globals');
-  offlineGlobals.setOnlineAvailable(false);
-
   let count = 15000;
   let data = getJoinsPerformanceTestData(count, assert);
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
     .where('Price', FilterOperator.Geq, count / 2)
     .orderBy('Country.Name desc,Age asc,Name desc')
     .skip(count / 10)
@@ -834,7 +833,7 @@ test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (
   });
 });
 
-module('query masters');
+module('performance query masters');
 
 test('adapter | indexeddb | order | master field', (assert) => {
   let data = {
@@ -849,7 +848,7 @@ test('adapter | indexeddb | order | master field', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).orderBy('Creator.Age desc, Price asc');
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).orderBy('Creator.Age desc, Price asc');
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -861,9 +860,6 @@ test('adapter | indexeddb | order | master field', (assert) => {
 });
 
 test('adapter | indexeddb | select master.master.field and order', (assert) => {
-  const offlineGlobals = app.__container__.lookup('service:offline-globals');
-  offlineGlobals.setOnlineAvailable(false);
-
   let data = {
     employee: [
       { id: 1, Price: 200, Creator: 1 },
@@ -880,7 +876,7 @@ test('adapter | indexeddb | select master.master.field and order', (assert) => {
     ]
   };
 
-  let builder = new QueryBuilder(store, modelName)
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
     .orderBy('Creator.Age desc, Price asc')
     .select('id,Creator,Creator.Age,Creator.Country.Name');
 
@@ -904,7 +900,7 @@ test('adapter | indexeddb | skip-top-count', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).select('Name').count().skip(1).top(1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('Name').count().skip(1).top(1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -923,7 +919,7 @@ test('adapter | indexeddb | by id', (assert) => {
     ],
   };
 
-  let builder = new QueryBuilder(store, modelName).select('Name').byId(1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('Name').byId(1);
 
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
@@ -943,7 +939,7 @@ test('adapter | indexeddb | by id', (assert) => {
  */
 function executeTest(data, query, assert, callback) {
   let done = assert.async();
-  let dbName = databasePrefix + Math.random();
+  let dbName = databasePrefixIndexedbAdapterTest + Math.random();
 
   let checkResult = (result, db, startExecTime) => {
     try {
@@ -961,11 +957,11 @@ function executeTest(data, query, assert, callback) {
   };
 
   let queryTempDb = () => {
-    store.set('offlineSchema', schema(dbName));
-    let db = dexie.dexie(dbName, store);
+    storeIndexedbAdapterTest.set('offlineSchema', schemaIndexedbAdapterTest(dbName));
+    let db = dexieIndexedbAdapterTest.dexie(dbName, storeIndexedbAdapterTest);
     db.open().then((db) => {
       let startExecTime = window.performance.now();
-      new IndexedDbAdapter(db).query(store, query).then((result) => {
+      new IndexedDbAdapter(db).query(storeIndexedbAdapterTest, query).then((result) => {
         checkResult(result, db, startExecTime);
       }).catch((error) => {
         failQuery(error, db);
@@ -999,8 +995,8 @@ function deleteTempDb(dbName) {
  * @returns {Dexie.Promise}
  */
 function createTempDb(dbName, data) {
-  store.set('offlineSchema', schema(dbName));
-  let db = dexie.dexie(dbName, store);
+  storeIndexedbAdapterTest.set('offlineSchema', schemaIndexedbAdapterTest(dbName));
+  let db = dexieIndexedbAdapterTest.dexie(dbName, storeIndexedbAdapterTest);
   return db.open().then((db) => {
     let promises = [];
     for (let table in data) {
