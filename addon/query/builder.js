@@ -4,9 +4,8 @@ import DS from 'ember-data';
 import BaseBuilder from './base-builder';
 import OrderByClause from './order-by-clause';
 import QueryObject from './query-object';
-import { createPredicate } from './predicate';
+import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import Information from '../utils/information';
-import isEmbedded from '../utils/is-embedded';
 
 /**
  * Class of builder for query.
@@ -182,8 +181,15 @@ export default class Builder extends BaseBuilder {
     }
 
     let tree;
+    let model = this._store.modelFor(this._modelName);
+
+    // TODO: Need rewrite unit tests.
+    // let modelExist = Ember.getOwner(this._store)._lookupFactory('model:' + this._modelName) ? true : false;
+    // if (modelExist) {
+    //   model = this._store.modelFor(this._modelName);
+    // }
+
     if (this._projectionName) {
-      let model = this._store.modelFor(this._modelName);
       let projection = model.projections.get(this._projectionName);
       if (!projection) {
         throw new Error(`Projection ${this._projectionName} for model ${this._modelName} is not specified`);
@@ -191,7 +197,7 @@ export default class Builder extends BaseBuilder {
 
       tree = this._getQueryTreeByProjection(projection, model, this._modelName);
     } else {
-      tree = this._getQueryBySelect(); // TODO: support query metadata like _getQueryTreeByProjection.
+      tree = this._getQueryBySelect(this._select, model, this._modelName);
     }
 
     // Merge, don't replace.
@@ -200,7 +206,10 @@ export default class Builder extends BaseBuilder {
     let select = Object.keys(uniqSelect);
 
     let expand = tree.expand;
-    let primaryKeyName = tree.primaryKeyName; // TODO: Set primaryKeyName field in query as it does for modelName.
+    let primaryKeyName = tree.primaryKeyName;
+
+    let extendProperties = this._getExtendedProjection(tree);
+    let extendTree = this._getQueryBySelect(extendProperties, model, this._modelName);
 
     return new QueryObject(
       this._modelName,
@@ -212,26 +221,31 @@ export default class Builder extends BaseBuilder {
       this._skip,
       this._isCount,
       expand,
-      select
+      select,
+      primaryKeyName,
+      extendTree
     );
   }
 
-  _getQueryBySelect() {
+  _getQueryBySelect(select, model, modelName) {
+    let primaryKeyNameFromSerializer = this._store.serializerFor(modelName).get('primaryKey');
+    let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
     let result = {
       select: ['id'],
-      expand: {}
+      expand: {},
+      primaryKeyName: primaryKeyName
     };
 
-    let selectProperties = Object.keys(this._select);
+    let selectProperties = Object.keys(select);
 
     for (let i = 0; i < selectProperties.length; i++) {
-      this._buildQueryForProperty(result, selectProperties[i]);
+      this._buildQueryForProperty(result, selectProperties[i], model);
     }
 
     return result;
   }
 
-  _buildQueryForProperty(data, property) {
+  _buildQueryForProperty(data, property, model) {
     let pathItems = Information.parseAttributePath(property);
 
     if (pathItems.length === 1) {
@@ -239,22 +253,39 @@ export default class Builder extends BaseBuilder {
     } else {
       let key = pathItems.shift();
 
-      data.expand[key] = {
-        select: ['id'],
-        expand: {}
+      let relationshipsByName = Ember.get(model, 'relationshipsByName');
+      let relationship = relationshipsByName.get(key);
+      let ralatedModelName = relationship.type;
+      let relatedModel = this._store.modelFor(ralatedModelName);
+
+      let relationshipProps = {
+        async: relationship.options.async,
+        isEmbedded: true, // TODO: isEmbedded(this._store, modelName, attrName)
+        type: relationship.kind
       };
 
-      this._buildQueryForProperty(data.expand[key], pathItems.join('.'));
+      let primaryKeyNameFromSerializer = this._store.serializerFor(ralatedModelName).get('primaryKey');
+      let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
+      data.expand[key] = {
+        select: ['id'],
+        expand: {},
+        modelName: ralatedModelName,
+        primaryKeyName: primaryKeyName,
+        relationship: relationshipProps
+      };
+
+      this._buildQueryForProperty(data.expand[key], pathItems.join('.'), relatedModel);
     }
   }
 
   _getQueryTreeByProjection(projection, model, modelName, relationshipProps) {
     let primaryKeyNameFromSerializer = this._store.serializerFor(modelName).get('primaryKey');
+    let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
     let tree = {
       select: ['id'],
       expand: {},
       modelName: modelName,
-      primaryKeyName: primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id',
+      primaryKeyName: primaryKeyName,
       relationship: relationshipProps
     };
 
@@ -267,12 +298,12 @@ export default class Builder extends BaseBuilder {
             tree.select.push(attrName);
             break;
 
-          case 'hasMany': // TODO: Check hasMany relations metadata.
+          case 'hasMany':
           case 'belongsTo':
             let relationshipsByName = Ember.get(model, 'relationshipsByName');
             let relationship = relationshipsByName.get(attrName);
-            let relatedModel = this._store.modelFor(relationship.type);
             let ralatedModelName = relationship.type;
+            let relatedModel = this._store.modelFor(ralatedModelName);
 
             let relationshipProps = {
               async: relationship.options.async,
@@ -290,5 +321,52 @@ export default class Builder extends BaseBuilder {
     }
 
     return tree;
+  }
+
+  _getExtendedProjection() {
+    let extend = [];
+    let existKeys = Object.keys(this._select);
+    let scanPredicates = function(predicate) {
+      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+        let path = '';
+        Information.parseAttributePath(predicate.attributePath).forEach((attribute) => {
+          let key = `${path}${attribute}`;
+          if (existKeys.indexOf(key) === -1) {
+            extend[key.trim()] = true;
+          }
+
+          path += `${attribute}.`;
+        });
+      }
+
+      if (predicate instanceof DetailPredicate) {
+        extend[predicate.detailPath] = scanPredicates(predicate.predicate);
+      }
+
+      if (predicate instanceof ComplexPredicate) {
+        predicate.predicates.forEach((innerPredicate) => {
+          Ember.merge(extend, scanPredicates({ innerPredicate }));
+        });
+      }
+    };
+
+    scanPredicates(this._predicate);
+
+    if (this._orderByClause) {
+      for (let i = 0; i < this._orderByClause.length; i++) {
+        let path = '';
+        let attributePath = Information.parseAttributePath(this._orderByClause.attribute(i).name);
+        for (let i = 0; i < attributePath.length; i++) {
+          let key = `${path}${attributePath[i]}`;
+          if (existKeys.indexOf(key) === -1) {
+            extend[key.trim()] = true;
+          }
+
+          path += `${attributePath[i]}.`;
+        }
+      }
+    }
+
+    return extend;
   }
 }
