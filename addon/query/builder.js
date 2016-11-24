@@ -183,12 +183,6 @@ export default class Builder extends BaseBuilder {
     let tree;
     let model = this._store.modelFor(this._modelName);
 
-    // TODO: Need rewrite unit tests.
-    // let modelExist = Ember.getOwner(this._store)._lookupFactory('model:' + this._modelName) ? true : false;
-    // if (modelExist) {
-    //   model = this._store.modelFor(this._modelName);
-    // }
-
     if (this._projectionName) {
       let projection = model.projections.get(this._projectionName);
       if (!projection) {
@@ -239,22 +233,33 @@ export default class Builder extends BaseBuilder {
     let selectProperties = Object.keys(select);
 
     for (let i = 0; i < selectProperties.length; i++) {
-      this._buildQueryForProperty(result, selectProperties[i], model);
+      this._buildQueryForProperty(result, selectProperties[i], model, modelName);
     }
 
     return result;
   }
 
-  _buildQueryForProperty(data, property, model) {
+  _buildQueryForProperty(data, property, model, modelName) {
     let pathItems = Information.parseAttributePath(property);
+    let relationshipsByName = Ember.get(model, 'relationshipsByName');
 
     if (pathItems.length === 1) {
-      data.select.push(pathItems[0]);
+      let attributeName = pathItems[0];
+      let modelAttributes = Ember.get(model, 'attributes');
+      if (attributeName === 'id' || modelAttributes.has(attributeName) || relationshipsByName.has(attributeName)) {
+        data.select.push(attributeName);
+      } else {
+        throw new Error(`Property '${attributeName}' in model '${modelName}' is not specified. ` +
+        `Please report this info to application support team or developers.`);
+      }
     } else {
       let key = pathItems.shift();
 
-      let relationshipsByName = Ember.get(model, 'relationshipsByName');
       let relationship = relationshipsByName.get(key);
+      if (!relationship) {
+        throw new Error(`Property '${key}' in model '${modelName}' is not specified. Please report this info to application support team or developers.`);
+      }
+
       let ralatedModelName = relationship.type;
       let relatedModel = this._store.modelFor(ralatedModelName);
 
@@ -274,7 +279,7 @@ export default class Builder extends BaseBuilder {
         relationship: relationshipProps
       };
 
-      this._buildQueryForProperty(data.expand[key], pathItems.join('.'), relatedModel);
+      this._buildQueryForProperty(data.expand[key], pathItems.join('.'), relatedModel, ralatedModelName);
     }
   }
 
