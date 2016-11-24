@@ -217,12 +217,12 @@ export default class extends BaseAdapter {
               let masterDataValue = masterData[masterIndex];
 
               // TODO: Check if Debug Mode build then use this.
-              // if (!masterDataValue.hasOwnProperty(masterPrimaryKeyName)) {
-              //   let error = new Error(`Metadata consistance error. ` +
-              //   `Not found property '${masterPrimaryKeyName}' in type '${masterTypeName}'.`);
-              //   reject(error);
-              //   break;
-              // }
+              if (!masterDataValue || !masterDataValue.hasOwnProperty(masterPrimaryKeyName)) {
+                let error = new Error(`Metadata consistance error. ` +
+                `Not found property '${masterPrimaryKeyName}' in type '${masterTypeName}'.`);
+                reject(error);
+                break;
+              }
 
               if (masterKey > masterDataValue[masterPrimaryKeyName] && masterIndex < masterDataLength) {
                 masterIndex++;
@@ -292,9 +292,8 @@ export default class extends BaseAdapter {
         };
 
         // будем ходить по expand-ам и сливать с предыдущим уровнем те мастера, у которых нет своих экспандов. делать это надо в цикле, пока не доберёмся до ствола.
-        let expand = query.expand;
-        if (expand) {
-          let scanExpand = function(exp, parent, deepLevel) {
+        if (query.expand || query.extend) {
+          let buildJoinPlan = function(exp, parent, deepLevel) {
             if (!exp) {
               return;
             }
@@ -304,6 +303,14 @@ export default class extends BaseAdapter {
             let masterDeepLevel = deepLevel + 1;
             for (let i = 0; i < length; i++) {
               let masterPropName = masterPropNames[i];
+              if (!parent.expand) {
+                parent.expand = {};
+              }
+
+              if (parent.expand[masterPropName]) {
+                continue;
+              }
+
               // TODO: если !relationship.options.async && isEmbedded(store, modelClass, name) то джойним. добавить для expand-а async и isEmbedded и сохранить в структурке relationship.
               // TODO: получить из query.
               let master = {
@@ -318,19 +325,21 @@ export default class extends BaseAdapter {
                 parent: parent,
                 relationType: exp[masterPropName].relationship.type
               };
-              if (!parent.expand) {
-                parent.expand = [];
-              }
-
-              parent.expand.push(master);
-              scanExpand(exp[masterPropName].expand, master, masterDeepLevel);
+              parent.expand[masterPropName] = master;
+              buildJoinPlan(exp[masterPropName].expand, master, masterDeepLevel);
               if (masterDeepLevel > currentQueryTreeDeepLevel) {
                 currentQueryTreeDeepLevel = masterDeepLevel;
               }
             }
           };
 
-          scanExpand(expand, queryTree, 0);
+          if (query.expand) {
+            buildJoinPlan(query.expand, queryTree, 0);
+          }
+
+          if (query.extend.expand) {
+            buildJoinPlan(query.extend.expand, queryTree, 0);
+          }
         }
 
         let table = _this._db.table(query.modelName);

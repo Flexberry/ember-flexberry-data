@@ -860,6 +860,41 @@ test('adapter | indexeddb | order | master field', (assert) => {
   });
 });
 
+test('adapter | indexeddb | select master.master.field and order', (assert) => {
+  const offlineGlobals = app.__container__.lookup('service:offline-globals');
+  offlineGlobals.setOnlineAvailable(false);
+
+  let data = {
+    employee: [
+      { id: 1, Price: 200, Creator: 1 },
+      { id: 2, Price: 100, Creator: 1 },
+      { id: 3, Price: 900, Creator: 2 },
+    ],
+    creator: [
+      { id: 1, Age: 10, Country: 1 },
+      { id: 2, Age: 15, Country: 2 },
+    ],
+    country: [
+      { id: 1, Name: 'Austria' },
+      { id: 2, Name: 'Australia' },
+    ]
+  };
+
+  let builder = new QueryBuilder(store, modelName)
+    .orderBy('Creator.Age desc, Price asc')
+    .select('id,Creator,Creator.Age,Creator.Country.Name');
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data, 'Data exist');
+    assert.equal(result.data.length, 3, 'Loaded all objects');
+    assert.equal(result.data[0].id, 3, 'Ordering 1');
+    assert.equal(result.data[1].id, 2, 'Ordering 2');
+    assert.equal(result.data[2].id, 1, 'Ordering 3');
+    assert.equal(result.data[0].Creator.Country.Name, 'Australia', 'Data exist');
+
+  });
+});
+
 test('adapter | indexeddb | skip-top-count', (assert) => {
   let data = {
     employee: [
