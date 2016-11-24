@@ -17,6 +17,11 @@ module('offline-CRUD', {
     run(function () {
       AppOfflineCrudTest = startApp();
       storeOfflineCrudTest = AppOfflineCrudTest.__container__.lookup('service:store');
+      let offlineSchema = {};
+      offlineSchema[dbNameOfflineCrudTest] = {
+        1: storeOfflineCrudTest.get('offlineSchema.TestDB')['0.1'],
+      };
+      storeOfflineCrudTest.set('offlineSchema', offlineSchema);
       storeOfflineCrudTest.set('offlineStore.dbName', dbNameOfflineCrudTest);
       let offlineGlobals = AppOfflineCrudTest.__container__.lookup('service:offline-globals');
       offlineGlobals.setOnlineAvailable(false);
