@@ -197,7 +197,7 @@ export default DS.Adapter.extend({
     let db = dexieService.dexie(this.get('dbName'), store);
     let queryOperation = (db) => {
       let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
-      return new IndexedDBAdapter(db).query(queryObject);
+      return new IndexedDBAdapter(db).query(store, queryObject);
     };
 
     return dexieService.performOperation(db, queryOperation);

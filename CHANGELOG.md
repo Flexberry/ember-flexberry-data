@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.7.1-beta.11] - 2016-11-23
+### Fixed
+- Querying records by fields of `date` type with query language in offline mode.
+
 ## [0.7.1-beta.10] - 2016-11-22
 ### Fixed
 - Passing version number of wrong type to Dexie. That causes error when trying to upgrade IndexedDB database vesion.
