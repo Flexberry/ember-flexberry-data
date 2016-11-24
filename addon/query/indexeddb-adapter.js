@@ -117,6 +117,7 @@ export default class extends BaseAdapter {
                   let direction = query.order.attribute(i).direction;
                   i = i + 1;
 
+                  // TODO: Do comparation with null fields.
                   if (!direction || direction === 'asc') {
                     return a[attrName] < b[attrName] ? -1 : a[attrName] > b[attrName] ? 1 : singleSort(a, b, i);
                   } else {
@@ -184,6 +185,7 @@ export default class extends BaseAdapter {
         let sortData = function(data, sortField) {
           // Sorting array by `sortField` and asc.
           let singleSort = function(a, b) {
+            // TODO: Do comparation with null fields.
             return a[sortField] < b[sortField] ? -1 : a[sortField] > b[sortField] ? 1 : 0;
           };
 
@@ -449,8 +451,7 @@ export default class extends BaseAdapter {
             attachScanDeepLevelToQueue(i);
           }
 
-          joinQueue.attach((queryItemResolve, queryItemReject) => {
-            // TODO: filter, order, skip, top.
+          joinQueue.attach((queueItemResolve) => {
             let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
 
             let order = buildOrder(query);
@@ -469,7 +470,7 @@ export default class extends BaseAdapter {
             }
 
             resolve(response);
-            queryItemResolve();
+            queueItemResolve();
           });
         }, reject);
       } else {
