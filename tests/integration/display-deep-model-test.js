@@ -17,6 +17,11 @@ module('Display deep model', {
       AppDisplayDeepModel = startApp();
       storeDisplayDeepModel = AppDisplayDeepModel.__container__.lookup('service:store');
       storeDisplayDeepModel.set('offlineStore.dbName', dbNameDisplayDeepModel);
+      let offlineSchema = {};
+      offlineSchema[dbNameDisplayDeepModel] = {
+        1: storeDisplayDeepModel.get('offlineSchema.TestDB')['0.1'],
+      };
+      storeDisplayDeepModel.set('offlineSchema', offlineSchema);
       let offlineGlobals = AppDisplayDeepModel.__container__.lookup('service:offline-globals');
       offlineGlobals.setOnlineAvailable(false);
 
