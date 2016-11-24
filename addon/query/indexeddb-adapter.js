@@ -117,11 +117,12 @@ export default class extends BaseAdapter {
                   let direction = query.order.attribute(i).direction;
                   i = i + 1;
 
-                  // TODO: Do comparation with null fields.
+                  let aVal = a[attrName];
+                  let bVal = b[attrName];
                   if (!direction || direction === 'asc') {
-                    return a[attrName] < b[attrName] ? -1 : a[attrName] > b[attrName] ? 1 : singleSort(a, b, i);
+                    return (!aVal && bVal) || (aVal < bVal) ? -1 : (aVal && !bVal) || (aVal > bVal) ? 1 : singleSort(a, b, i);
                   } else {
-                    return a[attrName] > b[attrName] ? -1 : a[attrName] < b[attrName] ? 1 : singleSort(a, b, i);
+                    return (aVal && !bVal) || (aVal > bVal) ? -1 : (!aVal && bVal) || (aVal < bVal) ? 1 : singleSort(a, b, i);
                   }
                 };
 
@@ -185,8 +186,9 @@ export default class extends BaseAdapter {
         let sortData = function(data, sortField) {
           // Sorting array by `sortField` and asc.
           let singleSort = function(a, b) {
-            // TODO: Do comparation with null fields.
-            return a[sortField] < b[sortField] ? -1 : a[sortField] > b[sortField] ? 1 : 0;
+            let aVal = a[sortField];
+            let bVal = b[sortField];
+            return (!aVal && bVal) || (aVal < bVal) ? -1 : (aVal && !bVal) || (aVal > bVal) ? 1 : 0;
           };
 
           data.sort(singleSort);
