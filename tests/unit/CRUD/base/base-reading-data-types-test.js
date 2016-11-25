@@ -1,10 +1,11 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
-import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
+import Condition from 'ember-flexberry-data/query/condition';
+import { SimplePredicate, ComplexPredicate } from 'ember-flexberry-data/query/predicate';
 
 export default function readingDataTypes(store, assert, App) {
-  assert.expect(9);
+  assert.expect(11);
   let done = assert.async();
 
   Ember.run(() => {
@@ -68,6 +69,24 @@ export default function readingDataTypes(store, assert, App) {
       .then((data) => {
         assert.ok(data.every(item => item.get('name') === 'Vasya'), 'Reading Date as String with some format| Data');
         assert.equal(data.get('length'), 2, `Reading Date as String with some format | Length`);
+      });
+    })
+
+    // Defferent types in complex.
+    .then(() => {
+      let predicate = new ComplexPredicate(Condition.And, ...[
+          new SimplePredicate('birthday', FilterOperator.Eq, new Date(1974, 10, 12, 13, 14, 0)),
+          new SimplePredicate('activated', FilterOperator.Eq, true),
+          new SimplePredicate('karma', FilterOperator.Eq, 1.5)
+      ]);
+
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(predicate);
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.equal(data.get('firstObject').get('name'), 'Vasya', `Reading different types in complex | Data`);
+        assert.equal(data.get('length'), 1, `Reading different types in complex | Length`);
       });
     })
     .catch((e) => {

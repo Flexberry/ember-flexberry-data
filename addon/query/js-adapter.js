@@ -15,7 +15,7 @@ import Information from '../utils/information';
  *   { Name: 'B', Surname: 'Z', Age: 12 }
  * ];
  *
- * let adapter = new JSAdapter();
+ * let adapter = new JSAdapter(moment);
  * let builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Eq, 'B');
  * let filter = adapter.buildFunc(builder.build());
  *
@@ -31,6 +31,21 @@ import Information from '../utils/information';
  */
 export default class JSAdapter extends BaseAdapter {
   /**
+    @param {Moment} moment Moment service.
+    @class IndexedDBAdapter
+    @constructor
+  */
+  constructor(moment) {
+    super();
+
+    if (!moment) {
+      throw new Error('Moment instance must be passed to JSAdapter.');
+    }
+
+    this._moment = moment;
+  }
+
+  /**
    * Builds JS function for filtering JS array of objects by specified logic from query.
    *
    * @method buildFunc
@@ -38,7 +53,7 @@ export default class JSAdapter extends BaseAdapter {
    * @returns {Function} Function for filtering JS array of objects.
    */
   buildFunc(query) {
-    let filter = query.predicate ? buildFilter(query.predicate) : (data) => data;
+    let filter = query.predicate ? buildFilter(this._moment, query.predicate) : (data) => data;
     let order = buildOrder(query);
     let projection = buildProjection(query);
     let topSkip = buildTopSkip(query);
@@ -155,22 +170,23 @@ export function buildProjection(query) {
 /**
   Builds function for filtering array of objects using predicate.
 
+  @param {Moment} moment Moment service.
   @param predicate Predicate for filtering array of objects.
   @param {Object} [options] Object with options for transfer `getAttributeFilterFunction` function.
   @return {Function}
 */
-export function buildFilter(predicate, options) {
+export function buildFilter(moment, predicate, options) {
   let b1 = predicate instanceof SimplePredicate;
   let b2 = predicate instanceof StringPredicate;
   let b3 = predicate instanceof DetailPredicate;
 
   if (b1 || b2 || b3) {
-    let filterFunction = getAttributeFilterFunction(predicate, options);
+    let filterFunction = getAttributeFilterFunction(moment, predicate, options);
     return getFilterFunctionAnd([filterFunction]);
   }
 
   if (predicate instanceof ComplexPredicate) {
-    let filterFunctions = predicate.predicates.map(predicate => getAttributeFilterFunction(predicate, options));
+    let filterFunctions = predicate.predicates.map(predicate => getAttributeFilterFunction(moment, predicate, options));
     switch (predicate.condition) {
       case Condition.And:
         return getFilterFunctionAnd(filterFunctions);
@@ -189,12 +205,13 @@ export function buildFilter(predicate, options) {
 /**
   Returns function for checkign single object using predicate.
 
+  @param {Moment} moment Moment service.
   @param {Query.BasePredicate} predicate Predicate for an attribute.
   @param {Object} [options] Object with options.
   @param {Object} [options.booleanAsString] If this option set as `true` and type of `predicate.value` equals boolean, convert value to string.
   @returns {Function} Function for checkign single object.
 */
-export function getAttributeFilterFunction(predicate, options) {
+export function getAttributeFilterFunction(moment, predicate, options) {
   if (!predicate) {
     return (i) => i;
   }
@@ -207,22 +224,88 @@ export function getAttributeFilterFunction(predicate, options) {
 
     switch (predicate.operator) {
       case FilterOperator.Eq:
-        return (i) => getValue(i, predicate.attributePath) === value;
+        return (i) => {
+          //If comparing date values.
+          let valueFromHash = getValue(i, predicate.attributePath);
+          let momentFromHash = moment.moment(valueFromHash);
+          let momentFromValue = moment.moment(value);
+          if (momentFromHash.isValid() && momentFromValue.isValid()) {
+            return momentFromHash.isSame(value);
+          }
+
+          //If comparing non-date values.
+          return valueFromHash === value;
+        };
 
       case FilterOperator.Neq:
-        return (i) => getValue(i, predicate.attributePath) !== value;
+        return (i) => {
+          //If comparing date values.
+          let valueFromHash = getValue(i, predicate.attributePath);
+          let momentFromHash = moment.moment(valueFromHash);
+          let momentFromValue = moment.moment(value);
+          if (momentFromHash.isValid() && momentFromValue.isValid()) {
+            return !momentFromHash.isSame(value);
+          }
+
+          //If comparing non-date values.
+          return valueFromHash !== value;
+        };
 
       case FilterOperator.Le:
-        return (i) => getValue(i, predicate.attributePath) < value;
+        return (i) => {
+          //If value is date.
+          let valueFromHash = getValue(i, predicate.attributePath);
+          let momentFromHash = moment.moment(valueFromHash);
+          let momentFromValue = moment.moment(value);
+          if (momentFromHash.isValid() && momentFromValue.isValid()) {
+            return momentFromHash.isBefore(value);
+          }
+
+          //If value is not date.
+          return valueFromHash < value;
+        };
 
       case FilterOperator.Leq:
-        return (i) => getValue(i, predicate.attributePath) <= value;
+        return (i) => {
+          //If value is date.
+          let valueFromHash = getValue(i, predicate.attributePath);
+          let momentFromHash = moment.moment(valueFromHash);
+          let momentFromValue = moment.moment(value);
+          if (momentFromHash.isValid() && momentFromValue.isValid()) {
+            return momentFromHash.isSameOrBefore(value);
+          }
+
+          //If value is not date.
+          return valueFromHash <= value;
+        };
 
       case FilterOperator.Ge:
-        return (i) => getValue(i, predicate.attributePath) > value;
+        return (i) => {
+          //If value is date.
+          let valueFromHash = getValue(i, predicate.attributePath);
+          let momentFromHash = moment.moment(valueFromHash);
+          let momentFromValue = moment.moment(value);
+          if (momentFromHash.isValid() && momentFromValue.isValid()) {
+            return momentFromHash.isAfter(value);
+          }
+
+          //If value is not date.
+          return valueFromHash > value;
+        };
 
       case FilterOperator.Geq:
-        return (i) => getValue(i, predicate.attributePath) >= value;
+        return (i) => {
+          //If value is date.
+          let valueFromHash = getValue(i, predicate.attributePath);
+          let momentFromHash = moment.moment(valueFromHash);
+          let momentFromValue = moment.moment(value);
+          if (momentFromHash.isValid() && momentFromValue.isValid()) {
+            return momentFromHash.isSameOrAfter(value);
+          }
+
+          //If value is not date.
+          return valueFromHash >= value;
+        };
 
       default:
         throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
@@ -234,7 +317,7 @@ export function getAttributeFilterFunction(predicate, options) {
   }
 
   if (predicate instanceof DetailPredicate) {
-    let detailFilter = buildFilter(predicate.predicate, options);
+    let detailFilter = buildFilter(moment, predicate.predicate, options);
     if (predicate.isAll) {
       return function (i) {
         let detail = getValue(i, predicate.detailPath);
@@ -261,7 +344,7 @@ export function getAttributeFilterFunction(predicate, options) {
   }
 
   if (predicate instanceof ComplexPredicate) {
-    let filterFunctions = predicate.predicates.map(predicate => getAttributeFilterFunction(predicate, options));
+    let filterFunctions = predicate.predicates.map(predicate => getAttributeFilterFunction(moment, predicate, options));
     switch (predicate.condition) {
       case Condition.And:
         return function (i) {
