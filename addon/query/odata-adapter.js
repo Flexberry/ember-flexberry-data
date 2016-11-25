@@ -5,6 +5,7 @@ import BaseAdapter from './base-adapter';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
+import getSerializedDateValue from '../utils/get-serialized-date-value';
 
 /**
  * Class of query adapter that translates query object into OData URL.
@@ -326,6 +327,8 @@ export default class ODataAdapter extends BaseAdapter {
         value = `${type}'${predicate.value}'`;
       } else if (meta.type === 'string') {
         value = `'${predicate.value}'`;
+      } else if (meta.type === 'date') {
+        value = getSerializedDateValue.call(this._store, predicate.value);
       } else {
         value = predicate.value;
       }

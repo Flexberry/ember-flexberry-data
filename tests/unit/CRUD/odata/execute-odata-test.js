@@ -51,6 +51,6 @@ export default function executeTest(testName, callback) {
 
     module('CRUD | odata-' + testName);
 
-    test(testName, (assert) => callback(store, assert));
+    test(testName, (assert) => callback(store, assert, app));
   }
 }
