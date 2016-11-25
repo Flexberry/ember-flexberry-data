@@ -27,7 +27,7 @@ module('offline-CRUD', {
       offlineGlobals.setOnlineAvailable(false);
 
       let dexieService = AppOfflineCrudTest.__container__.lookup('service:dexie');
-      var db = dexieService.dexie(dbNameOfflineCrudTest, storeOfflineCrudTest);
+      var db = dexieService.dexie(dbNameOfflineCrudTest, storeOfflineCrudTest.get('offlineStore'));
       Dexie.delete(dbNameOfflineCrudTest).then(() => {
         db.open().then((db) => {
           let promises = [];
