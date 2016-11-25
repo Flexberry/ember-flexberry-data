@@ -123,16 +123,14 @@ test('find record', function (assert) {
       assert.equal(get(records, 'text'), 'Loooong text', 'record text = Loooong text');
       assert.equal(get(records, 'votes'), 1, 'record votes = 1');
       assert.equal(get(records, 'moderated'), false, '1 record was found');
-      done1();
-    });
+    }).finally(done1);
   });
   var done2 = assert.async();
   run(function () {
     storeOfflineCrudTest.findRecord('ember-flexberry-dummy-suggestion-type', 'de627522-47c3-428f-99be-fdac2e8f5618').then(function(records) {
       assert.equal(get(records, 'name'), '123', '1 record was found');
       assert.equal(get(records, 'moderated'), false, '1 record was found');
-      done2();
-    });
+    }).finally(done2);
   });
   var done3 = assert.async();
   run(function () {
@@ -140,15 +138,13 @@ test('find record', function (assert) {
       assert.equal(get(records, 'name'), 'Васиииилий', '1 record was found');
       assert.equal(get(records, 'eMail'), 'pupkin1@mail.ru', '1 record was found');
       assert.equal(get(records, 'activated'), true, '1 record was found');
-      done3();
-    });
+    }).finally(done3);
   });
   var done4 = assert.async();
   run(function () {
     storeOfflineCrudTest.findRecord('ember-flexberry-dummy-vote', '8be0d89b-8cab-4b0b-b029-356c59809163').then(function(records) {
       assert.equal(get(records, 'voteType'), 'Like', '1 record was found');
-      done4();
-    });
+    }).finally(done4);
   });
   var done5 = assert.async();
   run(function () {
@@ -156,8 +152,7 @@ test('find record', function (assert) {
       assert.equal(get(records, 'text'), 'Not ok', '1 record was found');
       assert.equal(get(records, 'votes'), 566, '1 record was found');
       assert.equal(get(records, 'moderated'), false, '1 record was found');
-      done5();
-    });
+    }).finally(done5);
   });
 });
 
@@ -168,8 +163,7 @@ test('find all records', function (assert) {
     storeOfflineCrudTest.findAll('ember-flexberry-dummy-suggestion').then(function(records) {
       var firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found');
-      done();
-    });
+    }).finally(done);
   });
 });
 
@@ -180,8 +174,7 @@ test('query record via query', function (assert) {
     storeOfflineCrudTest.query('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(records) {
       var firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found without query language');
-      done1();
-    });
+    }).finally(done1);
   });
 
   var done2 = assert.async();
@@ -191,8 +184,7 @@ test('query record via query', function (assert) {
     storeOfflineCrudTest.query(modelName, builder.build()).then(function(records) {
       var firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found with query language');
-      done2();
-    });
+    }).finally(done2);
   });
 });
 
@@ -202,8 +194,7 @@ test('query record via queryRecord', function (assert) {
   run(function () {
     storeOfflineCrudTest.queryRecord('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(record) {
       assert.equal(get(record, 'address'), 'Street, 20', '1 record was found without query language');
-      done1();
-    });
+    }).finally(done1);
   });
 
   var done2 = assert.async();
@@ -212,8 +203,7 @@ test('query record via queryRecord', function (assert) {
     let builder = new Query.Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
     storeOfflineCrudTest.queryRecord(modelName, builder.build()).then(function(record) {
       assert.equal(get(record, 'address'), 'Street, 20', '1 record was found with query language');
-      done2();
-    });
+    }).finally(done2);
   });
 });
 
@@ -247,8 +237,7 @@ test('create record', function(assert) {
       assert.equal(get(records, 'length'), 1, 'Only чел was found');
       assert.equal(get(record, 'name'), 'чел', 'Correct name');
       assert.equal(get(record, 'id'), list.id, 'Correct, original id');
-      done();
-    });
+    }).finally(done);
   });
 });
 
@@ -262,8 +251,7 @@ test('delete record', function(assert) {
         name: 'Васиииилий'
       }).then(function(records) {
         assert.equal(get(records, 'length'), 0, 'No record was found');
-        done();
-      });
+      }).finally(done);
     };
 
     storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
