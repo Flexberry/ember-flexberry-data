@@ -52,6 +52,10 @@ export default class extends BaseAdapter {
       let complexQuery = containsRelationships(query);
 
       let sortData = function(data, sortField) {
+        if (!data) {
+          return;
+        }
+
         // Sorting array by `sortField` and asc.
         let singleSort = function(a, b) {
           let aVal = a[sortField];
@@ -78,7 +82,14 @@ export default class extends BaseAdapter {
         // Joining array `data` on field `masterField` with array `masterData` of objects `masterTypeName`. Array `data` must be ordered by `masterField`, array `masterData` must be ordered by id. Function do not use recursive calls.
         let masterIndex = 0;
         let dataLength = data.length;
-        let masterDataLength = masterData.length;
+        let masterDataLength;
+        if (!masterData) {
+          // TODO: May be return?
+          masterDataLength = 0;
+        } else {
+          masterDataLength = masterData.length;
+        }
+
         for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
           let masterKey = data[dataIndex][masterFieldName];
           if (!masterKey) {
