@@ -814,7 +814,7 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
 module('indexeddb-adapter-test joins performance');
 
 test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (assert) => {
-  let count = 10000;
+  let count = 5000;
   let data = getJoinsPerformanceTestData(count, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
