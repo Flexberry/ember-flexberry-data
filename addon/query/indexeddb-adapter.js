@@ -6,7 +6,7 @@ import Ember from 'ember';
 import FilterOperator from './filter-operator';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
-import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip, buildFilter } from './js-adapter';
+import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
 import Dexie from 'npm:dexie';
@@ -46,9 +46,10 @@ export default class extends BaseAdapter {
   query(store, query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
       let _this = this;
+      let moment = Ember.getOwner(store).lookup('service:moment');
+      let jsAdapter = new JSAdapter(moment);
       let table = _this._db.table(query.modelName);
       let complexQuery = containsRelationships(query);
-      let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
       let sortData = function(data, sortField) {
         // Sorting array by `sortField` and asc.
@@ -314,22 +315,22 @@ export default class extends BaseAdapter {
         joinQueue.attach((queueItemResolve) => {
           let applyFilterOrderTopSkipProjection = function(data, applyFilter, applyOrder, applyTopSkip, applyProjection, count) {
             if (applyFilter) {
-              let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (dataForFilter) => dataForFilter;
+              let filter = query.predicate ? jsAdapter.buildFilter(query.predicate, { booleanAsString: true }) : (dataForFilter) => dataForFilter;
               data = filter(data);
             }
 
             if (applyOrder) {
-              let order = buildOrder(query);
+              let order = jsAdapter.buildOrder(query);
               data = order(data);
             }
 
             if (applyTopSkip) {
-              let topskip = buildTopSkip(query);
+              let topskip = jsAdapter.buildTopSkip(query);
               data = topskip(data);
             }
 
             if (applyProjection) {
-              let jsProjection = buildProjection(query);
+              let jsProjection = jsAdapter.buildProjection(query);
               data = jsProjection(data);
             }
 
@@ -441,7 +442,7 @@ export default class extends BaseAdapter {
 
             // if this is result of sortBy() Promise need apply top-skip.
             if (!skipTopApplyed) {
-              let topskip = buildTopSkip(query);
+              let topskip = jsAdapter.buildTopSkip(query);
               data = topskip(data);
             } else {
               if (query.count && (offset || limit)) {
@@ -533,7 +534,8 @@ function updateWhereClause(store, table, query) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
       let moment = Ember.getOwner(store).lookup('service:moment');
-      return table.filter(getAttributeFilterFunction(moment, predicate));
+      let jsAdapter = new JSAdapter(moment);
+      return table.filter(jsAdapter.getAttributeFilterFunction(predicate));
     }
 
     switch (predicate.operator) {
@@ -562,7 +564,8 @@ function updateWhereClause(store, table, query) {
 
   if (predicate instanceof StringPredicate || predicate instanceof ComplexPredicate) {
     let moment = Ember.getOwner(store).lookup('service:moment');
-    return table.filter(getAttributeFilterFunction(moment, predicate, { booleanAsString: true }));
+    let jsAdapter = new JSAdapter(moment);
+    return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
   }
 
   throw new Error(`Unsupported predicate '${predicate}'`);
