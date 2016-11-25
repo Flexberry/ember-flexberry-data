@@ -6,6 +6,7 @@ import OrderByClause from './order-by-clause';
 import QueryObject from './query-object';
 import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import Information from '../utils/information';
+import isEmbedded from '../utils/is-embedded';
 
 /**
  * Class of builder for query.
@@ -265,7 +266,7 @@ export default class Builder extends BaseBuilder {
 
       let relationshipProps = {
         async: relationship.options.async,
-        isEmbedded: true, // TODO: isEmbedded(this._store, modelName, attrName)
+        isEmbedded: isEmbedded(this._store, model, key),
         type: relationship.kind
       };
 
@@ -312,7 +313,7 @@ export default class Builder extends BaseBuilder {
 
             let relationshipProps = {
               async: relationship.options.async,
-              isEmbedded: true, // TODO: isEmbedded(this._store, modelName, attrName)
+              isEmbedded: isEmbedded(this._store, model, attrName),
               type: attr.kind
             };
             tree.select.push(attrName);
