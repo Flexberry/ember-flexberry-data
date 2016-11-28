@@ -203,7 +203,7 @@ export default class Builder extends BaseBuilder {
     let expand = tree.expand;
     let primaryKeyName = tree.primaryKeyName;
 
-    let extendProperties = this._getExtendedProjection(tree);
+    let extendProperties = this._getExtendedProjection(model);
     let extendTree = this._getQueryBySelect(extendProperties, model, this._modelName);
 
     return new QueryObject(
@@ -232,8 +232,9 @@ export default class Builder extends BaseBuilder {
     };
 
     let selectProperties = Object.keys(select);
+    let selectPropertieslength = selectProperties.length;
 
-    for (let i = 0; i < selectProperties.length; i++) {
+    for (let i = 0; i < selectPropertieslength; i++) {
       this._buildQueryForProperty(result, selectProperties[i], model, modelName);
     }
 
@@ -264,21 +265,23 @@ export default class Builder extends BaseBuilder {
       let ralatedModelName = relationship.type;
       let relatedModel = this._store.modelFor(ralatedModelName);
 
-      let relationshipProps = {
-        async: relationship.options.async,
-        isEmbedded: isEmbedded(this._store, model, key),
-        type: relationship.kind
-      };
+      if (!data.expand[key]) {
+        let relationshipProps = {
+          async: relationship.options.async,
+          isEmbedded: isEmbedded(this._store, model, key),
+          type: relationship.kind
+        };
 
-      let primaryKeyNameFromSerializer = this._store.serializerFor(ralatedModelName).get('primaryKey');
-      let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
-      data.expand[key] = {
-        select: ['id'],
-        expand: {},
-        modelName: ralatedModelName,
-        primaryKeyName: primaryKeyName,
-        relationship: relationshipProps
-      };
+        let primaryKeyNameFromSerializer = this._store.serializerFor(ralatedModelName).get('primaryKey');
+        let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
+        data.expand[key] = {
+          select: ['id'],
+          expand: {},
+          modelName: ralatedModelName,
+          primaryKeyName: primaryKeyName,
+          relationship: relationshipProps
+        };
+      }
 
       this._buildQueryForProperty(data.expand[key], pathItems.join('.'), relatedModel, ralatedModelName);
     }
@@ -329,7 +332,8 @@ export default class Builder extends BaseBuilder {
     return tree;
   }
 
-  _getExtendedProjection() {
+  _getExtendedProjection(model) {
+    let _this = this;
     let extend = [];
     let existKeys = Object.keys(this._select);
     let scanPredicates = function(predicate, detailPath) {
@@ -371,6 +375,31 @@ export default class Builder extends BaseBuilder {
           path += `${attributePath[i]}.`;
         }
       }
+    }
+
+    // Add all related objects if no projection or select.
+    if (!this._projectionName && Object.keys(this._select).length === 0) {
+      let maxDeepLevel = 5; // TODO: May be configure it?
+      let greedyProjectionMaker = function(model, deepLevel, path) {
+        if (deepLevel > maxDeepLevel) {
+          return;
+        }
+
+        let modelAttributes = Ember.get(model, 'attributes');
+        modelAttributes.forEach(function(meta, name) {
+          extend[`${path}${name}`] = true;
+        });
+
+        let relationshipsByName = Ember.get(model, 'relationshipsByName');
+        relationshipsByName.forEach(function(meta, name) {
+          extend[`${path}${name}`] = true;
+          let ralatedModelName = meta.type;
+          let relatedModel = _this._store.modelFor(ralatedModelName);
+          greedyProjectionMaker(relatedModel, deepLevel + 1, `${path}${name}.`);
+        });
+      };
+
+      greedyProjectionMaker(model, 0, '');
     }
 
     return extend;
