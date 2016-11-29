@@ -3,10 +3,9 @@ import { module, test } from 'qunit';
 import startApp from '../../../helpers/start-app';
 import destroyApp from '../../../helpers/destroy-app';
 
-var AppExecuteOfflineTest;
-var storeExecuteOfflineTest;
-
 export default function executeTest(testName, callback) {
+  var AppExecuteOfflineTest;
+  var storeExecuteOfflineTest;
   module('CRUD | offline-' + testName, {
     setup: function() {
       AppExecuteOfflineTest = startApp();
