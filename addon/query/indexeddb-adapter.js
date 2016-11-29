@@ -82,8 +82,12 @@ export default class extends BaseAdapter {
         return ret;
       };
 
-      let joinSortedDataArrays = function(data, masterFieldName, masterData, masterPrimaryKeyName, masterTypeName) {
+      let joinSortedDataArrays = function(data, masterFieldName, masterData, masterPrimaryKeyName, masterTypeName, dataTypeName) {
         // Joining array `data` on field `masterField` with array `masterData` of objects `masterTypeName`. Array `data` must be ordered by `masterField`, array `masterData` must be ordered by id. Function do not use recursive calls.
+        if (!data) {
+          return;
+        }
+
         let masterIndex = 0;
         let dataLength = data.length;
         let masterDataLength;
@@ -99,7 +103,9 @@ export default class extends BaseAdapter {
           if (!masterKey) {
             continue;
           } else if (!masterData) {
-            let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}.`);
+            let objectId = data[dataIndex].id;
+            let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}. ` +
+            `It used in object of type '${dataTypeName}' with id '${objectId}'`);
             reject(error);
             break;
           }
@@ -119,7 +125,9 @@ export default class extends BaseAdapter {
             if (masterKey > masterDataValue[masterPrimaryKeyName] && masterIndex < masterDataLength) {
               masterIndex++;
             } else if (masterKey < masterDataValue[masterPrimaryKeyName] || masterIndex >= masterDataLength) {
-              let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}.`);
+              let objectId = data[dataIndex].id;
+              let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}. ` +
+              `It used in object of type '${dataTypeName}' with id '${objectId}'`);
               reject(error);
               break;
             }
@@ -133,7 +141,7 @@ export default class extends BaseAdapter {
         }
       };
 
-      let joinHasManyData = function(data, detailFieldName, detailsData, detailsTypeName) {
+      let joinHasManyData = function(data, detailFieldName, detailsData, detailsTypeName, dataTypeName) {
         // Joining array `data` on field `masterField` with hash map `detailsData` of objects `detailsTypeName`. Function do not use recursive calls.
         let dataLength = data.length;
         for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
@@ -149,7 +157,9 @@ export default class extends BaseAdapter {
             let detailObj = detailsData.get(detailKey);
 
             if (!detailObj) {
-              let error = new Error(`Data constraint error. Not found object type '${detailsTypeName}' with id ${detailKey}.`);
+              let objectId = data[dataIndex].id;
+              let error = new Error(`Data constraint error. Not found object type '${detailsTypeName}' with id ${detailKey}. ` +
+              `It used in object of type '${dataTypeName}' with id '${objectId}'`);
               reject(error);
               break;
             }
@@ -244,12 +254,12 @@ export default class extends BaseAdapter {
                     node.sorting = node.primaryKeyName;
                   }
 
-                  joinSortedDataArrays(node.parent.data, node.propNameInParent, node.data, node.primaryKeyName, node.modelName);
+                  joinSortedDataArrays(node.parent.data, node.propNameInParent, node.data, node.primaryKeyName, node.modelName, node.parent.modelName);
 
                 } else {
                   joinHasManyData(node.parent.data, node.propNameInParent,
                     getDetailsHashMap(node.data, node.primaryKeyName),
-                    node.modelName);
+                    node.modelName, node.parent.modelName);
                 }
 
                 // Remove node from parent.expand.
