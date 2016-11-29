@@ -67,6 +67,10 @@ export default class extends BaseAdapter {
       };
 
       let getDetailsHashMap = function(data, primaryKeyName) {
+        if (!data) {
+          return;
+        }
+
         let ret = Ember.Map.create();
         let dataLength = data.length;
         for (let i = 0; i < dataLength; i++) {
@@ -94,6 +98,10 @@ export default class extends BaseAdapter {
           let masterKey = data[dataIndex][masterFieldName];
           if (!masterKey) {
             continue;
+          } else if (!masterData) {
+            let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}.`);
+            reject(error);
+            break;
           }
 
           let moveMastersForvard = true;
@@ -172,25 +180,23 @@ export default class extends BaseAdapter {
                 parent.expand = {};
               }
 
-              if (parent.expand[masterPropName]) {
-                continue;
+              if (!parent.expand[masterPropName]) {
+                // TODO: если !relationship.options.async && isEmbedded(store, modelClass, name) то джойним. добавить для expand-а async и isEmbedded и сохранить в структурке relationship.
+                // TODO: получить из query.
+                parent.expand[masterPropName] = {
+                  propNameInParent: masterPropName,
+                  modelName: exp[masterPropName].modelName,
+                  primaryKeyName: exp[masterPropName].primaryKeyName,
+                  data: null,
+                  sorting: null,
+                  deepLevel: masterDeepLevel,
+                  expand: null,
+                  parent: parent,
+                  relationType: exp[masterPropName].relationship.type
+                };
               }
 
-              // TODO: если !relationship.options.async && isEmbedded(store, modelClass, name) то джойним. добавить для expand-а async и isEmbedded и сохранить в структурке relationship.
-              // TODO: получить из query.
-              let master = {
-                propNameInParent: masterPropName,
-                modelName: exp[masterPropName].modelName,
-                primaryKeyName: exp[masterPropName].primaryKeyName,
-                data: null,
-                sorting: null,
-                deepLevel: masterDeepLevel,
-                expand: null,
-                parent: parent,
-                relationType: exp[masterPropName].relationship.type
-              };
-              parent.expand[masterPropName] = master;
-              buildJoinPlan(exp[masterPropName].expand, master, masterDeepLevel);
+              buildJoinPlan(exp[masterPropName].expand, parent.expand[masterPropName], masterDeepLevel);
               if (masterDeepLevel > currentQueryTreeDeepLevel) {
                 currentQueryTreeDeepLevel = masterDeepLevel;
               }
@@ -226,29 +232,7 @@ export default class extends BaseAdapter {
         let scanDeepLevel = function(node, deepLevel) {
           return new Ember.RSVP.Promise((resolve, reject) => {
             if (node.deepLevel === deepLevel) {
-              // Load and join data.
-              let loadPromises = [];
-              if (!node.data) {
-                // Load data.
-                let nodeTable = _this._db.table(node.modelName);
-                let loadPromise = nodeTable.toArray().then((data) => {
-                  node.data = data;
-                  node.sorting = node.primaryKeyName;
-                }, reject);
-                loadPromises.push(loadPromise);
-              }
-
-              if (!node.parent.data) {
-                // Load parent data.
-                let nodeTable = _this._db.table(node.parent.modelName);
-                let loadPromise = nodeTable.toArray().then((data) => {
-                  node.parent.data = data;
-                  node.parent.sorting = node.parent.primaryKeyName;
-                }, reject);
-                loadPromises.push(loadPromise);
-              }
-
-              Dexie.Promise.all(loadPromises).then(() => {
+              let processData = () => {
                 if (node.relationType === 'belongsTo') {
                   if (node.parent.sorting !== node.propNameInParent) {
                     sortData(node.parent.data, node.propNameInParent);
@@ -284,26 +268,61 @@ export default class extends BaseAdapter {
                 if (masterFound) {
                   delete node.parent.expand[masterName];
                 }
+              };
 
+              // Load and join data.
+              let loadDataPromise;
+              if (!node.data) {
+                // Load data.
+                let nodeTable = _this._db.table(node.modelName);
+                loadDataPromise = nodeTable.toArray().then((data) => {
+                  node.data = data;
+                  node.sorting = node.primaryKeyName;
+                }).catch((error) => {reject(error);});
+              }
+
+              let loadParentDataPromise;
+              if (!node.parent.data) {
+                // Load parent data.
+                let nodeTable = _this._db.table(node.parent.modelName);
+                loadParentDataPromise = nodeTable.toArray().then((data) => {
+                  node.parent.data = data;
+                  node.parent.sorting = node.parent.primaryKeyName;
+                }).catch((error) => {reject(error);});
+                if (loadDataPromise) {
+                  loadDataPromise.then(loadParentDataPromise);
+                }
+              }
+
+              if (loadParentDataPromise) {
+                loadParentDataPromise.then(processData).then(() => {resolve();});
+              } else if (loadDataPromise) {
+                loadDataPromise.then(processData).then(() => {resolve();});
+              } else {
+                processData();
                 resolve();
-              }, reject);
+              }
             } else {
               if (node.expand) {
+                let joinRelationsQueue = Queue.create();
+                joinRelationsQueue.set('continueOnError', false);
+
                 let masters = Object.keys(node.expand);
                 let mastersCount = masters.length;
-                let promises = null;
+                let attachScanDeepLevelToRelationsQueue = (masterName) => {
+                  joinRelationsQueue.attach((queryItemResolve, queryItemReject) => scanDeepLevel(node.expand[masterName], deepLevel)
+                  .then(queryItemResolve, queryItemReject));
+                };
+
                 for (let i = 0; i < mastersCount; i++) {
-                  if (!promises) {
-                    promises = [];
-                  }
-
                   let masterName = masters[i];
-                  promises.push(scanDeepLevel(node.expand[masterName], deepLevel));
+                  attachScanDeepLevelToRelationsQueue(masterName);
                 }
 
-                if (promises) {
-                  Ember.RSVP.all(promises).then(() => resolve(), reject);
-                }
+                joinRelationsQueue.attach((queueItemResolve) => {
+                  resolve();
+                  queueItemResolve();
+                });
               } else {
                 resolve();
               }
@@ -472,13 +491,6 @@ export default class extends BaseAdapter {
             Dexie.Promise.all(promises).then(() => {
               joinTree.data = data;
               joinDataByJoinTree(joinTree, false, true, false, true, length);
-
-              let response = { meta: {}, data: data };
-              if (query.count) {
-                response.meta.count = length;
-              }
-
-              resolve(response);
             }, reject);
           }, reject);
         }
