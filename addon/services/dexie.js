@@ -145,5 +145,18 @@ export default Ember.Service.extend(Ember.Evented, {
     } else {
       return operation(db);
     }
+  },
+
+  /**
+    Closes the database. This operation completes immediately and there is no returned Promise.
+
+    @method close
+    @param {String} dbName
+  */
+  close(dbName) {
+    let dexie = this.get('_dexie')[dbName];
+    if (dexie instanceof Dexie) {
+      return dexie.close();
+    }
   }
 });
