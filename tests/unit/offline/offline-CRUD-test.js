@@ -109,6 +109,8 @@ module('offline-CRUD', {
 
   afterEach: function () {
     run(function () {
+      let dexieService = AppOfflineCrudTest.__container__.lookup('service:dexie');
+      dexieService.close(dbNameOfflineCrudTest);
       destroyApp(AppOfflineCrudTest);
     });
   }

@@ -108,6 +108,8 @@ module('Display deep model', {
 
   afterEach: function () {
     run(function () {
+      let dexieService = AppDisplayDeepModel.__container__.lookup('service:dexie');
+      dexieService.close(dbNameDisplayDeepModel);
       destroyApp(AppDisplayDeepModel);
     });
   }
