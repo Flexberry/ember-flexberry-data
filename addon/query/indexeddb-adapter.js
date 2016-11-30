@@ -52,10 +52,6 @@ export default class extends BaseAdapter {
       let complexQuery = containsRelationships(query);
 
       let sortData = function(data, sortField) {
-        if (!data) {
-          return;
-        }
-
         // Sorting array by `sortField` and asc.
         let singleSort = function(a, b) {
           let aVal = a[sortField];
@@ -67,10 +63,6 @@ export default class extends BaseAdapter {
       };
 
       let getDetailsHashMap = function(data, primaryKeyName) {
-        if (!data) {
-          return;
-        }
-
         let ret = Ember.Map.create();
         let dataLength = data.length;
         for (let i = 0; i < dataLength; i++) {
@@ -84,10 +76,6 @@ export default class extends BaseAdapter {
 
       let joinSortedDataArrays = function(data, masterFieldName, masterData, masterPrimaryKeyName, masterTypeName, dataTypeName) {
         // Joining array `data` on field `masterField` with array `masterData` of objects `masterTypeName`. Array `data` must be ordered by `masterField`, array `masterData` must be ordered by id. Function do not use recursive calls.
-        if (!data) {
-          return;
-        }
-
         let masterIndex = 0;
         let dataLength = data.length;
         let masterDataLength;
@@ -102,12 +90,6 @@ export default class extends BaseAdapter {
           let masterKey = data[dataIndex][masterFieldName];
           if (!masterKey) {
             continue;
-          } else if (!masterData) {
-            let objectId = data[dataIndex].id;
-            let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}. ` +
-            `It used in object of type '${dataTypeName}' with id '${objectId}'`);
-            reject(error);
-            break;
           }
 
           let moveMastersForvard = true;
@@ -174,7 +156,6 @@ export default class extends BaseAdapter {
       let buildJoinTree = function(joinTree) {
         let currentQueryTreeDeepLevel = 0;
 
-        // будем ходить по expand-ам и сливать с предыдущим уровнем те мастера, у которых нет своих экспандов. делать это надо в цикле, пока не доберёмся до ствола.
         if (query.expand || query.extend) {
           let buildJoinPlan = function(exp, parent, deepLevel) {
             if (!exp) {
@@ -238,7 +219,7 @@ export default class extends BaseAdapter {
 
       let joinDataByJoinTree = function(joinTree, applyFilter, applyOrder, applyTopSkip, applyProjection, count) {
 
-        // Найдём текущий уровень вложенности и смерджим его с parent.
+        // Sort data and merge join data level by level.
         let scanDeepLevel = function(node, deepLevel) {
           return new Ember.RSVP.Promise((resolve, reject) => {
             if (node.deepLevel === deepLevel) {
@@ -281,37 +262,32 @@ export default class extends BaseAdapter {
               };
 
               // Load and join data.
-              let loadDataPromise;
+              let loadPromises = [];
               if (!node.data) {
                 // Load data.
                 let nodeTable = _this._db.table(node.modelName);
-                loadDataPromise = nodeTable.toArray().then((data) => {
+                let loadPromise = nodeTable.toArray().then((data) => {
                   node.data = data;
                   node.sorting = node.primaryKeyName;
-                }).catch((error) => {reject(error);});
+                }, reject);
+                loadPromises.push(loadPromise);
               }
 
-              let loadParentDataPromise;
               if (!node.parent.data) {
                 // Load parent data.
                 let nodeTable = _this._db.table(node.parent.modelName);
-                loadParentDataPromise = nodeTable.toArray().then((data) => {
+                let loadPromise = nodeTable.toArray().then((data) => {
                   node.parent.data = data;
                   node.parent.sorting = node.parent.primaryKeyName;
-                }).catch((error) => {reject(error);});
-                if (loadDataPromise) {
-                  loadDataPromise.then(loadParentDataPromise);
-                }
+                }, reject);
+                loadPromises.push(loadPromise);
               }
 
-              if (loadParentDataPromise) {
-                loadParentDataPromise.then(processData).then(() => {resolve();});
-              } else if (loadDataPromise) {
-                loadDataPromise.then(processData).then(() => {resolve();});
-              } else {
+              Dexie.Promise.all(loadPromises).then(() => {
                 processData();
                 resolve();
-              }
+              }, reject);
+
             } else {
               if (node.expand) {
                 let joinRelationsQueue = Queue.create();
@@ -505,13 +481,6 @@ export default class extends BaseAdapter {
           }, reject);
         }
       } else {
-        /* Алгоритм.
-        * 1. Строим структуру, которая будет описывать как мы обходим дерево.
-        * 2. Читаем листья самого максимального уровня N с сортировкой по id, складываем результаты в массив массивов с доп. информацией: тип данных, как отсортированы, путь и уровень.
-        * 3. Читаем ветки и листья уровня N-1, если это ещё не ствол.
-        * 4. Если дошли до последних веток уровня 1, где 0 - это ствол, берём первую ветку и с сортировкой по соответствующему ей полю читаем ствол.
-        * 5. Берём все ветки уровня 1 и пересортировывая ствол сливаем их со стволом.
-        */
         table.toArray().then((data) => {
           joinTree.data = data;
           joinDataByJoinTree(joinTree, true, true, true, true);
