@@ -4,25 +4,30 @@ import startApp from '../helpers/start-app';
 import destroyApp from '../helpers/destroy-app';
 import Dexie from 'npm:dexie';
 
-var App;
-var store;
+var AppDisplayDeepModel;
+var storeDisplayDeepModel;
 var run = Ember.run;
-const dbName = 'TestDB';
+const dbNameDisplayDeepModel = 'TestDbDDM';
 
 module('Display deep model', {
   beforeEach: function (assert) {
     var done = assert.async();
 
     run(function () {
-      App = startApp();
-      store = App.__container__.lookup('service:store');
-      store.set('offlineStore.dbName', dbName);
-      let offlineGlobals = App.__container__.lookup('service:offline-globals');
+      AppDisplayDeepModel = startApp();
+      storeDisplayDeepModel = AppDisplayDeepModel.__container__.lookup('service:store');
+      storeDisplayDeepModel.set('offlineStore.dbName', dbNameDisplayDeepModel);
+      let offlineSchema = {};
+      offlineSchema[dbNameDisplayDeepModel] = {
+        1: storeDisplayDeepModel.get('offlineSchema.TestDB')['0.1'],
+      };
+      storeDisplayDeepModel.set('offlineSchema', offlineSchema);
+      let offlineGlobals = AppDisplayDeepModel.__container__.lookup('service:offline-globals');
       offlineGlobals.setOnlineAvailable(false);
 
-      let dexieService = App.__container__.lookup('service:dexie');
-      var db = dexieService.dexie(dbName, store);
-      Dexie.delete(dbName).then(() => {
+      let dexieService = AppDisplayDeepModel.__container__.lookup('service:dexie');
+      var db = dexieService.dexie(dbNameDisplayDeepModel, storeDisplayDeepModel);
+      Dexie.delete(dbNameDisplayDeepModel).then(() => {
         db.open().then((db) => {
           let promises = [];
           promises.push(db.table('ember-flexberry-dummy-suggestion').put({
@@ -103,7 +108,9 @@ module('Display deep model', {
 
   afterEach: function () {
     run(function () {
-      destroyApp(App);
+      let dexieService = AppDisplayDeepModel.__container__.lookup('service:dexie');
+      dexieService.close(dbNameDisplayDeepModel);
+      destroyApp(AppDisplayDeepModel);
     });
   }
 });

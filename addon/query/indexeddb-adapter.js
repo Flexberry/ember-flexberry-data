@@ -6,10 +6,11 @@ import Ember from 'ember';
 import FilterOperator from './filter-operator';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
-import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip, buildFilter } from './js-adapter';
+import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
 import Dexie from 'npm:dexie';
+import Queue from '../utils/queue';
 
 /**
   Class of query language adapter that allows to load data from IndexedDB.
@@ -44,19 +45,333 @@ export default class extends BaseAdapter {
   */
   query(store, query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      let table = this._db.table(query.modelName);
+      let _this = this;
+      let moment = Ember.getOwner(store).lookup('service:moment');
+      let jsAdapter = new JSAdapter(moment);
+      let table = _this._db.table(query.modelName);
       let complexQuery = containsRelationships(query);
-      let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
-      let extendedProjection = extendProjection(query);
-      let fastQuery = !complexQuery;
-      if (fastQuery) {
+
+      let sortData = function(data, sortField) {
+        // Sorting array by `sortField` and asc.
+        let singleSort = function(a, b) {
+          let aVal = a[sortField];
+          let bVal = b[sortField];
+          return (!aVal && bVal) || (aVal < bVal) ? -1 : (aVal && !bVal) || (aVal > bVal) ? 1 : 0;
+        };
+
+        data.sort(singleSort);
+      };
+
+      let getDetailsHashMap = function(data, primaryKeyName) {
+        let ret = Ember.Map.create();
+        let dataLength = data.length;
+        for (let i = 0; i < dataLength; i++) {
+          let obj = data[i];
+          let key = obj[primaryKeyName];
+          ret.set(key, obj);
+        }
+
+        return ret;
+      };
+
+      let joinSortedDataArrays = function(data, masterFieldName, masterData, masterPrimaryKeyName, masterTypeName, dataTypeName) {
+        // Joining array `data` on field `masterField` with array `masterData` of objects `masterTypeName`. Array `data` must be ordered by `masterField`, array `masterData` must be ordered by id. Function do not use recursive calls.
+        let masterIndex = 0;
+        let dataLength = data.length;
+        let masterDataLength;
+        if (!masterData) {
+          // TODO: May be return?
+          masterDataLength = 0;
+        } else {
+          masterDataLength = masterData.length;
+        }
+
+        for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
+          let masterKey = data[dataIndex][masterFieldName];
+          if (!masterKey) {
+            continue;
+          }
+
+          let moveMastersForvard = true;
+          while (moveMastersForvard) {
+            let masterDataValue = masterData[masterIndex];
+
+            // TODO: Check if Debug Mode build then use this.
+            if (!masterDataValue || !masterDataValue.hasOwnProperty(masterPrimaryKeyName)) {
+              let error = new Error(`Metadata consistance error. ` +
+              `Not found property '${masterPrimaryKeyName}' in type '${masterTypeName}'.`);
+              reject(error);
+              break;
+            }
+
+            if (masterKey > masterDataValue[masterPrimaryKeyName] && masterIndex < masterDataLength) {
+              masterIndex++;
+            } else if (masterKey < masterDataValue[masterPrimaryKeyName] || masterIndex >= masterDataLength) {
+              let objectId = data[dataIndex].id;
+              let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}. ` +
+              `It used in object of type '${dataTypeName}' with id '${objectId}'`);
+              reject(error);
+              break;
+            }
+
+            if (masterKey === masterDataValue[masterPrimaryKeyName]) {
+              data[dataIndex][masterFieldName] = masterDataValue;
+              moveMastersForvard = false;
+              continue;
+            }
+          }
+        }
+      };
+
+      let joinHasManyData = function(data, detailFieldName, detailsData, detailsTypeName, dataTypeName) {
+        // Joining array `data` on field `masterField` with hash map `detailsData` of objects `detailsTypeName`. Function do not use recursive calls.
+        let dataLength = data.length;
+        for (let dataIndex = 0; dataIndex < dataLength; dataIndex++) {
+          let detailsKeys = data[dataIndex][detailFieldName];
+          if (!detailsKeys) {
+            continue;
+          }
+
+          let detailsKeysLength = detailsKeys.length;
+          let detailsObjects = [];
+          for (let i = 0; i < detailsKeysLength; i++) {
+            let detailKey = detailsKeys[i];
+            let detailObj = detailsData.get(detailKey);
+
+            if (!detailObj) {
+              let objectId = data[dataIndex].id;
+              let error = new Error(`Data constraint error. Not found object type '${detailsTypeName}' with id ${detailKey}. ` +
+              `It used in object of type '${dataTypeName}' with id '${objectId}'`);
+              reject(error);
+              break;
+            }
+
+            detailsObjects.push(detailObj);
+          }
+
+          data[dataIndex][detailFieldName] = detailsObjects;
+        }
+      };
+
+      let buildJoinTree = function(joinTree) {
+        let currentQueryTreeDeepLevel = 0;
+
+        if (query.expand || query.extend) {
+          let buildJoinPlan = function(exp, parent, deepLevel) {
+            if (!exp) {
+              return;
+            }
+
+            let masterPropNames = Object.keys(exp);
+            let length = masterPropNames.length;
+            let masterDeepLevel = deepLevel + 1;
+            for (let i = 0; i < length; i++) {
+              let masterPropName = masterPropNames[i];
+              if (!parent.expand) {
+                parent.expand = {};
+              }
+
+              if (!parent.expand[masterPropName]) {
+                // TODO: если !relationship.options.async && isEmbedded(store, modelClass, name) то джойним. добавить для expand-а async и isEmbedded и сохранить в структурке relationship.
+                // TODO: получить из query.
+                parent.expand[masterPropName] = {
+                  propNameInParent: masterPropName,
+                  modelName: exp[masterPropName].modelName,
+                  primaryKeyName: exp[masterPropName].primaryKeyName,
+                  data: null,
+                  sorting: null,
+                  deepLevel: masterDeepLevel,
+                  expand: null,
+                  parent: parent,
+                  relationType: exp[masterPropName].relationship.type
+                };
+              }
+
+              buildJoinPlan(exp[masterPropName].expand, parent.expand[masterPropName], masterDeepLevel);
+              if (masterDeepLevel > currentQueryTreeDeepLevel) {
+                currentQueryTreeDeepLevel = masterDeepLevel;
+              }
+            }
+          };
+
+          if (query.expand) {
+            buildJoinPlan(query.expand, joinTree, 0);
+          }
+
+          if (query.extend.expand) {
+            buildJoinPlan(query.extend.expand, joinTree, 0);
+          }
+        }
+
+        return currentQueryTreeDeepLevel;
+      };
+
+      let joinTree = {
+        modelName: query.modelName,
+        primaryKeyName: query.primaryKeyName,
+        data: null,
+        sorting: null,
+        deepLevel: 0,
+        expand: null
+      };
+
+      let currentQueryTreeDeepLevel = buildJoinTree(joinTree);
+
+      let joinDataByJoinTree = function(joinTree, applyFilter, applyOrder, applyTopSkip, applyProjection, count) {
+
+        // Sort data and merge join data level by level.
+        let scanDeepLevel = function(node, deepLevel) {
+          return new Ember.RSVP.Promise((resolve, reject) => {
+            if (node.deepLevel === deepLevel) {
+              let processData = () => {
+                if (node.relationType === 'belongsTo') {
+                  if (node.parent.sorting !== node.propNameInParent) {
+                    sortData(node.parent.data, node.propNameInParent);
+                    node.parent.sorting = node.propNameInParent;
+                  }
+
+                  if (node.sorting !== node.primaryKeyName) {
+                    sortData(node.data, node.primaryKeyName);
+                    node.sorting = node.primaryKeyName;
+                  }
+
+                  joinSortedDataArrays(node.parent.data, node.propNameInParent, node.data, node.primaryKeyName, node.modelName, node.parent.modelName);
+
+                } else {
+                  joinHasManyData(node.parent.data, node.propNameInParent,
+                    getDetailsHashMap(node.data, node.primaryKeyName),
+                    node.modelName, node.parent.modelName);
+                }
+
+                // Remove node from parent.expand.
+                let masters = Object.keys(node.parent.expand);
+                let mastersCount = masters.length;
+                let masterName;
+                let masterFound = false;
+                for (let i = 0; i < mastersCount; i++) {
+                  masterName = masters[i];
+                  if (node.parent.expand[masterName].propNameInParent === node.propNameInParent) {
+                    masterFound = true;
+                    break;
+                  }
+                }
+
+                if (masterFound) {
+                  delete node.parent.expand[masterName];
+                }
+              };
+
+              // Load and join data.
+              let loadPromises = [];
+              if (!node.data) {
+                // Load data.
+                let nodeTable = _this._db.table(node.modelName);
+                let loadPromise = nodeTable.toArray().then((data) => {
+                  node.data = data;
+                  node.sorting = node.primaryKeyName;
+                }, reject);
+                loadPromises.push(loadPromise);
+              }
+
+              if (!node.parent.data) {
+                // Load parent data.
+                let nodeTable = _this._db.table(node.parent.modelName);
+                let loadPromise = nodeTable.toArray().then((data) => {
+                  node.parent.data = data;
+                  node.parent.sorting = node.parent.primaryKeyName;
+                }, reject);
+                loadPromises.push(loadPromise);
+              }
+
+              Dexie.Promise.all(loadPromises).then(() => {
+                processData();
+                resolve();
+              }, reject);
+
+            } else {
+              if (node.expand) {
+                let joinRelationsQueue = Queue.create();
+                joinRelationsQueue.set('continueOnError', false);
+
+                let masters = Object.keys(node.expand);
+                let mastersCount = masters.length;
+                let attachScanDeepLevelToRelationsQueue = (masterName) => {
+                  joinRelationsQueue.attach((queryItemResolve, queryItemReject) => scanDeepLevel(node.expand[masterName], deepLevel)
+                  .then(queryItemResolve, queryItemReject));
+                };
+
+                for (let i = 0; i < mastersCount; i++) {
+                  let masterName = masters[i];
+                  attachScanDeepLevelToRelationsQueue(masterName);
+                }
+
+                joinRelationsQueue.attach((queueItemResolve) => {
+                  resolve();
+                  queueItemResolve();
+                });
+              } else {
+                resolve();
+              }
+            }
+          });
+        };
+
+        let joinQueue = Queue.create();
+        joinQueue.set('continueOnError', false);
+
+        let attachScanDeepLevelToQueue = (i) => {
+          joinQueue.attach((queryItemResolve, queryItemReject) => scanDeepLevel(joinTree, i).then(queryItemResolve, queryItemReject));
+        };
+
+        // Scan query tree from leafs to root.
+        for (let i = currentQueryTreeDeepLevel; i > 0; i--) {
+          attachScanDeepLevelToQueue(i);
+        }
+
+        joinQueue.attach((queueItemResolve) => {
+          let applyFilterOrderTopSkipProjection = function(data, applyFilter, applyOrder, applyTopSkip, applyProjection, count) {
+            if (applyFilter) {
+              let filter = query.predicate ? jsAdapter.buildFilter(query.predicate, { booleanAsString: true }) : (dataForFilter) => dataForFilter;
+              data = filter(data);
+            }
+
+            if (applyOrder) {
+              let order = jsAdapter.buildOrder(query);
+              data = order(data);
+            }
+
+            if (applyTopSkip) {
+              let topskip = jsAdapter.buildTopSkip(query);
+              data = topskip(data);
+            }
+
+            if (applyProjection) {
+              let jsProjection = jsAdapter.buildProjection(query);
+              data = jsProjection(data);
+            }
+
+            let length = count ? count : data.length;
+            let response = { meta: {}, data: data };
+            if (query.count) {
+              response.meta.count = length;
+            }
+
+            resolve(response);
+          };
+
+          applyFilterOrderTopSkipProjection(joinTree.data, applyFilter, applyOrder, applyTopSkip, applyProjection, count);
+          queueItemResolve();
+        });
+      };
+
+      if (!complexQuery) {
         let offset = query.skip;
         let limit = query.top;
 
         table = updateWhereClause(store, table, query);
 
-        if (table instanceof this._db.Table && !query.order) {
-          // Go this way if filter is empty and simply sort by one field.
+        if (table instanceof _this._db.Table && !query.order) {
+          // Go this way if filter is empty and no sorting.
           if (offset) {
             table = table.offset(offset);
           }
@@ -66,30 +381,25 @@ export default class extends BaseAdapter {
           }
 
           table.toArray().then((data) => {
-            Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendedProjection))).then(() => { // TODO: loadByProjection need rewrite.
-              if (!projection) {
-                let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
-                data = jsProjection(data);
-              }
+            let length = data.length;
+            let countPromise;
 
-              let length = data.length;
+            if (query.count && (offset || limit)) {
+              let fullTable = updateWhereClause(store, _this._db.table(query.modelName), query);
+              countPromise = fullTable.count().then((count) => {
+                length = count;
+              }, reject);
+            }
 
-              let response = { meta: {}, data: data };
-              if (query.count) {
-                if (!offset && !limit) {
-                  response.meta.count = length;
-                  resolve(response);
-                } else {
-                  let fullTable = updateWhereClause(store, this._db.table(query.modelName), query);
-                  fullTable.count().then((count) => {
-                    response.meta.count = count;
-                    resolve(response);
-                  }, reject);
-                }
-              } else {
-                resolve(response);
-              }
-            }, reject);
+            let promises;
+            if (countPromise) {
+              promises = [countPromise];
+            }
+
+            Dexie.Promise.all(promises).then(() => {
+              joinTree.data = data;
+              joinDataByJoinTree(joinTree, false, false, false, true, length);
+            });
           }, reject);
         } else {
           // Go this way if used simple filter.
@@ -116,10 +426,12 @@ export default class extends BaseAdapter {
                   let direction = query.order.attribute(i).direction;
                   i = i + 1;
 
+                  let aVal = a[attrName];
+                  let bVal = b[attrName];
                   if (!direction || direction === 'asc') {
-                    return a[attrName] < b[attrName] ? -1 : a[attrName] > b[attrName] ? 1 : singleSort(a, b, i);
+                    return (!aVal && bVal) || (aVal < bVal) ? -1 : (aVal && !bVal) || (aVal > bVal) ? 1 : singleSort(a, b, i);
                   } else {
-                    return a[attrName] > b[attrName] ? -1 : a[attrName] < b[attrName] ? 1 : singleSort(a, b, i);
+                    return (aVal && !bVal) || (aVal > bVal) ? -1 : (!aVal && bVal) || (aVal < bVal) ? 1 : singleSort(a, b, i);
                   }
                 };
 
@@ -146,77 +458,32 @@ export default class extends BaseAdapter {
 
             // if this is result of sortBy() Promise need apply top-skip.
             if (!skipTopApplyed) {
-              let topskip = buildTopSkip(query);
+              let topskip = jsAdapter.buildTopSkip(query);
               data = topskip(data);
             } else {
               if (query.count && (offset || limit)) {
-                let fullTable = updateWhereClause(store, this._db.table(query.modelName), query);
+                let fullTable = updateWhereClause(store, _this._db.table(query.modelName), query);
                 countPromise = fullTable.count().then((count) => {
                   length = count;
                 }, reject);
               }
             }
 
-            let promises = data.map(i => i.loadByProjection(projection, extendedProjection));
+            let promises;
             if (countPromise) {
-              promises.push(countPromise);
+              promises = [countPromise];
             }
 
             Dexie.Promise.all(promises).then(() => {
-              if (!projection) {
-                let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
-                data = jsProjection(data);
-              }
-
-              let response = { meta: {}, data: data };
-              if (query.count) {
-                response.meta.count = length;
-              }
-
-              resolve(response);
+              joinTree.data = data;
+              joinDataByJoinTree(joinTree, false, true, false, true, length);
             }, reject);
           }, reject);
         }
       } else {
-        let isBadQuery = complexQuery;
-        let order = buildOrder(query);
-        let topskip = buildTopSkip(query);
-        let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
-        let table = this._db.table(query.modelName);
-        let moment = Ember.getOwner(store).lookup('service:moment');
-        let filter = query.predicate ? buildFilter(moment, query.predicate, { booleanAsString: true }) : (data) => data;
-        let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
-
-        Ember.warn('The next version is planned to change the behavior ' +
-          'of loading data from offline store, without specify attributes ' +
-          'and relationships will be loaded only their own object attributes.', projection, { id: 'IndexedDBAdapter.query' });
-
-        (isBadQuery ? table : updateWhereClause(store, table, query)).toArray().then((data) => {
-          let length = data.length;
-          if (!isBadQuery) {
-            data = topskip(order(data));
-          }
-
-          // TODO: loadByProjection call with query, projection already was processed into select and expand.
-          // Builder.build will process extending Projection.
-          Dexie.Promise.all(data.map(i => i.loadByProjection(projection, extendedProjection))).then(() => {
-            if (isBadQuery) {
-              data = filter(data);
-              length = data.length;
-              data = topskip(order(data));
-            }
-
-            if (!projection) {
-              data = jsProjection(data);
-            }
-
-            let response = { meta: {}, data: data };
-            if (query.count) {
-              response.meta.count = length;
-            }
-
-            resolve(response);
-          }, reject);
+        table.toArray().then((data) => {
+          joinTree.data = data;
+          joinDataByJoinTree(joinTree, true, true, true, true);
         }, reject);
       }
     });
@@ -269,7 +536,8 @@ function updateWhereClause(store, table, query) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
       let moment = Ember.getOwner(store).lookup('service:moment');
-      return table.filter(getAttributeFilterFunction(moment, predicate));
+      let jsAdapter = new JSAdapter(moment);
+      return table.filter(jsAdapter.getAttributeFilterFunction(predicate));
     }
 
     switch (predicate.operator) {
@@ -298,51 +566,11 @@ function updateWhereClause(store, table, query) {
 
   if (predicate instanceof StringPredicate || predicate instanceof ComplexPredicate) {
     let moment = Ember.getOwner(store).lookup('service:moment');
-    return table.filter(getAttributeFilterFunction(moment, predicate, { booleanAsString: true }));
+    let jsAdapter = new JSAdapter(moment);
+    return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
   }
 
   throw new Error(`Unsupported predicate '${predicate}'`);
-}
-
-/**
-  Returns object with attributes that necessary include in projection for loading.
-
-  @method extendProjection
-  @param {QueryObject} query
-  @return {Object}
-*/
-function extendProjection(query) {
-  let extend = {};
-  if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate) {
-    let path = '';
-    Information.parseAttributePath(query.predicate.attributePath).forEach((attribute) => {
-      Ember.set(extend, `${path}${attribute}`, {});
-      path += `${attribute}.`;
-    });
-  }
-
-  if (query.predicate instanceof DetailPredicate) {
-    extend[query.predicate.detailPath] = extendProjection(query.predicate);
-  }
-
-  if (query.predicate instanceof ComplexPredicate) {
-    query.predicate.predicates.forEach((predicate) => {
-      Ember.merge(extend, extendProjection({ predicate }));
-    });
-  }
-
-  if (query.order) {
-    for (let i = 0; i < query.order.length; i++) {
-      let path = '';
-      let attributePath = Information.parseAttributePath(query.order.attribute(i).name);
-      for (let i = 0; i < attributePath.length; i++) {
-        Ember.set(extend, `${path}${attributePath[i]}`, {});
-        path += `${attributePath[i]}.`;
-      }
-    }
-  }
-
-  return extend;
 }
 
 /**

@@ -122,21 +122,21 @@ export default function deleting(store, assert) {
       let commentId = records.comment;
       let userId = records.people[0];
       return store.findRecord('ember-flexberry-dummy-comment', commentId)
-      .then((comment) => {
-        comment.deleteRecord();
-        return comment.save();
-      })
+        .then((comment) => {
+          comment.deleteRecord();
+          return Ember.RSVP.all([comment.save(), comment.get('suggestion').save()]);
+        })
 
-      .then(() => {
-        store.unloadAll();
-        return store.findAll('ember-flexberry-dummy-comment');
-      })
-      .then((comments) =>
-        store.findRecord('ember-flexberry-dummy-application-user', userId)
-        .then((user) =>
-          assert.ok(comments.get('length') === 0 && user, 'With master relationship')
-        )
-      );
+        .then(() => {
+          store.unloadAll();
+          return store.findAll('ember-flexberry-dummy-comment');
+        })
+        .then((comments) =>
+          store.findRecord('ember-flexberry-dummy-application-user', userId)
+          .then((user) =>
+            assert.ok(comments.get('length') === 0 && user, 'With master relationship')
+          )
+        );
     })
     .catch((e) => {
       console.log(e, e.message);

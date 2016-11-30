@@ -22,6 +22,9 @@ export default Offline.Store.extend({
           'ember-flexberry-dummy-vote': 'id,suggestion,voteType,applicationUser',
           'ember-flexberry-dummy-comment': 'id,suggestion,text,votes,moderated,author,*userVotes',
           'ember-flexberry-dummy-comment-vote': 'id,comment,voteType,applicationUser',
+          'ember-flexberry-dummy-suggestion-file': 'id,suggestion,order,file',
+          'ember-flexberry-dummy-localization': 'id,name',
+          'ember-flexberry-dummy-localized-suggestion-type': 'id,suggestionType,localization',
           'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity':
             'id,objectPrimaryKey,operationTime,operationType,executionResult,source,serializedField,' +
             'createTime,creator,editTime,editor,user,objectType,*auditFields',

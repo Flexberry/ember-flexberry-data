@@ -18,10 +18,12 @@ export default class QueryObject {
    * @param count {Boolean} Flag indicates to request a count of the matching entities included with the entities in the response.
    * @param expand {Object} Specifies the related entities to be included in line with retrieved entities.
    * @param select {Object} A specific set of properties for each requested entity.
+   * @param primaryKeyName {Object} The name of primary key field for specified model name in modelName property.
+   * @param extend {Object} A additional computed set of properties for each requested entity. Based on properties in predicate and order, but not included in select and expand.
    * @class QueryObject
    * @constructor
    */
-  constructor(modelName, id, projectionName, predicate, order, top, skip, count, expand, select) {
+  constructor(modelName, id, projectionName, predicate, order, top, skip, count, expand, select, primaryKeyName, extend) {
     this.id = id;
     this.modelName = modelName;
     this.projectionName = projectionName;
@@ -32,5 +34,7 @@ export default class QueryObject {
     this.count = count;
     this.expand = expand;
     this.select = select;
+    this.primaryKeyName = primaryKeyName;
+    this.extend = extend;
   }
 }
