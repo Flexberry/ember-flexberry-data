@@ -1,11 +1,13 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.13] - 2016-11-30
 ### Added
 - Added implementation in-memory joins for offline data instead very slowly relation-by-relation scan and load objects by id.
 
 ### Removed
-- Dexie service Table method loadByProjection - implementation relation-by-relation scan and load objects by id. 
+- Dexie service Table method loadByProjection - implementation relation-by-relation scan and load objects by id.
 
 ### Fixed
 - Querying records by fields of `date` type with query language via `odata-adapter`.
