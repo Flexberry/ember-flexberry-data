@@ -214,7 +214,9 @@ export default DS.Store.extend({
       let offlineStore = this.get('offlineStore');
       let useOnlineStoreParam = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
       let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
-      return useOnlineStoreCondition ? this._decorateMethodAndCall('single', 'findRecord', arguments, 2) : offlineStore.findRecord.apply(offlineStore, arguments);
+      return useOnlineStoreCondition ?
+        this._decorateMethodAndCall('single', 'findRecord', arguments, 2) :
+        offlineStore.findRecord.apply(offlineStore, arguments);
     } else {
       let onlineStore = this.get('onlineStore');
       return onlineStore.findRecord.apply(onlineStore, arguments);
@@ -428,7 +430,7 @@ export default DS.Store.extend({
     let adapter = onlineStore.adapterFor(modelName);
     if (this.get('offlineGlobals.isOfflineEnabled')) {
       let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStore);
-      return useOnlineStoreCondition ? decorateAdapter.call(this, adapter, modelName) : offlineStore.adapterForapply(offlineStore, modelName);
+      return useOnlineStoreCondition ? decorateAdapter.call(this, adapter, modelName) : offlineStore.adapterFor.call(offlineStore, modelName);
     } else {
       return adapter;
     }
@@ -447,7 +449,7 @@ export default DS.Store.extend({
     let serializer = onlineStore.serializerFor(modelName);
     if (this.get('offlineGlobals.isOfflineEnabled')) {
       let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStore);
-      return useOnlineStoreCondition ? onlineStore.serializerFor.apply(onlineStore, modelName) : offlineStore.serializerFor.apply(offlineStore, modelName);
+      return useOnlineStoreCondition ? onlineStore.serializerFor.call(onlineStore, modelName) : offlineStore.serializerFor.call(offlineStore, modelName);
     } else {
       return serializer;
     }
@@ -504,15 +506,15 @@ export default DS.Store.extend({
   _getModelName(methodName, methodArguments) {
     let methodsWithExplicitlySpecifiedModelName = ['createRecord', 'getReference', 'hasRecordForId', 'normalize', 'peekAll', 'peekRecord', 'recordIsLoaded'];
     let methodsWithImplicitlySpecifiedModelName = ['deleteRecord', 'unloadRecord'];
-    if (methodsWithExplicitlySpecifiedModelName.includes(methodName)) {
+    if (methodsWithExplicitlySpecifiedModelName.indexOf(methodName) > -1) {
       return methodArguments[0];
-    } else if (methodsWithImplicitlySpecifiedModelName.includes(methodName)) {
+    } else if (methodsWithImplicitlySpecifiedModelName.indexOf(methodName) > -1) {
       return methodArguments[0].constructor.modelName;
     } else if (methodName === 'push') {
       let hash = methodArguments[0].data;
       if (isObject(hash)) {
         return hash.type;
-      } else if(Ember.$.isArray(hash)) {
+      } else if (Ember.$.isArray(hash)) {
         return hash.length > 0 ? hash[0].type : '';
       } else if (isObject(methodArguments[0]) && methodArguments[0].hasOwnProperty('type')) {
         return methodArguments[0].type;
