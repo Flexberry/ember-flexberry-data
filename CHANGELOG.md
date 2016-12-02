@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Getting of wrong serializer for offline models in online mode.
 
 ## [0.7.1-beta.13] - 2016-11-30
 ### Added

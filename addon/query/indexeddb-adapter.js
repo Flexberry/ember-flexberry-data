@@ -167,13 +167,17 @@ export default class extends BaseAdapter {
             let masterDeepLevel = deepLevel + 1;
             for (let i = 0; i < length; i++) {
               let masterPropName = masterPropNames[i];
+
+              // Performing joining only if relationship is not async and embedded.
+              if (exp[masterPropName].relationship.async || !exp[masterPropName].relationship.isEmbedded) {
+                continue;
+              }
+
               if (!parent.expand) {
                 parent.expand = {};
               }
 
               if (!parent.expand[masterPropName]) {
-                // TODO: если !relationship.options.async && isEmbedded(store, modelClass, name) то джойним. добавить для expand-а async и isEmbedded и сохранить в структурке relationship.
-                // TODO: получить из query.
                 parent.expand[masterPropName] = {
                   propNameInParent: masterPropName,
                   modelName: exp[masterPropName].modelName,

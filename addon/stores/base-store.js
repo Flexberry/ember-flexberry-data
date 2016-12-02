@@ -1,9 +1,9 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import decorateAdapter from './base-store/decorate-adapter';
-import decorateSerializer from './base-store/decorate-serializer';
 import decorateAPICall from './base-store/decorate-api-call';
 import QueryObject from '../query/query-object';
+import isObject from '../utils/is-object';
 
 /**
   Base class for application store.
@@ -187,12 +187,15 @@ export default DS.Store.extend({
     @return {Promise} promise
   */
   findAll(modelName, options) {
-    let offlineStore = this.get('offlineStore');
-    let isOfflineModel = this.get(`offlineModels.${modelName}`);
-    let useOnlineStore = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
-    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
-    let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
-    return useOnlineStoreCondition ? this._decorateMethodAndCall('all', 'findAll', arguments, 1) : offlineStore.findAll.apply(offlineStore, arguments);
+    if (this.get('offlineGlobals.isOfflineEnabled')) {
+      let offlineStore = this.get('offlineStore');
+      let useOnlineStoreParam = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
+      let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
+      return useOnlineStoreCondition ? this._decorateMethodAndCall('all', 'findAll', arguments, 1) : offlineStore.findAll.apply(offlineStore, arguments);
+    } else {
+      let onlineStore = this.get('onlineStore');
+      return onlineStore.findAll.apply(onlineStore, arguments);
+    }
   },
 
   /**
@@ -207,27 +210,15 @@ export default DS.Store.extend({
     @return {Promise} promise
    */
   findRecord(modelName, id, options) {
-    let offlineStore = this.get('offlineStore');
-    let isOfflineModel = this.get(`offlineModels.${modelName}`);
-    let useOnlineStore = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
-    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
-    let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
-    return useOnlineStoreCondition ? this._decorateMethodAndCall('single', 'findRecord', arguments, 2) : offlineStore.findRecord.apply(offlineStore, arguments);
-  },
-
-  /**
-    This method is called by the record's `reload` method.
-    This method calls the adapter's `find` method, which returns a promise. When
-    **that** promise resolves, `reloadRecord` will resolve the promise returned
-    by the record's `reload`.
-    @method reloadRecord
-    @private
-    @param {DS.Model} internalModel
-    @return {Promise} promise
-  */
-  reloadRecord() {
-    let offlineStore = this.get('offlineStore');
-    return this._isOnline() ? this._decorateMethodAndCall('single', 'reloadRecord', arguments, -1) : offlineStore.reloadRecord.apply(offlineStore, arguments);
+    if (this.get('offlineGlobals.isOfflineEnabled')) {
+      let offlineStore = this.get('offlineStore');
+      let useOnlineStoreParam = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
+      let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
+      return useOnlineStoreCondition ? this._decorateMethodAndCall('single', 'findRecord', arguments, 2) : offlineStore.findRecord.apply(offlineStore, arguments);
+    } else {
+      let onlineStore = this.get('onlineStore');
+      return onlineStore.findRecord.apply(onlineStore, arguments);
+    }
   },
 
   /**
@@ -242,18 +233,22 @@ export default DS.Store.extend({
   query(modelName, query) {
     // TODO: Method `copy` bewitch `QueryObject` into `Object`.
     let _query = query instanceof QueryObject ? query : Ember.copy(query);
-    let offlineStore = this.get('offlineStore');
-    let isOfflineModel = this.get(`offlineModels.${modelName}`);
-    let useOnlineStore = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
-    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
-    if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
-      delete _query.useOnlineStore;
-    }
 
-    let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
-    return useOnlineStoreCondition ?
-      this._decorateMethodAndCall('multiple', 'query', [modelName, _query], -1) :
-      offlineStore.query.apply(offlineStore, [modelName, _query]);
+    if (this.get('offlineGlobals.isOfflineEnabled')) {
+      let offlineStore = this.get('offlineStore');
+      let useOnlineStoreParam = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
+      if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
+        delete _query.useOnlineStore;
+      }
+
+      let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
+      return useOnlineStoreCondition ?
+        this._decorateMethodAndCall('multiple', 'query', [modelName, _query], -1) :
+        offlineStore.query.apply(offlineStore, [modelName, _query]);
+    } else {
+      let onlineStore = this.get('onlineStore');
+      return onlineStore.query.apply(onlineStore, [modelName, _query]);
+    }
   },
 
   /**
@@ -267,18 +262,22 @@ export default DS.Store.extend({
   queryRecord(modelName, query) {
     // TODO: Method `copy` bewitch `QueryObject` into `Object`.
     let _query = query instanceof QueryObject ? query : Ember.copy(query);
-    let offlineStore = this.get('offlineStore');
-    let isOfflineModel = this.get(`offlineModels.${modelName}`);
-    let useOnlineStore = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
-    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
-    if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
-      delete _query.useOnlineStore;
-    }
 
-    let useOnlineStoreCondition = (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
-    return useOnlineStoreCondition ?
-      this._decorateMethodAndCall('single', 'queryRecord', [modelName, _query], -1) :
-      offlineStore.queryRecord.apply(offlineStore, [modelName, _query]);
+    if (this.get('offlineGlobals.isOfflineEnabled')) {
+      let offlineStore = this.get('offlineStore');
+      let useOnlineStoreParam = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
+      if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
+        delete _query.useOnlineStore;
+      }
+
+      let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
+      return useOnlineStoreCondition ?
+        this._decorateMethodAndCall('single', 'queryRecord', [modelName, _query], -1) :
+        offlineStore.queryRecord.apply(offlineStore, [modelName, _query]);
+    } else {
+      let onlineStore = this.get('onlineStore');
+      return onlineStore.queryRecord.apply(onlineStore, [modelName, _query]);
+    }
   },
 
   /**
@@ -428,8 +427,8 @@ export default DS.Store.extend({
     let offlineStore = this.get('offlineStore');
     let adapter = onlineStore.adapterFor(modelName);
     if (this.get('offlineGlobals.isOfflineEnabled')) {
-      let useOnlineStoreCondition = useOnlineStore || (Ember.isNone(useOnlineStore) && this._isOnline());
-      return useOnlineStoreCondition ? decorateAdapter.call(this, adapter, modelName) : offlineStore.adapterFor(modelName);
+      let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStore);
+      return useOnlineStoreCondition ? decorateAdapter.call(this, adapter, modelName) : offlineStore.adapterForapply(offlineStore, modelName);
     } else {
       return adapter;
     }
@@ -447,8 +446,8 @@ export default DS.Store.extend({
     let offlineStore = this.get('offlineStore');
     let serializer = onlineStore.serializerFor(modelName);
     if (this.get('offlineGlobals.isOfflineEnabled')) {
-      let useOnlineStoreCondition = useOnlineStore || (Ember.isNone(useOnlineStore) && this._isOnline());
-      return useOnlineStoreCondition ? decorateSerializer.call(this, serializer, modelName) : offlineStore.serializerFor(modelName);
+      let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStore);
+      return useOnlineStoreCondition ? onlineStore.serializerFor.apply(onlineStore, modelName) : offlineStore.serializerFor.apply(offlineStore, modelName);
     } else {
       return serializer;
     }
@@ -484,10 +483,9 @@ export default DS.Store.extend({
   _callSuperMethod(methodName, useOnlineStoreParamNum, ...args) {
     let onlineStore = this.get('onlineStore');
     let offlineStore = this.get('offlineStore');
-    let isOfflineModel = this._isOfflineModel(methodName, args[0]);
-    let useOnlineStore = (args[0].length - 1) >= useOnlineStoreParamNum ? args[0][useOnlineStoreParamNum] : null;
-    useOnlineStore = useOnlineStore === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStore;
-    let useOnlineStoreCondition = useOnlineStore || (Ember.isNone(useOnlineStore) && this._isOnline());
+    let modelName = this._getModelName(methodName, args[0]);
+    let useOnlineStoreParam = (args[0].length - 1) >= useOnlineStoreParamNum ? args[0][useOnlineStoreParamNum] : null;
+    let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
     let offlineEnabled = this.get('offlineGlobals.isOfflineEnabled');
     return !offlineEnabled || (offlineEnabled && useOnlineStoreCondition) ?
       onlineStore[methodName].apply(onlineStore, args[0]) :
@@ -495,27 +493,48 @@ export default DS.Store.extend({
   },
 
   /**
-    Detect `offlineModels` by method name and arguments.
+    Detect model name by method name and arguments.
 
-    Support methods:
-    - `createRecord`
-
-    @method _isOfflineModel
+    @method _getModelName
     @private
     @param {String} methodName
     @param {Array} methodArguments
-    @return {Boolean}
+    @return {String}
   */
-  _isOfflineModel(methodName, methodArguments) {
-    let isOfflineModel;
-    switch (methodName) {
-      case 'createRecord':
-        isOfflineModel = this.get(`offlineModels.${methodArguments[0]}`);
-        return isOfflineModel || null;
-
-      default:
-        return null;
+  _getModelName(methodName, methodArguments) {
+    let methodsWithExplicitlySpecifiedModelName = ['createRecord', 'getReference', 'hasRecordForId', 'normalize', 'peekAll', 'peekRecord', 'recordIsLoaded'];
+    let methodsWithImplicitlySpecifiedModelName = ['deleteRecord', 'unloadRecord'];
+    if (methodsWithExplicitlySpecifiedModelName.includes(methodName)) {
+      return methodArguments[0];
+    } else if (methodsWithImplicitlySpecifiedModelName.includes(methodName)) {
+      return methodArguments[0].constructor.modelName;
+    } else if (methodName === 'push') {
+      let hash = methodArguments[0].data;
+      if (isObject(hash)) {
+        return hash.type;
+      } else if(Ember.$.isArray(hash)) {
+        return hash.length > 0 ? hash[0].type : '';
+      } else if (isObject(methodArguments[0]) && methodArguments[0].hasOwnProperty('type')) {
+        return methodArguments[0].type;
+      } else {
+        return '';
+      }
+    } else if (methodName === 'pushPayload' || methodName === 'unloadAll') {
+      if (!Ember.isNone(methodArguments[0]) && typeof methodArguments[0] === 'string') {
+        return methodArguments[0];
+      } else {
+        return '';
+      }
     }
+  },
+
+  /*
+    Detect which store should be used for specified modelName.
+  */
+  _useOnlineStore(modelName, useOnlineStoreParam) {
+    let isOfflineModel = !Ember.isEmpty(modelName) ? this.get(`offlineModels.${modelName}`) : undefined;
+    let useOnlineStore = useOnlineStoreParam === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStoreParam;
+    return (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
   },
 
   /**
