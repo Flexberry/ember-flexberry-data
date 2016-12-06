@@ -156,6 +156,10 @@ export default class extends BaseAdapter {
       let buildJoinTree = function(joinTree) {
         let currentQueryTreeDeepLevel = 0;
 
+        if (!complexQuery && (!query.expand || Object.keys(query.expand).length === 0) && query.select.length === 1 && query.select[0] === 'id') {
+          return currentQueryTreeDeepLevel;
+        }
+
         if (query.expand || query.extend) {
           let buildJoinPlan = function(exp, parent, deepLevel) {
             if (!exp) {

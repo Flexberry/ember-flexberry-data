@@ -814,7 +814,7 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
 module('indexeddb-adapter-test joins performance');
 
 test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (assert) => {
-  let count = 5000;
+  let count = 15000;
   let data = getJoinsPerformanceTestData(count, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
@@ -830,6 +830,51 @@ test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (
     assert.ok(result.data, 'Data exists');
     assert.equal(result.data.length, 20, 'Loading 20 objects');
     assert.ok(result.data[10].Price >= count / 2, 'Check filter apply');
+  });
+});
+
+test('adapter | indexeddb | by id with joins without select', (assert) => {
+  let count = 15000;
+  let data = getJoinsPerformanceTestData(count, assert);
+
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
+    .byId(3);
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = window.performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, 1, 'Loading 1 object');
+    assert.equal(result.data[0].id, 3, 'Check id');
+    assert.notOk(result.data[0].Name, 'Check own property');
+    assert.notOk(result.data[0].Creator, 'Check master property');
+    assert.notOk(result.data[0].Country, 'Check master id');
+  });
+});
+
+test('adapter | indexeddb | by id with joins select', (assert) => {
+  let count = 15000;
+  let data = getJoinsPerformanceTestData(count, assert);
+
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
+    .select('id,Name,Creator.Age,Creator.Country.Name,Country.id,Tags.Name')
+    .byId(3);
+
+  executeTest(data, builder.build(), assert, (result, startExecTime) => {
+    let endExecTime = window.performance.now();
+    assert.ok(true, `${Math.round(endExecTime - startExecTime)} ms execution time, loaded ${result.data.length}`);
+    assert.ok(result.data, 'Data exists');
+    assert.equal(result.data.length, 1, 'Loading 1 object');
+    assert.equal(result.data[0].id, 3, 'Check id');
+    assert.equal(result.data[0].Name, 'George', 'Check own property');
+    assert.equal(result.data[0].Creator.Age, 15, 'Check master property');
+    assert.equal(result.data[0].Creator.Country.Name, 'Austria', 'Check master.master property');
+    assert.equal(result.data[0].Country.id, 3, 'Check master id');
+    assert.equal(result.data[0].Tags.length, 3, 'Check details count');
+    assert.equal(result.data[0].Tags[0].Name, 'TTT', 'Check detail value');
+    assert.notOk(result.data[0].Age, 'Check redundant own property');
+    assert.notOk(result.data[0].Country.Name, 'Check redundant master property');
+    assert.notOk(result.data[0].Tags[0].Creator, 'Check redundant detail property');
   });
 });
 
@@ -1050,9 +1095,9 @@ function getJoinsPerformanceTestData(count, assert) {
 
   let data = {
     employee: [
-      { id: 1, Price: 200, Age: 10, Name: 'Felix', Creator: 1, Country: 1 },
-      { id: 2, Price: 100, Age: 10, Name: 'Edward', Creator: 1, Country: 1 },
-      { id: 3, Price: 900, Age: 15, Name: 'George', Creator: 2, Country: 1 }
+      { id: 1, Price: 200, Age: 10, Name: 'Felix', Creator: 1, Country: 1, Tags: [1, 2, 3] },
+      { id: 2, Price: 100, Age: 10, Name: 'Edward', Creator: 1, Country: 1, Tags: [1, 2, 3] },
+      { id: 3, Price: 900, Age: 15, Name: 'George', Creator: 2, Country: 3, Tags: [1, 2, 3] }
     ],
     creator: [
       { id: 1, Age: 10, Name: 'Felix', Country: 1 },
@@ -1063,6 +1108,11 @@ function getJoinsPerformanceTestData(count, assert) {
       { id: 1, Name: 'Austria' },
       { id: 2, Name: 'Australia' },
       { id: 3, Name: 'Belgium' },
+    ],
+    tag: [
+      { id: 1, Name: 'TTT', Creator: 1 },
+      { id: 2, Name: 'AAA', Creator: 2 },
+      { id: 3, Name: 'GGG', Creator: 3 },
     ]
   };
 
