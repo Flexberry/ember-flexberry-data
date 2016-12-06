@@ -4,6 +4,9 @@
 ### Fixed
 - Getting of wrong serializer for offline models in online mode.
 
+### Removed
+- Redundant decoration of online serializer.
+
 ## [0.7.1-beta.13] - 2016-11-30
 ### Added
 - Added implementation in-memory joins for offline data instead very slowly relation-by-relation scan and load objects by id.
