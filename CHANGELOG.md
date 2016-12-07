@@ -4,6 +4,7 @@
 ### Fixed
 - Getting of wrong serializer for offline models in online mode.
 - Offline query by projection or select are cut redundand properties for relationships in `js-adapter`.
+- Optimized loading offline data for query by id. 
 
 ### Removed
 - Redundant decoration of online serializer.
