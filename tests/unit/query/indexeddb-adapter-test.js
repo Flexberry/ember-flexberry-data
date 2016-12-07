@@ -814,7 +814,7 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
 module('indexeddb-adapter-test joins performance');
 
 test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (assert) => {
-  let count = 15000;
+  let count = 5000;
   let data = getJoinsPerformanceTestData(count, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
@@ -834,7 +834,7 @@ test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (
 });
 
 test('adapter | indexeddb | by id with joins without select', (assert) => {
-  let count = 15000;
+  let count = 5000;
   let data = getJoinsPerformanceTestData(count, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
@@ -853,11 +853,11 @@ test('adapter | indexeddb | by id with joins without select', (assert) => {
 });
 
 test('adapter | indexeddb | by id with joins select', (assert) => {
-  let count = 15000;
+  let count = 5000;
   let data = getJoinsPerformanceTestData(count, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .select('id,Name,Creator.Age,Creator.Country.Name,Country.id,Tags.Name')
+    .select('id,Name,Creator.Age,Creator.Country.Name,Country,Country.id,Tags.Name')
     .byId(3);
 
   executeTest(data, builder.build(), assert, (result, startExecTime) => {

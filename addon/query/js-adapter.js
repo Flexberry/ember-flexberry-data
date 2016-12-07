@@ -152,6 +152,7 @@ export default class JSAdapter extends BaseAdapter {
   buildProjection(query) {
     let select = query.select;
     let expand = query.expand;
+    let expandKeys = Object.keys(expand);
     if (!select || select.length === 0) {
       return data => data;
     }
@@ -160,38 +161,42 @@ export default class JSAdapter extends BaseAdapter {
       let dataMap = data.map(item => {
         let r = {};
 
-        let applySelect = function (r, item, select) {
+        let applySelect = function (r, item, select, exclude) {
           if (!item) {
             return;
           }
 
           let length = select.length;
           for (let i = 0; i < length; i++) {
-            r[select[i]] = item[select[i]];
+            let key = select[i];
+            if (exclude.indexOf(key) === -1) {
+              r[key] = item[key];
+            }
           }
         };
 
-        applySelect(r, item, select);
+        applySelect(r, item, select, expandKeys);
 
-        let processExpand = function(r, item, expand) {
+        let processExpand = function(r, item, expand, expandKeys) {
           if (!expand) {
             return;
           }
 
-          let expandKeys = Object.keys(expand);
           let length = expandKeys.length;
           for (let i = 0; i < length; i++) {
             let expandKey = expandKeys[i];
 
             let expandItem = expand[expandKey];
             let expandItemSelect = expandItem.select;
+            let expandItemExpand = expandItem.expand;
+            let expandItemExpandKeys = Object.keys(expandItemExpand);
 
             if (expandItem.relationship.type === 'belongsTo') {
               let itemValue = item[expandKey];
               if (itemValue) {
                 r[expandKey] = {};
-                applySelect(r[expandKey], itemValue, expandItemSelect);
-                processExpand(r[expandKey], itemValue, expandItem.expand);
+                applySelect(r[expandKey], itemValue, expandItemSelect, expandItemExpandKeys);
+                processExpand(r[expandKey], itemValue, expandItemExpand, expandItemExpandKeys);
               }
             } else {
               r[expandKey] = [];
@@ -200,15 +205,15 @@ export default class JSAdapter extends BaseAdapter {
                 let itemValue = item[expandKey][j];
                 if (itemValue) {
                   r[expandKey].push({});
-                  applySelect(r[expandKey][j], itemValue, expandItemSelect);
-                  processExpand(r[expandKey][j], itemValue, expandItem.expand);
+                  applySelect(r[expandKey][j], itemValue, expandItemSelect, expandItemExpandKeys);
+                  processExpand(r[expandKey][j], itemValue, expandItemExpand, expandItemExpandKeys);
                 }
               }
             }
           }
         };
 
-        processExpand(r, item, expand);
+        processExpand(r, item, expand, expandKeys);
         return r;
       });
       return dataMap;
