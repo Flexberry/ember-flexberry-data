@@ -278,10 +278,12 @@ export default class extends BaseAdapter {
               if (!node.parent.data) {
                 // Load parent data.
                 let nodeTable = _this._db.table(node.parent.modelName);
-                let loadPromise = nodeTable.toArray().then((data) => {
-                  node.parent.data = data;
-                  node.parent.sorting = node.parent.primaryKeyName;
-                }, reject);
+                let loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {
+                  nodeTable.toArray().then((data) => {
+                    node.parent.data = data;
+                    node.parent.sorting = node.parent.primaryKeyName;
+                    loadResolve();
+                  }, loadReject);});
                 loadPromises.push(loadPromise);
               } else if (node.parent.data.length === 1 && node.relationType === 'belongsTo') {
                 filterById = node.parent.data[0][node.propNameInParent];
@@ -294,14 +296,15 @@ export default class extends BaseAdapter {
                   nodeTable = nodeTable.where(node.primaryKeyName).equals(filterById);
                 }
 
-                let loadPromise = nodeTable.toArray().then((data) => {
-                  node.data = data; // TODO: а успевает ли это выполниться до того, как ниже будет processData вызвана?
+                let loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {nodeTable.toArray().then((data) => {
+                  node.data = data;
                   node.sorting = node.primaryKeyName;
-                }, reject);
+                  loadResolve();
+                }, loadReject);});
                 loadPromises.push(loadPromise);
               }
 
-              Dexie.Promise.all(loadPromises).then(() => {
+              Ember.RSVP.all(loadPromises).then(() => {
                 processData();
                 resolve();
               }, reject);
@@ -317,7 +320,7 @@ export default class extends BaseAdapter {
                   joinRelationsQueue.attach((queryItemResolve, queryItemReject) => {
                     // load data for optimal performance.
                     let expandedMaster = node.expand[masterName];
-                    let dexiePromise;
+                    let loadPromise;
                     let skipScan = false;
                     if (node.data && !expandedMaster.data) {
                       let nodeDataLength = node.data.length;
@@ -341,18 +344,22 @@ export default class extends BaseAdapter {
                         if (anyOfKeys.length === 0) {
                           skipScan = true;
                         } else {
-                          dexiePromise = _this._db.table(expandedMaster.modelName)
-                            .where(node.primaryKeyName)
+                          loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {
+                            _this._db.table(expandedMaster.modelName)
+                            .where(expandedMaster.primaryKeyName)
                             .anyOf(anyOfKeys)
                             .toArray()
-                            .then((data) => { // TODO: Use Ember.Promise.
-                              expandedMaster.data = data;
-                            }, queryItemReject);
+                            .then((loadedData) => {
+                              expandedMaster.data = loadedData;
+                              expandedMaster.sorting = expandedMaster.primaryKeyName;
+                              loadResolve();
+                            }, loadReject);
+                          });
                         }
                       }
                     }
 
-                    Dexie.Promise.all([dexiePromise]).then(() => {
+                    Ember.RSVP.all([loadPromise]).then(() => {
                       if (!skipScan) {
                         scanDeepLevel(expandedMaster, deepLevel).then(queryItemResolve, queryItemReject);
                       } else {
