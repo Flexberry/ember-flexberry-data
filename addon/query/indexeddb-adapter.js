@@ -271,15 +271,9 @@ export default class extends BaseAdapter {
 
               // Load and join data.
               let loadPromises = [];
-              if (!node.data) {
-                // Load data.
-                let nodeTable = _this._db.table(node.modelName);
-                let loadPromise = nodeTable.toArray().then((data) => {
-                  node.data = data;
-                  node.sorting = node.primaryKeyName;
-                }, reject);
-                loadPromises.push(loadPromise);
-              }
+
+              // If parent data is one record and relationship is belongsTo then apply filter by master id from parent data.
+              let filterById;
 
               if (!node.parent.data) {
                 // Load parent data.
@@ -287,6 +281,22 @@ export default class extends BaseAdapter {
                 let loadPromise = nodeTable.toArray().then((data) => {
                   node.parent.data = data;
                   node.parent.sorting = node.parent.primaryKeyName;
+                }, reject);
+                loadPromises.push(loadPromise);
+              } else if (node.parent.data.length === 1 && node.relationType === 'belongsTo') {
+                filterById = node.parent.data[0][node.propNameInParent];
+              }
+
+              if (!node.data) {
+                // Load data.
+                let nodeTable = _this._db.table(node.modelName);
+                if (filterById) {
+                  nodeTable = nodeTable.where(node.primaryKeyName).equals(filterById);
+                }
+
+                let loadPromise = nodeTable.toArray().then((data) => {
+                  node.data = data; // TODO: а успевает ли это выполниться до того, как ниже будет processData вызвана?
+                  node.sorting = node.primaryKeyName;
                 }, reject);
                 loadPromises.push(loadPromise);
               }
@@ -304,8 +314,52 @@ export default class extends BaseAdapter {
                 let masters = Object.keys(node.expand);
                 let mastersCount = masters.length;
                 let attachScanDeepLevelToRelationsQueue = (masterName) => {
-                  joinRelationsQueue.attach((queryItemResolve, queryItemReject) => scanDeepLevel(node.expand[masterName], deepLevel)
-                  .then(queryItemResolve, queryItemReject));
+                  joinRelationsQueue.attach((queryItemResolve, queryItemReject) => {
+                    // load data for optimal performance.
+                    let expandedMaster = node.expand[masterName];
+                    let dexiePromise;
+                    let skipScan = false;
+                    if (node.data && !expandedMaster.data) {
+                      let nodeDataLength = node.data.length;
+                      if (nodeDataLength === 0) {
+                        skipScan = true;
+                      } else if (nodeDataLength <= 50) { // Magical constant which depend on list form max rows.
+                        let anyOfKeys = [];
+
+                        for (let i = 0; i < nodeDataLength; i++) {
+                          let relationKeyValue = node.data[i][masterName];
+
+                          if (relationKeyValue) {
+                            if (expandedMaster.relationType === 'belongsTo') {
+                              anyOfKeys.push(relationKeyValue);
+                            } else {
+                              anyOfKeys = anyOfKeys.concat(relationKeyValue);
+                            }
+                          }
+                        }
+
+                        if (anyOfKeys.length === 0) {
+                          skipScan = true;
+                        } else {
+                          dexiePromise = _this._db.table(expandedMaster.modelName)
+                            .where(node.primaryKeyName)
+                            .anyOf(anyOfKeys)
+                            .toArray()
+                            .then((data) => { // TODO: Use Ember.Promise.
+                              expandedMaster.data = data;
+                            }, queryItemReject);
+                        }
+                      }
+                    }
+
+                    Dexie.Promise.all([dexiePromise]).then(() => {
+                      if (!skipScan) {
+                        scanDeepLevel(expandedMaster, deepLevel).then(queryItemResolve, queryItemReject);
+                      } else {
+                        queryItemResolve();
+                      }
+                    });
+                  });
                 };
 
                 for (let i = 0; i < mastersCount; i++) {
