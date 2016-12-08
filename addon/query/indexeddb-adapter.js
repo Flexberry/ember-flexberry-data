@@ -156,6 +156,10 @@ export default class extends BaseAdapter {
       let buildJoinTree = function(joinTree) {
         let currentQueryTreeDeepLevel = 0;
 
+        if (!complexQuery && (!query.expand || Object.keys(query.expand).length === 0) && query.select.length === 1 && query.select[0] === 'id') {
+          return currentQueryTreeDeepLevel;
+        }
+
         if (query.expand || query.extend) {
           let buildJoinPlan = function(exp, parent, deepLevel) {
             if (!exp) {
@@ -267,27 +271,40 @@ export default class extends BaseAdapter {
 
               // Load and join data.
               let loadPromises = [];
-              if (!node.data) {
-                // Load data.
-                let nodeTable = _this._db.table(node.modelName);
-                let loadPromise = nodeTable.toArray().then((data) => {
-                  node.data = data;
-                  node.sorting = node.primaryKeyName;
-                }, reject);
-                loadPromises.push(loadPromise);
-              }
+
+              // If parent data is one record and relationship is belongsTo then apply filter by master id from parent data.
+              let filterById;
 
               if (!node.parent.data) {
                 // Load parent data.
                 let nodeTable = _this._db.table(node.parent.modelName);
-                let loadPromise = nodeTable.toArray().then((data) => {
-                  node.parent.data = data;
-                  node.parent.sorting = node.parent.primaryKeyName;
-                }, reject);
+                let loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {
+                  nodeTable.toArray().then((data) => {
+                    node.parent.data = data;
+                    node.parent.sorting = node.parent.primaryKeyName;
+                    loadResolve();
+                  }, loadReject);});
+                loadPromises.push(loadPromise);
+              } else if (node.parent.data.length === 1 && node.relationType === 'belongsTo') {
+                filterById = node.parent.data[0][node.propNameInParent];
+              }
+
+              if (!node.data) {
+                // Load data.
+                let nodeTable = _this._db.table(node.modelName);
+                if (filterById) {
+                  nodeTable = nodeTable.where(node.primaryKeyName).equals(filterById);
+                }
+
+                let loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {nodeTable.toArray().then((data) => {
+                  node.data = data;
+                  node.sorting = node.primaryKeyName;
+                  loadResolve();
+                }, loadReject);});
                 loadPromises.push(loadPromise);
               }
 
-              Dexie.Promise.all(loadPromises).then(() => {
+              Ember.RSVP.all(loadPromises).then(() => {
                 processData();
                 resolve();
               }, reject);
@@ -300,8 +317,56 @@ export default class extends BaseAdapter {
                 let masters = Object.keys(node.expand);
                 let mastersCount = masters.length;
                 let attachScanDeepLevelToRelationsQueue = (masterName) => {
-                  joinRelationsQueue.attach((queryItemResolve, queryItemReject) => scanDeepLevel(node.expand[masterName], deepLevel)
-                  .then(queryItemResolve, queryItemReject));
+                  joinRelationsQueue.attach((queryItemResolve, queryItemReject) => {
+                    // load data for optimal performance.
+                    let expandedMaster = node.expand[masterName];
+                    let loadPromise;
+                    let skipScan = false;
+                    if (node.data && !expandedMaster.data) {
+                      let nodeDataLength = node.data.length;
+                      if (nodeDataLength === 0) {
+                        skipScan = true;
+                      } else if (nodeDataLength <= 50) { // Magical constant which depend on list form max rows.
+                        let anyOfKeys = [];
+
+                        for (let i = 0; i < nodeDataLength; i++) {
+                          let relationKeyValue = node.data[i][masterName];
+
+                          if (relationKeyValue) {
+                            if (expandedMaster.relationType === 'belongsTo') {
+                              anyOfKeys.push(relationKeyValue);
+                            } else {
+                              anyOfKeys = anyOfKeys.concat(relationKeyValue);
+                            }
+                          }
+                        }
+
+                        if (anyOfKeys.length === 0) {
+                          skipScan = true;
+                        } else {
+                          loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {
+                            _this._db.table(expandedMaster.modelName)
+                            .where(expandedMaster.primaryKeyName)
+                            .anyOf(anyOfKeys)
+                            .toArray()
+                            .then((loadedData) => {
+                              expandedMaster.data = loadedData;
+                              expandedMaster.sorting = expandedMaster.primaryKeyName;
+                              loadResolve();
+                            }, loadReject);
+                          });
+                        }
+                      }
+                    }
+
+                    Ember.RSVP.all([loadPromise]).then(() => {
+                      if (!skipScan) {
+                        scanDeepLevel(expandedMaster, deepLevel).then(queryItemResolve, queryItemReject);
+                      } else {
+                        queryItemResolve();
+                      }
+                    });
+                  });
                 };
 
                 for (let i = 0; i < mastersCount; i++) {
