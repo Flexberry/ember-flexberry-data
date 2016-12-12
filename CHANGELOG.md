@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.1-beta.14] - 2016-12-12
 ### Added
 - Support reading of polymorphic relationships for in-memory joins for offline data.
 
