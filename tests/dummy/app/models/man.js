@@ -9,5 +9,4 @@ Model.reopenClass({
   _parentModelName: 'creator'
 });
 
-
 export default Model;

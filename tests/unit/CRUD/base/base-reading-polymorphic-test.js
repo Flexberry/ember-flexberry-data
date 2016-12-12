@@ -18,12 +18,14 @@ export default function readingDataTypes(store, assert) {
         assert.equal(data.get('length'), 2, 'Reading model with polymorphic relationship | Length');
         let testPoly1 = data.objectAt(0);
         let testPoly2 = data.objectAt(1);
+        let relationPole1 = testPoly1.get('relation.pole');
+        let relationPole2 = testPoly2.get('relation.pole');
         let modelName1 = testPoly1.get('relation').constructor.modelName;
         let modelName2 = testPoly2.get('relation').constructor.modelName;
         assert.equal(testPoly1.get('selfPole'), 'Self pole 1', `Reading model with polymorphic relationship | Own field of record 1`);
-        assert.equal(testPoly1.get('relation.pole'), 'Base pole another child', `Reading model with polymorphic relationship | Polymorphic relation of record 1`);
+        assert.equal(relationPole1, 'Base pole another child', `Reading model with polymorphic relationship | Polymorphic relation of record 1`);
         assert.equal(testPoly2.get('selfPole'), 'Self pole 2', `Reading model with polymorphic relationship | Own field of record 2`);
-        assert.equal(testPoly2.get('relation.pole'), 'Base pole child', `Reading model with polymorphic relationship | Polymorphic relation of record 2`);
+        assert.equal(relationPole2, 'Base pole child', `Reading model with polymorphic relationship | Polymorphic relation of record 2`);
         assert.equal(modelName1, 'ember-flexberry-dummy-test-poly-another-child', `Reading model with polymorphic relationship | Model name of record 1`);
         assert.equal(modelName2, 'ember-flexberry-dummy-test-poly-child', `Reading model with polymorphic relationship | Model name of record 2`);
       });
