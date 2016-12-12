@@ -39,6 +39,13 @@ export default Offline.Store.extend({
             'id,createTime,creator,editTime,editor,group,user',
           'i-c-s-soft-s-t-o-r-m-n-e-t-security-session':
             'id,userKey,startedAt,lastAccess,closed',
+        },
+
+        0.2: {
+          'ember-flexberry-dummy-test-poly-base': 'id,pole',
+          'ember-flexberry-dummy-test-poly-child': 'id,pole,childPole',
+          'ember-flexberry-dummy-test-poly-another-child': 'id,pole,childAnotherPole',
+          'ember-flexberry-dummy-test-poly': 'id,selfPole,relation',
         }
       },
     });

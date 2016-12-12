@@ -268,6 +268,7 @@ export default class Builder extends BaseBuilder {
       if (!data.expand[key]) {
         let relationshipProps = {
           async: relationship.options.async,
+          polymorphic: relationship.options.polymorphic,
           isEmbedded: isEmbedded(this._store, model, key),
           type: relationship.kind
         };
@@ -316,6 +317,7 @@ export default class Builder extends BaseBuilder {
 
             let relationshipProps = {
               async: relationship.options.async,
+              polymorphic: relationship.options.polymorphic,
               isEmbedded: isEmbedded(this._store, model, attrName),
               type: attr.kind
             };

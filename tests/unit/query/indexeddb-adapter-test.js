@@ -22,6 +22,8 @@ const schemaIndexedbAdapterTest = (dbName) => {
     1: {
       employee: 'id,Age,Name,Surname,CountryName,Price,Active,Country,Creator,Manager,*Tags',
       creator: 'id,Name,Age,Country',
+      man: 'id,Name,Age,Country,EyesColor',
+      bot: 'id,Name,Age,Country,IsClever',
       country: 'id,Name',
       tag: 'id,Name,Creator'
     },
@@ -653,6 +655,50 @@ test('adapter | indexeddb | order with skip-top', (assert) => {
   });
 });
 
+test('adapter | indexeddb | polymorphic relationships', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Creator: 1, Tags: [5, 3], _Creator_type: 'bot' },
+      { id: 2, Creator: 3, Tags: [3, 1], _Creator_type: 'man' },
+      { id: 3, Creator: 5, Tags: [2, 4], _Creator_type: 'creator' },
+    ],
+    creator: [
+      { id: 1, Name: 'X' },
+      { id: 2, Name: 'Y' },
+      { id: 3, Name: 'Z' },
+      { id: 4, Name: 'A' },
+      { id: 5, Name: 'M' },
+    ],
+    bot: [
+      { id: 1, Name: 'X', IsClever: true },
+      { id: 4, Name: 'A', IsClever: false },
+      { id: 5, Name: 'M', IsClever: true },
+    ],
+    man: [
+      { id: 2, Name: 'Y', EyesColor: 'gray' },
+      { id: 3, Name: 'Z', EyesColor: 'blue' },
+    ],
+    tag: [
+      { id: 1, Creator: 1, _Creator_type: 'bot' },
+      { id: 2, Creator: 2, _Creator_type: 'man' },
+      { id: 3, Creator: 3, _Creator_type: 'man' },
+      { id: 4, Creator: 4, _Creator_type: 'bot' },
+      { id: 5, Creator: 5, _Creator_type: 'bot' },
+    ],
+  };
+
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).selectByProjection('TestJoins').orderBy('id asc');
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0]._Creator_type, 'bot');
+    assert.equal(result.data[1]._Creator_type, 'man');
+    assert.equal(result.data[2]._Creator_type, 'creator');
+    assert.ok(!!result.data[0].Tags[0]._Creator_type);
+  });
+});
+
 module('indexeddb-adapter-test performance');
 
 test('adapter | indexeddb | no filter, no order, no skip, no top', (assert) => {
@@ -1124,7 +1170,8 @@ function getJoinsPerformanceTestData(count, assert) {
       Age: 10 + Math.floor(Math.random() * 99),
       Name: `King of Kongo Ololong ${Math.floor(Math.random() * count)}`,
       Creator: Math.floor(Math.random() * 9) > 3 ? Math.floor(Math.random() * count) : null,
-      Country: Math.floor(Math.random() * 9) > 3 ? Math.floor(Math.random() * count) : null
+      Country: Math.floor(Math.random() * 9) > 3 ? Math.floor(Math.random() * count) : null,
+      Tags: []
     });
     data.creator.push({
       id: i,
