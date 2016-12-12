@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Support reading of polymorphic relationships for in-memory joins for offline data.
+
 ### Fixed
 - Getting of wrong serializer for offline models in online mode.
 - Offline query by projection or select are cut redundand properties for relationships in `js-adapter`.

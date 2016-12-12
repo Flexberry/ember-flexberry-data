@@ -12,10 +12,23 @@ let Employee = Projection.Model.extend({
   CountryName: attr('string'),
   Price: attr('decimal'),
   Active: attr('boolean'),
-  Country: DS.belongsTo('country'),
-  Creator: DS.belongsTo('creator'),
-  Manager: DS.belongsTo('employee'),
-  Tags: DS.hasMany('tag'),
+  Country: DS.belongsTo('country', {
+    inverse: null,
+    async: false
+  }),
+  Creator: DS.belongsTo('creator', {
+    inverse: null,
+    async: false,
+    polymorphic: true
+  }),
+  Manager: DS.belongsTo('employee', {
+    inverse: null,
+    async: false
+  }),
+  Tags: DS.hasMany('tag', {
+    inverse: 'Creator',
+    async: false
+  }),
   externalId: attr('guid')
 });
 
@@ -41,6 +54,12 @@ Employee.defineProjection('TestJoins', 'employee', {
   Creator: Projection.belongsTo('creator', 'Creator', {
     Name: Projection.attr('Name'),
     Country: Projection.belongsTo('country', 'Country', {
+      Name: Projection.attr('Name')
+    }),
+  }),
+  Tags: Projection.hasMany('tag', 'Tags', {
+    Name: Projection.attr('Name'),
+    Creator: Projection.belongsTo('creator', 'Creator', {
       Name: Projection.attr('Name')
     }),
   }),

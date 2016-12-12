@@ -17,11 +17,13 @@ export default function executeTest(testName, callback) {
       let offlineSchema = {};
       offlineSchema[dbName] = {
         1: storeExecuteOfflineTest.get('offlineSchema.TestDB')['0.1'],
+        2: storeExecuteOfflineTest.get('offlineSchema.TestDB')['0.2'],
       };
       storeExecuteOfflineTest.set('offlineSchema', offlineSchema);
       storeExecuteOfflineTest.set('offlineStore.dbName', dbName);
       let offlineGlobals = AppExecuteOfflineTest.__container__.lookup('service:offline-globals');
       offlineGlobals.setOnlineAvailable(false);
+      storeExecuteOfflineTest._dbInit();
     },
     teardown: function(assert) {
       let cleanUpDone = assert.async();

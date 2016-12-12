@@ -194,9 +194,21 @@ export default class JSAdapter extends BaseAdapter {
             if (expandItem.relationship.type === 'belongsTo') {
               let itemValue = item[expandKey];
               if (itemValue) {
+                // Try to include attr that stores type of relationship for polymorphic master in offline mode.
+                // It makes sense only when buildProjection was called from indexeddb-adapter.
+                // Otherwise given object always will not contain attr with polymorphic relationship type name.
+                if (expandItem.relationship.polymorphic) {
+                  let polymorphicMasterTypeKey = '_' + expandKey + '_type';
+                  if (item.hasOwnProperty(polymorphicMasterTypeKey)) {
+                    r[polymorphicMasterTypeKey] = item[polymorphicMasterTypeKey];
+                  }
+                }
+
                 r[expandKey] = {};
                 applySelect(r[expandKey], itemValue, expandItemSelect, expandItemExpandKeys);
                 processExpand(r[expandKey], itemValue, expandItemExpand, expandItemExpandKeys);
+              } else {
+                r[expandKey] = null;
               }
             } else {
               r[expandKey] = [];

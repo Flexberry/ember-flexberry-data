@@ -4,7 +4,10 @@ import { Projection } from 'ember-flexberry-data';
 let Creator = Projection.Model.extend({
   Name: DS.attr('string'),
   Age: DS.attr('number'),
-  Country: DS.belongsTo('country')
+  Country: DS.belongsTo('country', {
+    inverse: null,
+    async: false
+  })
 });
 
 export default Creator;
