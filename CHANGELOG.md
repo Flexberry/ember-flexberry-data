@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.8.0-beta.0] - 2016-12-13
+### Added
+- Validations for 'hasMany' relationships in base model.
+
 ## [0.7.1-beta.14] - 2016-12-12
 ### Added
 - Support reading of polymorphic relationships for in-memory joins for offline data.
@@ -10,9 +14,6 @@
 - Getting of wrong serializer for offline models in online mode.
 - Offline query by projection or select are cut redundand properties for relationships in `js-adapter`.
 - Optimized loading offline data for query by id. 
-
-### Added
-- Validations for 'hasMany' relationships in base model.
 
 ### Removed
 - Redundant decoration of online serializer.
