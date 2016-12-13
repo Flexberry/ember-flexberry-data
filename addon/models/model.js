@@ -4,20 +4,20 @@ import createProj from '../utils/create';
 import EmberValidations from 'ember-validations';
 
 /**
- * Base model that supports projections and validations.
- *
- * @module ember-flexberry-data
- * @class Model
- * @namespace Projection
- * @extends DS.Model
- * @uses EmberValidationsMixin
- * @uses Ember.EventedMixin
+  Base model that supports projections and validations.
 
- * @event preSave
- * @param {Object} event Event object
- * @param {Promise[]} promises Array to which custom 'preSave' promises could be pushed
+  @module ember-flexberry-data
+  @class Model
+  @namespace Projection
+  @extends DS.Model
+  @uses EmberValidationsMixin
+  @uses Ember.EventedMixin
 
- * @public
+  @event preSave
+  @param {Object} event Event object
+  @param {Promise[]} promises Array to which custom 'preSave' promises could be pushed
+
+  @public
  */
 var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   /**
@@ -91,8 +91,37 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       });
     }
 
-    // Return normal validation promise without any additional logic.
-    return this._super(...arguments);
+    // Validate model.
+    let validationPromises = {
+      base: this._super(options)
+    };
+
+    let hasManyRelationships = Ember.A();
+    this.eachRelationship((name, attrs) => {
+      if (attrs.kind === 'hasMany') {
+        hasManyRelationships.pushObject(attrs.key);
+      }
+    });
+
+    // Validate hasMany relationships.
+    hasManyRelationships.forEach((relationshipName) => {
+      let details = this.get(relationshipName);
+      if (!Ember.isArray(details)) {
+        details = Ember.A();
+      }
+
+      details.forEach((detailModel, i) => {
+        validationPromises[relationshipName + '.' + i] = detailModel.validate.apply(detailModel, options);
+      });
+    });
+
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      Ember.RSVP.hash(validationPromises).then((hash) => {
+        resolve(this.get('errors'));
+      }).catch((reason) => {
+        reject(this.get('errors'));
+      });
+    });
   },
 
   /**
@@ -324,6 +353,24 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   },
 
   /**
+    Initializes model.
+  */
+  init() {
+    this._super(...arguments);
+
+    // Attach validation observers for hasMany relationships.
+    this.eachRelationship((name, attrs) => {
+      if (attrs.kind !== 'hasMany') {
+        return;
+      }
+
+      let detailsName = attrs.key;
+      Ember.addObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
+      Ember.addObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
+    });
+  },
+
+  /**
     Fired when the record is loaded from the server.
     [More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).
 
@@ -354,6 +401,107 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   didCreate() {
     this._super(...arguments);
     this._saveCanonicalBelongsTo();
+  },
+
+  /**
+    Destroys model.
+  */
+  willDestroy() {
+    this._super(...arguments);
+
+    // Attach validation observers for hasMany relationships.
+    this.eachRelationship((name, attrs) => {
+      if (attrs.kind !== 'hasMany') {
+        return;
+      }
+
+      let detailsName = attrs.key;
+      Ember.removeObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
+      Ember.removeObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
+    });
+  },
+
+  /**
+    Observes & handles changes in each hasMany relationship.
+
+    @method _onChangeHasManyRelationship
+    @param {Object} changedObject Reference to changed object.
+    @param {changedPropertyPath} changedPropertyPath Path to changed property.
+    @private
+  */
+  _onChangeHasManyRelationship(changedObject, changedPropertyPath) {
+    Ember.run.once(this, '_aggregateHasManyRelationshipValidationErrors', changedObject, changedPropertyPath);
+  },
+
+  /**
+    Aggregates validation error messages for hasMany relationships.
+
+    @method _aggregateHasManyRelationshipValidationErrors
+    @param {Object} changedObject Reference to changed object.
+    @param {changedPropertyPath} changedPropertyPath Path to changed property.
+    @private
+  */
+  _aggregateHasManyRelationshipValidationErrors(changedObject, changedPropertyPath) {
+    let aggregator = this;
+    let detailsPath;
+
+    if (changedObject === aggregator) {
+      detailsPath = changedPropertyPath;
+    } else {
+      this.eachRelationship((name, attrs) => {
+        if (detailsPath) {
+          return;
+        }
+
+        if (attrs.kind !== 'hasMany') {
+          return;
+        }
+
+        let detailsName = attrs.key;
+        let details = this.get(detailsName);
+        details.forEach((detail, i) => {
+          if (detailsPath) {
+            return;
+          }
+
+          if (detail === changedObject) {
+            detailsPath = `${detailsName}.[]`;
+          }
+        });
+      });
+    }
+
+    // Retrieve aggregator's validation errors object.
+    let errors = Ember.get(this, 'errors');
+
+    let detailsName = detailsPath.split('.')[0];
+    let details = Ember.get(this, detailsName);
+    if (!Ember.isArray(details)) {
+      return;
+    }
+
+    // Collect each detail's errors object into single array of error messages.
+    let detailsErrorMessages = Ember.A();
+    details.forEach((detail, i) => {
+      let detailErrors = Ember.get(detail, 'errors');
+
+      for (let detailPropertyName in detailErrors) {
+        let detailPropertyErrorMessages = detailErrors[detailPropertyName];
+        if (detailErrors.hasOwnProperty(detailPropertyName) && Ember.isArray(detailPropertyErrorMessages)) {
+          detailPropertyErrorMessages.forEach((detailPropertyErrorMessage) => {
+            Ember.removeObserver(detail, `errors.${detailPropertyName}.[]`, this, this._onChangeHasManyRelationship);
+
+            if (!Ember.get(detail, 'isDeleted')) {
+              Ember.addObserver(detail, `errors.${detailPropertyName}.[]`, this, this._onChangeHasManyRelationship);
+              detailsErrorMessages.pushObject(detailPropertyErrorMessage);
+            }
+          });
+        }
+      }
+    });
+
+    // Remember array of error messages in aggregator's errors object.
+    Ember.set(errors, detailsName, detailsErrorMessages);
   },
 
   /**
