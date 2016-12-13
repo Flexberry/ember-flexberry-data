@@ -6,6 +6,9 @@
 - Offline query by projection or select are cut redundand properties for relationships in `js-adapter`.
 - Optimized loading offline data for query by id. 
 
+### Added
+- Validations for 'hasMany' relationships in base model.
+
 ### Removed
 - Redundant decoration of online serializer.
 
