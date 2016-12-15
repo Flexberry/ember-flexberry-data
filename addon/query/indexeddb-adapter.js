@@ -8,6 +8,7 @@ import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } f
 import BaseAdapter from './base-adapter';
 import { getAttributeFilterFunction, buildProjection, buildOrder, buildTopSkip, buildFilter } from './js-adapter';
 import Information from '../utils/information';
+import getSerializedDateValue from '../utils/get-serialized-date-value';
 import Dexie from 'npm:dexie';
 import Queue from '../utils/queue';
 
@@ -556,11 +557,7 @@ function updateWhereClause(store, table, query) {
         break;
 
       case 'date':
-        let dateTransform = Ember.getOwner(store).lookup('transform:date');
-        let moment = Ember.getOwner(store).lookup('service:moment');
-        let valueToTransform = moment.moment(predicate.value);
-        Ember.assert('Date value must be passed to query as JavaScript Date (instance or string) or as ISO 8601 string', valueToTransform.isValid());
-        value = dateTransform.serialize(valueToTransform.toDate());
+        value = getSerializedDateValue.call(store, predicate.value);
         break;
 
       default:

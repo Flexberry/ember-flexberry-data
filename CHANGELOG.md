@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 ### Fixed
+- Querying records by fields of `date` type with query language via `odata-adapter`.
+
+## [0.7.1-beta.12] - 2016-11-25
+### Fixed
 - Querying records by fields of `date` type with query language using complex predicates in offline mode.
 
 ## [0.7.1-beta.11] - 2016-11-23
