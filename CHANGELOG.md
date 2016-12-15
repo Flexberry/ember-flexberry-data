@@ -3,6 +3,10 @@
 ## [Unreleased]
 ### Fixed
 - Querying records by fields of `date` type with query language via `odata-adapter`.
+- Getting of wrong serializer for offline models in online mode.
+
+### Removed
+- Redundant decoration of online serializer.
 
 ## [0.7.1-beta.12] - 2016-11-25
 ### Fixed
