@@ -481,7 +481,8 @@ export default class extends BaseAdapter {
         let topskip = buildTopSkip(query);
         let jsProjection = buildProjection(query); // TODO: if used select, then missed loadByProjection call.
         let table = this._db.table(query.modelName);
-        let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
+        let moment = Ember.getOwner(store).lookup('service:moment');
+        let filter = query.predicate ? buildFilter(moment, query.predicate, { booleanAsString: true }) : (data) => data;
         let projection = query.projectionName ? query.projectionName : query.projection ? query.projection : null;
 
         Ember.warn('The next version is planned to change the behavior ' +
@@ -525,7 +526,7 @@ export default class extends BaseAdapter {
   Filtering only with Dexie can applied only for simple cases (for `SimplePredicate`).
   For complex cases all logic implemened programmatically.
 
-  @param {Dexie.Table} store Store instance.
+  @param {DS.Store or subclass} store Store instance.
   @param {Dexie.Table} table Table instance for loading objects.
   @param {Query} query Query language instance for loading data.
   @returns {Dexie.Collection|Dexie.Table} Table or collection that can be used with `toArray` method.
@@ -557,7 +558,9 @@ function updateWhereClause(store, table, query) {
       case 'date':
         let dateTransform = Ember.getOwner(store).lookup('transform:date');
         let moment = Ember.getOwner(store).lookup('service:moment');
-        value = dateTransform.serialize(moment.moment(predicate.value).toDate());
+        let valueToTransform = moment.moment(predicate.value);
+        Ember.assert('Date value must be passed to query as JavaScript Date (instance or string) or as ISO 8601 string', valueToTransform.isValid());
+        value = dateTransform.serialize(valueToTransform.toDate());
         break;
 
       default:
@@ -567,7 +570,8 @@ function updateWhereClause(store, table, query) {
     if (value === null) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
-      return table.filter(getAttributeFilterFunction(predicate));
+      let moment = Ember.getOwner(store).lookup('service:moment');
+      return table.filter(getAttributeFilterFunction(moment, predicate));
     }
 
     switch (predicate.operator) {
@@ -595,7 +599,8 @@ function updateWhereClause(store, table, query) {
   }
 
   if (predicate instanceof StringPredicate || predicate instanceof ComplexPredicate) {
-    return table.filter(getAttributeFilterFunction(predicate, { booleanAsString: true }));
+    let moment = Ember.getOwner(store).lookup('service:moment');
+    return table.filter(getAttributeFilterFunction(moment, predicate, { booleanAsString: true }));
   }
 
   throw new Error(`Unsupported predicate '${predicate}'`);

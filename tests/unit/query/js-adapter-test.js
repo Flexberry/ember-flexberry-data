@@ -10,7 +10,8 @@ import startApp from '../../helpers/start-app';
 
 const app = startApp();
 const store = app.__container__.lookup('service:store');
-const adapter = new JSAdapter();
+const moment = app.__container__.lookup('service:moment');
+const adapter = new JSAdapter(moment);
 
 module('js-adapter-test');
 
