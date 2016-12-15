@@ -455,7 +455,8 @@ export default class extends BaseAdapter {
           }
 
           joinQueue.attach((queueItemResolve) => {
-            let filter = query.predicate ? buildFilter(query.predicate, { booleanAsString: true }) : (data) => data;
+            let moment = Ember.getOwner(store).lookup('service:moment');
+            let filter = query.predicate ? buildFilter(moment, query.predicate, { booleanAsString: true }) : (data) => data;
 
             let order = buildOrder(query);
             let topskip = buildTopSkip(query);
