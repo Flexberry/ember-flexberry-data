@@ -10,7 +10,7 @@ moduleForModel('model', 'Unit | Model | model', {
     'model:ember-flexberry-dummy-suggestion-file',
     'model:ember-flexberry-dummy-comment',
     'model:ember-flexberry-dummy-comment-vote',
-    'model:ember-flexberry-dummy-localized-suggestion-type',
+    'model:ember-flexberry-dummy-localized-suggestion-type'
   ],
 });
 

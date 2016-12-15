@@ -1,12 +1,15 @@
 # Change Log
 
 ## [Unreleased]
-### Fixed
-- Querying records by fields of `date` type with query language via `odata-adapter`.
-- Getting of wrong serializer for offline models in online mode.
+### Added
+- Validations for 'hasMany' relationships in base model.
 
 ### Removed
 - Redundant decoration of online serializer.
+
+### Fixed
+- Querying records by fields of `date` type with query language via `odata-adapter`.
+- Getting of wrong serializer for offline models in online mode.
 
 ## [0.7.1-beta.12] - 2016-11-25
 ### Fixed
