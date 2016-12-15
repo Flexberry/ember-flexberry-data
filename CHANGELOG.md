@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.7.2-beta.0] - 2016-12-15
 ### Added
 - Validations for 'hasMany' relationships in base model.
 
