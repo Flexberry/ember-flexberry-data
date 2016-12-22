@@ -234,8 +234,9 @@ export default class Builder extends BaseBuilder {
     };
 
     let selectProperties = Object.keys(select);
+    let selectPropertieslength = selectProperties.length;
 
-    for (let i = 0; i < selectProperties.length; i++) {
+    for (let i = 0; i < selectPropertieslength; i++) {
       this._buildQueryForProperty(result, selectProperties[i], model, modelName, isOfflineMode);
     }
 
@@ -266,22 +267,24 @@ export default class Builder extends BaseBuilder {
       let ralatedModelName = relationship.type;
       let relatedModel = this._store.modelFor(ralatedModelName);
 
-      let relationshipProps = {
-        async: relationship.options.async,
-        isEmbedded: true, // TODO: isEmbedded(this._store, modelName, attrName)
-        type: relationship.kind
-      };
+      if (!data.expand[key]) {
+        let relationshipProps = {
+          async: relationship.options.async,
+          isEmbedded: true, // TODO: isEmbedded(this._store, modelName, attrName)
+          type: relationship.kind
+        };
 
-      let primaryKeyNameFromSerializer = isOfflineMode ? this._localStore.serializerFor(modelName).get('primaryKey') :
-      this._store.serializerFor(modelName).get('primaryKey');
-      let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
-      data.expand[key] = {
-        select: ['id'],
-        expand: {},
-        modelName: ralatedModelName,
-        primaryKeyName: primaryKeyName,
-        relationship: relationshipProps
-      };
+        let primaryKeyNameFromSerializer = isOfflineMode ? this._localStore.serializerFor(modelName).get('primaryKey') :
+        this._store.serializerFor(modelName).get('primaryKey');
+        let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
+        data.expand[key] = {
+          select: ['id'],
+          expand: {},
+          modelName: ralatedModelName,
+          primaryKeyName: primaryKeyName,
+          relationship: relationshipProps
+        };
+      }
 
       this._buildQueryForProperty(data.expand[key], pathItems.join('.'), relatedModel, ralatedModelName, isOfflineMode);
     }
