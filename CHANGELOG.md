@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Incorrect building of query object for offline models.
 
 ## [0.8.0-beta.0] - 2016-12-13
 ### Added

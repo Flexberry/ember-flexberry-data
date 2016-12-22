@@ -48,21 +48,172 @@ test('query builder | select by projection', assert => {
   assert.equal(result.select[6], 'userVotes');
 
   assert.ok(result.expand);
+  assert.ok(result.extend);
+
+  assert.notOk(result.extend.suggestion);
+  assert.notOk(result.extend.author);
+  assert.notOk(result.extend.userVotes);
+
+  assert.ok(result.extend.select);
+  assert.ok(result.extend.select, 1);
+  assert.equal(result.extend.select[0], 'id');
 
   assert.ok(result.expand.suggestion);
   assert.ok(result.expand.suggestion.select);
   assert.ok(result.expand.suggestion.expand);
+  assert.ok(result.expand.suggestion.select, 2);
   assert.equal(result.expand.suggestion.select[0], 'id');
   assert.equal(result.expand.suggestion.select[1], 'address');
 
   assert.ok(result.expand.author);
   assert.ok(result.expand.author.select);
   assert.ok(result.expand.author.expand);
+  assert.ok(result.expand.author.select, 2);
   assert.equal(result.expand.author.select[0], 'id');
   assert.equal(result.expand.author.select[1], 'name');
 
   assert.ok(result.expand.userVotes);
   assert.ok(result.expand.userVotes.select);
   assert.ok(result.expand.userVotes.expand);
+  assert.ok(result.expand.userVotes.select, 3);
   assert.equal(result.expand.userVotes.select[0], 'id');
+  assert.equal(result.expand.userVotes.select[1], 'voteType');
+  assert.equal(result.expand.userVotes.select[2], 'applicationUser');
+
+  assert.ok(result.expand.userVotes.expand.applicationUser);
+  assert.ok(result.expand.userVotes.expand.applicationUser.select);
+  assert.ok(result.expand.userVotes.expand.applicationUser.expand);
+  assert.ok(result.expand.userVotes.expand.applicationUser.select, 2);
+  assert.equal(result.expand.userVotes.expand.applicationUser.select[0], 'id');
+  assert.equal(result.expand.userVotes.expand.applicationUser.select[1], 'name');
+});
+
+test('query builder | select by attributes list', assert => {
+  // Arrange.
+  let attrs = 'id,text,votes,author,author.name,userVotes,userVotes.voteType,userVotes.applicationUser,userVotes.applicationUser.name';
+  let builder = new Builder(store, 'ember-flexberry-dummy-comment').select(attrs);
+
+  // Act.
+  let result = builder.build();
+
+  // Assert.
+  assert.ok(result);
+  assert.notOk(result.projectionName);
+
+  assert.ok(result.select);
+  assert.ok(result.select.length, 5);
+  assert.equal(result.select[0], 'id');
+  assert.equal(result.select[1], 'text');
+  assert.equal(result.select[2], 'votes');
+  assert.equal(result.select[3], 'author');
+  assert.equal(result.select[4], 'userVotes');
+
+  assert.ok(result.expand);
+  assert.ok(result.extend);
+
+  assert.notOk(result.expand.suggestion);
+
+  assert.notOk(result.extend.suggestion);
+  assert.notOk(result.extend.author);
+  assert.notOk(result.extend.userVotes);
+
+  assert.ok(result.extend.select);
+  assert.ok(result.extend.select, 1);
+  assert.equal(result.extend.select[0], 'id');
+
+  assert.ok(result.expand.author);
+  assert.ok(result.expand.author.select);
+  assert.ok(result.expand.author.expand);
+  assert.ok(result.expand.author.select, 2);
+  assert.equal(result.expand.author.select[0], 'id');
+  assert.equal(result.expand.author.select[1], 'name');
+
+  assert.ok(result.expand.userVotes);
+  assert.ok(result.expand.userVotes.select);
+  assert.ok(result.expand.userVotes.expand);
+  assert.ok(result.expand.userVotes.select, 3);
+  assert.equal(result.expand.userVotes.select[0], 'id');
+  assert.equal(result.expand.userVotes.select[1], 'voteType');
+  assert.equal(result.expand.userVotes.select[2], 'applicationUser');
+
+  assert.ok(result.expand.userVotes.expand.applicationUser);
+  assert.ok(result.expand.userVotes.expand.applicationUser.select);
+  assert.ok(result.expand.userVotes.expand.applicationUser.expand);
+  assert.ok(result.expand.userVotes.expand.applicationUser.select, 2);
+  assert.equal(result.expand.userVotes.expand.applicationUser.select[0], 'id');
+  assert.equal(result.expand.userVotes.expand.applicationUser.select[1], 'name');
+});
+
+test('query builder | enrichment', assert => {
+  // Arrange.
+  let attrs = 'id,text';
+  let builder = new Builder(store, 'ember-flexberry-dummy-comment').select(attrs).orderBy('votes asc,author.name desc');
+
+  // Act.
+  let result = builder.build();
+
+  // Assert.
+  assert.ok(result);
+  assert.notOk(result.projectionName);
+
+  assert.ok(result.select);
+  assert.ok(result.select.length, 2);
+  assert.equal(result.select[0], 'id');
+  assert.equal(result.select[1], 'text');
+
+  assert.ok(result.expand);
+  assert.ok(result.extend);
+
+  assert.notOk(result.expand.suggestion);
+  assert.notOk(result.expand.author);
+  assert.notOk(result.expand.userVotes);
+
+  assert.ok(result.extend);
+  assert.ok(result.extend.select);
+  assert.ok(result.extend.expand);
+  assert.notOk(result.extend.expand.suggestion);
+  assert.notOk(result.extend.expand.userVotes);
+
+  assert.ok(result.extend.select, 3);
+  assert.equal(result.extend.select[0], 'id');
+  assert.equal(result.extend.select[1], 'votes');
+  assert.equal(result.extend.select[2], 'author');
+  assert.ok(result.extend.expand.author.select, 2);
+  assert.equal(result.extend.expand.author.select[0], 'id');
+  assert.equal(result.extend.expand.author.select[1], 'name');
+});
+
+test('query builder | offline model', assert => {
+  // Arrange.
+  store.offlineModels = {
+    'ember-flexberry-dummy-comment': true,
+  };
+
+  let builder = new Builder(store, 'ember-flexberry-dummy-comment').selectByProjection('CommentD').orderBy('suggestion.address desc');
+  let commentPkName = builder._localStore.serializerFor('ember-flexberry-dummy-comment').get('primaryKey');
+  let authorPkName = builder._localStore.serializerFor('ember-flexberry-dummy-application-user').get('primaryKey');
+  let suggestionPkName = builder._localStore.serializerFor('ember-flexberry-dummy-suggestion').get('primaryKey');
+
+  // Act.
+  let result = builder.build();
+
+  // Assert.
+  assert.ok(result);
+  assert.equal(result.projectionName, 'CommentD');
+
+  assert.ok(result.expand);
+  assert.ok(result.extend);
+
+  assert.ok(result.expand.author);
+  assert.notOk(result.expand.suggestion);
+  assert.notOk(result.expand.userVotes);
+
+  assert.ok(result.extend.expand.suggestion);
+  assert.notOk(result.extend.expand.author);
+  assert.notOk(result.extend.expand.userVotes);
+
+  //Primary key name should always get from offline serializers for offline model and it's relationships.
+  assert.equal(result.primaryKeyName, commentPkName);
+  assert.equal(result.expand.author.primaryKeyName, authorPkName);
+  assert.equal(result.extend.expand.suggestion.primaryKeyName, suggestionPkName);
 });
