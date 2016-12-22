@@ -76,7 +76,7 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
           resolve(record);
         }, reject);
       } else {
-        Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
+        Ember.warn('It does not allow to sync down related records without specified projection. ' +
           'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
         resolve(record);
       }
@@ -90,7 +90,7 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
 
     var recordData = record.toJSON && record.toJSON();
 
-    Ember.Logger.warn(warnMessage, recordData);
+    Ember.warn(warnMessage, recordData);
 
     return RSVP.resolve(record);
   }

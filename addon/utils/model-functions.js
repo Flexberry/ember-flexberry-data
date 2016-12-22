@@ -41,7 +41,7 @@ export function getValueFromLocales(i18n, key) {
   if (i18n.exists(key)) {
     return i18n.t(key);
   } else {
-    Ember.Logger.warn(`The ${key} is not found in locales.`);
+    Ember.warn(`The ${key} is not found in locales.`);
     return null;
   }
 }

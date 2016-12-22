@@ -399,7 +399,7 @@ export default DS.Adapter.extend({
           resolve();
         }).catch((err) => {
           if (clearHashesOnTransactionFail) {
-            Ember.Logger.warn('Some data loss while performing sync down records!');
+            Ember.warn('Some data loss while performing sync down records!');
             dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
             _this._hashesToStore.clear();
           }

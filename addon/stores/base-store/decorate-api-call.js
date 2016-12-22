@@ -47,7 +47,7 @@ export default function decorateAPICall(finderType, superFunc) {
     /*
     function syncUp() {
       return syncer.syncUp().catch(function(error) {
-        Ember.Logger.warn('Syncing Error:');
+        Ember.warn('Syncing Error:');
         Ember.Logger.error(error && error.stack);
       });
     }

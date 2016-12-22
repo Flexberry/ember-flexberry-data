@@ -320,7 +320,7 @@ export default class ODataAdapter extends BaseAdapter {
       } else if (meta.isEnum) {
         let type = meta.sourceType;
         if (!type) {
-          Ember.Logger.warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`);
+          Ember.warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`);
           type = Ember.String.classify(meta.type);
         }
 
