@@ -38,7 +38,7 @@ test('query builder | select by projection', assert => {
   assert.equal(result.projectionName, 'CommentE');
 
   assert.ok(result.select);
-  assert.ok(result.select.length, 7);
+  assert.equal(result.select.length, 7);
   assert.equal(result.select[0], 'id');
   assert.equal(result.select[1], 'suggestion');
   assert.equal(result.select[2], 'text');
@@ -55,27 +55,27 @@ test('query builder | select by projection', assert => {
   assert.notOk(result.extend.userVotes);
 
   assert.ok(result.extend.select);
-  assert.ok(result.extend.select, 1);
+  assert.equal(result.extend.select.length, 1);
   assert.equal(result.extend.select[0], 'id');
 
   assert.ok(result.expand.suggestion);
   assert.ok(result.expand.suggestion.select);
   assert.ok(result.expand.suggestion.expand);
-  assert.ok(result.expand.suggestion.select, 2);
+  assert.equal(result.expand.suggestion.select.length, 2);
   assert.equal(result.expand.suggestion.select[0], 'id');
   assert.equal(result.expand.suggestion.select[1], 'address');
 
   assert.ok(result.expand.author);
   assert.ok(result.expand.author.select);
   assert.ok(result.expand.author.expand);
-  assert.ok(result.expand.author.select, 2);
+  assert.equal(result.expand.author.select.length, 2);
   assert.equal(result.expand.author.select[0], 'id');
   assert.equal(result.expand.author.select[1], 'name');
 
   assert.ok(result.expand.userVotes);
   assert.ok(result.expand.userVotes.select);
   assert.ok(result.expand.userVotes.expand);
-  assert.ok(result.expand.userVotes.select, 3);
+  assert.equal(result.expand.userVotes.select.length, 3);
   assert.equal(result.expand.userVotes.select[0], 'id');
   assert.equal(result.expand.userVotes.select[1], 'voteType');
   assert.equal(result.expand.userVotes.select[2], 'applicationUser');
@@ -83,7 +83,7 @@ test('query builder | select by projection', assert => {
   assert.ok(result.expand.userVotes.expand.applicationUser);
   assert.ok(result.expand.userVotes.expand.applicationUser.select);
   assert.ok(result.expand.userVotes.expand.applicationUser.expand);
-  assert.ok(result.expand.userVotes.expand.applicationUser.select, 2);
+  assert.equal(result.expand.userVotes.expand.applicationUser.select.length, 2);
   assert.equal(result.expand.userVotes.expand.applicationUser.select[0], 'id');
   assert.equal(result.expand.userVotes.expand.applicationUser.select[1], 'name');
 });
@@ -101,7 +101,7 @@ test('query builder | select by attributes list', assert => {
   assert.notOk(result.projectionName);
 
   assert.ok(result.select);
-  assert.ok(result.select.length, 5);
+  assert.equal(result.select.length, 5);
   assert.equal(result.select[0], 'id');
   assert.equal(result.select[1], 'text');
   assert.equal(result.select[2], 'votes');
@@ -118,20 +118,20 @@ test('query builder | select by attributes list', assert => {
   assert.notOk(result.extend.userVotes);
 
   assert.ok(result.extend.select);
-  assert.ok(result.extend.select, 1);
+  assert.equal(result.extend.select.length, 1);
   assert.equal(result.extend.select[0], 'id');
 
   assert.ok(result.expand.author);
   assert.ok(result.expand.author.select);
   assert.ok(result.expand.author.expand);
-  assert.ok(result.expand.author.select, 2);
+  assert.equal(result.expand.author.select.length, 2);
   assert.equal(result.expand.author.select[0], 'id');
   assert.equal(result.expand.author.select[1], 'name');
 
   assert.ok(result.expand.userVotes);
   assert.ok(result.expand.userVotes.select);
   assert.ok(result.expand.userVotes.expand);
-  assert.ok(result.expand.userVotes.select, 3);
+  assert.equal(result.expand.userVotes.select.length, 3);
   assert.equal(result.expand.userVotes.select[0], 'id');
   assert.equal(result.expand.userVotes.select[1], 'voteType');
   assert.equal(result.expand.userVotes.select[2], 'applicationUser');
@@ -139,7 +139,7 @@ test('query builder | select by attributes list', assert => {
   assert.ok(result.expand.userVotes.expand.applicationUser);
   assert.ok(result.expand.userVotes.expand.applicationUser.select);
   assert.ok(result.expand.userVotes.expand.applicationUser.expand);
-  assert.ok(result.expand.userVotes.expand.applicationUser.select, 2);
+  assert.equal(result.expand.userVotes.expand.applicationUser.select.length, 2);
   assert.equal(result.expand.userVotes.expand.applicationUser.select[0], 'id');
   assert.equal(result.expand.userVotes.expand.applicationUser.select[1], 'name');
 });
@@ -157,7 +157,7 @@ test('query builder | enrichment', assert => {
   assert.notOk(result.projectionName);
 
   assert.ok(result.select);
-  assert.ok(result.select.length, 2);
+  assert.equal(result.select.length, 2);
   assert.equal(result.select[0], 'id');
   assert.equal(result.select[1], 'text');
 
@@ -174,11 +174,11 @@ test('query builder | enrichment', assert => {
   assert.notOk(result.extend.expand.suggestion);
   assert.notOk(result.extend.expand.userVotes);
 
-  assert.ok(result.extend.select, 3);
+  assert.equal(result.extend.select.length, 3);
   assert.equal(result.extend.select[0], 'id');
   assert.equal(result.extend.select[1], 'votes');
   assert.equal(result.extend.select[2], 'author');
-  assert.ok(result.extend.expand.author.select, 2);
+  assert.equal(result.extend.expand.author.select.length, 2);
   assert.equal(result.extend.expand.author.select[0], 'id');
   assert.equal(result.extend.expand.author.select[1], 'name');
 });
