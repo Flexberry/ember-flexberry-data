@@ -81,7 +81,6 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
         resolve(record);
       }
     }).catch((reason) => {
-      Ember.Logger.error(reason);
       reject(reason);
     }));
   } else {

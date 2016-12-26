@@ -161,7 +161,7 @@ export default Ember.Service.extend({
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           return record;
         }).catch((reason) => {
-          Ember.Logger.error(reason);
+          return Ember.RSVP.reject(reason);
         });
       } else {
         return createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params);
