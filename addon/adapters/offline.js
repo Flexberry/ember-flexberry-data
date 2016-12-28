@@ -399,7 +399,9 @@ export default DS.Adapter.extend({
           resolve();
         }).catch((err) => {
           if (clearHashesOnTransactionFail) {
-            Ember.warn('Some data loss while performing sync down records!');
+            Ember.warn('Some data loss while performing sync down records!',
+            false,
+            { id: 'ember-flexberry-data-debug.offline.sync-down-data-loss' });
             dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
             _this._hashesToStore.clear();
           }

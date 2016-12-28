@@ -41,7 +41,9 @@ export function getValueFromLocales(i18n, key) {
   if (i18n.exists(key)) {
     return i18n.t(key);
   } else {
-    Ember.warn(`The ${key} is not found in locales.`);
+    Ember.warn(`The ${key} is not found in locales.`,
+      false,
+      { id: 'ember-flexberry-data-debug.locales.key-is-not-found' });
     return null;
   }
 }
