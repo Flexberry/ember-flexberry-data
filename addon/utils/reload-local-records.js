@@ -76,12 +76,13 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
           resolve(record);
         }, reject);
       } else {
-        Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
-          'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
+        Ember.warn('It does not allow to sync down related records without specified projection. ' +
+          'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js',
+          false,
+          { id: 'ember-flexberry-data-debug.offline.sync-down-without-projection' });
         resolve(record);
       }
     }).catch((reason) => {
-      Ember.Logger.error(reason);
       reject(reason);
     }));
   } else {
@@ -90,7 +91,9 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
 
     var recordData = record.toJSON && record.toJSON();
 
-    Ember.Logger.warn(warnMessage, recordData);
+    Ember.warn(warnMessage + recordData,
+      false,
+      { id: 'ember-flexberry-data-debug.offline.record-does-not-have-id' });
 
     return RSVP.resolve(record);
   }
