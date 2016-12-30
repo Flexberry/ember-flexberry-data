@@ -4,6 +4,9 @@
     "window",
     "-Promise"
   ],
+  "globals": {
+    "moment": true
+  },
   "browser": true,
   "boss": true,
   "curly": true,
@@ -28,5 +31,6 @@
   "white": false,
   "eqnull": true,
   "esnext": true,
-  "unused": true
+  "unused": "vars",
+  "loopfunc": true
 }

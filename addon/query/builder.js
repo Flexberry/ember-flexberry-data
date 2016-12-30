@@ -1,10 +1,12 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseBuilder from './base-builder';
 import OrderByClause from './order-by-clause';
 import QueryObject from './query-object';
-import { createPredicate } from './predicate';
+import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import Information from '../utils/information';
+import isEmbedded from '../utils/is-embedded';
 
 /**
  * Class of builder for query.
@@ -30,6 +32,7 @@ export default class Builder extends BaseBuilder {
     }
 
     this._store = store;
+    this._localStore = Ember.getOwner(store).lookup('store:local');
     this._modelName = modelName;
 
     this._id = null;
@@ -180,12 +183,18 @@ export default class Builder extends BaseBuilder {
     }
 
     let tree;
+    let model = this._store.modelFor(this._modelName);
+    let isOfflineMode = this._store.offlineModels && this._store.offlineModels[this._modelName];
+
     if (this._projectionName) {
-      let model = this._store.modelFor(this._modelName);
       let projection = model.projections.get(this._projectionName);
-      tree = this._getQueryTreeByProjection(projection);
+      if (!projection) {
+        throw new Error(`Projection ${this._projectionName} for model ${this._modelName} is not specified`);
+      }
+
+      tree = this._getQueryTreeByProjection(projection, model, this._modelName, undefined, isOfflineMode);
     } else {
-      tree = this._getQueryBySelect();
+      tree = this._getQueryBySelect(this._select, model, this._modelName, isOfflineMode);
     }
 
     // Merge, don't replace.
@@ -194,6 +203,10 @@ export default class Builder extends BaseBuilder {
     let select = Object.keys(uniqSelect);
 
     let expand = tree.expand;
+    let primaryKeyName = tree.primaryKeyName;
+
+    let extendProperties = this._getExtendedProjection(model);
+    let extendTree = this._getQueryBySelect(extendProperties, model, this._modelName, isOfflineMode);
 
     return new QueryObject(
       this._modelName,
@@ -205,46 +218,90 @@ export default class Builder extends BaseBuilder {
       this._skip,
       this._isCount,
       expand,
-      select
+      select,
+      primaryKeyName,
+      extendTree
     );
   }
 
-  _getQueryBySelect() {
+  _getQueryBySelect(select, model, modelName, isOfflineMode) {
+    let primaryKeyNameFromSerializer = isOfflineMode ? this._localStore.serializerFor(modelName).get('primaryKey') :
+      this._store.serializerFor(modelName).get('primaryKey');
+    let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
     let result = {
       select: ['id'],
-      expand: {}
+      expand: {},
+      primaryKeyName: primaryKeyName
     };
 
-    let selectProperties = Object.keys(this._select);
+    let selectProperties = Object.keys(select);
+    let selectPropertieslength = selectProperties.length;
 
-    for (let i = 0; i < selectProperties.length; i++) {
-      this._buildQueryForProperty(result, selectProperties[i]);
+    for (let i = 0; i < selectPropertieslength; i++) {
+      this._buildQueryForProperty(result, selectProperties[i], model, modelName, isOfflineMode);
     }
 
     return result;
   }
 
-  _buildQueryForProperty(data, property) {
+  _buildQueryForProperty(data, property, model, modelName, isOfflineMode) {
     let pathItems = Information.parseAttributePath(property);
+    let relationshipsByName = Ember.get(model, 'relationshipsByName');
 
     if (pathItems.length === 1) {
-      data.select.push(pathItems[0]);
+      let attributeName = pathItems[0];
+      let modelAttributes = Ember.get(model, 'attributes');
+      if (attributeName === 'id' || modelAttributes.has(attributeName) || relationshipsByName.has(attributeName)) {
+        data.select.push(attributeName);
+      } else {
+        throw new Error(`Property '${attributeName}' in model '${modelName}' is not specified. ` +
+        `Please report this info to application support team or developers.`);
+      }
     } else {
       let key = pathItems.shift();
 
-      data.expand[key] = {
-        select: ['id'],
-        expand: {}
-      };
+      let relationship = relationshipsByName.get(key);
+      if (!relationship) {
+        throw new Error(`Property '${key}' in model '${modelName}' is not specified. Please report this info to application support team or developers.`);
+      }
 
-      this._buildQueryForProperty(data.expand[key], pathItems.join('.'));
+      let ralatedModelName = relationship.type;
+      let relatedModel = this._store.modelFor(ralatedModelName);
+
+      if (!data.expand[key]) {
+        let relationshipProps = {
+          async: relationship.options.async,
+          polymorphic: relationship.options.polymorphic,
+          isEmbedded: isEmbedded(this._store, model, key),
+          type: relationship.kind
+        };
+
+        let primaryKeyNameFromSerializer = isOfflineMode ? this._localStore.serializerFor(modelName).get('primaryKey') :
+          this._store.serializerFor(modelName).get('primaryKey');
+        let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
+        data.expand[key] = {
+          select: ['id'],
+          expand: {},
+          modelName: ralatedModelName,
+          primaryKeyName: primaryKeyName,
+          relationship: relationshipProps
+        };
+      }
+
+      this._buildQueryForProperty(data.expand[key], pathItems.join('.'), relatedModel, ralatedModelName, isOfflineMode);
     }
   }
 
-  _getQueryTreeByProjection(projection) {
+  _getQueryTreeByProjection(projection, model, modelName, relationshipProps, isOfflineMode) {
+    let primaryKeyNameFromSerializer = isOfflineMode ? this._localStore.serializerFor(modelName).get('primaryKey') :
+      this._store.serializerFor(modelName).get('primaryKey');
+    let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
     let tree = {
       select: ['id'],
-      expand: {}
+      expand: {},
+      modelName: modelName,
+      primaryKeyName: primaryKeyName,
+      relationship: relationshipProps
     };
 
     let attributes = projection.attributes;
@@ -258,8 +315,19 @@ export default class Builder extends BaseBuilder {
 
           case 'hasMany':
           case 'belongsTo':
+            let relationshipsByName = Ember.get(model, 'relationshipsByName');
+            let relationship = relationshipsByName.get(attrName);
+            let ralatedModelName = relationship.type;
+            let relatedModel = this._store.modelFor(ralatedModelName);
+
+            let relationshipProps = {
+              async: relationship.options.async,
+              polymorphic: relationship.options.polymorphic,
+              isEmbedded: isEmbedded(this._store, model, attrName),
+              type: attr.kind
+            };
             tree.select.push(attrName);
-            tree.expand[attrName] = this._getQueryTreeByProjection(attr);
+            tree.expand[attrName] = this._getQueryTreeByProjection(attr, relatedModel, ralatedModelName, relationshipProps, isOfflineMode);
             break;
 
           default:
@@ -269,5 +337,78 @@ export default class Builder extends BaseBuilder {
     }
 
     return tree;
+  }
+
+  _getExtendedProjection(model) {
+    let _this = this;
+    let extend = [];
+    let existKeys = Object.keys(this._select);
+    let scanPredicates = function(predicate, detailPath) {
+      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+        let path = detailPath ? detailPath + '.' : '';
+        Information.parseAttributePath(predicate.attributePath).forEach((attribute) => {
+          let key = `${path}${attribute}`;
+          if (existKeys.indexOf(key) === -1) {
+            extend[key.trim()] = true;
+          }
+
+          path += `${attribute}.`;
+        });
+      }
+
+      if (predicate instanceof DetailPredicate) {
+        scanPredicates(predicate.predicate, predicate.detailPath);
+      }
+
+      if (predicate instanceof ComplexPredicate) {
+        predicate.predicates.forEach((innerPredicate) => {
+          scanPredicates(innerPredicate, detailPath);
+        });
+      }
+    };
+
+    scanPredicates(this._predicate);
+
+    if (this._orderByClause) {
+      for (let i = 0; i < this._orderByClause.length; i++) {
+        let path = '';
+        let attributePath = Information.parseAttributePath(this._orderByClause.attribute(i).name);
+        for (let i = 0; i < attributePath.length; i++) {
+          let key = `${path}${attributePath[i]}`;
+          if (existKeys.indexOf(key) === -1) {
+            extend[key.trim()] = true;
+          }
+
+          path += `${attributePath[i]}.`;
+        }
+      }
+    }
+
+    // Add all related objects if no projection or select.
+    if (!this._projectionName && Object.keys(this._select).length === 0) {
+      let maxDeepLevel = 5; // TODO: May be configure it?
+      let greedyProjectionMaker = function(model, deepLevel, path) {
+        if (deepLevel > maxDeepLevel) {
+          return;
+        }
+
+        let modelAttributes = Ember.get(model, 'attributes');
+        modelAttributes.forEach(function(meta, name) {
+          extend[`${path}${name}`] = true;
+        });
+
+        let relationshipsByName = Ember.get(model, 'relationshipsByName');
+        relationshipsByName.forEach(function(meta, name) {
+          extend[`${path}${name}`] = true;
+          let ralatedModelName = meta.type;
+          let relatedModel = _this._store.modelFor(ralatedModelName);
+          greedyProjectionMaker(relatedModel, deepLevel + 1, `${path}${name}.`);
+        });
+      };
+
+      greedyProjectionMaker(model, 0, '');
+    }
+
+    return extend;
   }
 }

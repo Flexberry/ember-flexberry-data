@@ -16,15 +16,6 @@ export let Model = Ember.Mixin.create({
   user: DS.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', { inverse: null, async: false }),
   objectType: DS.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', { inverse: null, async: false }),
   auditFields: DS.hasMany('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', { inverse: 'auditEntity', async: false }),
-  validations: {
-    objectPrimaryKey: { presence: true },
-    operationTime: { datetime: true },
-    operationType: { presence: true },
-    executionResult: { presence: true },
-    source: { presence: true },
-    user: { presence: true },
-    objectType: { presence: true },
-  },
 });
 
 export let defineProjections = function (model) {

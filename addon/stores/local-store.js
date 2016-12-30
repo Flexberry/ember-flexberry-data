@@ -1,14 +1,15 @@
+/**
+  @module ember-flexberry-data
+*/
+
 import Ember from 'ember';
 import DS from 'ember-data';
 import OfflineAdapter from '../adapters/offline';
 import QueryBuilder from '../query/builder';
 
 /**
-  @module ember-flexberry-data
-*/
-
-/**
   Store that used in offline mode by default.
+
   @class LocalStore
   @namespace Offline
   @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
@@ -18,21 +19,30 @@ export default DS.Store.extend({
   /**
     Database name for IndexedDB.
 
-    @property databaseName
+    @property dbName
     @type String
+    @default 'ember-flexberry-data'
   */
-  databaseName: undefined,
+  dbName: Ember.computed({
+    get() {
+      return this.get('adapter.dbName');
+    },
+    set(key, value) {
+      return this.set('adapter.dbName', value);
+    },
+  }),
 
-  init: function() {
-    let owner = Ember.getOwner(this);
-    let databaseName = Ember.isNone(this.get('databaseName')) ? 'ember-flexberry-data' : this.get('databaseName');
-    let adapter = OfflineAdapter.create(owner.ownerInjection(), {
-      databaseName: databaseName,
-    });
+  /**
+    Initializing instance.
+    [More info](http://emberjs.com/api/data/classes/DS.Store.html#method_init).
 
-    this.set('adapter', adapter);
-
+    @method init
+  */
+  init() {
     this._super(...arguments);
+    let dbName = this.get('dbName');
+    let owner = Ember.getOwner(this);
+    this.set('adapter', OfflineAdapter.create(owner.ownerInjection(), dbName ? { dbName } : {}));
   },
 
   /**
@@ -91,17 +101,21 @@ export default DS.Store.extend({
    * @return {DS.AdapterPopulatedRecordArray} Records promise.
    */
   findAll: function(modelName, options) {
+    Ember.debug(`Flexberry Local Store::findAll ${modelName}`);
+
     let builder = new QueryBuilder(this, modelName);
+    if (options && options.projection) {
+      Ember.debug(`Flexberry Local Store::findAll using projection '${options.projection}'`);
+
+      builder.selectByProjection(options.projection);
+      return this.query(modelName, builder.build());
+    }
+
     let queryObject = builder.build();
 
     // Now if projection is not specified then only 'id' field will be selected.
     queryObject.select = [];
-    if (options && options.projection) {
-      queryObject.projection = options.projection;
-      return this.query(modelName, queryObject);
-    }
-
-    return this._super(...arguments);
+    return this.query(modelName, queryObject);
   },
 
   /**
@@ -120,15 +134,20 @@ export default DS.Store.extend({
    */
   findRecord: function(modelName, id, options) {
     // TODO: case of options.reload === false.
+    Ember.debug(`Flexberry Local Store::findRecord ${modelName}(${id})`);
+
     let builder = new QueryBuilder(this, modelName).byId(id);
+    if (options && options.projection) {
+      Ember.debug(`Flexberry Local Store::findRecord using projection '${options.projection}'`);
+
+      builder.selectByProjection(options.projection);
+      return this.queryRecord(modelName, builder.build());
+    }
+
     let queryObject = builder.build();
 
     // Now if projection is not specified then only 'id' field will be selected.
     queryObject.select = [];
-    if (options && options.projection) {
-      queryObject.projection = options.projection;
-    }
-
     return this.queryRecord(modelName, queryObject);
   },
 
@@ -148,7 +167,20 @@ export default DS.Store.extend({
    *                   once the server returns.
    */
   query: function(modelName, query) {
-    return this._super(modelName, query);
+    Ember.debug(`Flexberry Local Store::query ${modelName}`, query);
+
+    let promise = this._super(...arguments);
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      promise.then((results) => {
+        if (results && Ember.isArray(results)) {
+          results.forEach((result) => {
+            result.didLoad();
+          });
+        }
+
+        resolve(results);
+      }, reject);
+    });
   },
 
   /**
@@ -167,14 +199,17 @@ export default DS.Store.extend({
    *                   once the server returns.
    */
   queryRecord: function(modelName, query) {
-    return this._super(modelName, query);
-  },
+    Ember.debug(`Flexberry Local Store::queryRecord ${modelName}`, query);
 
-  /**
-   * Changes `databaseName` adapter's property if `databaseName` property was changed.
-   */
-  _databaseNameObserver: Ember.observer('databaseName', function() {
-    let databaseName = this.get('databaseName');
-    this.get('adapter').set('databaseName', databaseName);
-  })
+    let promise = this._super(...arguments);
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      promise.then((result) => {
+        if (result) {
+          result.didLoad();
+        }
+
+        resolve(result);
+      }, reject);
+    });
+  },
 });

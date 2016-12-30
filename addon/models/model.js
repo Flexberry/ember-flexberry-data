@@ -4,20 +4,20 @@ import createProj from '../utils/create';
 import EmberValidations from 'ember-validations';
 
 /**
- * Base model that supports projections and validations.
- *
- * @module ember-flexberry-data
- * @class Model
- * @namespace Projection
- * @extends DS.Model
- * @uses EmberValidationsMixin
- * @uses Ember.EventedMixin
+  Base model that supports projections and validations.
 
- * @event preSave
- * @param {Object} event Event object
- * @param {Promise[]} promises Array to which custom 'preSave' promises could be pushed
+  @module ember-flexberry-data
+  @class Model
+  @namespace Projection
+  @extends DS.Model
+  @uses EmberValidationsMixin
+  @uses Ember.EventedMixin
 
- * @public
+  @event preSave
+  @param {Object} event Event object
+  @param {Promise[]} promises Array to which custom 'preSave' promises could be pushed
+
+  @public
  */
 var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   /**
@@ -39,6 +39,42 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   validations: {},
 
   /**
+    Flag that indicates sync up process of model is processing.
+
+    @property isSyncingUp
+    @type Boolean
+    @default false
+  */
+  isSyncingUp: false,
+
+  /**
+    Flag that indicates model is created during sync up process.
+
+    @property isCreatedDuringSyncUp
+    @type Boolean
+    @default false
+  */
+  isCreatedDuringSyncUp: false,
+
+  /**
+    Flag that indicates model is updated last time during sync up process.
+
+    @property isCreatedDuringSyncUp
+    @type Boolean
+    @default false
+  */
+  isUpdatedDuringSyncUp: false,
+
+  /**
+    Flag that indicates model is destroyed during sync up process.
+
+    @property isCreatedDuringSyncUp
+    @type Boolean
+    @default false
+  */
+  isDestroyedDuringSyncUp: false,
+
+  /**
     Checks that model satisfies validation rules defined in 'validations' property.
 
     @method validate
@@ -55,8 +91,37 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       });
     }
 
-    // Return normal validation promise without any additional logic.
-    return this._super(...arguments);
+    // Validate model.
+    let validationPromises = {
+      base: this._super(options)
+    };
+
+    let hasManyRelationships = Ember.A();
+    this.eachRelationship((name, attrs) => {
+      if (attrs.kind === 'hasMany') {
+        hasManyRelationships.pushObject(attrs.key);
+      }
+    });
+
+    // Validate hasMany relationships.
+    hasManyRelationships.forEach((relationshipName) => {
+      let details = this.get(relationshipName);
+      if (!Ember.isArray(details)) {
+        details = Ember.A();
+      }
+
+      details.forEach((detailModel, i) => {
+        validationPromises[relationshipName + '.' + i] = detailModel.validate.apply(detailModel, options);
+      });
+    });
+
+    return new Ember.RSVP.Promise((resolve, reject) => {
+      Ember.RSVP.hash(validationPromises).then((hash) => {
+        resolve(this.get('errors'));
+      }).catch((reason) => {
+        reject(this.get('errors'));
+      });
+    });
   },
 
   /**
@@ -106,9 +171,11 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     options = Ember.merge({ softSave: false }, options || {});
 
     return new Ember.RSVP.Promise((resolve, reject) => {
-      this.validate({
-        validateDeleted: false
-      }).then(() => this.beforeSave(options)).then(() => {
+      // If we are updating while syncing up then checking of validation rules should be skipped
+      // because they can be violated by unfilled fields of model.
+      let promise = this.get('isSyncingUp') && this.get('dirtyType') === 'updated' ?
+        Ember.RSVP.resolve() : this.validate({ validateDeleted: false });
+      promise.then(() => this.beforeSave(options)).then(() => {
         // Call to base class 'save' method with right context.
         // The problem is that call to current save method will be already finished,
         // and traditional _this._super will point to something else, but not to DS.Model 'save' method,
@@ -117,6 +184,9 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
           return DS.Model.prototype.save.call(this, options);
         }
       }).then(value => {
+        // Assuming that record is not updated during sync up;
+        this.set('isUpdatedDuringSyncUp', false);
+
         // Model validation was successful (model is valid or deleted),
         // all 'preSave' event promises has been successfully resolved,
         // finally model has been successfully saved,
@@ -165,14 +235,13 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Object} Object with changes, empty object if no change.
   */
   changedHasMany() {
-    let _this = this;
     let changedHasMany = {};
-    _this.eachRelationship((key, { kind }) => {
+    this.eachRelationship((key, { kind }) => {
       if (kind === 'hasMany') {
-        if (_this.get(key).filterBy('hasDirtyAttributes', true).length) {
+        if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           changedHasMany[key] = [
-            _this.get(`${key}.canonicalState`).map(internalModel => internalModel.record),
-            _this.get(`${key}.currentState`).map(internalModel => internalModel.record),
+            this.get(`${key}.canonicalState`).map(internalModel => internalModel.record),
+            this.get(`${key}.currentState`).map(internalModel => internalModel.record),
           ];
         }
       }
@@ -187,17 +256,16 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @param {String} [forOnlyKey] If specified, it is rollback invoked for relationship with this key.
   */
   rollbackHasMany(forOnlyKey) {
-    let _this = this;
-    _this.eachRelationship((key, { kind }) => {
+    this.eachRelationship((key, { kind }) => {
       if (kind === 'hasMany' && (!forOnlyKey || forOnlyKey === key)) {
-        if (_this.get(key).filterBy('hasDirtyAttributes', true).length) {
-          [_this.get(`${key}.canonicalState`), _this.get(`${key}.currentState`)].forEach((state, i) => {
+        if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
+          [this.get(`${key}.canonicalState`), this.get(`${key}.currentState`)].forEach((state, i) => {
             let records = state.map(internalModel => internalModel.record);
             records.forEach((record) => {
               record.rollbackAll();
             });
             if (i === 0) {
-              _this.set(key, records);
+              this.set(key, records);
             }
           });
         }
@@ -223,12 +291,11 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Object} Object with changes, empty object if no change.
   */
   changedBelongsTo() {
-    let _this = this;
     let changedBelongsTo = {};
-    _this.eachRelationship((key, { kind }) => {
+    this.eachRelationship((key, { kind }) => {
       if (kind === 'belongsTo') {
-        let current = _this.get(key);
-        let canonical = _this.get('_canonicalBelongsTo')[key] || null;
+        let current = this.get(key);
+        let canonical = this.get(`_canonicalBelongsTo.${key}`) || null;
         if (current !== canonical) {
           changedBelongsTo[key] = [canonical, current];
         }
@@ -244,17 +311,22 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @param {String} [forOnlyKey] If specified, it is rollback invoked for relationship with this key.
   */
   rollbackBelongsTo(forOnlyKey) {
-    let _this = this;
-    _this.eachRelationship((key, { kind, options }) => {
+    this.eachRelationship((key, { kind, options }) => {
       if (kind === 'belongsTo' && (!forOnlyKey || forOnlyKey === key)) {
-        let current = _this.get(key);
-        let canonical = _this.get('_canonicalBelongsTo')[key] || null;
+        let current = this.get(key);
+        let canonical = this.get(`_canonicalBelongsTo.${key}`) || null;
         if (current !== canonical) {
           if (options.inverse && options.inverse !== key) {
-            current.rollbackBelongsTo(options.inverse);
+            if (current && current.rollbackBelongsTo) {
+              current.rollbackBelongsTo(options.inverse);
+            }
+
+            if (canonical && canonical.rollbackBelongsTo) {
+              canonical.rollbackBelongsTo(options.inverse);
+            }
           }
 
-          _this.set(key, canonical);
+          this.set(key, canonical);
         }
       }
     });
@@ -281,6 +353,24 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   },
 
   /**
+    Initializes model.
+  */
+  init() {
+    this._super(...arguments);
+
+    // Attach validation observers for hasMany relationships.
+    this.eachRelationship((name, attrs) => {
+      if (attrs.kind !== 'hasMany') {
+        return;
+      }
+
+      let detailsName = attrs.key;
+      Ember.addObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
+      Ember.addObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
+    });
+  },
+
+  /**
     Fired when the record is loaded from the server.
     [More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).
 
@@ -300,6 +390,118 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   didUpdate() {
     this._super(...arguments);
     this._saveCanonicalBelongsTo();
+  },
+
+  /**
+    Fired when the record is created.
+    [More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didCreate).
+
+    @method didCreate
+  */
+  didCreate() {
+    this._super(...arguments);
+    this._saveCanonicalBelongsTo();
+  },
+
+  /**
+    Destroys model.
+  */
+  willDestroy() {
+    this._super(...arguments);
+
+    // Attach validation observers for hasMany relationships.
+    this.eachRelationship((name, attrs) => {
+      if (attrs.kind !== 'hasMany') {
+        return;
+      }
+
+      let detailsName = attrs.key;
+      Ember.removeObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
+      Ember.removeObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
+    });
+  },
+
+  /**
+    Observes & handles changes in each hasMany relationship.
+
+    @method _onChangeHasManyRelationship
+    @param {Object} changedObject Reference to changed object.
+    @param {changedPropertyPath} changedPropertyPath Path to changed property.
+    @private
+  */
+  _onChangeHasManyRelationship(changedObject, changedPropertyPath) {
+    Ember.run.once(this, '_aggregateHasManyRelationshipValidationErrors', changedObject, changedPropertyPath);
+  },
+
+  /**
+    Aggregates validation error messages for hasMany relationships.
+
+    @method _aggregateHasManyRelationshipValidationErrors
+    @param {Object} changedObject Reference to changed object.
+    @param {changedPropertyPath} changedPropertyPath Path to changed property.
+    @private
+  */
+  _aggregateHasManyRelationshipValidationErrors(changedObject, changedPropertyPath) {
+    let aggregator = this;
+    let detailsPath;
+
+    if (changedObject === aggregator) {
+      detailsPath = changedPropertyPath;
+    } else {
+      this.eachRelationship((name, attrs) => {
+        if (detailsPath) {
+          return;
+        }
+
+        if (attrs.kind !== 'hasMany') {
+          return;
+        }
+
+        let detailsName = attrs.key;
+        let details = this.get(detailsName);
+        details.forEach((detail, i) => {
+          if (detailsPath) {
+            return;
+          }
+
+          if (detail === changedObject) {
+            detailsPath = `${detailsName}.[]`;
+          }
+        });
+      });
+    }
+
+    // Retrieve aggregator's validation errors object.
+    let errors = Ember.get(this, 'errors');
+
+    let detailsName = detailsPath.split('.')[0];
+    let details = Ember.get(this, detailsName);
+    if (!Ember.isArray(details)) {
+      return;
+    }
+
+    // Collect each detail's errors object into single array of error messages.
+    let detailsErrorMessages = Ember.A();
+    details.forEach((detail, i) => {
+      let detailErrors = Ember.get(detail, 'errors');
+
+      for (let detailPropertyName in detailErrors) {
+        let detailPropertyErrorMessages = detailErrors[detailPropertyName];
+        if (detailErrors.hasOwnProperty(detailPropertyName) && Ember.isArray(detailPropertyErrorMessages)) {
+          detailPropertyErrorMessages.forEach((detailPropertyErrorMessage) => {
+            Ember.removeObserver(detail, `errors.${detailPropertyName}.[]`, this, this._onChangeHasManyRelationship);
+
+            if (!Ember.get(detail, 'isDeleted')) {
+              Ember.addObserver(detail, `errors.${detailPropertyName}.[]`, this, this._onChangeHasManyRelationship);
+              detailsErrorMessages.pushObject(detailPropertyErrorMessage);
+            }
+          });
+        }
+      }
+    });
+
+    // Remember array of error messages in aggregator's errors object.
+    Ember.set(errors, detailsName, detailsErrorMessages);
   },
 
   /**
@@ -377,7 +579,18 @@ Model.reopenClass({
 
     this.projections.set(projectionName, proj);
     return proj;
-  }
+  },
+
+  /**
+   * Parent model type name.
+   *
+   * @property _parentModelName
+   * @type String
+   * @default null
+   * @private
+   * @static
+   */
+  _parentModelName: null
 });
 
 export default Model;

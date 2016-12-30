@@ -10,7 +10,7 @@ moduleForModel('model', 'Unit | Model | model', {
     'model:ember-flexberry-dummy-suggestion-file',
     'model:ember-flexberry-dummy-comment',
     'model:ember-flexberry-dummy-comment-vote',
-    'model:ember-flexberry-dummy-localized-suggestion-type',
+    'model:ember-flexberry-dummy-localized-suggestion-type'
   ],
 });
 
@@ -119,5 +119,35 @@ test('rollback belongsTo relationships', function(assert) {
       author: user1,
       editor1: user1,
     }, `Results 'rollbackBelongsTo' function without 'forOnlyKey' specified as expected.`);
+  });
+});
+
+test('changedBelongsTo after saving the created model', function(assert) {
+  Ember.run(() => {
+    let store = this.store();
+
+    let type1 = store.createRecord('ember-flexberry-dummy-suggestion-type');
+
+    let user1 = store.createRecord('ember-flexberry-dummy-application-user');
+
+    let suggestion = store.createRecord('ember-flexberry-dummy-suggestion', {
+      type: type1,
+      author: user1,
+      editor1: user1,
+    });
+
+    //Diff `belongsTo` relationships.
+    assert.deepEqual(suggestion.changedBelongsTo(), {
+      type: [null, type1],
+      author: [null, user1],
+      editor1: [null, user1],
+    }, `Results 'changedBelongsTo' function as expected.`);
+
+    //Instead of save on server.
+    suggestion.didCreate();
+
+    //Diff `belongsTo` relationships.
+    assert.deepEqual(suggestion.changedBelongsTo(), {
+    }, `Results 'changedBelongsTo' function as expected.`);
   });
 });

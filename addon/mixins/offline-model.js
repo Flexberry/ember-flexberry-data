@@ -21,11 +21,11 @@ import AuditModelMixin from './audit-model';
   @extends <a href="http://emberjs.com/api/classes/Ember.Mixin.html">Ember.Mixin</a>
   @public
 */
-export default Ember.Mixin.create(AuditModelMixin, {
+export default Ember.Mixin.create({
   /**
     Date and time of last sync down of model.
 
-    @property editTime
+    @property syncDownTime
     @type Date
   */
   syncDownTime: DS.attr('date'),
@@ -83,4 +83,4 @@ export default Ember.Mixin.create(AuditModelMixin, {
       }
     });
   },
-});
+}, AuditModelMixin);

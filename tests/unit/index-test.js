@@ -18,6 +18,7 @@ test('index exports', function (assert) {
   assert.ok(Offline.ModelMixin);
   assert.ok(Offline.GlobalsService);
   assert.ok(Offline.Syncer);
+  assert.ok(Offline.DexieService);
 
   assert.ok(Adapter.Offline);
   assert.ok(Adapter.Odata);

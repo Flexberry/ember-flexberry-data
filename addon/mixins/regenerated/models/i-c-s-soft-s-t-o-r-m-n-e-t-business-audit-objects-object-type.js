@@ -4,9 +4,6 @@ import { Projection } from 'ember-flexberry-data';
 
 export let Model = Ember.Mixin.create({
   name: DS.attr('string'),
-  validations: {
-    name: { presence: true },
-  },
 });
 
 export let defineProjections = function (model) {

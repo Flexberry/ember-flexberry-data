@@ -21,13 +21,6 @@ export let Model = Ember.Mixin.create({
   creator: DS.attr('string'),
   editTime: DS.attr('date'),
   editor: DS.attr('string'),
-  validations: {
-    name: { presence: true },
-    isUser: { presence: true },
-    isGroup: { presence: true },
-    isRole: { presence: true }
-  },
-
 });
 export let defineProjections = function (model) {
   model.defineProjection('AuditView', 'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', {

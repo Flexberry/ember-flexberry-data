@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import isEmbedded from './is-embedded';
 
 var RSVP = Ember.RSVP;
 
@@ -11,10 +12,14 @@ var RSVP = Ember.RSVP;
   @param {String|DS.Model} type
   @param {Boolean} reload
   @param {String} [projectionName]
+  @param {Object} [params] Additional parameters for syncing down.
+  @param {Query.QueryObject} [params.queryObject] QueryObject instance to make query if descriptor is a typeName.
+  @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
   @return {Promise} Promise
   @private
 */
-export function reloadLocalRecords(type, reload, projectionName) {
+export function reloadLocalRecords(type, reload, projectionName, params) {
+  let _this = this;
   var store = Ember.getOwner(this).lookup('service:store');
   var modelType = store.modelFor(type);
   let modelName = modelType.modelName;
@@ -22,70 +27,100 @@ export function reloadLocalRecords(type, reload, projectionName) {
   var localStore = Ember.getOwner(this).lookup('store:local');
   var localAdapter = localStore.adapterFor(modelName);
 
-  var reloadedRecords = localAdapter.findAll(localStore, modelType)
-    .then(deleteAll)
-    .then(createAll);
+  var reloadedRecords = localAdapter.clear(modelName).then(createAll);
 
   return reloadedRecords;
-
-  function deleteAll(localRecords) {
-    var deletedRecords = localRecords.map(function(record) {
-      return localAdapter.deleteRecord(localStore, modelType, { id: record.id });
-    });
-
-    return RSVP.all(deletedRecords);
-  }
 
   function createAll() {
     var projection = Ember.isNone(projectionName) ? null : modelType.projections[projectionName];
     if (reload) {
-      let options = {
-        reload: true,
-        useOnlineStore: true
-      };
-      options = Ember.isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
-      return store.findAll(type, options).then(function(records) {
-        return createLocalRecords(store, localAdapter, localStore, modelType, records, projection);
-      });
+      if (params && params.queryObject) {
+        params.queryObject = Ember.$.extend(true, params.queryObject, { useOnlineStore: true });
+        return store.query(type, params.queryObject).then(function(records) {
+          return createLocalRecords.call(_this, store, localAdapter, localStore, modelType, records, projection, params);
+        });
+      } else {
+        let options = {
+          reload: true,
+          useOnlineStore: true
+        };
+        options = Ember.isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
+        return store.findAll(type, options).then(function(records) {
+          return createLocalRecords.call(_this, store, localAdapter, localStore, modelType, records, projection, params);
+        });
+      }
     } else {
       var records = store.peekAll(type);
-      return createLocalRecords(store, localAdapter, localStore, modelType, records, projection);
+      return createLocalRecords.call(_this, store, localAdapter, localStore, modelType, records, projection, params);
     }
   }
 }
 
-function createLocalRecord(store, localAdapter, localStore, modelType, record, projection) {
+export function createLocalRecord(store, localAdapter, localStore, modelType, record, projection, params) {
+  let _this = this;
+  let dexieService = Ember.getOwner(store).lookup('service:dexie');
+  if (params && params.unloadSyncedRecords) {
+    _this.get('_recordsToUnload').push(record);
+  }
+
+  dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
   if (record.get('id')) {
+    // TODO: if record from online store should not be unloaded then it will have dirty attribute.
+    record.set('syncDownTime', new Date());
     var snapshot = record._createSnapshot();
-    return localAdapter.createRecord(localStore, modelType, snapshot).then(function() {
-      return syncDownRelatedRecords(store, record, localAdapter, localStore, projection);
-    });
+    let fieldsToUpdate = projection ? projection.attributes : null;
+    return new Ember.RSVP.Promise((resolve, reject) => localAdapter.addHashForBulkUpdateOrCreate(localStore, modelType, snapshot, fieldsToUpdate).then(() => {
+      let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
+      if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
+        return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection, params).then(() => {
+          resolve(record);
+        }, reject);
+      } else {
+        Ember.warn('It does not allow to sync down related records without specified projection. ' +
+          'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js',
+          false,
+          { id: 'ember-flexberry-data-debug.offline.sync-down-without-projection' });
+        resolve(record);
+      }
+    }).catch((reason) => {
+      reject(reason);
+    }));
   } else {
     var recordName = record.constructor && record.constructor.modelName;
     var warnMessage = 'Record ' + recordName + ' does not have an id, therefor we can not create it locally: ';
 
     var recordData = record.toJSON && record.toJSON();
 
-    Ember.Logger.warn(warnMessage, recordData);
+    Ember.warn(warnMessage + recordData,
+      false,
+      { id: 'ember-flexberry-data-debug.offline.record-does-not-have-id' });
 
-    return RSVP.resolve();
+    return RSVP.resolve(record);
   }
 }
 
-function createLocalRecords(store, localAdapter, localStore, modelType, records, projection) {
-  var createdRecords = records.map(function(record) {
-    return createLocalRecord(store, localAdapter, localStore, modelType, record, projection);
+function createLocalRecords(store, localAdapter, localStore, modelType, records, projection, params) {
+  let _this = this;
+  let recordsCount = records.get('length');
+  let accumulatedRecordsCount = 0;
+  let createdRecordsPromises = records.map(function(record) {
+    return _this._syncDownQueue.attach((resolve, reject) =>
+      createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params).then(() => {
+        accumulatedRecordsCount++;
+        if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
+          return localAdapter.bulkUpdateOrCreate(localStore, true, false).then(() => {
+            resolve(record);
+          }, reject);
+        } else {
+          resolve(record);
+        }
+      }, reject));
   });
-  return RSVP.all(createdRecords);
+  return RSVP.all(createdRecordsPromises).then(() => _this._unloadRecordsAfterSyncDown(store, params));
 }
 
-export function syncDownRelatedRecords(store, mainRecord, localAdapter, localStore, projection) {
-  function isEmbedded(store, modelType, relationshipName) {
-    var serializerAttrs = store.serializerFor(modelType.modelName).get('attrs');
-    return serializerAttrs[relationshipName] &&
-    ((serializerAttrs[relationshipName].deserialize && serializerAttrs[relationshipName].deserialize === 'records') ||
-    (serializerAttrs[relationshipName].embedded && serializerAttrs[relationshipName].embedded === 'always'));
-  }
+export function syncDownRelatedRecords(store, mainRecord, localAdapter, localStore, projection, params) {
+  let _this = this;
 
   function isAsync(modelType, relationshipName) {
     return Ember.get(modelType, 'relationshipsByName').get(relationshipName).options.async;
@@ -93,7 +128,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
 
   function createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, projection) {
     let modelType = store.modelFor(relatedRecord.constructor.modelName);
-    return createLocalRecord(store, localAdapter, localStore, modelType, relatedRecord, projection);
+    return createLocalRecord.call(_this, store, localAdapter, localStore, modelType, relatedRecord, projection, params);
   }
 
   function createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, projection) {
@@ -101,7 +136,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
     for (let i = 0; i < relatedRecords.get('length'); i++) {
       let relatedRecord = relatedRecords.objectAt(i);
       let modelType = store.modelFor(relatedRecord.constructor.modelName);
-      promises.pushObject(createLocalRecord(store, localAdapter, localStore, modelType, relatedRecord, projection));
+      promises.pushObject(createLocalRecord.call(_this, store, localAdapter, localStore, modelType, relatedRecord, projection, params));
     }
 
     return promises;
@@ -129,11 +164,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
         } else {
           if (isEmbedded(store, modelType, belongToName)) {
             var relatedRecord = mainRecord.get(belongToName);
-            if (!Ember.isNone(relatedRecord)) {
-              promises.pushObject(
-                createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[belongToName])
-              );
-            }
+            createRelatedBelongsToRecordFunction(relatedRecord);
           }
         }
       }
@@ -153,7 +184,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
         } else {
           if (isEmbedded(store, modelType, hasManyName)) {
             var relatedRecords = mainRecord.get(hasManyName);
-            promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[hasManyName]));
+            createRelatedHasManyRecordsFunction(relatedRecords);
           }
         }
       }

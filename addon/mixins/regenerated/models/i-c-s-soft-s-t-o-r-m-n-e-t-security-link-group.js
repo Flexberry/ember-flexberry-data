@@ -8,11 +8,6 @@ export let Model = Ember.Mixin.create({
   editor: DS.attr('string'),
   group: DS.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', { inverse: null, async: false }),
   user: DS.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', { inverse: null, async: false }),
-  validations: {
-    group: { presence: true },
-    user: { presence: true }
-  },
-
 });
 export let defineProjections = function (model) {
   model.defineProjection('AuditView', 'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group', {

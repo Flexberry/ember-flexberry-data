@@ -4,16 +4,18 @@
 
 import Ember from 'ember';
 import DS from 'ember-data';
-import isAsync from '../utils/is-async';
 import isObject from '../utils/is-object';
 import generateUniqueId from '../utils/generate-unique-id';
-import IndexeddbAdapter from '../query/indexeddb-adapter';
+import IndexedDBAdapter from '../query/indexeddb-adapter';
 import QueryObject from '../query/query-object';
 import QueryBuilder from '../query/builder';
 import FilterOperator from '../query/filter-operator';
 import Condition from '../query/condition';
 import { SimplePredicate, ComplexPredicate } from '../query/predicate';
 import Dexie from 'npm:dexie';
+import Information from '../utils/information';
+
+const { RSVP } = Ember;
 
 /**
   Default adapter for {{#crossLink "Offline.LocalStore"}}{{/crossLink}}.
@@ -22,82 +24,117 @@ import Dexie from 'npm:dexie';
   @namespace Adapter
   @extends <a href="http://emberjs.com/api/data/classes/DS.Adapter.html">DS.Adapter</a>
 */
-var OfflineAdapter = DS.Adapter.extend({
+export default DS.Adapter.extend({
+  /* Map of hashes for bulk operations */
+  _hashesToStore: Ember.Map.create(),
+
   /**
-    Accumulates schemas of models used in Dexie.
+    If you would like your adapter to use a custom serializer you can set the defaultSerializer property to be the name of the custom serializer.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#property_defaultSerializer).
 
-    @property _schemas
-    @type Object
-    @private
+    @property defaultSerializer
+    @type String
+    @default 'offline'
   */
-  _schemas: {},
-
   defaultSerializer: 'offline',
-
-  //queue: LFQueue.create(),
-  //cache: LFCache.create(),
-  //caching: 'model',
-  coalesceFindRequests: true,
 
   /**
     Database name for IndexedDB.
 
-    @property databaseName
+    @property dbName
     @type String
+    @default 'ember-flexberry-data'
   */
-  databaseName: undefined,
+  dbName: 'ember-flexberry-data',
 
-  /*
-    Adapter initialization.
+  /**
+    Instance of dexie service.
+
+    @property dexieService
+    @type Offline.DexieService
   */
-  init() {
-    this._super(...arguments);
-    Ember.assert('Error: database name for IndexedDB is not defined', !Ember.isNone(this.databaseName));
-  },
+  dexieService: Ember.inject.service('dexie'),
 
-  shouldBackgroundReloadRecord() {
-    return false;
-  },
-
-  shouldReloadAll() {
-    return true;
-  },
-
-  /*
+  /**
     Generate globally unique IDs for records.
+
+    @method generateIdForRecord
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Object} inputProperties
+    @return {String}
   */
   generateIdForRecord: generateUniqueId,
 
   /**
-    Clear adapter's cache and IndexedDB's store.
+    Clear tables in IndexedDB database, if `table` not specified, clear all tables.
 
     @method clear
+    @param {String} [table] Table name.
+    @return {Promise}
   */
-  clear: function () {
-    // clear data in databse
-    var db = new Dexie(this.databaseName);
-    return db.delete();
+  clear(table) {
+    let store = Ember.getOwner(this).lookup('service:store');
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    if (table) {
+      return dexieService.performQueueOperation(db, (db) => db.table(table).clear());
+    } else {
+      return RSVP.all(db.tables.map(table => dexieService.performQueueOperation(db, () => table.clear())));
+    }
   },
 
   /**
-    This is the main entry point into finding records.
+    Delete IndexedDB database.
+
+    @method delete
+    @return {Promise}
+  */
+  delete() {
+    return Dexie.delete(this.get('dbName'));
+  },
+
+  /**
+    The `findRecord()` method is invoked when the store is asked for a record that has not previously been loaded.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_findRecord).
 
     @method findRecord
     @param {DS.Store} store
     @param {DS.Model} type
-    @param {Object|String|Integer|null} id
+    @param {String|Integer} id
+    @return {Promise}
   */
   findRecord(store, type, id) {
-    let table = this._getTableForOperationsByModelType(type);
-    return table.get(id);
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    return dexieService.performOperation(db, (db) => db.table(type.modelName).get(id));
   },
 
+  /**
+    The `findAll()` method is used to retrieve all records for a given type.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_findAll).
+
+    @method findAll
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @return {Promise}
+  */
   findAll(store, type) {
-    let db = new Dexie(this.databaseName);
-    let table = db.table(type.modelName);
-    return table.toArray();
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    return dexieService.performOperation(db, (db) => db.table(type.modelName).toArray());
   },
 
+  /**
+    Find multiple records at once if coalesceFindRequests is true.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_findMany).
+
+    @method findMany
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Array} ids
+    @return {Promise}
+  */
   findMany(store, type, ids) {
     let promises = Ember.A();
     let records = Ember.A();
@@ -109,130 +146,290 @@ var OfflineAdapter = DS.Adapter.extend({
       promises.pushObject(this.findRecord(store, type, ids[i]).then(addRecord));
     }
 
-    return Ember.RSVP.all(promises).then(() => {
-      Ember.RSVP.resolve(records.compact());
-    }).catch(function(reason) {
-      Ember.RSVP.reject(reason);
-    });
-  },
-
-  queryRecord(store, type, query) {
-    return this.query(store, type, query).then(result => new Ember.RSVP.Promise((resolve) => resolve(result[0])));
+    return RSVP.all(promises).then(() => RSVP.resolve(records.compact())).catch(reason => RSVP.reject(reason));
   },
 
   /**
-    Supports query language objects or queries that look like this:
-     {
-       <property to query>: <value to match>,
-       ...
-     }
+    The `queryRecord()` method is invoked when the store is asked for a single record through a query object.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_queryRecord).
 
-    (in this case every property added to the query is an "AND" query, not "OR")
+    @method queryRecord
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Object|QueryObject} query
+    @return {Promise}
+  */
+  queryRecord(store, type, query) {
+    return this.query(store, type, query).then(records => new RSVP.resolve(records.data[0]));
+  },
+
+  /**
+    This method is called when you call `query` on the store.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_query).
+
+    Supports {{#crossLink "Query.QueryObject"}}{{/crossLink}} instance or objects that look like this:
+      ```javascript
+      {
+        ...
+        <property to query>: <value to match>,
+        //and
+        <property to query>: <value to match>,
+        ...
+      }
+      ```
+
+    @method query
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Object|QueryObject} query
+    @return {Promise}
   */
   query(store, type, query) {
     let modelName = type.modelName;
-    let proj = this._extractProjectionFromQuery(modelName, type, query);
+    let projection = this._extractProjectionFromQuery(modelName, type, query);
     let originType = null;
     if (query && query.originType) {
       originType = query.originType;
-
       delete query.originType;
     }
 
-    let indexedDBAdapter = new IndexeddbAdapter(this.databaseName);
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let queryOperation = (db) => {
+      let queryObject = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, projection);
+      return new IndexedDBAdapter(db).query(store, queryObject);
+    };
 
-    let _this = this;
-    let queryForIndexedDBAdapter = query instanceof QueryObject ? query : this._makeQueryObject(store, modelName, query, proj);
-    return indexedDBAdapter.query(store, queryForIndexedDBAdapter).then((recordArray) =>
-      new Ember.RSVP.Promise((resolve, reject) => {
-        let promises = Ember.A();
-        for (let i = 0; i < recordArray.length; i++) {
-          let record = recordArray[i];
-          promises.pushObject(_this._completeLoadRecord(store, type, record, proj, originType));
-        }
-
-        Ember.RSVP.all(promises).then(() => {
-          resolve(recordArray);
-        }).catch((reason) => {
-          reject(reason);
-        });
-      })
-    );
-  },
-
-  createRecord(store, type, snapshot) {
-    return this._updateOrCreate(store, type, snapshot);
-  },
-
-  updateRecord(store, type, snapshot) {
-    return this._updateOrCreate(store, type, snapshot);
-  },
-
-  deleteRecord(store, type, snapshot) {
-    let table = this._getTableForOperationsByModelType(type);
-    return table.delete(snapshot.id);
-  },
-
-  // private
-
-  /**
-    Gets [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given model type.
-    Creates [Dexie's schema](https://github.com/dfahlander/Dexie.js/wiki/Version.stores()) that contains only 'id' property for specified model type.
-
-    @method _getTableForOperationsByModelType
-    @param {subclass of DS.Model} type Model type.
-    @return {WritableTable} Instance of [WritableTable](https://github.com/dfahlander/Dexie.js/wiki/WriteableTable) class for given model type.
-    @private
-  */
-  _getTableForOperationsByModelType(type) {
-    let schemas = this.get('_schemas');
-    if (!schemas[type.modelName]) {
-      schemas[type.modelName] = {
-        schema: this._createSchema(type),
-        version: Object.keys(schemas).length + 1,
-      };
-
-      this.set('_schemas', schemas);
-    }
-
-    let db = new Dexie(this.databaseName);
-    for (let schema in schemas) {
-      db.version(schemas[schema].version).stores(schemas[schema].schema);
-    }
-
-    return db[type.modelName];
+    return dexieService.performOperation(db, queryOperation);
   },
 
   /**
-    Return schema for Dexie.
+    Implement this method in a subclass to handle the creation of new records.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_createRecord).
 
-    @method _createSchema
+    @method createRecord
+    @param {DS.Store} store
     @param {DS.Model} type
-    @return {Object} Return schema for Dexie.
+    @param {DS.Snapshot} snapshot
+    @return {Promise}
   */
-  _createSchema(type) {
-    let schema = {};
-    schema[type.modelName] = 'id';
-
-    type.eachAttribute((name) => {
-      schema[type.modelName] += `,${name}`;
+  createRecord(store, type, snapshot) {
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+    let createOperation = (db) => new RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).add(hash).then((id) => {
+        db.table(type.modelName).get(id).then((record) => {
+          resolve(record);
+        }).catch(reject);
+      }).catch(reject);
     });
 
-    type.eachRelationship((name, { kind }) => {
-      if (kind === 'hasMany') {
-        schema[type.modelName] += `,*${name}`;
+    return dexieService.performQueueOperation(db, createOperation).then(() => this._createOrUpdateParentModels(store, type, hash));
+  },
+
+  /**
+    Implement this method in a subclass to handle the updating of a record.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_updateRecord).
+
+    @method updateRecord
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {DS.Snapshot} snapshot
+    @return {Promise}
+  */
+  updateRecord(store, type, snapshot) {
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+    let updateOperation = (db) => new RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).put(hash).then((id) => {
+        db.table(type.modelName).get(id).then((record) => {
+          resolve(record);
+        }).catch(reject);
+      }).catch(reject);
+    });
+
+    return dexieService.performQueueOperation(db, updateOperation).then(() => this._createOrUpdateParentModels(store, type, hash));
+  },
+
+  /**
+    Implement this method in a subclass to handle the deletion of a record.
+    [More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_deleteRecord).
+
+    @method deleteRecord
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {DS.Snapshot} snapshot
+    @return {Promise}
+  */
+  deleteRecord(store, type, snapshot) {
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id)).then(() =>
+      this._deleteParentModels(store, type, snapshot.id));
+  },
+
+  /**
+    Create record if it does not exist, or update changed fields of record.
+
+    @method updateOrCreate
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {DS.Snapshot} snapshot
+    @param {Object} fieldsToUpdate
+    @return {Promise}
+  */
+  updateOrCreate(store, type, snapshot, fieldsToUpdate) {
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let updateOrCreateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).get(snapshot.id).then((record) => {
+        if (!Ember.isNone(fieldsToUpdate) && record) {
+          if (Ember.$.isEmptyObject(fieldsToUpdate)) {
+            resolve();
+          } else {
+            let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+            for (let attrName in hash) {
+              if (hash.hasOwnProperty(attrName) && !fieldsToUpdate.hasOwnProperty(attrName)) {
+                delete hash[attrName];
+              }
+            }
+
+            return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).update(snapshot.id, hash)).then(resolve, reject);
+          }
+        } else {
+          let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+          return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).put(hash)).then(resolve, reject);
+        }
+      }).catch(reject);
+    });
+
+    return dexieService.performOperation(db, updateOrCreateOperation);
+  },
+
+  /**
+    Stores record's hash for performing bulk operaion with {{#crossLink "Adapter.Offline/bulkUpdateOrCreate:method"}} method.
+
+    @method addHashForBulkUpdateOrCreate
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {DS.Snapshot} snapshot
+    @param {Object} fieldsToUpdate
+    @return {Promise}
+  */
+  addHashForBulkUpdateOrCreate(store, type, snapshot, fieldsToUpdate) {
+    let _this = this;
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let addHashForBulkOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
+      db.table(type.modelName).get(snapshot.id).then((record) => {
+        if (!Ember.isNone(fieldsToUpdate) && record) {
+          if (!Ember.$.isEmptyObject(fieldsToUpdate)) {
+            let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+            for (let attrName in hash) {
+              if (hash.hasOwnProperty(attrName) && !fieldsToUpdate.hasOwnProperty(attrName)) {
+                delete hash[attrName];
+              }
+            }
+
+            // Merge record with hash and store it to local store only if hash contains some changes for record.
+            let needChangeRecord = false;
+            for (let attrName in hash) {
+              if (hash.hasOwnProperty(attrName) && (!record[attrName] || record[attrName] !== hash[attrName])) {
+                needChangeRecord = true;
+                break;
+              }
+            }
+
+            if (needChangeRecord) {
+              Ember.merge(record, hash);
+              _this._storeHashForBulkOperation(type.modelName, record);
+            } else {
+              dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
+            }
+          } else {
+            dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
+          }
+        } else {
+          let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+          _this._storeHashForBulkOperation(type.modelName, hash);
+        }
+
+        resolve();
+      }).catch(reject);
+    });
+
+    return dexieService.performOperation(db, addHashForBulkOperation);
+  },
+
+  /**
+    Performing bulk operaion with previously stored hashes.
+
+    @method bulkUpdateOrCreate
+    @param {DS.Store} store
+    @param {Boolean} replaceIfExist If set to `true` then hashes will be replaced in store if they already exist
+    @param {Boolean} clearHashesOnTransactionFail If set to `true` then previously stored hashes will be cleared if transaction with bulk operations fails
+    @return {Promise}
+  */
+  bulkUpdateOrCreate(store, replaceIfExist, clearHashesOnTransactionFail) {
+    let _this = this;
+    let dexieService = this.get('dexieService');
+    let db = dexieService.dexie(this.get('dbName'), store);
+    let numberOfRecordsToStore = 0;
+    let bulkUpdateOrCreateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
+      if (_this._hashesToStore.size === 0) {
+        resolve();
       } else {
-        schema[type.modelName] += `,${name}`;
+        let tableNames = _this._hashesToStore._keys.toArray();
+        db.transaction('rw', tableNames, () => {
+          for (let i = 0; i < tableNames.length; i++) {
+            let tableName = tableNames[i];
+            let arrayOfHashes = _this._hashesToStore.get(tableName);
+            numberOfRecordsToStore += arrayOfHashes ? arrayOfHashes.length : 0;
+            if (replaceIfExist) {
+              db.table(tableName).bulkPut(arrayOfHashes ? arrayOfHashes : {});
+            } else {
+              db.table(tableName).bulkAdd(arrayOfHashes ? arrayOfHashes : {});
+            }
+          }
+        }).then(() => {
+          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
+          _this._hashesToStore.clear();
+          resolve();
+        }).catch((err) => {
+          if (clearHashesOnTransactionFail) {
+            Ember.warn('Some data loss while performing sync down records!',
+            false,
+            { id: 'ember-flexberry-data-debug.offline.sync-down-data-loss' });
+            dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
+            _this._hashesToStore.clear();
+          }
+
+          reject(err);
+        });
       }
     });
 
-    return schema;
+    return dexieService.performQueueOperation(db, bulkUpdateOrCreateOperation);
   },
 
-  _updateOrCreate(store, type, snapshot) {
-    const serializer = store.serializerFor(type.modelName);
-    const recordHash = serializer.serialize(snapshot, { includeId: true });
-    return this._getTableForOperationsByModelType(snapshot.type).put(recordHash);
+  /**
+    Stores hash for performing bulk operaion into map.
+
+    @method _storeHashForBulkOperation
+    @param {String} modelName
+    @param {Object} hash
+    @private
+  */
+  _storeHashForBulkOperation(modelName, hash) {
+    let arrayOfHashes = this._hashesToStore.get(modelName);
+    if (!arrayOfHashes) {
+      arrayOfHashes = [];
+    }
+
+    arrayOfHashes.push(hash);
+    this._hashesToStore.set(modelName, arrayOfHashes);
   },
 
   /**
@@ -260,10 +457,10 @@ var OfflineAdapter = DS.Adapter.extend({
 
     let predicates = [];
     for (let property in query) {
-      const queryValue = query[property];
+      const queryValue = query[property] instanceof Date ? query[property].toString() : query[property];
 
       // I suppose it's possible to encounter problems when queryValue will have 'Date' type...
-      predicates.push(new SimplePredicate(property, FilterOperator.Eq, queryValue.toString()));
+      predicates.push(new SimplePredicate(property, FilterOperator.Eq, queryValue));
     }
 
     if (predicates.length === 1) {
@@ -271,7 +468,7 @@ var OfflineAdapter = DS.Adapter.extend({
     } else if (predicates.length > 1) {
       let cp = new ComplexPredicate(Condition.And, predicates[0], predicates[1]);
       for (let i = 2; i < predicates.length; i++) {
-        cp.and(predicates[i]);
+        cp = cp.and(predicates[i]);
       }
 
       builder.where(cp);
@@ -321,165 +518,38 @@ var OfflineAdapter = DS.Adapter.extend({
     return null;
   },
 
-  /**
-    Completes loading record for given projection.
-
-    @method _completeLoadingRecord
-    @param {subclass of DS.Store} store Store to use for complete loading record.
-    @param {subclass of DS.Model} type Model type.
-    @param {Object} record Main record loaded by adapter.
-    @param {Object} [projection] Projection for complete loading of record.
-    @param {subclass of DS.Model} [originType] Type of model that referencing to main record's model type.
-    @return {Object} Completely loaded record with all properties
-                     include relationships corresponds to given projection
-    @private
-  */
-  _completeLoadRecord: function(store, type, record, projection, originType) {
-    let promises = Ember.A();
-    if (!Ember.isNone(projection) && projection.attributes) {
-      let attributes = projection.attributes;
-      for (let attrName in attributes) {
-        if (attributes.hasOwnProperty(attrName)) {
-          this._replaceIdToHash(store, type, record, attributes, attrName, promises);
+  _createOrUpdateParentModels(store, type, record) {
+    let _this = this;
+    let parentModelName = type._parentModelName;
+    if (parentModelName) {
+      let information = new Information(store);
+      let newHash = {};
+      Ember.merge(newHash, record);
+      for (let attrName in newHash) {
+        if (newHash.hasOwnProperty(attrName) && !information.isExist(parentModelName, attrName)) {
+          delete newHash[attrName];
         }
       }
+
+      let dexieService = _this.get('dexieService');
+      let db = dexieService.dexie(_this.get('dbName'), store);
+      return dexieService.performQueueOperation(db, (db) => db.table(parentModelName).put(newHash)).then(() =>
+        _this._createOrUpdateParentModels(store, store.modelFor(parentModelName), record));
     } else {
-      let relationshipNames = Ember.get(type, 'relationshipNames');
-      let allRelationshipNames = Ember.A().concat(relationshipNames.belongsTo, relationshipNames.hasMany);
-      let relationshipsByName = Ember.get(type, 'relationshipsByName');
-      let originTypeModelName = !Ember.isNone(originType) ? originType.modelName : '';
-      allRelationshipNames.forEach(function(attrName) {
-        // Avoid loops formed by inverse attributes.
-        let possibleInverseType = store.modelFor(relationshipsByName.get(attrName).type);
-        let relationshipsByNameOfPossibleInverseType = Ember.get(possibleInverseType, 'relationshipsByName');
-        let inverseAttribute = relationshipsByName.get(attrName).options.inverse;
-        let possibleInverseTypeMeta = !Ember.isNone(inverseAttribute) ? relationshipsByNameOfPossibleInverseType.get(inverseAttribute) : null;
-        if ((Ember.isNone(possibleInverseTypeMeta) || relationshipsByName.get(attrName).type !== originTypeModelName) && !Ember.isEmpty(record[attrName])) {
-          this._replaceIdToHash(store, type, record, relationshipsByName, attrName, promises);
-        }
-      }, this);
-    }
-
-    return Ember.RSVP.all(promises).then(() => {
-      let relationshipNames = Ember.get(type, 'relationshipNames');
-      let belongsTo = relationshipNames.belongsTo;
-      for (let i = 0; i < belongsTo.length; i++) {
-        let relationshipName = belongsTo[i];
-        if (!isAsync(type, relationshipName) && !isObject(record[relationshipName])) {
-          record[relationshipName] = null;
-        }
-      }
-
-      let hasMany = relationshipNames.hasMany;
-      for (let i = 0; i < hasMany.length; i++) {
-        let relationshipName = hasMany[i];
-        if (!Ember.isArray(record[relationshipName])) {
-          record[relationshipName] = [];
-        } else {
-          if (!isAsync(type, relationshipName)) {
-            let hasUnloadedObjects = false;
-            for (let j = 0; j < record[relationshipName].length; j++) {
-              if (!isObject(record[relationshipName][j])) {
-                hasUnloadedObjects = true;
-              }
-            }
-
-            if (hasUnloadedObjects) {
-              record[relationshipName] = [];
-            }
-          }
-        }
-      }
-
-      return record;
-    });
-  },
-
-  _loadRelatedRecord(store, type, id, proj, originType) {
-    let modelName = proj.modelName ? proj.modelName : proj.type;
-    let relatedRecord = store.peekRecord(modelName, id);
-    if (Ember.isNone(relatedRecord)) {
-      let builder = new QueryBuilder(store, modelName);
-      builder.byId(id);
-
-      if (proj && proj.modelName) {
-        let attrNames = 'id';
-        let attrs = proj.attributes;
-        for (let key in attrs) {
-          if (attrs.hasOwnProperty(key) && !Ember.isNone(attrs[key].kind)) {
-            attrNames += ',' + key;
-          }
-        }
-
-        builder.select(attrNames);
-      }
-
-      let query = builder.build();
-      if (Ember.$.isEmptyObject(builder._select)) {
-        // Now if projection is not specified then only 'id' field will be selected.
-        query.select = [];
-      }
-
-      query.originType = originType;
-      if (proj && proj.modelName) {
-        query.projection = proj;
-      }
-
-      return this.queryRecord(store, type, query);
-    } else {
-      let relatedRecordObject = relatedRecord.serialize({ includeId: true });
-      return this._completeLoadRecord(store, type, relatedRecordObject, proj, originType);
+      return Ember.RSVP.resolve();
     }
   },
 
-  _replaceIdToHash(store, type,  record, attributes, attrName, promises) {
-    let attr = attributes.hasOwnProperty(attrName) ? attributes[attrName] : attributes.get(attrName);
-    let modelName = attr.modelName ? attr.modelName : attr.type;
-    let relatedModelType = (attr.kind === 'belongsTo' || attr.kind === 'hasMany') ? store.modelFor(modelName) : null;
-    switch (attr.kind) {
-      case 'attr':
-        break;
-      case 'belongsTo':
-        if (!isAsync(type, attrName)) {
-          // let primaryKeyName = this.serializer.get('primaryKey');
-          let id = record[attrName];
-          if (!Ember.isNone(id) && (!isObject(id))) {
-            promises.pushObject(this._loadRelatedRecord(store, relatedModelType, id, attr, type).then((relatedRecord) => {
-              delete record[attrName];
-              record[attrName] = relatedRecord;
-            }));
-          }
-        }
-
-        break;
-      case 'hasMany':
-        if (!isAsync(type, attrName)) {
-          if (Ember.isArray(record[attrName])) {
-            let ids = Ember.copy(record[attrName]);
-            delete record[attrName];
-            record[attrName] = [];
-            let pushToRecordArray = (relatedRecord) => {
-              record[attrName].push(relatedRecord);
-            };
-
-            for (var i = 0; i < ids.length; i++) {
-              let id = ids[i];
-              if (!isObject(id)) {
-                promises.pushObject(this._loadRelatedRecord(store, relatedModelType, id, attr, type).then(pushToRecordArray));
-              } else {
-                pushToRecordArray(id);
-              }
-            }
-          } else {
-            record[attrName] = [];
-          }
-        }
-
-        break;
-      default:
-        throw new Error(`Unknown kind of projection attribute: ${attr.kind}`);
+  _deleteParentModels(store, type, id) {
+    let _this = this;
+    let parentModelName = type._parentModelName;
+    if (parentModelName) {
+      let dexieService = _this.get('dexieService');
+      let db = dexieService.dexie(_this.get('dbName'), store);
+      return dexieService.performQueueOperation(db, (db) => db.table(parentModelName).delete(id)).then(() =>
+        _this._deleteParentModels(store, store.modelFor(parentModelName), id));
+    } else {
+      return Ember.RSVP.resolve();
     }
   }
 });
-
-export default OfflineAdapter;
