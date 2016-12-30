@@ -1,306 +1,117 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.8.0] - 2016-12-30
+### Added
+- `Query.IndexedDBAdapter`:
+    - Added implementation in-memory joins for offline data instead very slowly relation-by-relation scan and load objects by id.
+    - Support `count` function of query builder.
+- `Offline.Store`:
+    - Property `offlineModels` for specifying models that should be always loaded from offline store.
+    - Properties `queueSyncDownWorksCount` and `completeSyncDownWorksCount` for tracking count of objects that should be synced down.
+- `Adapter.Offline`:
+    - Ability to specify table name for `clear` method. This case can be used for clearing one table.
+    - Logic for saving parent models in offline mode (for create/update/delete operations). Now it is not using transactions (will be added in next versions).
+- `Adapter.Odata`:
+    - `timeout` property.
+- `syncer` service:
+    - Default error handlers. Override [`resolveServerError`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L222) and [`resolveNotFoundRecord`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L259) methods to add custom logic.
+    - Saving changed relationships for sync up process.
+    - Ability to specify query object in `syncDown` method in case of syncing down records by model type.
+    - Ability to specify option for unloading records from online store when sync down. It's topical for sync down big data. Please add `{ unloadSyncedRecords: true }` as fourth parameter in `syncDown` method calls where needed.
+    - `syncDownTime` property of model is setting now when performing sync down operation.
+    - `allowSyncDownRelatedRecordsWithoutProjection` option for offline settings. If true then record will be synced down completely, i.e. including with all related records with arbitrary nesting. Otherwise only requested record will be synced down without related records.
+- `Projection.Model`:
+    - Validations for 'hasMany' relationships.
+    - Model properties:
+        - `isSyncingUp` - true if model is syncing up.
+        - `isCreatedDuringSyncUp` - true if model is created during sync up process.
+        - `isUpdatedDuringSyncUp` - true if model is updated last time during sync up process.
+        - `isDestroyedDuringSyncUp` - true if model is destroyed during sync up process.
+- Now `dexie` service can work with multiple DBs.
+- Some parameters checks for `Query.Builder` and `Utils.Information` classes.
+
+
 ### Changed
+- Update Dexie to 1.4.2 version.
+- `Offline.Store`:
+    - Now uses static `offlineSchema`. You must define `offlineSchema` property in `store` service of your application. **Important**. This changes are breaking!
+- `syncer` service:
+    - Changed arguments for `syncUp` method, first parameter now can be and array of jobs for execute, object with options for sync is second parameter now. **Important**. This changes are breaking!
+    - Disable models unloads after sync down and sync up operations.
+    - Now we don't replace entire record when sync down. Instead we save only changed properties which are specified in projection for existing records in local store.
+- `Query.IndexedDBAdapter`:
+    - Search by string (e.g. by all fields in lists) is now case insensitive.
+- `Offline.LocalStore` and `Adapter.Offline`:
+    - Renamed property `databaseName` to `dbName`.
+- It is not necessary now to add attribute or relationship to model projection if it is needed for building restriction with query language.
 - `Ember.Logger.xxx` changed to `Ember.xxx` calls and throwing errors. So redundant messages will not display in console in production.
 
 ### Fixed
-- Incorrect building of query object for offline models.
-
-## [0.8.0-beta.0] - 2016-12-13
-### Added
-- Validations for 'hasMany' relationships in base model.
-
-## [0.7.1-beta.14] - 2016-12-12
-### Added
-- Support reading of polymorphic relationships for in-memory joins for offline data.
-
-### Fixed
-- Getting of wrong serializer for offline models in online mode.
-- Offline query by projection or select are cut redundand properties for relationships in `js-adapter`.
-- Optimized loading offline data for query by id. 
+- Loading relationships in offline mode moved "under" offline adapter layer, i.e. offline adapter now get "full object" at once with embedded objects for embedded relationships. So now fixed:
+    - `Adapter.Offline` apply filters after loading relationships. This allows to filter data by master and detail model's proprties.
+    - There is no relationships that "disappear" unexpectedly after reading data.
+    - Improved performance for reading data in offline mode.
+- `Adapter.Offline`:
+    - Error at attempt to save existing records into IndexedDB.
+    - Now it is able to save and read `null` value in `boolean` attributes in offline mode.
+    - Not quite adequate implementation of `updateRecord` method.
+    - Closing IndexedDB connection during CRUD operations.
+    - Errors during parallel requests to IndexedDB (now using queue of requests).
+    - Errors when making predicates for query object (when passed query to `query` method is not `QueryObject`).
+    - Result type for `createRecord` and `updateRecord` methods.
+- `Projection.StoreMixin`:
+    - Wrong projection for reading data used in `findRecord` and `findAll` methods if projection was not specified for query.
+- `Query.IndexedDBAdapter`:
+    - IndexedDB not support filter by keys type of `boolean`.
+    - Searching presence of relationships in query with `containsRelationships` method could return wrong results.
+    - Sorting is now applying before skip and top.
+- `Query.JsAdapter`:
+    - Search by empty fields.
+- Query language:
+    - Querying records by fields of `date` type.
+    - Filter by boolean value in offline mode, if restriction was passed through complex predicate.
+- Optimizing performance:
+    - For sync down operation.
+    - Application loading performance.
+    - For different operations with data in addon by setting some factories as singletons. It optimizes performance of lookup operation for particular factory because new instance of factory class is not creating.
+    - CRUD operations in offline adapter.
+- `syncer` service:
+    - Unloading synced records from online store after sync down operation.
+    - Relationships of model are not reset now when syncing up after changing model in offline mode.
+    - Validation errors could break syncing up if model was updated in offline mode.
+    - Wrong store instance was used for loading relationships in offline mode, it causes errors when syncing up.
+    - Casting for `boolean` type and casting for `null` value of all types while performing sync up.
+    - Saving of wrong relationship type for polymorphic belongsTo relationships in offline audit objects.
+    - Some internal bugs in `syncDown` method.
+    - Loading only one last relationship when restoring changes for record while performing sync up.
+    - Considering types of attributes when restoring values while performing sync up, now it makes casting for `date` and `number` types.
+    - `reloadLocalRecords` method tried to clear table using model class instead of model name.
+- `Serializer.Offline`:
+    - Now we are setting proper types of polymorphic belongsTo relationships in offline mode.
+    - Serializing attributes of `boolean`, `number` and `decimal` types when saving offline.
+    - `normalizeArrayResponse` method did not expect that adapter can return response in various format.
+    - Processing of included objects in `normalizeArrayResponse` method.
+- `Projection.Model`:
+    - `rollbackBelongsTo` method.
+    - Now `changedBelongsTo` is empty after saving created model.
+- `Offline.ModelMixin`:
+    - Audit fields was not filled because `save` method of `Offline.ModelMixin` run before `save` method of `Audit.ModelMixin`.
+- `Offline.Store`:
+    - Syncing down records with option `syncDownWhenOnlineEnabled` is now using specified projection for online store's method call.
+    - `useOnlineStore` parameter is not deleting now from query object for `query` and `queryRecord` methods.
+- `Offline.LocalStore`:
+    - Projection passed in options now processing correctly in `findAll` and `findRecord` methods.
+- Disable offline audit for `i-c-s-soft-s-t-o-r-m-n-e-t-security-agent` model.
+- Remove validation from audit models.
 
 ### Removed
 - Redundant decoration of online serializer.
-
-## [0.7.1-beta.13] - 2016-11-30
-### Added
-- Added implementation in-memory joins for offline data instead very slowly relation-by-relation scan and load objects by id.
-
-### Removed
-- Dexie service Table method loadByProjection - implementation relation-by-relation scan and load objects by id.
-
-### Fixed
-- Querying records by fields of `date` type with query language via `odata-adapter`.
-
-## [0.7.1-beta.12] - 2016-11-25
-### Fixed
-- Querying records by fields of `date` type with query language using complex predicates in offline mode.
-
-## [0.7.1-beta.11] - 2016-11-23
-### Fixed
-- Querying records by fields of `date` type with query language using simple predicates in offline mode.
-
-## [0.7.1-beta.10] - 2016-11-22
-### Fixed
-- Passing version number of wrong type to Dexie. That causes error when trying to upgrade IndexedDB database vesion.
-
-## [0.7.1-beta.9] - 2016-11-21
-### Added
-- `syncDownTime` property of model is setting now when performing sync down operation.
-
-### Fixed
-- Optimizing performance for sync down operation.
-- Unloading synced records from online store after sync down operation.
-- Relationships of model are not reset now when syncing up after changing model in offline mode.
-
-## [0.7.1-beta.8] - 2016-11-20
-### Fixed
-- Validation errors could break syncing up if model was updated in offline mode.
-
-## [0.7.1-beta.7] - 2016-11-18
-### Fixed
-- Wrong store instance was connected with internal model, it causes errors when `unloadRecord` and `unloadAll` methods of store were called.
-- Wrong store instance was used for loading relationships in offline mode, it causes errors when syncing up.
-
-## [0.7.1-beta.6] - 2016-11-18
-### Fixed
-- Duplicate relationships for loading in `loadByProjection` method in `dexie` service.
-- Incorrect data retrieving from offline storage for case with single order by field without any filter.
-- Now we are setting proper types of polymorphic belongsTo relationships in offline mode.
-- Application loading performance.
-
-## [0.7.1-beta.5] - 2016-11-15
-### Fixed
-- Optimized performance of query for loading offline data from IndexedDB for simple predicate and ordering by own object properties.
-- Now `syncDown` operation performing without `yield` operator. So performance of building app was increased.
-
-## [0.7.1-beta.4] - 2016-11-09
-### Changed
-- It is not necessary now to add attribute or relationship to projection if it is needed for building restriction.
-
-### Fixed
-- Wrong projection for reading data used in `findRecord` and `findAll` methods of online `store` mixin if projection was not specified for query.
-- Searching presence of relationships in query with `containsRelationships` method of `indexeddb-adapter` could return wrong results.
-- Optimized performance of `syncDown` method of `syncer` service.
-- Optimized performance of different operations with data in addon by setting some factories as singletons. It optimizes performance of lookup operation for particular factory because new instance of factory class is not creating.
-
-## [0.7.1-beta.3] - 2016-11-03
-### Added
-- Default error handlers in `syncer` service. Override [`resolveServerError`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L222) and [`resolveNotFoundRecord`](https://github.com/Flexberry/ember-flexberry-data/blob/5a4ae8a2ab6e8c85dff17a6908b25ead887b6f6d/addon/services/syncer.js#L259) methods to add custom logic.
-
-### Changed
-- Changed arguments for `syncUp` method of `syncer` service, first parameter now can be and array of jobs for execute, object with options for sync is second parameter now. **Important**. This changes are breaking!
-
-### Fixed
-- Optimized performance of loading relationships from IndexedDB.
-
-## [0.7.1-beta.2] - 2016-10-31
-### Added
-- Now `dexie` service can work with multiple DBs.
-- Now hashes received via `dexie` service have `loadRelationships` method that can be used for replacing ids with hashes when reading synchronous relationships.
-- Some parameters checks for `builder` and `information` classes.
-
-### Fixed
-- Loading relationships in offline mode moved "under" offline adapter layer, i.e. offline adapter now get "full object" at once with embedded objects for embedded relationships. So now fixed:
-    - `indexeddb-adapter` apply filters after loading relationships. This allows to filter data by master and detail model's proprties.
-    - There is no relationships that "disappear" unexpectedly after reading data.
-    - Improved performance for reading data in offline mode (but for some cases improving performance is still required).
-
-## [0.7.1-beta.1] - 2016-10-28
-### Fixed
-- Filter by boolean value in offline mode, if restriction was passed via complex predicate.
-
-## [0.7.1-beta.0] - 2016-10-27
-### Fixed
-- `syncer` service now makes casting for `boolean` type and corrected casting for `null` value of all types while performing sync up.
-- Serializing attributes of `boolean`, `number` and `decimal` types when saving offline.
-- Now it is able to save and read `null` value in `boolean` attributes in offline mode.
-
-## [0.6.2-beta.30] - 2016-10-21
-### Added
-- Base model properties:
-    - `isSyncingUp` - true if model is syncing up.
-    - `isCreatedDuringSyncUp` - true if model is created during sync up process.
-    - `isUpdatedDuringSyncUp` - true if model is updated last time during sync up process.
-    - `isDestroyedDuringSyncUp` - true if model is destroyed during sync up process.
-
-### Fixed
-- Now we are saving information about model type of polymorphic belongsTo relationships into local store. Setting proper types of polymorphic belongsTo relationships should come in next versions of addon.
-
-## [0.6.2-beta.29] - 2016-10-20
-### Fixed
-- Saving of wrong relationship type for polymorphic belongsTo relationships in offline audit objects.
-
-## [0.6.2-beta.28] - 2016-10-19
-### Added
-- Saving of base models logic for offline (for create/update/delete operations). Now it is not using transactions (will be added in next versions).
-
-### Changed
-- Disable models unloads after sync down and sync up operations in `syncer` service.
-
-## [0.6.2-beta.27] - 2016-10-18
-### Fixed
-- Some internal bugs in `syncDown` method of `syncer` service.
-
-## [0.6.2-beta.26] - 2016-10-18
-### Fixed
-- If `queryRecord` method did not find any record, it still tries to call `didLoad`.
-
-## [0.6.2-beta.25] - 2016-10-17
-### Added
-- `allowSyncDownRelatedRecordsWithoutProjection` option for offline settings. If true then record will be synced down completely, i.e. including with all related records with arbitrary nesting. Otherwise only requested record will be synced down without related records.
-
-## [0.6.2-beta.24] - 2016-10-17
-### Fixed
-- When rollback `belongsTo` relationships, if relationship was reset to null then rollback relationship attempts to apply for null.
-- When rollback `belongsTo` relationships, there was no rollback for canonical state of relationship.
-- If model is not support `rollbackBelongsTo` mehod then it should not be called.
-
-### Known issues
-- Event `didLoad` fired for model instance only when model loads first time. We added manual triggering of this event to save state, because model instance can be loaded in another projection.
-
-## [0.6.2-beta.23] - 2016-10-16
-### Fixed
-- Small optimization of performance for sync down operation.
-- `syncer` service waited for loading only one last relationship when restoring changes for record while performing sync up.
-- `syncer` service was not considered types of attributes when restoring values while performing sync up, now it makes casting for `date` and `number` types.
--  Audit fields was not filled because `save` method of `offline-model` mixin for offline run first (before `save` method of `audit-model` mixin).
-
-## [0.6.2-beta.22] - 2016-10-15
-### Added
-- `syncer` service now saves changed relationships for sync up process.
-
-### Changed
-- `syncer` service now selects jobs for sync up using query language. This allows select at once 'Unexecuted' and 'Failed' jobs and sort them.
-
-## [0.6.2-beta.21] - 2016-10-15
-### Changed
-- Now we don't replace entire record when sync down. Instead we save only changed properties which are specified in projection for existing records in local store.
-
-### Fixed
-- Update IndexedDB database failed if database version in offline schema was specified as string.
-- Sorting in `indexeddb-adapter` is now applying before skip and top.
-
-## [0.6.2-beta.20] - 2016-10-14
-### Added
-- Ability to specify option for unloading records from online store when sync down. It's topical for sync down big data. Please add `{ unloadSyncedRecords: true }` as fourth parameter in `syncDown` method calls where needed.
-
-### Changed
-- Search by string (by all fields in lists) is now case insensitive in offline mode.
-
-### Fixed
-- Not quite adequate implementation of `updateRecord` method of `offline` adapter.
-- Search by empty fields in `js-adapter`.
-
-## [0.6.2-beta.19] - 2016-10-12
-### Added
-- `timeout` property to `odata` adapter.
-
-### Fixed
-- Loading related records logic in `offline` adapter for synchronous reading.
-
-## [0.6.2-beta.18] - 2016-10-11
-### Fixed
-- `reloadLocalRecords` method tried to clear table using model class instead of model name.
-- Projection passed in options now processing correctly in `findAll` and `findRecord` methods of local store.
-
-## [0.6.2-beta.17] - 2016-10-10
-### Changed
-- Fix problems with getting `dexie` service.
-
-## [0.6.2-beta.16] - 2016-10-10
-### Changed
-- Property `queueSyncDownWorksCount` was moved to `dexie` service.
-
-## [0.6.2-beta.15] - 2016-10-07
-### Changed
-- Property `queueSyncDownWorksCount` now stores actual number of objects that should be synced down.
-
-### Removed
-- Property `completeSyncDownWorksCount` in `base-store` was removed.
-
-## [0.6.2-beta.14] - 2016-10-07
-### Added
-- Now you can specify table name for `clear` method from `Adapter.Offline` for clear one table.
-- Ability to specify query object in `syncDown` method of `syncer` service in case of syncing down records by model mype.
-
-### Fixed
-- Method `normalizeArrayResponse` from `Serializer.Offline` did not expect that adapter can return response in various format.
-- Time of processing CRUD operations in offline adapter.
-- Closing IndexedDB connection during CRUD operations.
-- Errors during parallel requests to IndexedDB (now using queue of requests).
-
-### Removed
 - Obsolete code in `syncer` service.
 
-## [0.6.2-beta.13] - 2016-10-05
-### Fixed
-- Casting to string only `Date` instead of all types.
-
-## [0.6.2-beta.12] - 2016-10-05
-### Added
-- Properties `queueSyncDownWorksCount` and `completeSyncDownWorksCount` in `base-store` class for tracking count of objects that should be synced down.
-
-## [0.6.2-beta.11] - 2016-10-04
-### Fixed
-- Syncing down records with option `syncDownWhenOnlineEnabled` is now using specified projection for online store's method call.
-- Normalize array response for included objects.
-
-## [0.6.2-beta.10] - 2016-10-04
-### Added
-- Support `count` function in `Query.Builder` for offline.
-
-## [0.6.2-beta.9] - 2016-10-03
-### Changed
-- Service `Syncer` now not sync relationships if projection not specified.
-
-### Fixed
-- Option `useOnlineStore` not apply due to error check `offlineModels` options.
-- Property `offlineModels` now use in `createRecord` and `scheduleSave` methods from `Offline.Store`.
-- Now not delete `useOnlineStore` parameter from object for `query` and `queryRecord` methods.
-
-## [0.6.2-beta.7] - 2016-10-01
-### Added
-- Property `offlineModels` of `Offline.Store` for specified models that by default loaded from offline.
-
-### Fixed
-- Remove validation from audit models.
-- Responses format in `Offline` adapter at `createRecord` and `updateRecord` methods.
-- Disable offline audit for agent model.
-- Convert object into `QueryObject` for query.
-- Save record in offline mode.
-
-## [0.6.2-beta.2] - 2016-09-28
-### Breaking changes
-- Now uses static `offlineSchema` for Dexie. You must define `offlineSchema` in `Store` your application.
-
-### Fixed
-- Error at attempt to save existing records into IndexedDB.
-
-## [0.6.2-beta.1] - 2016-09-23
-### Changed
-- Update Dexie to 1.4.2 version.
-
-### Fixed
-- Now `changedBelongsTo` is empty after saving the created model.
-
 ### Known issues
-- Methods `findRecord`, `findAll` and `findMany` from `Adapter.Offline` returns model with relationships as id's not depending on options.
-
-## [0.6.2-beta.0] - 2016-09-21
-### Changed
-- `Offline.LocalStore` and `Adapter.Offline`:
-    - Renamed property `databaseName` to `dbName`.
-- `Query.IndexedDBAdapter`:
-    - Unnecessary `store` instance for `query` method.
-    - No build schema by projection for query.
-
-### Fixed
-- `Adapter.Offline`:
-    - Logic for dynamic schema versioning.
-- `Query.IndexedDBAdapter`:
-    - IndexedDB not support filter by keys type of `boolean`.
+- It is not possible for now to specify Dexie upgrage functions when specifying offline schema versions.
 
 ## [0.6.1] - 2016-09-16
 ### Fixed
