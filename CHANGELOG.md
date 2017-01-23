@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `Query.JsAdapter`:
+    - Fixed error when hasMany relationship is undefined in indexed DB.
 
 ## [0.8.0] - 2016-12-30
 ### Added
