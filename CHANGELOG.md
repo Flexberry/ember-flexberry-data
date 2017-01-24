@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `Query.IndexedDBAdapter`:
+    - Fix `meta.count` computing.
 
 ## [0.8.0] - 2016-12-30
 ### Added

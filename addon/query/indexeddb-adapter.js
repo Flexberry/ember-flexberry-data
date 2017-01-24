@@ -409,6 +409,8 @@ export default class extends BaseAdapter {
               data = order(data);
             }
 
+            let length = count ? count : data.length;
+
             if (applyTopSkip) {
               let topskip = jsAdapter.buildTopSkip(query);
               data = topskip(data);
@@ -419,7 +421,6 @@ export default class extends BaseAdapter {
               data = jsProjection(data);
             }
 
-            let length = count ? count : data.length;
             let response = { meta: {}, data: data };
             if (query.count) {
               response.meta.count = length;
