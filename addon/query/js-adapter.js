@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import BaseAdapter from './base-adapter';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
 import FilterOperator from './filter-operator';
@@ -212,7 +213,7 @@ export default class JSAdapter extends BaseAdapter {
               }
             } else {
               r[expandKey] = [];
-              let detailsCount = item[expandKey].length;
+              let detailsCount = Ember.isNone(item[expandKey]) ? 0 : item[expandKey].length;
               for (let j = 0; j < detailsCount; j++) {
                 let itemValue = item[expandKey][j];
                 if (itemValue) {
