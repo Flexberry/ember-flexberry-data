@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### Fixed
+- `Query.IndexedDBAdapter`:
+    - Fix `meta.count` computing.
 - `Query.JsAdapter`:
     - Fixed error when hasMany relationship is undefined in indexed DB.
 
