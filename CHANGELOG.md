@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `Projection.Model`:
+    - Now canonical state of hasMany relationships sets to current state after saving.
 
 ## [0.8.1] - 2017-01-26
 ### Fixed
