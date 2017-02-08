@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.8.3] - 2017-02-08
+### Fixed
+- `syncer` service:
+    - Fix wrong `store` in `syncUp` method.
+
 ## [0.8.2] - 2017-02-06
 ### Fixed
 - `Projection.Model`:

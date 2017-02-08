@@ -205,19 +205,21 @@ export default Ember.Service.extend({
     let store = getOwner(this).lookup('service:store');
     let dexieService = getOwner(this).lookup('service:dexie');
     let modelName = 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity';
-    if (!jobs) {
+    if (jobs) {
+      return RSVP.resolve(jobs);
+    } else {
       predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
         .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
-      builder = new Builder(store, modelName)
+      builder = new Builder(store.get('offlineStore'), modelName)
         .selectByProjection('AuditEntityE')
         .orderBy('operationTime')
         .where(predicate);
-    }
 
-    return (jobs ? RSVP.resolve(jobs) : this.get('offlineStore').query(modelName, builder.build())).then((jobs) => {
-      dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
-      return this._runJobs(store, jobs, options && options.continueOnError);
-    });
+      return this.get('offlineStore').query(modelName, builder.build()).then((jobs) => {
+        dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
+        return this._runJobs(store, jobs, options && options.continueOnError);
+      });
+    }
   },
 
   /**
