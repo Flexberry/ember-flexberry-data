@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `syncer` service:
+    - Fix wrong `store` in `syncUp` method.
 
 ## [0.8.2] - 2017-02-06
 ### Fixed
