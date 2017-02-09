@@ -187,13 +187,6 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
         // Assuming that record is not updated during sync up;
         this.set('isUpdatedDuringSyncUp', false);
 
-        // Sets canonical state for hasMany relationships after save.
-        this.eachRelationship((key, { kind }) => {
-          if (kind === 'hasMany') {
-            this.set(`${key}.canonicalState`, this.get(`${key}.currentState`));
-          }
-        });
-
         // Model validation was successful (model is valid or deleted),
         // all 'preSave' event promises has been successfully resolved,
         // finally model has been successfully saved,
@@ -247,8 +240,8 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       if (kind === 'hasMany') {
         if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           changedHasMany[key] = [
-            this.get(`${key}.canonicalState`).map(internalModel => internalModel.record),
-            this.get(`${key}.currentState`).map(internalModel => internalModel.record),
+            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel.record : undefined),
+            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel.record : undefined),
           ];
         }
       }
