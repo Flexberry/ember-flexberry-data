@@ -1,9 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.8.4] - 2017-02-09
 ### Fixed
 - `Projection.Model`:
-    - Fix `changedHasMany` function, for support `undefined` internal models.
+    - Fix `changedHasMany` function: added supporting of `undefined` internal models.
 
 ## [0.8.3] - 2017-02-08
 ### Fixed
