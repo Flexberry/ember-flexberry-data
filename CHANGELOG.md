@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- `Utils`:
+    - Add `firstLoadOfflineObjects` function for load and save objects to `indexedDB` provided by `GetJsonForOffline` Odata function.
 
 ## [0.8.4] - 2017-02-09
 ### Fixed
