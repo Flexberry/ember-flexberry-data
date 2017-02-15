@@ -29,22 +29,22 @@ export function firstLoadOfflineObjects(dexieDB, odataPath, idPath = 'guid') {
         } else {
           objArray.push(objs[objType]);
         }
-        objArray.map(record =>
-          {
-            if (idPath) {
-              record.id =  record.id[idPath];
+
+        objArray.map(record => {
+          if (idPath) {
+            record.id =  record.id[idPath];
+          }
+
+          for (let key in record) {
+            if (record[key] && record[key].id) {
+              record[key] = idPath ? record[key].id[idPath] : record[key].id;
             }
 
-            for (let key in record) {
-              if (record[key] && record[key].id) {
-                record[key] = idPath ? record[key].id[idPath] : record[key].id;
-              }
-
-              if (record[key] instanceof Array) {
-                for (let i = 0; i < record[key].length; i++) {
-                  if (record[key][i].id) {
-                    record[key][i] = idPath ? record[key][i].id[idPath] : record[key][i].id;
-                  }
+            if (record[key] instanceof Array) {
+              for (let i = 0; i < record[key].length; i++) {
+                if (record[key][i].id) {
+                  record[key][i] = idPath ? record[key][i].id[idPath] : record[key][i].id;
+                }
               }
             }
           }
