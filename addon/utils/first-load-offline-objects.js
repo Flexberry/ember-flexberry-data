@@ -25,7 +25,6 @@ export function firstLoadOfflineObjects(dexieDB, odataPath, functionName, modelN
       method: 'GET',
       url: `${odataPath}/${functionName}(objToLoad='${modelName}',top=${top},skip=${skip},count=${count})`,
     }).done(function(msg) {
-      let promises = []
       let objs = JSON.parse(msg.value);
       if (!isNaN(+objs)) {
         return resolve(+objs);
