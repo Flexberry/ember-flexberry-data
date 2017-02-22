@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 ### Added
+- `Utils`:
+    - Add `firstLoadOfflineObjects` function for initial loading and saving objects to IndexedDB.
 - `Adapter.Odata`:
     - Add `buildExportExcelURL` function to receive exported excel file URL.
 
