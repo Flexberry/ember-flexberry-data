@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.9.0-beta.0] - 2017-02-22
 ### Added
 - `Utils`:
     - Add `firstLoadOfflineObjects` function for initial loading and saving objects to IndexedDB.
