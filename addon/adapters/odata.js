@@ -130,6 +130,21 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
+   * Returns URL for exported excel file.
+   *
+   * @method buildExportExcelURL
+   * @param {Object} store
+   * @param {Object} query
+   * @return {String} The URL for excel file.
+   */
+  buildExportExcelURL(store, query) {
+    let url = this._buildURL(query.modelName);
+    let builder = new ODataQueryAdapter(url, store);
+    url = builder.getODataFullUrl(query) + '&exportExcel=true';
+    return url;
+  },
+
+  /**
    * Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.
    * Appends id as `(id)` (OData specification) instead of `/id`.
    *
