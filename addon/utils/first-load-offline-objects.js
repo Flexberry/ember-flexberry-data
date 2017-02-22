@@ -57,7 +57,9 @@ export function firstLoadOfflineObjects(dexieDB, odataPath, functionName, modelN
         }
       });
 
-      dexieDB.table(modelName).bulkAdd(objArray).then(() => resolve(), () => reject());
+      dexieDB.table(modelName).bulkPut(objArray).then(() => resolve(), () => reject());
+    }).fail(function() {
+      return reject(modelName);
     });
   });
 }
