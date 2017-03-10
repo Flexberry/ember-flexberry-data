@@ -135,12 +135,15 @@ export default DS.RESTAdapter.extend({
    * @method buildExportExcelURL
    * @param {Object} store
    * @param {Object} query
+   * @param {Object} detSeparateCols
+   * @param {Object} detSeparateRows
    * @return {String} The URL for excel file.
    */
-  buildExportExcelURL(store, query) {
+  buildExportExcelURL(store, query, detSeparateCols, detSeparateRows) {
     let url = this._buildURL(query.modelName);
     let builder = new ODataQueryAdapter(url, store);
-    url = builder.getODataFullUrl(query) + '&exportExcel=true';
+    url = `${builder.getODataFullUrl(query)}&colsOrder=${query.colsOrder}&` +
+      `exportExcel=true&detSeparateRows=${detSeparateRows}&detSeparateCols=${detSeparateCols}`;
     return url;
   },
 
