@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `syncer` service:
+    - Fix wrong converting of `'true'` strings to boolean value when performing sync up process.
 
 ## [0.9.0-beta.0] - 2017-02-22
 ### Added
