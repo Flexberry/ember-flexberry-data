@@ -694,7 +694,7 @@ export default Ember.Service.extend({
   },
 
   _getBooleanValue(value) {
-    if (typeof(value) === 'string') {
+    if (typeof value === 'string') {
       return value.toLowerCase() === 'true';
     }
 
