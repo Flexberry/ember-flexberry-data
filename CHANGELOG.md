@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.9.0-beta.1] - 2017-03-18
 ### Changed
 - `Adapter.Odata`:
     - Improve `buildExportExcelURL` function to receive exported excel file URL.
