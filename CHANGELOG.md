@@ -1,6 +1,10 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- `Adapter.Odata`:
+    - Improve `buildExportExcelURL` function to receive exported excel file URL.
+
 ### Fixed
 - `syncer` service:
     - Fix wrong converting of `'true'` strings to boolean value when performing sync up process.
