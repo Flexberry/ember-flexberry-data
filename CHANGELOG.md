@@ -1,6 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- `Query.Builder`:
+    - Add `customQueryParams` and `dataType` properties.
+- `Adapter.Odata`:
+    - Now `query` function can return files.
 
 ## [0.9.0-beta.1] - 2017-03-18
 ### Changed

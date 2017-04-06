@@ -68,6 +68,13 @@ export default class ODataAdapter extends BaseAdapter {
       }
     }
 
+    let customQueryParams = query.customQueryParams || {};
+    for (let param in customQueryParams) {
+      if (customQueryParams.hasOwnProperty(param)) {
+        odataArgs[param] = customQueryParams[param];
+      }
+    }
+
     return odataArgs;
   }
 
