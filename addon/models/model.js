@@ -516,7 +516,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       if (kind === 'belongsTo') {
         if (options.async === false) {
           let belongsToValue = _this.get(key);
-          if (belongsToValue) {
+          if (belongsToValue || _this.get('_canonicalBelongsTo')[key]) {
             _this.get('_canonicalBelongsTo')[key] = belongsToValue;
           } else {
             _this.addObserver(key, _this, _this._saveBelongsToObserver);
