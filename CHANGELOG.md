@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.9.0-beta.3] - 2017-04-12
 ### Fixed
 - `Projection.Model`:
     - Fix `_saveCanonicalBelongsTo` method error when `canonicalBelongsTo` value changed to `null`.
