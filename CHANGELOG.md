@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `Adapter.Offline`:
+    - Fix `syncDownTime` property addition for offline models.
 
 ## [0.9.0-beta.3] - 2017-04-12
 ### Fixed

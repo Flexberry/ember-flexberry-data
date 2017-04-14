@@ -316,21 +316,26 @@ export default DS.Adapter.extend({
     @param {DS.Model} type
     @param {DS.Snapshot} snapshot
     @param {Object} fieldsToUpdate
+    @param {Boolean} syncDownTime
     @return {Promise}
   */
-  addHashForBulkUpdateOrCreate(store, type, snapshot, fieldsToUpdate) {
+  addHashForBulkUpdateOrCreate(store, type, snapshot, fieldsToUpdate, syncDownTime) {
     let _this = this;
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
     let addHashForBulkOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
       db.table(type.modelName).get(snapshot.id).then((record) => {
         if (!Ember.isNone(fieldsToUpdate) && record) {
-          if (!Ember.$.isEmptyObject(fieldsToUpdate)) {
+          if (!Ember.$.isEmptyObject(fieldsToUpdate) || syncDownTime) {
             let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
             for (let attrName in hash) {
               if (hash.hasOwnProperty(attrName) && !fieldsToUpdate.hasOwnProperty(attrName)) {
                 delete hash[attrName];
               }
+            }
+
+            if (syncDownTime) {
+              hash.syncDownTime = new Date();
             }
 
             // Merge record with hash and store it to local store only if hash contains some changes for record.
@@ -353,6 +358,10 @@ export default DS.Adapter.extend({
           }
         } else {
           let hash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+          if (syncDownTime) {
+            hash.syncDownTime = new Date();
+          }
+
           _this._storeHashForBulkOperation(type.modelName, hash);
         }
 
