@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- Replace `Ember.String` functions usage by functions with cyrillic support.
 
 ## [0.9.0-beta.4] - 2017-04-14
 ### Fixed

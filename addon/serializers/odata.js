@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseSerializer from './base';
+import { capitalize, camelize } from '../utils/string-functions';
 
 /**
  * Serializer class for OData.
@@ -37,11 +38,26 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
     if (Ember.isNone(belongsToId)) {
       json[payloadKey] = null;
     } else {
-      json[payloadKey] = Ember.String.pluralize(Ember.String.capitalize(Ember.String.camelize(relationship.type))) + '(' + belongsToId + ')';
+      json[payloadKey] = Ember.String.pluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';
     }
 
     if (relationship.options.polymorphic) {
       this.serializePolymorphicType(snapshot, json, relationship);
     }
-  }
+  },
+
+  /**
+    * Returns key for a given relationship.
+    *
+    * @param key Existing relationship key.
+    * @returns {string} Key for a given relationship.
+   */
+  keyForRelationship(key, typeClass, method) {
+    if ((method === 'serialize' && this.hasSerializeRecordsOption(key)) ||
+    (method === 'deserialize' && this.hasDeserializeRecordsOption(key))) {
+      return this.keyForAttribute(key, method);
+    } else {
+      return capitalize(key) + '@odata.bind';
+    }
+  },
 });
