@@ -3,6 +3,7 @@ import DS from 'ember-data';
 
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
+import { capitalize, camelize } from '../utils/string-functions';
 
 /**
  * The OData adapter class.
@@ -144,8 +145,8 @@ export default DS.RESTAdapter.extend({
    * @return {String} The path for a given type.
    */
   pathForType(modelName) {
-    var camelized = Ember.String.camelize(modelName);
-    var capitalized = Ember.String.capitalize(camelized);
+    var camelized = camelize(modelName);
+    var capitalized = capitalize(camelized);
     return Ember.String.pluralize(capitalized);
   },
 
