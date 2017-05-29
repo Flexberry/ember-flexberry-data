@@ -1,12 +1,14 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.9.0-beta.5] - 2017-05-29
+### Changed
+- Replace `Ember.String` functions usage by functions with cyrillic support.
+
 ### Fixed
 - `Projection.Model`:
     - Fix `_aggregateHasManyRelationshipValidationErrors` method validation error when deleting new unsaved detail.
-
-### Changed
-- Replace `Ember.String` functions usage by functions with cyrillic support.
 
 ## [0.9.0-beta.4] - 2017-04-14
 ### Fixed
