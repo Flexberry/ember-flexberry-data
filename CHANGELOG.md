@@ -1,6 +1,10 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `Projection.Model`:
+    - Fix `_aggregateHasManyRelationshipValidationErrors` method validation error when deleting new unsaved detail.
+
 ### Changed
 - Replace `Ember.String` functions usage by functions with cyrillic support.
 
