@@ -80,6 +80,72 @@ export class SimplePredicate extends BasePredicate {
 }
 
 /**
+ * The class of date predicate for filtering attribute by value and filter operator.
+ *
+ * @namespace Query
+ * @class DatePredicate
+ * @extends BasePredicate
+ *
+ * @param attributePath {String} The path to the attribute for filtering.
+ * @param operator {Query.FilterOperator|String} The filter operator.
+ * @param value {String|Date} The value for filtering.
+ * @constructor
+ */
+export class DatePredicate extends BasePredicate {
+  constructor(attributePath, operator, value) {
+    super();
+
+    this._attributePath = attributePath;
+    this._operator = FilterOperator.tryCreate(operator);
+    this._value = value;
+  }
+
+  /**
+   * The path to the attribute for filtering.
+   *
+   * @property attributePath
+   * @type String
+   * @public
+   */
+  get attributePath() {
+    return this._attributePath;
+  }
+
+  /**
+   * The filter operator.
+   *
+   * @property operator
+   * @type Query.FilterOperator
+   * @public
+   */
+  get operator() {
+    return this._operator;
+  }
+
+  /**
+   * The value for filtering.
+   *
+   * @property value
+   * @type String
+   * @public
+   */
+  get value() {
+    return this._value;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the predicate.
+   * @public
+   */
+  toString() {
+    return `(${this._attributePath} ${this._operator} ${this._value})`;
+  }
+}
+
+/**
  * The class of complex predicate which include multiple predicates unioned with logical condition.
  *
  * @namespace Query

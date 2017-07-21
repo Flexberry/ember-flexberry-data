@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
@@ -203,7 +203,7 @@ export default class ODataAdapter extends BaseAdapter {
    * @return {String} OData filter part.
    */
   _convertPredicateToODataFilterClause(predicate, modelName, prefix, level) {
-    if (predicate instanceof SimplePredicate) {
+    if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
       return this._buildODataSimplePredicate(predicate, modelName, prefix);
     }
 

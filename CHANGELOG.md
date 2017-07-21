@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Add `DatePredicate` for dates.
 
 ## [0.9.0-beta.5] - 2017-05-29
 ### Changed
