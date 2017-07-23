@@ -4,6 +4,9 @@
 ### Added
 - Add `DatePredicate` for dates.
 
+### Changed
+- Now if record saving fail, audit record won't be created.
+
 ## [0.9.0-beta.5] - 2017-05-29
 ### Changed
 - Replace `Ember.String` functions usage by functions with cyrillic support.

@@ -65,16 +65,20 @@ export default Ember.Mixin.create({
         reject(new Error('Attempt to save readonly model instance.'));
       } else if (_this.get('hasDirtyAttributes') && !_this.get('offlineGlobals.isOnline')) {
         _this.get('syncer').createJob(_this).then((auditEntity) => {
-          if (auditEntity.get('objectPrimaryKey')) {
-            resolve(__super.call(_this, ...arguments));
-          } else {
-            __super.call(_this, ...arguments).then((record) => {
+          __super.call(_this, ...arguments).then((record) => {
+            if (!auditEntity.get('objectPrimaryKey')) {
               auditEntity.set('objectPrimaryKey', record.get('id'));
               auditEntity.save().then(() => {
                 resolve(record);
               });
-            });
-          }
+            } else {
+              resolve(record);
+            }
+          }).catch((reason) => {
+            auditEntity.destroyRecord().then(() => {
+              reject(reason);
+            })
+          });
         }).catch((reason) => {
           reject(reason);
         });
