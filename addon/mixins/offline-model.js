@@ -77,7 +77,7 @@ export default Ember.Mixin.create({
           }).catch((reason) => {
             auditEntity.destroyRecord().then(() => {
               reject(reason);
-            })
+            });
           });
         }).catch((reason) => {
           reject(reason);
