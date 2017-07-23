@@ -2,7 +2,7 @@ import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, ComplexPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, ComplexPredicate, DatePredicate } from 'ember-flexberry-data/query/predicate';
 
 export default function readingDataTypes(store, assert, App) {
   assert.expect(11);
@@ -63,7 +63,7 @@ export default function readingDataTypes(store, assert, App) {
       let moment = App.__container__.lookup('service:moment');
       let dateBirth = moment.moment(new Date(1974, 10, 12, 13, 14, 0)).format('YYYY-MM-DDTHH:mmZ');
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate('birthday', FilterOperator.Eq, dateBirth));
+        .where(new DatePredicate('birthday', FilterOperator.Eq, dateBirth));
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) => {
@@ -75,7 +75,7 @@ export default function readingDataTypes(store, assert, App) {
     // Defferent types in complex.
     .then(() => {
       let predicate = new ComplexPredicate(Condition.And, ...[
-          new SimplePredicate('birthday', FilterOperator.Eq, new Date(1974, 10, 12, 13, 14, 0)),
+          new DatePredicate('birthday', FilterOperator.Eq, new Date(1974, 10, 12, 13, 14, 0)),
           new SimplePredicate('activated', FilterOperator.Eq, true),
           new SimplePredicate('karma', FilterOperator.Eq, 1.5)
       ]);

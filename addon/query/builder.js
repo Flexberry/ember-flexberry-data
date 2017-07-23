@@ -4,7 +4,7 @@ import DS from 'ember-data';
 import BaseBuilder from './base-builder';
 import OrderByClause from './order-by-clause';
 import QueryObject from './query-object';
-import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
+import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
 import Information from '../utils/information';
 import isEmbedded from '../utils/is-embedded';
 
@@ -377,7 +377,7 @@ export default class Builder extends BaseBuilder {
     let extend = [];
     let existKeys = Object.keys(this._select);
     let scanPredicates = function(predicate, detailPath) {
-      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate || predicate instanceof DatePredicate) {
         let path = detailPath ? detailPath + '.' : '';
         Information.parseAttributePath(predicate.attributePath).forEach((attribute) => {
           let key = `${path}${attribute}`;

@@ -4,7 +4,7 @@
 
 import Ember from 'ember';
 import FilterOperator from './filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
 import BaseAdapter from './base-adapter';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
@@ -46,8 +46,19 @@ export default class extends BaseAdapter {
   query(store, query) {
     return new Ember.RSVP.Promise((resolve, reject) => {
       let _this = this;
-      let moment = Ember.getOwner(store).lookup('service:moment');
-      let jsAdapter = new JSAdapter(moment);
+      let jsAdapter;
+      let datePredicates = [];
+      if (query.predicate instanceof ComplexPredicate) {
+        datePredicates = query.predicate.predicates.filter(predicate => predicate instanceof DatePredicate);
+      }
+
+      if (query.predicate instanceof DatePredicate || datePredicates.length > 0) {
+        let moment = Ember.getOwner(store).lookup('service:moment');
+        jsAdapter = new JSAdapter(moment);
+      } else {
+        jsAdapter = new JSAdapter();
+      }
+
       let table = _this._db.table(query.modelName);
       let complexQuery = containsRelationships(query);
 
@@ -585,7 +596,7 @@ function updateWhereClause(store, table, query) {
     return table;
   }
 
-  if (predicate instanceof SimplePredicate) {
+  if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
     let information = new Information(store);
     let attrType = information.getType(query.modelName, predicate.attributePath);
     let value;
@@ -605,8 +616,8 @@ function updateWhereClause(store, table, query) {
     if (value === null) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
-      let moment = Ember.getOwner(store).lookup('service:moment');
-      let jsAdapter = new JSAdapter(moment);
+      let jsAdapter = predicate instanceof DatePredicate ? new JSAdapter(Ember.getOwner(store).lookup('service:moment')) : new JSAdapter();
+
       return table.filter(jsAdapter.getAttributeFilterFunction(predicate));
     }
 
@@ -634,9 +645,15 @@ function updateWhereClause(store, table, query) {
     }
   }
 
-  if (predicate instanceof StringPredicate || predicate instanceof ComplexPredicate) {
-    let moment = Ember.getOwner(store).lookup('service:moment');
-    let jsAdapter = new JSAdapter(moment);
+  if (predicate instanceof StringPredicate) {
+    let jsAdapter = new JSAdapter();
+    return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
+  }
+
+  if (predicate instanceof ComplexPredicate) {
+    let datePredicates = predicate.predicates.filter(pred => pred instanceof DatePredicate);
+    let jsAdapter = datePredicates.length > 0 ? new JSAdapter(Ember.getOwner(store).lookup('service:moment')) : new JSAdapter();
+
     return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
   }
 
@@ -652,7 +669,7 @@ function updateWhereClause(store, table, query) {
 */
 function containsRelationships(query) {
   let contains = false;
-  if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate) {
+  if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate || query.predicate instanceof DatePredicate) {
     contains = Information.parseAttributePath(query.predicate.attributePath).length > 1;
   }
 
