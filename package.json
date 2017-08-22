@@ -1,6 +1,6 @@
 {
   "name": "ember-flexberry-data",
-  "version": "0.7.1-beta.2",
+  "version": "0.9.0-beta.6",
   "description": "Support of database projections, JavaScript Query Language and working with several kinds of backends",
   "license": "MIT",
   "author": {
@@ -37,6 +37,7 @@
     "ember-cli-htmlbars-inline-precompile": "^0.3.3",
     "ember-cli-inject-live-reload": "^1.4.1",
     "ember-cli-jshint": "^1.0.4",
+    "ember-cli-moment-shim": "2.2.1",
     "ember-cli-qunit": "^3.0.1",
     "ember-cli-release": "^0.2.9",
     "ember-cli-sri": "^2.1.0",
@@ -46,6 +47,7 @@
     "ember-disable-prototype-extensions": "^1.1.0",
     "ember-export-application-global": "^1.0.5",
     "ember-load-initializers": "^0.5.1",
+    "ember-moment": "6.0.0",
     "ember-resolver": "^2.0.3",
     "loader.js": "^4.0.10",
     "node-uuid": "^1.4.7"

@@ -1,7 +1,11 @@
+import DS from 'ember-data';
 import { Serializer } from 'ember-flexberry-data';
 
-// TODO: ODataSerializer.extend
-export default Serializer.Offline.extend({
+export default Serializer.Offline.extend(DS.EmbeddedRecordsMixin, {
   attrs: {
-  }
+    Country: { serialize: 'id', deserialize: 'records' },
+    Manager: { serialize: 'id', deserialize: 'records' },
+    Creator: { serialize: 'id', deserialize: 'records' },
+    Tags: { serialize: 'id', deserialize: 'records' },
+  },
 });

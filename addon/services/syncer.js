@@ -1,8 +1,9 @@
 import Ember from 'ember';
 import Builder from '../query/builder';
 import { SimplePredicate } from '../query/predicate';
-import { reloadLocalRecords, syncDownRelatedRecords } from '../utils/reload-local-records';
+import { reloadLocalRecords, createLocalRecord } from '../utils/reload-local-records';
 import isModelInstance from '../utils/is-model-instance';
+import Queue from '../utils/queue';
 
 const { RSVP, isNone, isArray, getOwner, get } = Ember;
 
@@ -12,6 +13,12 @@ const { RSVP, isNone, isArray, getOwner, get } = Ember;
   @extends Ember.Object
 */
 export default Ember.Service.extend({
+  /* Queue of promises for syncDown */
+  _syncDownQueue: Queue.create(),
+
+  /* Array of records to be unloaded after syncing down */
+  _recordsToUnload: null,
+
   /**
     Store that use for making requests in offline mode.
     By default it is set to global instane of {{#crossLink "LocalStore"}}{{/crossLink}} class.
@@ -20,6 +27,24 @@ export default Ember.Service.extend({
     @type <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
   */
   offlineStore: undefined,
+
+  /**
+    Number of "main" records (include related records for relationships) that should be accumulated before bulk operation will be performed.
+
+    @property numberOfRecordsForPerformingBulkOperations
+    @type Number
+    @default 10
+  */
+  numberOfRecordsForPerformingBulkOperations: 10,
+
+  /**
+    Allows to enable or disable continuation of syncing down if error occurs.
+
+    @property queueContinueOnError
+    @type Boolean
+    @default true
+  */
+  queueContinueOnError: true,
 
   /**
   */
@@ -37,6 +62,8 @@ export default Ember.Service.extend({
     let localStore = getOwner(this).lookup('store:local');
 
     _this.set('offlineStore', localStore);
+    _this.get('_syncDownQueue').set('continueOnError', _this.get('queueContinueOnError'));
+    _this.set('_recordsToUnload', []);
   },
 
   /**
@@ -50,25 +77,47 @@ export default Ember.Service.extend({
    * @param {Object} [params] Additional parameters for syncing down.
    * @param {Query.QueryObject} [params.queryObject] QueryObject instance to make query if descriptor is a typeName.
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
-   * @return {Promie}
+   * @return {Promise}
    */
   syncDown: function(descriptor, reload, projectionName, params) {
     let _this = this;
+
+    _this.set('_recordsToUnload', []);
+
+    let bulkUpdateOrCreateCall = (record, resolve, reject) => {
+      let localStore = _this.get('offlineStore');
+      let modelName = record.constructor.modelName;
+      let localAdapter = localStore.adapterFor(modelName);
+      return localAdapter.bulkUpdateOrCreate(localStore, true, false).then(() => {
+        resolve(record);
+      }, reject);
+    };
 
     if (typeof descriptor === 'string') {
       return reloadLocalRecords.call(this, descriptor, reload, projectionName, params);
 
     } else if (isModelInstance(descriptor)) {
-      return _this._syncDownRecord(descriptor, reload, projectionName, params);
-
+      let store = getOwner(this).lookup('service:store');
+      return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, descriptor, reload, projectionName, params).then(() =>
+        bulkUpdateOrCreateCall(descriptor, resolve, reject), reject).then(() => _this._unloadRecordsAfterSyncDown(store, params)));
     } else if (isArray(descriptor)) {
+      let store = getOwner(this).lookup('service:store');
+      let recordsCount =  descriptor.get ? descriptor.get('length') : descriptor.length;
+      let accumulatedRecordsCount = 0;
       let updatedRecords = descriptor.map(function(record) {
-        return _this._syncDownRecord(record, reload, projectionName, params);
+        return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, record, reload, projectionName, params).then(() => {
+          accumulatedRecordsCount++;
+          if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
+            return bulkUpdateOrCreateCall(record, resolve, reject);
+          } else {
+            resolve(record);
+          }
+        }, reject));
       });
-      return RSVP.all(updatedRecords);
+      return RSVP.all(updatedRecords).then(() => _this._unloadRecordsAfterSyncDown(store, params));
 
     } else {
-      throw new Error('Input can only be a string, a DS.Model or an array of DS.Model, but is ' + descriptor);
+      throw new Error('Input for sync down can only be a string, a DS.Model or an array of DS.Model, but is ' + descriptor);
     }
   },
 
@@ -86,6 +135,7 @@ export default Ember.Service.extend({
    * Saves data to local store.
    *
    * @method _syncDownRecord
+   * @param {DS.Store or Subclass} store Store of application.
    * @param {DS.Model} record Record to save in local store.
    * @param {Boolean} [reload] If set to true then syncer perform remote reload for data, otherwise data will get from the store.
    * @param {String} [projectionName] Name of projection for remote reload of data. If not set then all properties of record, except navigation properties, will be read.
@@ -94,56 +144,30 @@ export default Ember.Service.extend({
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
    * @private
    */
-  _syncDownRecord: function(record, reload, projectionName/*, params*/) {
+  _syncDownRecord: function(store, record, reload, projectionName, params) {
     var _this = this;
 
     function saveRecordToLocalStore(store, record, projectionName) {
-      let dexieService = getOwner(_this).lookup('service:dexie');
-      dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
       let modelName = record.constructor.modelName;
       let modelType = store.modelFor(modelName);
       let projection = isNone(projectionName) ? null : modelType.projections[projectionName];
       let localStore = this.get('offlineStore');
       let localAdapter = localStore.adapterFor(modelName);
-      let snapshot = record._createSnapshot();
-      let unloadRecordFromStore = () => {
-
-        // TODO: Uncomment this after fix bug with load unloaded models.
-        // if (params && params.unloadSyncedRecords) {
-        //   if (store.get('onlineStore')) {
-        //     store.get('onlineStore').unloadRecord(record);
-        //   } else {
-        //     store.unloadRecord(record);
-        //   }
-        // }
-      };
 
       if (record.get('isDeleted')) {
+        let snapshot = record._createSnapshot();
         return localAdapter.deleteRecord(localStore, snapshot.type, snapshot).then(() => {
+          let dexieService = getOwner(_this).lookup('service:dexie');
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
+          return record;
         }).catch((reason) => {
-          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-          Ember.Logger.error(reason);
-        }).finally(unloadRecordFromStore);
+          return Ember.RSVP.reject(reason);
+        });
       } else {
-        return localAdapter.updateOrCreate(localStore, snapshot.type, snapshot).then(function() {
-          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-          let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
-          if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
-            return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection);
-          } else {
-            Ember.Logger.warn('It does not allow to sync down related records without specified projection. ' +
-              'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js');
-            return RSVP.resolve();
-          }
-        }).catch((reason) => {
-          dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-          Ember.Logger.error(reason);
-        }).finally(unloadRecordFromStore);
+        return createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params);
       }
     }
 
-    var store = getOwner(this).lookup('service:store');
     if (reload) {
       let modelName = record.constructor.modelName;
       let options = {
@@ -151,11 +175,15 @@ export default Ember.Service.extend({
         useOnlineStore: true
       };
       options = isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
-      return store.findRecord(modelName, record.id, options).then(function(reloadedRecord) {
+      return new Ember.RSVP.Promise((resolve, reject) => {
+        store.findRecord(modelName, record.id, options).then(function(reloadedRecord) {
 
-        // TODO: Uncomment this after fix bug with load unloaded models.
-        // store.get('onlineStore').unloadRecord(modelName);
-        return saveRecordToLocalStore.call(_this, store, reloadedRecord, projectionName);
+          // TODO: Uncomment this after fix bug with load unloaded models.
+          // store.get('onlineStore').unloadRecord(reloadedRecord);
+          saveRecordToLocalStore.call(_this, store, reloadedRecord, projectionName).then(() => {
+            resolve(record);
+          }, reject);
+        });
       });
     } else {
       return saveRecordToLocalStore.call(_this, store, record, projectionName);
@@ -163,34 +191,124 @@ export default Ember.Service.extend({
   },
 
   /**
+    Start sync up process.
+
+    @method syncUp
+    @param {Ember.Array} [jobs] Array instances of `auditEntity` model for sync up.
+    @param {Object} [options] Object with options for sync up.
+    @param {Boolean} [options.continueOnError] If `true` continue sync up if an error occurred.
+    @return {Promise}
   */
-  syncUp(continueOnError) {
-    let dexieService = getOwner(this).lookup('service:dexie');
+  syncUp(jobs, options) {
+    let builder;
+    let predicate;
     let store = getOwner(this).lookup('service:store');
+    let dexieService = getOwner(this).lookup('service:dexie');
     let modelName = 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity';
-    let predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
-      .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
-    let builder = new Builder(store, modelName)
-      .selectByProjection('AuditEntityE')
-      .orderBy('operationTime')
-      .where(predicate);
-    return this.get('offlineStore').query(modelName, builder.build()).then((jobs) => {
-      dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
-      return this._runJobs(store, jobs, continueOnError);
-    });
+    if (jobs) {
+      return RSVP.resolve(jobs);
+    } else {
+      predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
+        .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
+      builder = new Builder(store.get('offlineStore'), modelName)
+        .selectByProjection('AuditEntityE')
+        .orderBy('operationTime')
+        .where(predicate);
+
+      return this.get('offlineStore').query(modelName, builder.build()).then((jobs) => {
+        dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
+        return this._runJobs(store, jobs, options && options.continueOnError);
+      });
+    }
+  },
+
+  /**
+    This method is called when a sync process if at attempt create, update or delete record, server error return.
+    Default behavior: Marked `job` as 'Ошибка', execute further when called `syncUp` method.
+
+    @example
+      ```javascript
+      // app/services/syncer.js
+      import { Offline } from 'ember-flexberry-data';
+
+      export default Offline.Syncer.extend({
+        ...
+        resolveServerError(job, error) {
+          let _this = this;
+          return new Ember.RSVP.Promise((resolve, reject) => {
+            // Here `error.status` as example, as if user not authorized on server.
+            if (error.status === 401) {
+              // As if `auth` function authorize user.
+              auth().then(() => {
+                _this.syncUp(Ember.A([job])).then(() => {
+                  job.set('executionResult', 'Выполнено');
+                  resolve(job.save());
+                }, reject);
+              }, reject);
+            } else {
+              job.set('executionResult', 'Ошибка');
+              resolve(job.save());
+            }
+          });
+        },
+        ...
+      });
+
+      ```
+
+    @method resolveServerError
+    @param {subclass of DS.Model} job Instance of `auditEntity` model when restore which error occurred.
+    @param {Object} error
+    @return {Promise} Promise that resolves updated job.
+  */
+  resolveServerError(job, error) {
+    Ember.debug(`Error sync up:'${job.get('operationType')}' - '${job.get('objectType.name')}:${job.get('objectPrimaryKey')}'.`, error);
+    job.set('executionResult', 'Ошибка');
+    return job.save();
+  },
+
+  /**
+    This method is called when a sync process not found record on server for delete or update.
+    Default behavior: Marked `job` as 'Не выполнено', not delete and not execute further when called `syncUp` method.
+
+    @example
+      ```javascript
+      // app/services/syncer.js
+      import { Offline } from 'ember-flexberry-data';
+
+      export default Offline.Syncer.extend({
+        ...
+        resolveNotFoundRecord(job) {
+          if (job.get('operationType') === 'UPDATE') {
+            // It will be executed when next called `syncUp` method.
+            job.set('executionResult', 'Ошибка');
+          } else if (job.get('operationType') === 'DELETE') {
+            // It will be immediately delete and not never executed.
+            job.set('executionResult', 'Выполнено');
+          }
+
+          return job.save();
+        },
+        ...
+      });
+
+      ```
+
+    @method resolveNotFoundRecord
+    @param {subclass of DS.Model} job Instance of `auditEntity` model when restore which error occurred.
+    @return {Promise} Promise that resolves updated job.
+  */
+  resolveNotFoundRecord(job) {
+    job.set('executionResult', 'Не выполнено');
+    return job.save();
   },
 
   /**
   */
   createJob(record) {
-    let _this = this;
     return new RSVP.Promise((resolve, reject) => {
-      _this._createAuditEntity(record).then((auditEntity) => {
-        _this._createAuditFields(auditEntity, record).then((auditEntity) => {
-          resolve(auditEntity);
-        }).catch((reason) => {
-          reject(reason);
-        });
+      this._createAuditEntity(record).then((auditEntity) => {
+        this._createAuditFields(auditEntity, record).then(resolve, reject);
       });
     });
   },
@@ -215,7 +333,7 @@ export default Ember.Service.extend({
               reject(reason);
             }
           });
-        });
+        }, reject);
       } else {
         dexieService.set('queueSyncUpWorksCount', 0);
         resolve(executedJob);
@@ -232,7 +350,7 @@ export default Ember.Service.extend({
         RSVP.all(job.get('auditFields').map(field => field.destroyRecord())).then(() => {
           dexieService.set('queueSyncUpCurrentModelName', null);
           resolve(job.destroyRecord());
-        });
+        }, reject);
       } else {
         reject(job);
       }
@@ -257,18 +375,11 @@ export default Ember.Service.extend({
   */
   _runCreatingJob(store, job) {
     let record = store.peekRecord(job.get('objectType.name'), job.get('objectPrimaryKey'));
-
-    // TODO: Uncomment this after fix bug with load unloaded models.
-    // if (record) {
-    //   record.rollbackAll();
-    //   store.unloadRecord(record);
-    // }
-
-    if (!record)
-    {
-      record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
+    if (record) {
+      store.unloadRecord(record);
     }
 
+    record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
     record.set('isSyncingUp', true);
     record.set('isCreatedDuringSyncUp', true);
 
@@ -277,13 +388,7 @@ export default Ember.Service.extend({
       return record.save().then(() => {
         job.set('executionResult', 'Выполнено');
         return job.save();
-      }).catch((reason) => {
-
-        // TODO: Resolve conflicts here.
-        job.set('executionResult', 'Ошибка');
-        Ember.Logger.error(`Sync up model '${job.get('objectType.name')}' creating job error`, reason, record);
-        return job.save();
-      }).finally(() => {
+      }).catch(reason => this.resolveServerError(job, reason)).finally(() => {
         if (record) {
           record.set('isSyncingUp', false);
         }
@@ -304,20 +409,14 @@ export default Ember.Service.extend({
             record.set('isUpdatedDuringSyncUp', true);
             job.set('executionResult', 'Выполнено');
             return job.save();
-          }).catch((reason) => {
-
-            // TODO: Resolve conflicts here.
-            job.set('executionResult', 'Ошибка');
-            Ember.Logger.error(`Sync up model '${query.modelName}' updating job error`, reason, record);
-            return job.save();
-          }).finally(() => {
+          }).catch(reason => this.resolveServerError(job, reason)).finally(() => {
             if (record) {
               record.set('isSyncingUp', false);
             }
           });
         });
       } else {
-        throw new Error('No record is found on server.');
+        return this.resolveNotFoundRecord(job);
       }
     });
   },
@@ -333,19 +432,13 @@ export default Ember.Service.extend({
           record.set('isDestroyedDuringSyncUp', true);
           job.set('executionResult', 'Выполнено');
           return job.save();
-        }).catch((reason) => {
-
-          // TODO: Resolve conflicts here.
-          job.set('executionResult', 'Ошибка');
-          Ember.Logger.error(`Sync up model '${query.modelName}' removing job error`, reason, record);
-          return job.save();
-        }).finally(() => {
+        }).catch(reason => this.resolveServerError(job, reason)).finally(() => {
           if (record) {
             record.set('isSyncingUp', false);
           }
         });
       } else {
-        throw new Error('No record is found on server.');
+        return this.resolveNotFoundRecord(job);
       }
     });
   },
@@ -378,7 +471,10 @@ export default Ember.Service.extend({
           if (auditData.operationType === 'DELETE' && auditEntity.get('operationType') === 'INSERT') {
             return auditEntity.destroyRecord();
           } else {
-            delete auditData.operationType;
+            if (auditEntity.get('operationType') === 'INSERT') {
+              delete auditData.operationType;
+            }
+
             auditEntity.setProperties(auditData);
             return auditEntity.save();
           }
@@ -471,6 +567,7 @@ export default Ember.Service.extend({
   /**
   */
   _changesForRecord(store, job) {
+    let _this = this;
     return new RSVP.Promise((resolve, reject) => {
       let changes = {};
       let promises = [];
@@ -488,7 +585,7 @@ export default Ember.Service.extend({
           let value = auditField.get('newValue');
           switch (attributes.get(field).type) {
             case 'boolean':
-              changes[field] = value === null ? null : !!value;
+              changes[field] = value === null ? null : _this._getBooleanValue(value);
               break;
 
             case 'number':
@@ -553,11 +650,54 @@ export default Ember.Service.extend({
   /**
   */
   _createQuery(store, job) {
-    let builder = new Builder(store)
-      .from(job.get('objectType.name'))
-      .byId(job.get('objectPrimaryKey'));
+    //TODO: Get projection for sync up from generated list of projections for models.
+    let modelName = job.get('objectType.name');
+    let modelClass = store.modelFor(modelName);
+    let projectionName = modelName.indexOf('-') > -1 ? modelName.substring(modelName.indexOf('-') + 1) : modelName;
+    projectionName = projectionName.camelize().capitalize() + 'E';
+
+    let builder = new Builder(store).from(modelName);
+    if (modelClass.projections && modelClass.projections.get(projectionName)) {
+      builder = builder.selectByProjection(projectionName);
+    }
+
+    builder = builder.byId(job.get('objectPrimaryKey'));
     let query = builder.build();
     query.useOnlineStore = true;
     return query;
   },
+
+  /**
+  */
+  _unloadRecordsAfterSyncDown(store, params) {
+    let recordsToUnload = this.get('_recordsToUnload');
+    if (params && params.unloadSyncedRecords && recordsToUnload.length > 0) {
+      for (let i = 0; i < recordsToUnload.length; i++) {
+        let record = recordsToUnload[i];
+        if (record.get('hasDirtyAttributes')) {
+          record.rollbackAttributes();
+        }
+
+        if (!record.get('isDeleted')) {
+          if (store.get('onlineStore')) {
+            store.get('onlineStore').unloadRecord(record);
+          } else {
+            store.unloadRecord(record);
+          }
+        }
+      }
+
+      this.set('_recordsToUnload', []);
+    }
+
+    return Ember.RSVP.resolve();
+  },
+
+  _getBooleanValue(value) {
+    if (typeof value === 'string') {
+      return value.toLowerCase() === 'true';
+    }
+
+    return !!value;
+  }
 });

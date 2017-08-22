@@ -7,7 +7,7 @@
 [![ember-data](https://embadge.io/v1/badge.svg?label=ember-data&range=~2.4.2)](https://github.com/emberjs/data/releases)
 [![ember-cli](https://embadge.io/v1/badge.svg?label=ember-cli&range=2.4.3)](https://github.com/ember-cli/ember-cli/releases)
 
-Ember [Flexberry](http://flexberry.ru/) Data addon - Support of database projections, JavaScript Query Language and working with several kinds of backends.
+Ember [Flexberry](http://flexberry.ru/) Data addon - Support of database projections, JavaScript Query Language, Offline data storage (`IndexedDB` via `dexie`) and working with several kinds of backends: `OData V4`, `JSON API`, etc.
 
 ## Installation
 
@@ -38,7 +38,7 @@ You will need the following things properly installed on your computer.
 ## Running
 
 * `ember server`
-* Visit your app at http://localhost:4200.
+* Visit your app at http://localhost:4201.
 
 ## Running Tests
 
@@ -71,7 +71,7 @@ You will need the following things properly installed on your computer.
 #### Documenting
 
 * Document your code using [YUIDoc Syntax Reference](http://yui.github.io/yuidoc/syntax/index.html). For examples, you can look at the documented code in the ember.js repository.
-* After pushing into master or develop branch, documentation will be automatically generated and updated in [Flexberry/Documentation repository](https://github.com/Flexberry/Documentation), which is available via http://flexberry.github.io/Documentation.
+* After pushing into master or develop branch, documentation will be automatically generated and updated in [Flexberry/Documentation repository](https://github.com/Flexberry/flexberry.github.io), which is available via http://flexberry.github.io.
 * For testing and generating documentation by hands use [YUIDoc](http://yui.github.io/yuidoc/).
 
 ## Further Reading / Useful Links

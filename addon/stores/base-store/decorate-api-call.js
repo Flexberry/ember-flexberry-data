@@ -22,36 +22,20 @@ export default function decorateAPICall(finderType, superFunc) {
       }
     }
 
-    /*
-	return syncUp()
-      .then(function() { return _superFinder.apply(_this, args); })
-      .then(syncDown);
-    */
+    return _superFinder.apply(_this, args).then(function(result) {
+      let queryOrOptions = isObject(args[1]) ? args[1] : isObject(args[2]) ? args[2] : null;
+      let projectionName = null;
+      if (!Ember.isNone(queryOrOptions)) {
+        projectionName = queryOrOptions.projectionName ? queryOrOptions.projectionName :
+          queryOrOptions.projection && typeof queryOrOptions.projection === 'string' ? queryOrOptions.projection : null;
+      }
 
-    return _superFinder.apply(_this, args)
-      .then(function(result) {
-        let queryOrOptions = isObject(args[1]) ? args[1] : isObject(args[2]) ? args[2] : null;
-        let projectionName = null;
-        if (!Ember.isNone(queryOrOptions)) {
-          projectionName = queryOrOptions.projectionName ? queryOrOptions.projectionName :
-            queryOrOptions.projection && typeof queryOrOptions.projection === 'string' ? queryOrOptions.projection : null;
-        }
-
-        if (Ember.getOwner(_this).lookup('service:offline-globals').get('isSyncDownWhenOnlineEnabled')) {
-          return syncDown(result, false, projectionName, { unloadSyncedRecords: false });
-        } else {
-          return result;
-        }
-      });
-
-    /*
-    function syncUp() {
-      return syncer.syncUp().catch(function(error) {
-        Ember.Logger.warn('Syncing Error:');
-        Ember.Logger.error(error && error.stack);
-      });
-    }
-    */
+      if (Ember.getOwner(_this).lookup('service:offline-globals').get('isSyncDownWhenOnlineEnabled')) {
+        return syncDown(result, false, projectionName, { unloadSyncedRecords: false });
+      } else {
+        return result;
+      }
+    });
 
     function syncDown(result, reload, projectionName) {
       if (finderType === 'all') {

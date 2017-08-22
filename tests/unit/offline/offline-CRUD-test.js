@@ -5,25 +5,30 @@ import destroyApp from '../../helpers/destroy-app';
 import Dexie from 'npm:dexie';
 import { Query } from 'ember-flexberry-data';
 
-var App;
-var store;
+var AppOfflineCrudTest;
+var storeOfflineCrudTest;
 var run = Ember.run;
 var get = Ember.get;
-const dbName = 'TestDB';
+const dbNameOfflineCrudTest = 'TestDbOCT';
 
 module('offline-CRUD', {
   beforeEach: function (assert) {
     var done = assert.async();
     run(function () {
-      App = startApp();
-      store = App.__container__.lookup('service:store');
-      store.set('offlineStore.dbName', dbName);
-      let offlineGlobals = App.__container__.lookup('service:offline-globals');
+      AppOfflineCrudTest = startApp();
+      storeOfflineCrudTest = AppOfflineCrudTest.__container__.lookup('service:store');
+      let offlineSchema = {};
+      offlineSchema[dbNameOfflineCrudTest] = {
+        1: storeOfflineCrudTest.get('offlineSchema.TestDB')['0.1'],
+      };
+      storeOfflineCrudTest.set('offlineSchema', offlineSchema);
+      storeOfflineCrudTest.set('offlineStore.dbName', dbNameOfflineCrudTest);
+      let offlineGlobals = AppOfflineCrudTest.__container__.lookup('service:offline-globals');
       offlineGlobals.setOnlineAvailable(false);
 
-      let dexieService = App.__container__.lookup('service:dexie');
-      var db = dexieService.dexie(dbName, store);
-      Dexie.delete(dbName).then(() => {
+      let dexieService = AppOfflineCrudTest.__container__.lookup('service:dexie');
+      var db = dexieService.dexie(dbNameOfflineCrudTest, storeOfflineCrudTest.get('offlineStore'));
+      Dexie.delete(dbNameOfflineCrudTest).then(() => {
         db.open().then((db) => {
           let promises = [];
           promises.push(db.table('ember-flexberry-dummy-suggestion').put({
@@ -104,7 +109,9 @@ module('offline-CRUD', {
 
   afterEach: function () {
     run(function () {
-      destroyApp(App);
+      let dexieService = AppOfflineCrudTest.__container__.lookup('service:dexie');
+      dexieService.close(dbNameOfflineCrudTest);
+      destroyApp(AppOfflineCrudTest);
     });
   }
 });
@@ -113,46 +120,41 @@ test('find record', function (assert) {
   assert.expect(13);
   var done1 = assert.async();
   run(function () {
-    store.findRecord('ember-flexberry-dummy-suggestion', 'fea5b275-cb9b-4584-ba04-26122bc8cbd3').then(function(records) {
+    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-suggestion', 'fea5b275-cb9b-4584-ba04-26122bc8cbd3').then(function(records) {
       assert.equal(get(records, 'address'), 'Street, 20', 'record address = Street, 20');
       assert.equal(get(records, 'text'), 'Loooong text', 'record text = Loooong text');
       assert.equal(get(records, 'votes'), 1, 'record votes = 1');
       assert.equal(get(records, 'moderated'), false, '1 record was found');
-      done1();
-    });
+    }).finally(done1);
   });
   var done2 = assert.async();
   run(function () {
-    store.findRecord('ember-flexberry-dummy-suggestion-type', 'de627522-47c3-428f-99be-fdac2e8f5618').then(function(records) {
+    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-suggestion-type', 'de627522-47c3-428f-99be-fdac2e8f5618').then(function(records) {
       assert.equal(get(records, 'name'), '123', '1 record was found');
       assert.equal(get(records, 'moderated'), false, '1 record was found');
-      done2();
-    });
+    }).finally(done2);
   });
   var done3 = assert.async();
   run(function () {
-    store.findRecord('ember-flexberry-dummy-application-user', '555a6d25-ac76-417c-bcc5-25bc260fc3ae').then(function(records) {
+    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-application-user', '555a6d25-ac76-417c-bcc5-25bc260fc3ae').then(function(records) {
       assert.equal(get(records, 'name'), 'Васиииилий', '1 record was found');
       assert.equal(get(records, 'eMail'), 'pupkin1@mail.ru', '1 record was found');
       assert.equal(get(records, 'activated'), true, '1 record was found');
-      done3();
-    });
+    }).finally(done3);
   });
   var done4 = assert.async();
   run(function () {
-    store.findRecord('ember-flexberry-dummy-vote', '8be0d89b-8cab-4b0b-b029-356c59809163').then(function(records) {
+    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-vote', '8be0d89b-8cab-4b0b-b029-356c59809163').then(function(records) {
       assert.equal(get(records, 'voteType'), 'Like', '1 record was found');
-      done4();
-    });
+    }).finally(done4);
   });
   var done5 = assert.async();
   run(function () {
-    store.findRecord('ember-flexberry-dummy-comment', '7e5d3b63-eb5e-446e-84da-26865f87c1c5').then(function(records) {
+    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-comment', '7e5d3b63-eb5e-446e-84da-26865f87c1c5').then(function(records) {
       assert.equal(get(records, 'text'), 'Not ok', '1 record was found');
       assert.equal(get(records, 'votes'), 566, '1 record was found');
       assert.equal(get(records, 'moderated'), false, '1 record was found');
-      done5();
-    });
+    }).finally(done5);
   });
 });
 
@@ -160,11 +162,10 @@ test('find all records', function (assert) {
   assert.expect(1);
   var done = assert.async();
   run(function () {
-    store.findAll('ember-flexberry-dummy-suggestion').then(function(records) {
+    storeOfflineCrudTest.findAll('ember-flexberry-dummy-suggestion').then(function(records) {
       var firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found');
-      done();
-    });
+    }).finally(done);
   });
 });
 
@@ -172,22 +173,20 @@ test('query record via query', function (assert) {
   assert.expect(2);
   var done1 = assert.async();
   run(function () {
-    store.query('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(records) {
+    storeOfflineCrudTest.query('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(records) {
       var firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found without query language');
-      done1();
-    });
+    }).finally(done1);
   });
 
   var done2 = assert.async();
   run(function () {
     let modelName = 'ember-flexberry-dummy-suggestion';
-    let builder = new Query.Builder(store, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
-    store.query(modelName, builder.build()).then(function(records) {
+    let builder = new Query.Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
+    storeOfflineCrudTest.query(modelName, builder.build()).then(function(records) {
       var firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found with query language');
-      done2();
-    });
+    }).finally(done2);
   });
 });
 
@@ -195,20 +194,18 @@ test('query record via queryRecord', function (assert) {
   assert.expect(2);
   var done1 = assert.async();
   run(function () {
-    store.queryRecord('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(record) {
+    storeOfflineCrudTest.queryRecord('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(record) {
       assert.equal(get(record, 'address'), 'Street, 20', '1 record was found without query language');
-      done1();
-    });
+    }).finally(done1);
   });
 
   var done2 = assert.async();
   run(function () {
     let modelName = 'ember-flexberry-dummy-suggestion';
-    let builder = new Query.Builder(store, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
-    store.queryRecord(modelName, builder.build()).then(function(record) {
+    let builder = new Query.Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
+    storeOfflineCrudTest.queryRecord(modelName, builder.build()).then(function(record) {
       assert.equal(get(record, 'address'), 'Street, 20', '1 record was found with query language');
-      done2();
-    });
+    }).finally(done2);
   });
 });
 
@@ -217,7 +214,7 @@ test('create record', function(assert) {
   let done = assert.async();
 
   run(function() {
-    var list = store.createRecord('ember-flexberry-dummy-application-user', {
+    var list = storeOfflineCrudTest.createRecord('ember-flexberry-dummy-application-user', {
       name: 'чел',
       eMail: 'pupkin1@mail.ru',
       phone1: '+790356568933',
@@ -234,7 +231,7 @@ test('create record', function(assert) {
     });
 
     list.save().then(function() {
-      return store.query('ember-flexberry-dummy-application-user', {
+      return storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
         name: 'чел'
       });
     }).then(function(records) {
@@ -242,8 +239,7 @@ test('create record', function(assert) {
       assert.equal(get(records, 'length'), 1, 'Only чел was found');
       assert.equal(get(record, 'name'), 'чел', 'Correct name');
       assert.equal(get(record, 'id'), list.id, 'Correct, original id');
-      done();
-    });
+    }).finally(done);
   });
 });
 
@@ -253,15 +249,14 @@ test('delete record', function(assert) {
 
   run(function() {
     var AssertListIsDeleted = function() {
-      return store.query('ember-flexberry-dummy-application-user', {
+      return storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
         name: 'Васиииилий'
       }).then(function(records) {
         assert.equal(get(records, 'length'), 0, 'No record was found');
-        done();
-      });
+      }).finally(done);
     };
 
-    store.query('ember-flexberry-dummy-application-user', {
+    storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
       name: 'Васиииилий'
     }).then(function(records) {
       var record = records.objectAt(0);

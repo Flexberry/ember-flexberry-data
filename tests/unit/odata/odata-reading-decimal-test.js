@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from './execute-odata-CRUD-test';
+import executeTest from '../CRUD/odata/execute-odata-test';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 
 function initTestData(store) {

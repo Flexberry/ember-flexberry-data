@@ -1,7 +1,7 @@
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
+import { Projection, Offline } from 'ember-flexberry-data';
 
-var Model = Projection.Model.extend({
+let Model = Projection.Model.extend(Offline.ModelMixin, {
   name: DS.attr('string'),
   eMail: DS.attr('string'),
   phone1: DS.attr('string'),

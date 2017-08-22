@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import { singularize } from 'ember-inflector';
+import { capitalize, camelize, dasherize } from '../utils/string-functions';
 
 /**
  * Base serializer class.
@@ -82,7 +83,7 @@ export default DS.RESTSerializer.extend({
    * @returns {string} Key for a given attribute.
    */
   keyForAttribute(attr) {
-    return Ember.String.capitalize(attr);
+    return capitalize(attr);
   },
 
   /**
@@ -94,7 +95,7 @@ export default DS.RESTSerializer.extend({
    */
   /* jshint unused:vars */
   keyForRelationship(key, relationship) {
-    return Ember.String.capitalize(key) + '@odata.bind';
+    return capitalize(key) + '@odata.bind';
   },
   /* jshint unused:true */
 
@@ -105,7 +106,7 @@ export default DS.RESTSerializer.extend({
     @param {String} relationshipType Type of relationship (`relationship.type`).
    */
   modelNameFromRelationshipType(relationshipType) {
-    return Ember.String.capitalize(Ember.String.camelize(relationshipType));
+    return capitalize(camelize(relationshipType));
   },
 
   /**
@@ -171,7 +172,7 @@ export default DS.RESTSerializer.extend({
     @return {String}
   */
   modelNameFromPayloadKey(key) {
-    return singularize(Ember.String.dasherize(key.replace(/[#\.]/g, '')));
+    return singularize(dasherize(key.replace(/[#\.]/g, '')));
   },
 
   /**
