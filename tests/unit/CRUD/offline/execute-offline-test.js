@@ -1,14 +1,15 @@
 import Ember from 'ember';
 import { module, test } from 'qunit';
-import startApp from '../../../helpers/start-app';
-import destroyApp from '../../../helpers/destroy-app';
+import startApp from 'dummy/tests/helpers/start-app';
+import destroyApp from 'dummy/tests/helpers/destroy-app';
 
 export default function executeTest(testName, callback) {
   let AppExecuteOfflineTest;
   let storeExecuteOfflineTest;
   let testDbName;
+
   module('CRUD | offline-' + testName, {
-    setup: function() {
+    beforeEach() {
       AppExecuteOfflineTest = startApp();
       storeExecuteOfflineTest = AppExecuteOfflineTest.__container__.lookup('service:store');
       let dbName = 'testDbEOT' + Math.floor(Math.random() * 9999);
@@ -25,7 +26,8 @@ export default function executeTest(testName, callback) {
       offlineGlobals.setOnlineAvailable(false);
       storeExecuteOfflineTest._dbInit();
     },
-    teardown: function(assert) {
+
+    afterEach(assert) {
       let cleanUpDone = assert.async();
 
       Ember.run(() => {
@@ -37,7 +39,7 @@ export default function executeTest(testName, callback) {
           cleanUpDone();
         });
       });
-    }
+    },
   });
 
   test(testName, (assert) => callback(storeExecuteOfflineTest, assert, AppExecuteOfflineTest));
