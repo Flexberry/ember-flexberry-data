@@ -6,9 +6,9 @@ node_js:
   - "6"
 
 cache:
+  yarn: true
   directories:
     - $HOME/.npm
-    - $HOME/.cache # includes bowers cache
 
 env:
   - EMBER_TRY_SCENARIO=default
@@ -34,14 +34,12 @@ notifications:
     on_start: never     # options: [always|never|change] default: always
 
 before_install:
-  - npm config set spin false
-  - npm install -g firebase-tools
-  - npm install -g bower phantomjs-prebuilt
-  - bower --version
-  - phantomjs --version
+  - yarn global add firebase-tools
+  - yarn global add phantomjs-prebuilt
+  - yarn global add bower
 
 install:
-  - npm install
+  - yarn install
   - bower install
 
 script:
