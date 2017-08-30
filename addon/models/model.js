@@ -358,8 +358,19 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   init() {
     this._super(...arguments);
 
+    let errors = this.get('errors');
+    this.eachAttribute((name) => {
+      if (!errors.get(name)) {
+        errors.set(name, Ember.A());
+      }
+    });
+
     // Attach validation observers for hasMany relationships.
     this.eachRelationship((name, attrs) => {
+      if (!errors.get(name)) {
+        errors.set(name, Ember.A());
+      }
+
       if (attrs.kind !== 'hasMany') {
         return;
       }
