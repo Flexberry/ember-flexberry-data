@@ -32,7 +32,7 @@ test('decimal | serialize | number', function (assert) {
       assert.equal(JSON.parse(json).DecimalNumber, 555.5);
       return true;
     },
-    responseText: { DecimalNumber: 555.5 }
+    responseText: { id: 1, DecimalNumber: 555.5 }
   });
 
   Ember.run(() => {
@@ -49,7 +49,7 @@ test('decimal | serialize | string with \'.\'', function (assert) {
       assert.equal(JSON.parse(json).DecimalNumber, 555.5);
       return true;
     },
-    responseText: { DecimalNumber: 555.5 }
+    responseText: { id: 1, DecimalNumber: 555.5 }
   });
 
   Ember.run(() => {
@@ -67,7 +67,7 @@ test('decimal | serialize | string with \',\'', function (assert) {
       assert.equal(JSON.parse(json).DecimalNumber, 555.5);
       return true;
     },
-    responseText: { DecimalNumber: 555.5 }
+    responseText: { id: 1, DecimalNumber: 555.5 }
   });
 
   Ember.run(() => {
