@@ -42,7 +42,7 @@ You will need the following things properly installed on your computer.
 
 ## Running Tests
 
-* `npm test` (Runs `ember try:testall` to test your addon against multiple Ember versions)
+* `npm test` (Runs `ember try:each` to test your addon against multiple Ember versions)
 * `ember test`
 * `ember test --server`
 * `ember test --testODataSerivce` (Also runs integration tests for OData service, needs corresponding backend)
