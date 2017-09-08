@@ -770,7 +770,7 @@ test('adapter | indexeddb | filter, no order, skip, top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .skip(1000)
     .top(20)
     .select('id,Price');
@@ -788,7 +788,7 @@ test('adapter | indexeddb | filter, order asc, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Name asc')
     .select('id,Price,Name');
 
@@ -805,7 +805,7 @@ test('adapter | indexeddb | filter, order desc, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Name desc')
     .select('id,Price,Name');
 
@@ -822,7 +822,7 @@ test('adapter | indexeddb | filter, many order asc desc, no skip, no top', (asse
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Age asc,Name desc')
     .select('id,Age,Name,Price');
 
@@ -840,7 +840,7 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Age asc,Name desc')
     .skip(1000)
     .top(20)

@@ -112,5 +112,4 @@ executeTest('reading | decimal', (store, assert) => {
       .catch(e => console.log(e, e.message))
       .finally(done);
   });
-  wait();
 });
