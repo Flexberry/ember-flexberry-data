@@ -4,6 +4,7 @@ moduleForModel('i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group', 'Unit | Seriali
   needs: [
     'serializer:i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group',
     'model:i-c-s-soft-s-t-o-r-m-n-e-t-security-agent',
+    'service:syncer',
   ],
 });
 

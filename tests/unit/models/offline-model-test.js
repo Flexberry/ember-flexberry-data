@@ -6,8 +6,9 @@ import startApp from '../../helpers/start-app';
 let App;
 
 moduleForModel('offline-model', 'Unit | Model | offline model', {
-  // Specify the other units that are required for this test.
-  needs: [],
+  needs: [
+    'service:syncer',
+  ],
 
   beforeEach() {
     App = startApp();
