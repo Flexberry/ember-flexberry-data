@@ -37,11 +37,9 @@ notifications:
 before_install:
   - yarn global add firebase-tools
   - yarn global add phantomjs-prebuilt
-  - yarn global add bower
 
 install:
   - yarn install
-  - bower install
 
 script:
   - ember try:one $EMBER_TRY_SCENARIO --skip-cleanup
