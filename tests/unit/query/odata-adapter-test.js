@@ -3,7 +3,7 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate } from 'ember-flexberry-data/query/predicate';
 import ODataAdapter from 'ember-flexberry-data/query/odata-adapter';
 import startApp from '../../helpers/start-app';
 
@@ -157,7 +157,7 @@ test('adapter | odata | simple predicate | leq', function (assert) {
   runTest(assert, builder, 'Customers', `$filter=FirstName le 'Vasya'&$select=CustomerID`);
 });
 
-test('adapter | odata | string predicate', function (assert) {
+test('x', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where(new StringPredicate('firstName').contains('a'));
 
@@ -360,6 +360,59 @@ test('adapter | odata | select | master fields', function (assert) {
     '&' +
     '$expand=Author($select=__PrimaryKey,Name)'
     );
+});
+
+test('adapter | odata | geography predicate | intersect', function (assert) {
+  // Arrange.
+  let gp = new GeographyPredicate('firstName').
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(gp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=geo.intersects(FirstName,geography'SRID=12345;` +
+    `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))')&$select=CustomerID`);
+});
+
+test('adapter | odata | geography predicate | inside complex', function (assert) {
+  // Arrange.
+  let gp = new GeographyPredicate('firstName').
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  let sp = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(gp.and(sp));
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=geo.intersects(FirstName,geography'SRID=12345;` +
+    `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') and FirstName eq 'Vasya'&$select=CustomerID`);
+});
+
+test('adapter | odata | detail predicate | all | with geography predicate', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').all(new GeographyPredicate('applicationUser.name').
+    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:geo.intersects(f/ApplicationUser/Name,geography'SRID=12345;` +
+    `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
+});
+
+test('adapter | odata | detail predicate | any | with geography predicate', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').any(new GeographyPredicate('applicationUser.name').
+    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:geo.intersects(f/ApplicationUser/Name,geography'SRID=12345;` +
+    `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {
