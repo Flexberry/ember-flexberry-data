@@ -4,7 +4,7 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import IndexedDbAdapter from 'ember-flexberry-data/query/indexeddb-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
 
 import startApp from '../../helpers/start-app';
@@ -1189,3 +1189,25 @@ function getJoinsPerformanceTestData(count, assert) {
   assert.ok(true, `${Math.round(creatingEndTime - creatingStartTime)} ms construct ${data.employee.length} objects time`);
   return data;
 }
+
+test('adapter | indexeddb | geography predicate | intersects', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, CountryName: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+      { id: 2, CountryName: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+      { id: 3, CountryName: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+    ],
+  };
+
+  let gp = new GeographyPredicate('CountryName').
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(gp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 3);
+  });
+});
