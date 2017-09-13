@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+## [0.9.0-beta.7] - 2017-09-13
+### Added
+- Add `GeographyPredicate` for spatial data types.
 
 ## [0.9.0-beta.6] - 2017-07-23
 ### Added
