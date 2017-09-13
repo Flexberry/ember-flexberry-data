@@ -4,7 +4,7 @@ import QueryBuilder from 'ember-flexberry-data/query/builder';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate } from 'ember-flexberry-data/query/predicate';
 
 import startApp from '../../helpers/start-app';
 
@@ -515,4 +515,24 @@ test('adapter | js | skip-top', (assert) => {
   assert.ok(result);
   assert.equal(result.length, 1);
   assert.equal(result[0].Name, 'B');
+});
+
+test('adapter | js | geography predicate | intersects', (assert) => {
+  const data = [
+    { id: 1, Coordinates: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+    { id: 2, Coordinates: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+    { id: 3, Coordinates: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' }
+  ];
+
+  let sp1 = new GeographyPredicate('Coordinates').
+    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  let builder = new QueryBuilder(store, 'employee').where(sp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+  assert.equal(result[0].id, 1);
+  assert.equal(result[1].id, 2);
+  assert.equal(result[2].id, 3);
 });

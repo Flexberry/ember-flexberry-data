@@ -15,6 +15,7 @@ let Model = Projection.Model.extend(Offline.ModelMixin, {
   gender: DS.attr('ember-flexberry-dummy-gender'),
   vip: DS.attr('boolean'),
   karma: DS.attr('decimal'),
+  coordinates: DS.attr('string'),
 
   // Model validation rules.
   validations: {
