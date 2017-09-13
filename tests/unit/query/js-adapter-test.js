@@ -519,12 +519,12 @@ test('adapter | js | skip-top', (assert) => {
 
 test('adapter | js | geography predicate | intersects', (assert) => {
   const data = [
-    { id: 1, Country: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
-    { id: 2, Country: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
-    { id: 3, Country: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' }
+    { id: 1, Coordinates: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+    { id: 2, Coordinates: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+    { id: 3, Coordinates: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' }
   ];
 
-  let sp1 = new GeographyPredicate('Country').
+  let sp1 = new GeographyPredicate('Coordinates').
     intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
   let builder = new QueryBuilder(store, 'employee').where(sp1);
   let filter = adapter.buildFunc(builder.build());

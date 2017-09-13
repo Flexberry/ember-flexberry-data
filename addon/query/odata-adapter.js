@@ -222,7 +222,7 @@ export default class ODataAdapter extends BaseAdapter {
         attribute = `${prefix}/${attribute}`;
       }
 
-      return `geo.intersects(${attribute},geography'${predicate.containsValue}')`;
+      return `geo.intersects(${attribute},geography'${predicate.intersectsValue}')`;
     }
 
     if (predicate instanceof DetailPredicate) {

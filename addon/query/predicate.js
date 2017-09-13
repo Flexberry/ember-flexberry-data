@@ -291,7 +291,7 @@ export class GeographyPredicate extends BasePredicate {
     }
 
     this._attributePath = attributePath;
-    this._containsValue = null;
+    this._intersectsValue = null;
   }
 
   /**
@@ -306,26 +306,26 @@ export class GeographyPredicate extends BasePredicate {
   }
 
   /**
-   * The value that has to be contained in the attribute.
+   * The geography value that has to intersect with the attribute.
    *
-   * @property containsValue
+   * @property intersectsValue
    * @type {String}
    * @public
    */
-  get containsValue() {
-    return this._containsValue;
+  get intersectsValue() {
+    return this._intersectsValue;
   }
 
   /**
    * Sets the value that the attribute has to contain.
    *
    * @method contains
-   * @param {String} value The value that the attribute has to contain.
+   * @param {String} geography The geography value that has to intersect with the attribute.
    * @return {Query.StringPredicate} Returns this instance.
    * @chainable
    */
-  intersects(value) {
-    this._containsValue = value;
+  intersects(geography) {
+    this._intersectsValue = geography;
     return this;
   }
 }

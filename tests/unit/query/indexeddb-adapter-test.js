@@ -1193,13 +1193,13 @@ function getJoinsPerformanceTestData(count, assert) {
 test('adapter | indexeddb | geography predicate | intersects', (assert) => {
   let data = {
     employee: [
-      { id: 1, CountryName: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
-      { id: 2, CountryName: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
-      { id: 3, CountryName: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
-    ],
+      { id: 1, Coordinates: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+      { id: 2, Coordinates: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+      { id: 3, Coordinates: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' }
+    ]
   };
 
-  let gp = new GeographyPredicate('CountryName').
+  let gp = new GeographyPredicate('Coordinates').
   intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(gp);
 

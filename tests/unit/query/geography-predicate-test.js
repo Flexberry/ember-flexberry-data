@@ -9,8 +9,8 @@ test('predicate | geography | constructor', function (assert) {
   assert.throws(() => new GeographyPredicate(''), Error);
   assert.throws(() => new GeographyPredicate(null), Error);
 
-  let p = new GeographyPredicate('Name');
+  let p = new GeographyPredicate('Coordinates');
 
   assert.ok(p);
-  assert.equal(p.attributePath, 'Name');
+  assert.equal(p.attributePath, 'Coordinates');
 });
