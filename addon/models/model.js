@@ -442,39 +442,10 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @private
   */
   _aggregateHasManyRelationshipValidationErrors(changedObject, changedPropertyPath) {
-    let aggregator = this;
-    let detailsPath;
-
-    if (changedObject === aggregator) {
-      detailsPath = changedPropertyPath;
-    } else {
-      this.eachRelationship((name, attrs) => {
-        if (detailsPath) {
-          return;
-        }
-
-        if (attrs.kind !== 'hasMany') {
-          return;
-        }
-
-        let detailsName = attrs.key;
-        let details = this.get(detailsName);
-        details.forEach((detail, i) => {
-          if (detailsPath) {
-            return;
-          }
-
-          if (detail === changedObject) {
-            detailsPath = `${detailsName}.[]`;
-          }
-        });
-      });
-    }
-
     // Retrieve aggregator's validation errors object.
     let errors = Ember.get(this, 'errors');
 
-    let detailsName = detailsPath.split('.')[0];
+    let detailsName = changedPropertyPath.split('.')[0];
     let details = Ember.get(this, detailsName);
     if (!Ember.isArray(details)) {
       return;
@@ -489,10 +460,10 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
         let detailPropertyErrorMessages = detailErrors[detailPropertyName];
         if (detailErrors.hasOwnProperty(detailPropertyName) && Ember.isArray(detailPropertyErrorMessages)) {
           detailPropertyErrorMessages.forEach((detailPropertyErrorMessage) => {
-            Ember.removeObserver(detail, `errors.${detailPropertyName}.[]`, this, this._onChangeHasManyRelationship);
+            Ember.removeObserver(this, `${detailsName}.@each.${detailPropertyName}`, this, this._onChangeHasManyRelationship);
 
             if (!Ember.get(detail, 'isDeleted')) {
-              Ember.addObserver(detail, `errors.${detailPropertyName}.[]`, this, this._onChangeHasManyRelationship);
+              Ember.addObserver(this, `${detailsName}.@each.${detailPropertyName}`, this, this._onChangeHasManyRelationship);
               detailsErrorMessages.pushObject(detailPropertyErrorMessage);
             }
           });
@@ -516,7 +487,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       if (kind === 'belongsTo') {
         if (options.async === false) {
           let belongsToValue = _this.get(key);
-          if (belongsToValue) {
+          if (belongsToValue || _this.get('_canonicalBelongsTo')[key]) {
             _this.get('_canonicalBelongsTo')[key] = belongsToValue;
           } else {
             _this.addObserver(key, _this, _this._saveBelongsToObserver);

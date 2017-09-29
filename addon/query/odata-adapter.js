@@ -2,10 +2,11 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
+import { classify } from '../utils/string-functions';
 
 /**
  * Class of query adapter that translates query object into OData URL.
@@ -65,6 +66,13 @@ export default class ODataAdapter extends BaseAdapter {
         if (v !== null && v !== '') {
           odataArgs[k] = v;
         }
+      }
+    }
+
+    let customQueryParams = query.customQueryParams || {};
+    for (let param in customQueryParams) {
+      if (customQueryParams.hasOwnProperty(param)) {
+        odataArgs[param] = customQueryParams[param];
       }
     }
 
@@ -195,7 +203,7 @@ export default class ODataAdapter extends BaseAdapter {
    * @return {String} OData filter part.
    */
   _convertPredicateToODataFilterClause(predicate, modelName, prefix, level) {
-    if (predicate instanceof SimplePredicate) {
+    if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
       return this._buildODataSimplePredicate(predicate, modelName, prefix);
     }
 
@@ -206,6 +214,15 @@ export default class ODataAdapter extends BaseAdapter {
       }
 
       return `contains(${attribute},'${predicate.containsValue}')`;
+    }
+
+    if (predicate instanceof GeographyPredicate) {
+      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+      if (prefix) {
+        attribute = `${prefix}/${attribute}`;
+      }
+
+      return `geo.intersects(${attribute},geography'${predicate.intersectsValue}')`;
     }
 
     if (predicate instanceof DetailPredicate) {
@@ -323,7 +340,7 @@ export default class ODataAdapter extends BaseAdapter {
           Ember.warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`,
           false,
           { id: 'ember-flexberry-data-debug.odata-adapter.source-type-is-not-specified-for-enum' });
-          type = Ember.String.classify(meta.type);
+          type = classify(meta.type);
         }
 
         value = `${type}'${predicate.value}'`;

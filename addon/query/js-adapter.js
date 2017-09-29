@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
 import Information from '../utils/information';
@@ -39,11 +39,9 @@ export default class JSAdapter extends BaseAdapter {
   constructor(moment) {
     super();
 
-    if (!moment) {
-      throw new Error('Moment instance must be passed to JSAdapter.');
+    if (moment) {
+      this._moment = moment;
     }
-
-    this._moment = moment;
   }
 
   /**
@@ -244,10 +242,19 @@ export default class JSAdapter extends BaseAdapter {
     let b1 = predicate instanceof SimplePredicate;
     let b2 = predicate instanceof StringPredicate;
     let b3 = predicate instanceof DetailPredicate;
+    let b4 = predicate instanceof DatePredicate;
+    let b5 = predicate instanceof GeographyPredicate;
 
-    if (b1 || b2 || b3) {
+    if (b1 || b2 || b3 || b4) {
       let filterFunction = this.getAttributeFilterFunction(predicate, options);
       return this.getFilterFunctionAnd([filterFunction]);
+    }
+
+    if (b5) {
+      Ember.warn('GeographyPredicate is not supported in js-adapter');
+      return function (data) {
+        return data;
+      };
     }
 
     if (predicate instanceof ComplexPredicate) {
@@ -281,100 +288,63 @@ export default class JSAdapter extends BaseAdapter {
       return (i) => i;
     }
 
-    if (predicate instanceof SimplePredicate) {
+    if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
       let value = predicate.value;
       if (options && options.booleanAsString && typeof value === 'boolean') {
         value = `${value}`;
       }
 
-      switch (predicate.operator) {
-        case FilterOperator.Eq:
-          return (i) => {
-            //If comparing date values.
-            let valueFromHash = _this.getValue(i, predicate.attributePath);
-            let momentFromHash = _this._moment.moment(valueFromHash);
-            let momentFromValue = _this._moment.moment(value);
-            if (momentFromHash.isValid() && momentFromValue.isValid()) {
+      return (i) => {
+        let datesIsValid = false;
+        let valueFromHash = _this.getValue(i, predicate.attributePath);
+        let momentFromHash;
+        if (predicate instanceof DatePredicate) {
+          momentFromHash = _this._moment.moment(valueFromHash);
+          let momentFromValue = _this._moment.moment(value);
+          datesIsValid = momentFromHash.isValid() && momentFromValue.isValid();
+        }
+
+        switch (predicate.operator) {
+          case FilterOperator.Eq:
+            if (datesIsValid) {
               return momentFromHash.isSame(value);
             }
 
-            //If comparing non-date values.
             return valueFromHash === value;
-          };
-
-        case FilterOperator.Neq:
-          return (i) => {
-            //If comparing date values.
-            let valueFromHash = _this.getValue(i, predicate.attributePath);
-            let momentFromHash = _this._moment.moment(valueFromHash);
-            let momentFromValue = _this._moment.moment(value);
-            if (momentFromHash.isValid() && momentFromValue.isValid()) {
+          case FilterOperator.Neq:
+            if (datesIsValid) {
               return !momentFromHash.isSame(value);
             }
 
-            //If comparing non-date values.
             return valueFromHash !== value;
-          };
-
-        case FilterOperator.Le:
-          return (i) => {
-            //If value is date.
-            let valueFromHash = _this.getValue(i, predicate.attributePath);
-            let momentFromHash = _this._moment.moment(valueFromHash);
-            let momentFromValue = _this._moment.moment(value);
-            if (momentFromHash.isValid() && momentFromValue.isValid()) {
+          case FilterOperator.Le:
+            if (datesIsValid) {
               return momentFromHash.isBefore(value);
             }
 
-            //If value is not date.
             return valueFromHash < value;
-          };
-
-        case FilterOperator.Leq:
-          return (i) => {
-            //If value is date.
-            let valueFromHash = _this.getValue(i, predicate.attributePath);
-            let momentFromHash = _this._moment.moment(valueFromHash);
-            let momentFromValue = _this._moment.moment(value);
-            if (momentFromHash.isValid() && momentFromValue.isValid()) {
+          case FilterOperator.Leq:
+            if (datesIsValid) {
               return momentFromHash.isSameOrBefore(value);
             }
 
-            //If value is not date.
             return valueFromHash <= value;
-          };
-
-        case FilterOperator.Ge:
-          return (i) => {
-            //If value is date.
-            let valueFromHash = _this.getValue(i, predicate.attributePath);
-            let momentFromHash = _this._moment.moment(valueFromHash);
-            let momentFromValue = _this._moment.moment(value);
-            if (momentFromHash.isValid() && momentFromValue.isValid()) {
+          case FilterOperator.Ge:
+            if (datesIsValid) {
               return momentFromHash.isAfter(value);
             }
 
-            //If value is not date.
             return valueFromHash > value;
-          };
-
-        case FilterOperator.Geq:
-          return (i) => {
-            //If value is date.
-            let valueFromHash = _this.getValue(i, predicate.attributePath);
-            let momentFromHash = _this._moment.moment(valueFromHash);
-            let momentFromValue = _this._moment.moment(value);
-            if (momentFromHash.isValid() && momentFromValue.isValid()) {
+          case FilterOperator.Geq:
+            if (datesIsValid) {
               return momentFromHash.isSameOrAfter(value);
             }
 
-            //If value is not date.
             return valueFromHash >= value;
-          };
-
-        default:
-          throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
-      }
+          default:
+            throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
+        }
+      };
     }
 
     if (predicate instanceof StringPredicate) {

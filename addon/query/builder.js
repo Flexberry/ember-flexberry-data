@@ -4,7 +4,7 @@ import DS from 'ember-data';
 import BaseBuilder from './base-builder';
 import OrderByClause from './order-by-clause';
 import QueryObject from './query-object';
-import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } from './predicate';
+import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
 import Information from '../utils/information';
 import isEmbedded from '../utils/is-embedded';
 
@@ -39,9 +39,12 @@ export default class Builder extends BaseBuilder {
     this._projectionName = null;
     this._predicate = null;
     this._orderByClause = null;
+    this._idFromProjection = false;
     this._isCount = false;
     this._expand = {};
     this._select = {};
+    this._dataType = null;
+    this._customQueryParams = {};
   }
 
   /**
@@ -161,14 +164,42 @@ export default class Builder extends BaseBuilder {
    *
    * @method selectByProjection
    * @param projectionName {String} The name of the projection.
+   * @param idFromProjection {Boolean}
    * @return {Query.Builder} Returns this instance.
    * @public
    * @chainable
    */
-  selectByProjection(projectionName) {
-    this._projectionName = projectionName;
-    return this;
-  }
+   selectByProjection(projectionName, idFromProjection) {
+     this._idFromProjection = idFromProjection;
+     this._projectionName = projectionName;
+     return this;
+   }
+
+   /**
+    *
+    * @method ofDataType
+    * @param dataType {String} The name of the data type.
+    * @return {Query.Builder} Returns this instance.
+    * @public
+    * @chainable
+    */
+   ofDataType(dataType) {
+     this._dataType = dataType;
+     return this;
+   }
+
+   /**
+    *
+    * @method withCustomParams
+    * @param customQueryParams {Object}
+    * @return {Query.Builder} Returns this instance.
+    * @public
+    * @chainable
+    */
+   withCustomParams(customQueryParams) {
+     this._customQueryParams = customQueryParams;
+     return this;
+   }
 
   /**
    * Builds query instance using all provided data.
@@ -220,7 +251,9 @@ export default class Builder extends BaseBuilder {
       expand,
       select,
       primaryKeyName,
-      extendTree
+      extendTree,
+      this._customQueryParams,
+      this._dataType
     );
   }
 
@@ -297,7 +330,7 @@ export default class Builder extends BaseBuilder {
       this._store.serializerFor(modelName).get('primaryKey');
     let primaryKeyName = primaryKeyNameFromSerializer ? primaryKeyNameFromSerializer : 'id';
     let tree = {
-      select: ['id'],
+      select: this._idFromProjection ? [] : ['id'],
       expand: {},
       modelName: modelName,
       primaryKeyName: primaryKeyName,
@@ -344,7 +377,7 @@ export default class Builder extends BaseBuilder {
     let extend = [];
     let existKeys = Object.keys(this._select);
     let scanPredicates = function(predicate, detailPath) {
-      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate) {
+      if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate || predicate instanceof DatePredicate) {
         let path = detailPath ? detailPath + '.' : '';
         Information.parseAttributePath(predicate.attributePath).forEach((attribute) => {
           let key = `${path}${attribute}`;

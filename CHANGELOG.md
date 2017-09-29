@@ -2,6 +2,33 @@
 
 ## [Unreleased]
 
+## [0.9.0] - 2017-09-29
+### Added
+- Add `GeographyPredicate` for spatial data types.
+- Add `DatePredicate` for dates.
+- `Query.Builder`:
+    - Add `customQueryParams` and `dataType` properties.
+- `Adapter.Odata`:
+    - Add `buildExportExcelURL` function to receive exported excel file URL.
+- `Utils`:
+    - Add `firstLoadOfflineObjects` function for initial loading and saving objects to IndexedDB.
+
+### Changed
+- Now if record saving fail, audit record won't be created.
+- Replace `Ember.String` functions usage by functions with cyrillic support.
+- `Adapter.Odata`:
+    - Improve `buildExportExcelURL` function to receive exported excel file URL.
+    - Now `query` method can return files.
+
+### Fixed
+- `Projection.Model`:
+    - Fix `_aggregateHasManyRelationshipValidationErrors` method validation error when deleting new unsaved detail.
+    - Fix `_saveCanonicalBelongsTo` method error when `canonicalBelongsTo` value changed to `null`.
+- `Adapter.Offline`:
+    - Fix `syncDownTime` property addition for offline models.
+- `syncer` service:
+    - Fix wrong converting of `'true'` strings to boolean value when performing sync up process.
+
 ## [0.8.4] - 2017-02-09
 ### Fixed
 - `Projection.Model`:

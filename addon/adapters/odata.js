@@ -3,6 +3,7 @@ import DS from 'ember-data';
 
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
+import { capitalize, camelize } from '../utils/string-functions';
 
 /**
  * The OData adapter class.
@@ -53,7 +54,27 @@ export default DS.RESTAdapter.extend({
     Ember.debug(`Flexberry ODataAdapter::query '${type}'`, data);
 
     // TODO: think about moving request execution into query adapter
-    return this.ajax(url, 'GET', { data: data, timeout: timeout });
+    return this.ajax(url, 'GET', { data: data, timeout: timeout, dataType: query.dataType || 'json' });
+  },
+
+  /**
+    Overloaded method from `RESTAdapter` (Ember Data).
+    Customizes ajax options for the requests.
+
+    @method ajaxOptions
+    @param {String} url
+    @param {DS.Model} type
+    @param {Object} options
+    @return {Object}
+  */
+  ajaxOptions: function ajaxOptions(url, type, options) {
+    let dataType = options.dataType;
+    let hash = this._super(...arguments);
+    if (dataType === 'blob') {
+      hash.dataType = dataType;
+    }
+
+    return hash;
   },
 
   /**
@@ -124,8 +145,8 @@ export default DS.RESTAdapter.extend({
    * @return {String} The path for a given type.
    */
   pathForType(modelName) {
-    var camelized = Ember.String.camelize(modelName);
-    var capitalized = Ember.String.capitalize(camelized);
+    var camelized = camelize(modelName);
+    var capitalized = capitalize(camelized);
     return Ember.String.pluralize(capitalized);
   },
 
