@@ -4,7 +4,7 @@
 
 import Ember from 'ember';
 import FilterOperator from './filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
@@ -590,6 +590,11 @@ function updateWhereClause(store, table, query) {
     } else {
       predicate = predicate.and(new SimplePredicate('id', FilterOperator.Eq, query.id));
     }
+  }
+
+  if (predicate instanceof GeographyPredicate) {
+    Ember.warn('GeographyPredicate is not supported in indexedDB-adapter');
+    return table;
   }
 
   if (!predicate) {

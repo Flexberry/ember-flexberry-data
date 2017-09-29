@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
@@ -214,6 +214,15 @@ export default class ODataAdapter extends BaseAdapter {
       }
 
       return `contains(${attribute},'${predicate.containsValue}')`;
+    }
+
+    if (predicate instanceof GeographyPredicate) {
+      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+      if (prefix) {
+        attribute = `${prefix}/${attribute}`;
+      }
+
+      return `geo.intersects(${attribute},geography'${predicate.intersectsValue}')`;
     }
 
     if (predicate instanceof DetailPredicate) {

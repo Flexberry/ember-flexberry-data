@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
 import Information from '../utils/information';
@@ -243,10 +243,18 @@ export default class JSAdapter extends BaseAdapter {
     let b2 = predicate instanceof StringPredicate;
     let b3 = predicate instanceof DetailPredicate;
     let b4 = predicate instanceof DatePredicate;
+    let b5 = predicate instanceof GeographyPredicate;
 
     if (b1 || b2 || b3 || b4) {
       let filterFunction = this.getAttributeFilterFunction(predicate, options);
       return this.getFilterFunctionAnd([filterFunction]);
+    }
+
+    if (b5) {
+      Ember.warn('GeographyPredicate is not supported in js-adapter');
+      return function (data) {
+        return data;
+      };
     }
 
     if (predicate instanceof ComplexPredicate) {
