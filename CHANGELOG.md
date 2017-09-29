@@ -1,57 +1,33 @@
 # Change Log
 
 ## [Unreleased]
-## [0.9.0-beta.7] - 2017-09-13
+
+## [0.9.0] - 2017-09-29
 ### Added
 - Add `GeographyPredicate` for spatial data types.
-
-## [0.9.0-beta.6] - 2017-07-23
-### Added
 - Add `DatePredicate` for dates.
+- `Query.Builder`:
+    - Add `customQueryParams` and `dataType` properties.
+- `Adapter.Odata`:
+    - Add `buildExportExcelURL` function to receive exported excel file URL.
+- `Utils`:
+    - Add `firstLoadOfflineObjects` function for initial loading and saving objects to IndexedDB.
 
 ### Changed
 - Now if record saving fail, audit record won't be created.
-
-## [0.9.0-beta.5] - 2017-05-29
-### Changed
 - Replace `Ember.String` functions usage by functions with cyrillic support.
+- `Adapter.Odata`:
+    - Improve `buildExportExcelURL` function to receive exported excel file URL.
+    - Now `query` method can return files.
 
 ### Fixed
 - `Projection.Model`:
     - Fix `_aggregateHasManyRelationshipValidationErrors` method validation error when deleting new unsaved detail.
-
-## [0.9.0-beta.4] - 2017-04-14
-### Fixed
+    - Fix `_saveCanonicalBelongsTo` method error when `canonicalBelongsTo` value changed to `null`.
 - `Adapter.Offline`:
     - Fix `syncDownTime` property addition for offline models.
-
-## [0.9.0-beta.3] - 2017-04-12
-### Fixed
-- `Projection.Model`:
-    - Fix `_saveCanonicalBelongsTo` method error when `canonicalBelongsTo` value changed to `null`.
-
-## [0.9.0-beta.2] - 2017-04-07
-### Added
-- `Query.Builder`:
-    - Add `customQueryParams` and `dataType` properties.
-- `Adapter.Odata`:
-    - Now `query` method can return files.
-
-## [0.9.0-beta.1] - 2017-03-18
-### Changed
-- `Adapter.Odata`:
-    - Improve `buildExportExcelURL` function to receive exported excel file URL.
-
-### Fixed
 - `syncer` service:
     - Fix wrong converting of `'true'` strings to boolean value when performing sync up process.
-
-## [0.9.0-beta.0] - 2017-02-22
-### Added
-- `Utils`:
-    - Add `firstLoadOfflineObjects` function for initial loading and saving objects to IndexedDB.
-- `Adapter.Odata`:
-    - Add `buildExportExcelURL` function to receive exported excel file URL.
 
 ## [0.8.4] - 2017-02-09
 ### Fixed
