@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Fix `GeographyPredicate`.
 
 ## [0.9.0] - 2017-09-29
 ### Added

@@ -371,7 +371,7 @@ test('adapter | odata | geography predicate | intersect', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where(gp);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=geo.intersects(Coordinates,geography'SRID=12345;` +
+  runTest(assert, builder, 'Customers', `$filter=geo.intersects(geography1=Coordinates,geography2=geography'SRID=12345;` +
     `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))')&$select=CustomerID`);
 });
 
@@ -385,7 +385,7 @@ test('adapter | odata | geography predicate | inside complex', function (assert)
   let builder = new QueryBuilder(store, 'customer').where(gp.and(sp));
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=geo.intersects(Coordinates,geography'SRID=12345;` +
+  runTest(assert, builder, 'Customers', `$filter=geo.intersects(geography1=Coordinates,geography2=geography'SRID=12345;` +
     `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') and FirstName eq 'Vasya'&$select=CustomerID`);
 });
 
@@ -398,8 +398,8 @@ test('adapter | odata | detail predicate | all | with geography predicate', func
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:geo.intersects(f/ApplicationUser/Coordinates,geography'SRID=12345;` +
-    `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:geo.intersects(geography1=f/ApplicationUser/Coordinates,` +
+    `geography2=geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
 });
 
 test('adapter | odata | detail predicate | any | with geography predicate', function (assert) {
@@ -411,8 +411,8 @@ test('adapter | odata | detail predicate | any | with geography predicate', func
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
-  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:geo.intersects(f/ApplicationUser/Coordinates,geography'SRID=12345;` +
-    `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:geo.intersects(geography1=f/ApplicationUser/Coordinates,` +
+    `geography2=geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {
