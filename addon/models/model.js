@@ -544,7 +544,12 @@ Model.reopenClass({
 
     if (!this.projections) {
       this.reopenClass({
-        projections: Ember.Object.create()
+        projections: Ember.Object.create({ modelName }),
+      });
+    } else if (this.projections.get('modelName') !== modelName) {
+      let baseProjections = Ember.merge({}, this.projections);
+      this.reopenClass({
+        projections: Ember.Object.create(Ember.merge(baseProjections, { modelName })),
       });
     }
 

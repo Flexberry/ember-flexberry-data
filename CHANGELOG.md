@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Fixed
 - Fix `GeographyPredicate`.
+- When extend `Projection.Model` and using inheritance, the entire hierarchy of models has a shared `projections` object, now each child model has its own `projections` object and copy parent `projections` object.
 
 ## [0.9.0] - 2017-09-29
 ### Added
