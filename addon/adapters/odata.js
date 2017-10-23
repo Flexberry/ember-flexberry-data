@@ -78,6 +78,22 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
+    Takes an ajax response, and returns the json payload or an error.
+
+    @method handleResponse
+    @param {Number} status
+    @param {Object} headers
+    @param {Object} payload
+  */
+  handleResponse(status, headers, payload) {
+    if (!this.isSuccess(status, headers, payload) && typeof payload === 'object' && payload.error) {
+      return new DS.AdapterError(payload.error.details, payload.error.message);
+    }
+
+    return this._super(...arguments);
+  },
+
+  /**
    * Overloaded method from `RESTAdapter` (Ember Data).
    * Called by the sore in order to fetch single record from the server.
    *
