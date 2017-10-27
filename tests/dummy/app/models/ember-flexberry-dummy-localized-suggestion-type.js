@@ -15,15 +15,6 @@ var Model = Projection.Model.extend({
     inverse: null,
     async: false
   }),
-
-  // Model validation rules.
-  validations: {
-    name: {
-      presence: {
-        message: 'Name is required'
-      }
-    }
-  }
 });
 
 // Edit form projection.

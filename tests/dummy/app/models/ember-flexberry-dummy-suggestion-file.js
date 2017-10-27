@@ -10,10 +10,6 @@ var Model = Projection.Model.extend({
   }),
   order: DS.attr('number'),
   file: DS.attr('file'),
-
-  // Model validation rules.
-  validations: {
-  }
 });
 
 // Edit form projection.
