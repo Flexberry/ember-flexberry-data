@@ -10,6 +10,7 @@ import Condition from './condition';
  */
 export class BasePredicate {
   constructor() {
+    let a;
   }
 }
 
@@ -76,6 +77,46 @@ export class SimplePredicate extends BasePredicate {
    */
   toString() {
     return `(${this._attributePath} ${this._operator} ${this._value})`;
+  }
+}
+
+/**
+ * The class of not predicate.
+ *
+ * @namespace Query
+ * @class NotPredicate
+ * @extends BasePredicate
+ *
+ * @param predicate {Object} Another predicate.
+ * @constructor
+ */
+export class NotPredicate extends BasePredicate {
+  constructor(predicate) {
+    super();
+
+    this._predicate = predicate;
+  }
+
+  /**
+   * Predicate getter.
+   *
+   * @property predicate
+   * @type String
+   * @public
+   */
+  get predicate() {
+    return this._predicate;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of result predicate.
+   * @public
+   */
+  toString() {
+    return `not (${this._predicate})`;
   }
 }
 
