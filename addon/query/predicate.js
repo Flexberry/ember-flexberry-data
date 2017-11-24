@@ -541,5 +541,5 @@ export function createPredicate(...args) {
     return new SimplePredicate(args[0], args[1], args[2]);
   }
 
-  throw new Error(`Couldn not create predicate from arguments`);
+  throw new Error(`Could not create predicate from arguments`);
 }
