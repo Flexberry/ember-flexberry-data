@@ -1,7 +1,7 @@
 import DS from 'ember-data';
-import { Projection, Offline } from 'ember-flexberry-data';
+import { Projection } from 'ember-flexberry-data';
 
-let Model = Projection.Model.extend(Offline.ModelMixin, {
+var Model = Projection.Model.extend({
   name: DS.attr('string'),
   eMail: DS.attr('string'),
   phone1: DS.attr('string'),
@@ -15,7 +15,6 @@ let Model = Projection.Model.extend(Offline.ModelMixin, {
   gender: DS.attr('ember-flexberry-dummy-gender'),
   vip: DS.attr('boolean'),
   karma: DS.attr('decimal'),
-  coordinates: DS.attr('string'),
 
   // Model validation rules.
   validations: {
