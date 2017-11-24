@@ -10,7 +10,6 @@ import Condition from './condition';
  */
 export class BasePredicate {
   constructor() {
-    let a;
   }
 }
 
