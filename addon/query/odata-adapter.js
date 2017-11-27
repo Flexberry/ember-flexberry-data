@@ -209,6 +209,7 @@ export default class ODataAdapter extends BaseAdapter {
 
     if (predicate instanceof NotPredicate) {
       let innerPredicate = predicate._predicate;
+
       if (innerPredicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
         return `not (${this._buildODataSimplePredicate(innerPredicate, modelName, prefix)})`;
       }
@@ -216,42 +217,42 @@ export default class ODataAdapter extends BaseAdapter {
       if (innerPredicate instanceof StringPredicate) {
         let attribute = this._getODataAttributeName(modelName, innerPredicate.attributePath);
         if (prefix) {
-          attribute = `not (${prefix}/${attribute})`;
+          attribute = `${prefix}/${attribute}`;
         }
 
-        return `contains(${attribute},'${predicate.containsValue}')`;
+        return `not (contains(${attribute},'${innerPredicate.containsValue}'))`;
       }
 
       if (innerPredicate instanceof GeographyPredicate) {
-        let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+        let attribute = this._getODataAttributeName(modelName, innerPredicate.attributePath);
         if (prefix) {
           attribute = `${prefix}/${attribute}`;
         }
 
-        return `not (geo.intersects(${attribute},geography'${predicate.intersectsValue}'))`;
+        return `not (geo.intersects(${attribute},geography'${innerPredicate.intersectsValue}'))`;
       }
 
       if (innerPredicate instanceof DetailPredicate) {
         let func = '';
-        if (predicate.isAll) {
+        if (innerPredicate.isAll) {
           func = 'all';
-        } else if (predicate.isAny) {
+        } else if (innerPredicate.isAny) {
           func = 'any';
         } else {
           throw new Error(`OData supports only 'any' or 'or' operations for details`);
         }
 
         let additionalPrefix = 'f';
-        let meta = this._info.getMeta(modelName, predicate.detailPath);
-        let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, meta.type, prefix + additionalPrefix, level);
-        let detailPath = this._getODataAttributeName(modelName, predicate.detailPath);
+        let meta = this._info.getMeta(modelName, innerPredicate.detailPath);
+        let detailPredicate = this._convertPredicateToODataFilterClause(innerPredicate.predicate, meta.type, prefix + additionalPrefix, level);
+        let detailPath = this._getODataAttributeName(modelName, innerPredicate.detailPath);
 
         return `not (${detailPath}/${func}(${additionalPrefix}:${detailPredicate}))`;
       }
 
       if (innerPredicate instanceof ComplexPredicate) {
-        let separator = ` ${predicate.condition} `;
-        let result = predicate.predicates
+        let separator = ` ${innerPredicate.condition} `;
+        let result = innerPredicate.predicates
           .map(i => this._convertPredicateToODataFilterClause(i, modelName, prefix, level + 1)).join(separator);
         let lp = level > 0 ? '(' : '';
         let rp = level > 0 ? ')' : '';
