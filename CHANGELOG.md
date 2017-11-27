@@ -1,9 +1,10 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.9.1-beta.2] - 2017-11-27
 ### Added
-- Not predicate in `Query.Predicates`.
-- Support for not predicate in ODataAdapter.
+- `NotPredicate` for `not` expressions in query language.
 
 ## [0.9.1-beta.1] - 2017-10-17
 ### Added
