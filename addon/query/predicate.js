@@ -453,6 +453,10 @@ export class DetailPredicate extends BasePredicate {
  */
 export class NotPredicate extends BasePredicate {
   constructor(predicate) {
+    if (!predicate) {
+      throw new Error('Inner predicate is required.');
+    }
+
     super();
 
     this._predicate = predicate;
