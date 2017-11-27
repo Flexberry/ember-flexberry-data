@@ -424,7 +424,7 @@ test('adapter | odata | not predicate | any | with simple predicate', function (
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (FirstName eq 'Vasya')&$select=id`);
+  runTest(assert, builder, 'Customers', `$filter=not (FirstName eq 'Vasya')&$select=CustomerID`);
 });
 
 test('adapter | odata | not predicate | any | with complex predicate', function (assert) {
@@ -438,13 +438,13 @@ test('adapter | odata | not predicate | any | with complex predicate', function 
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (FirstName eq 'Vasya' or FirstName eq 'Petya')&$select=id`);
+  runTest(assert, builder, 'Customers', `$filter=not (FirstName eq 'Vasya' or FirstName eq 'Petya')&$select=CustomerID`);
 });
 
 test('adapter | odata | not predicate | any | with geography predicate', function (assert) {
   // Arrange.
   let innerPredicate = new GeographyPredicate('coordinates').
-  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');;
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
   let np = new NotPredicate(innerPredicate);
 
   // Act.
@@ -452,7 +452,7 @@ test('adapter | odata | not predicate | any | with geography predicate', functio
 
   // Act && Assert.
   runTest(assert, builder, 'Customers',
-  `$filter=not (geo.intersects(Coordinates,geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=id`);
+  `$filter=not (geo.intersects(Coordinates,geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=CustomerID`);
 });
 
 test('adapter | odata | not predicate | any | with detail predicate', function (assert) {
@@ -478,7 +478,7 @@ test('adapter | odata | not predicate | any | with string predicate', function (
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (contains(FirstName,'a'))&$select=id`);
+  runTest(assert, builder, 'Customers', `$filter=not (contains(FirstName,'a'))&$select=CustomerID`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {
