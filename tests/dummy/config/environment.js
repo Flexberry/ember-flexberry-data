@@ -1,6 +1,7 @@
 /* jshint node: true */
 
 module.exports = function(environment) {
+  var backendUrl = 'https://flexberry-ember-dummy.azurewebsites.net';
   var ENV = {
     modulePrefix: 'dummy',
     environment: environment,
@@ -14,6 +15,13 @@ module.exports = function(environment) {
     },
 
     APP: {
+      backendUrl: backendUrl,
+
+      backendUrls: {
+        root: backendUrl,
+        api: backendUrl + '/odata'
+      },
+
       // Here you can pass flags/options to your application instance
       // when it is created
 

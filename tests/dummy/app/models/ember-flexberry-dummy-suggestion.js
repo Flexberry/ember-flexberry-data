@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 import { Projection } from 'ember-flexberry-data';
 
@@ -7,6 +8,7 @@ var Model = Projection.Model.extend({
   date: DS.attr('date'),
   votes: DS.attr('number'),
   moderated: DS.attr('boolean'),
+  commentsCount: DS.attr('number'),
 
   // This property is for flexberry-lookup component. No inverse relationship here.
   type: DS.belongsTo('ember-flexberry-dummy-suggestion-type', {
@@ -63,6 +65,18 @@ var Model = Projection.Model.extend({
         message: 'Editor is required'
       }
     }
+  },
+
+  commentsChanged: Ember.on('init', Ember.observer('comments', function() {
+    Ember.run.once(this, 'commentsCountCompute');
+  })),
+
+  commentsCountCompute: function() {
+    let result = 0;
+    this.get('comments').forEach(function() {
+      result++;
+    });
+    this.set('commentsCount', result);
   }
 });
 
@@ -100,7 +114,7 @@ Model.defineProjection('SuggestionE', 'ember-flexberry-dummy-suggestion', {
   }),
   userVotes: Projection.hasMany('ember-flexberry-dummy-vote', 'User votes', {
     voteType: Projection.attr('Vote type'),
-    author: Projection.belongsTo('ember-flexberry-dummy-application-user', 'Author', {
+    author: Projection.belongsTo('ember-flexberry-dummy-application-user', 'Application user', {
       name: Projection.attr('Name', {
         hidden: true
       }),
@@ -151,6 +165,15 @@ Model.defineProjection('SuggestionL', 'ember-flexberry-dummy-suggestion', {
     })
   }, {
     displayMemberPath: 'name'
+  }),
+  commentsCount: Projection.attr('Comments Count'),
+  comments: Projection.hasMany('ember-flexberry-dummy-comment', 'Comments', {
+    text: Projection.attr('Text'),
+    votes: Projection.attr('Votes'),
+    moderated: Projection.attr('Moderated'),
+    author: Projection.belongsTo('ember-flexberry-dummy-application-user', 'Author', {
+      name: Projection.attr('Name', { hidden: true })
+    }, { displayMemberPath: 'name' })
   })
 });
 
@@ -219,6 +242,55 @@ Model.defineProjection('LookupInBlockFormView', 'ember-flexberry-dummy-suggestio
     name: Projection.attr('name', { hidden: true }),
     eMail: Projection.attr('eMail', { hidden: true }),
     gender: Projection.attr('gender', { hidden: true })
+  }, {
+    displayMemberPath: 'name'
+  })
+});
+
+// Example custom filter.
+Model.defineProjection('FlexberryObjectlistviewCustomFilter', 'ember-flexberry-dummy-suggestion', {
+  address: Projection.attr('Address'),
+  date: Projection.attr('Date'),
+  votes: Projection.attr('Votes'),
+  type: Projection.belongsTo('ember-flexberry-dummy-suggestion-type', 'Type', {
+    name: Projection.attr('Name', {
+      hidden: true,
+    }),
+    moderated: Projection.attr('Moderated'),
+    parent: Projection.belongsTo('ember-flexberry-dummy-suggestion-type', 'Parent moderated', {
+      moderated: Projection.attr('Moderated', {
+        hidden: true,
+      }),
+      name: Projection.attr('Parent type'),
+    }, {
+      displayMemberPath: 'moderated',
+    }),
+  }, {
+    displayMemberPath: 'name',
+  }),
+  author: Projection.belongsTo('ember-flexberry-dummy-application-user', 'Author', {
+    name: Projection.attr('Name', {
+      hidden: true,
+    }),
+    eMail: Projection.attr('Author email'),
+  }, {
+    displayMemberPath: 'name',
+  }),
+  editor1: Projection.belongsTo('ember-flexberry-dummy-application-user', 'Editor', {
+    name: Projection.attr('Name', {
+      hidden: true,
+    }),
+  }, {
+    displayMemberPath: 'name',
+  }),
+});
+
+// Projection for lookup default ordering example.
+Model.defineProjection('DefaultOrderingExampleView', 'ember-flexberry-dummy-suggestion', {
+  type: Projection.belongsTo('ember-flexberry-dummy-suggestion-type', 'Type', {
+    name: Projection.attr('Name', {
+      hidden: true
+    })
   }, {
     displayMemberPath: 'name'
   })

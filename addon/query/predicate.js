@@ -442,6 +442,50 @@ export class DetailPredicate extends BasePredicate {
 }
 
 /**
+ * The class of not predicate.
+ *
+ * @namespace Query
+ * @class NotPredicate
+ * @extends BasePredicate
+ *
+ * @param predicate {Object} Another predicate.
+ * @constructor
+ */
+export class NotPredicate extends BasePredicate {
+  constructor(predicate) {
+    if (!predicate) {
+      throw new Error('Inner predicate is required.');
+    }
+
+    super();
+
+    this._predicate = predicate;
+  }
+
+  /**
+   * Predicate getter.
+   *
+   * @property predicate
+   * @type String
+   * @public
+   */
+  get predicate() {
+    return this._predicate;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of result predicate.
+   * @public
+   */
+  toString() {
+    return `not ${this._predicate}`;
+  }
+}
+
+/**
  * Combines specified predicates using `and` logic condition.
  *
  * @for BasePredicate
@@ -470,7 +514,7 @@ BasePredicate.prototype.or = function (...predicates) {
 };
 
 /**
- * Throws error if specified arguemnt is not a predicate.
+ * Throws error if specified argument is not a predicate.
  *
  * @param {Object} predicate Object for validate.
  */
@@ -501,5 +545,5 @@ export function createPredicate(...args) {
     return new SimplePredicate(args[0], args[1], args[2]);
   }
 
-  throw new Error(`Couldn not create predicate from arguments`);
+  throw new Error(`Could not create predicate from arguments`);
 }

@@ -169,37 +169,37 @@ export default class Builder extends BaseBuilder {
    * @public
    * @chainable
    */
-   selectByProjection(projectionName, idFromProjection) {
-     this._idFromProjection = idFromProjection;
-     this._projectionName = projectionName;
-     return this;
-   }
+  selectByProjection(projectionName, idFromProjection) {
+    this._idFromProjection = idFromProjection;
+    this._projectionName = projectionName;
+    return this;
+  }
 
-   /**
-    *
-    * @method ofDataType
-    * @param dataType {String} The name of the data type.
-    * @return {Query.Builder} Returns this instance.
-    * @public
-    * @chainable
-    */
-   ofDataType(dataType) {
-     this._dataType = dataType;
-     return this;
-   }
+  /**
+  *
+  * @method ofDataType
+  * @param dataType {String} The name of the data type.
+  * @return {Query.Builder} Returns this instance.
+  * @public
+  * @chainable
+  */
+  ofDataType(dataType) {
+    this._dataType = dataType;
+    return this;
+  }
 
-   /**
-    *
-    * @method withCustomParams
-    * @param customQueryParams {Object}
-    * @return {Query.Builder} Returns this instance.
-    * @public
-    * @chainable
-    */
-   withCustomParams(customQueryParams) {
-     this._customQueryParams = customQueryParams;
-     return this;
-   }
+  /**
+  *
+  * @method withCustomParams
+  * @param customQueryParams {Object}
+  * @return {Query.Builder} Returns this instance.
+  * @public
+  * @chainable
+  */
+  withCustomParams(customQueryParams) {
+    this._customQueryParams = customQueryParams;
+    return this;
+  }
 
   /**
    * Builds query instance using all provided data.

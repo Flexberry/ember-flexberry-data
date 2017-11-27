@@ -45,6 +45,7 @@ import { DatePredicate } from './query/predicate';
 import { ComplexPredicate }from './query/predicate';
 import { StringPredicate }from './query/predicate';
 import { DetailPredicate } from './query/predicate';
+import { NotPredicate } from './query/predicate';
 import { createPredicate } from './query/predicate';
 import { GeographyPredicate } from './query/predicate';
 
@@ -131,6 +132,7 @@ Query.BasePredicate = BasePredicate;
 Query.SimplePredicate = SimplePredicate;
 Query.DatePredicate = DatePredicate;
 Query.ComplexPredicate = ComplexPredicate;
+Query.NotPredicate = NotPredicate;
 Query.StringPredicate = StringPredicate;
 Query.DetailPredicate = DetailPredicate;
 Query.createPredicate = createPredicate;
