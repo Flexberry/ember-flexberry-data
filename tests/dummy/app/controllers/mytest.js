@@ -9,16 +9,16 @@ export default Ember.Controller.extend({
     click() {
       let store = this.get('store');
       let modelName = 'ember-flexberry-dummy-suggestion';
-      let innerPredicate = new Query.SimplePredicate('Address', Query.FilterOperator.Eq, 'Street, 200');
+      let innerPredicate = new Query.SimplePredicate('address', Query.FilterOperator.Eq, 'Street, 200');
       console.log(innerPredicate);
 
       let notPredicate = new Query.NotPredicate(innerPredicate);
 
-      //console.log(notPredicate);
-      let builder = new Query.Builder(store, modelName).where(innerPredicate).select('Address,Date,Votes,Type,Author');
-      store.query(modelName, builder.build());
+      console.log(notPredicate.toString());
+      let builder = new Query.Builder(store, modelName).selectByProjection('SuggestionL').where(notPredicate);
+      console.log(store.query(modelName, builder.build()));
 
-      //console.log(store.query('ember-flexberry-dummy-suggestion', ));
+      //.where(innerPredicate).
 
     }
   }

@@ -477,7 +477,7 @@ export class NotPredicate extends BasePredicate {
    * @public
    */
   toString() {
-    return `not (${this._predicate})`;
+    return `not ${this._predicate}`;
   }
 }
 
