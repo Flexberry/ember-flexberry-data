@@ -4,7 +4,7 @@
 
 import Ember from 'ember';
 import FilterOperator from './filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, NotPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
@@ -308,10 +308,10 @@ export default class extends BaseAdapter {
                 }
 
                 let loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {nodeTable.toArray().then((data) => {
-                  node.data = data;
-                  node.sorting = node.primaryKeyName;
-                  loadResolve();
-                }, loadReject);});
+                    node.data = data;
+                    node.sorting = node.primaryKeyName;
+                    loadResolve();
+                  }, loadReject);});
                 loadPromises.push(loadPromise);
               }
 
@@ -601,6 +601,71 @@ function updateWhereClause(store, table, query) {
     return table;
   }
 
+  if (predicate instanceof NotPredicate) {
+    let innerPredicate = predicate._predicate;
+
+    if (innerPredicate instanceof SimplePredicate || innerPredicate instanceof DatePredicate) {
+      let information = new Information(store);
+      let attrType = information.getType(query.modelName, innerPredicate.attributePath);
+      let value;
+      switch (attrType) {
+        case 'boolean':
+          value = typeof innerPredicate.value === 'boolean' ? `${innerPredicate.value}` : innerPredicate.value;
+          break;
+
+        case 'date':
+          value = getSerializedDateValue.call(store, innerPredicate.value);
+          break;
+
+        default:
+          value = innerPredicate.value;
+      }
+
+      if (value === null) {
+        // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
+        // https://github.com/dfahlander/Dexie.js/issues/153
+        let jsAdapter = innerPredicate instanceof DatePredicate ? new JSAdapter(Ember.getOwner(store).lookup('service:moment')) : new JSAdapter();
+
+        return table.filter(jsAdapter.getAttributeFilterFunction(predicate));
+      }
+
+      switch (innerPredicate.operator) {
+        case FilterOperator.Eq:
+          return table.where(innerPredicate.attributePath).notEqual(value);
+
+        case FilterOperator.Neq:
+          return table.where(innerPredicate.attributePath).equals(value);
+
+        case FilterOperator.Le:
+          return table.where(innerPredicate.attributePath).aboveOrEqual(value);
+
+        case FilterOperator.Leq:
+          return table.where(innerPredicate.attributePath).above(value);
+
+        case FilterOperator.Ge:
+          return table.where(innerPredicate.attributePath).belowOrEqual(value);
+
+        case FilterOperator.Geq:
+          return table.where(innerPredicate.attributePath).below(value);
+
+        default:
+          throw new Error('Unknown operator');
+      }
+    }
+
+    if (innerPredicate instanceof StringPredicate) {
+      let jsAdapter = new JSAdapter();
+      return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
+    }
+
+    if (innerPredicate instanceof ComplexPredicate) {
+      let datePredicates = innerPredicate.predicates.filter(pred => pred instanceof DatePredicate);
+      let jsAdapter = datePredicates.length > 0 ? new JSAdapter(Ember.getOwner(store).lookup('service:moment')) : new JSAdapter();
+
+      return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
+    }
+  }
+
   if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
     let information = new Information(store);
     let attrType = information.getType(query.modelName, predicate.attributePath);
@@ -674,6 +739,7 @@ function updateWhereClause(store, table, query) {
 */
 function containsRelationships(query) {
   let contains = false;
+
   if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate || query.predicate instanceof DatePredicate) {
     contains = Information.parseAttributePath(query.predicate.attributePath).length > 1;
   }

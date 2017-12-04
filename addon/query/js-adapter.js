@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, NotPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
 import Information from '../utils/information';
@@ -286,6 +286,134 @@ export default class JSAdapter extends BaseAdapter {
     let _this = this;
     if (!predicate) {
       return (i) => i;
+    }
+
+    if (predicate instanceof NotPredicate) {
+      let innerPredicate = predicate._predicate;
+
+      if (innerPredicate instanceof SimplePredicate || innerPredicate instanceof DatePredicate) {
+        let value = innerPredicate.value;
+        if (options && options.booleanAsString && typeof value === 'boolean') {
+          value = `${value}`;
+        }
+
+        return (i) => {
+          let datesIsValid = false;
+          let valueFromHash = _this.getValue(i, innerPredicate.attributePath);
+          let momentFromHash;
+          if (innerPredicate instanceof DatePredicate) {
+            momentFromHash = _this._moment.moment(valueFromHash);
+            let momentFromValue = _this._moment.moment(value);
+            datesIsValid = momentFromHash.isValid() && momentFromValue.isValid();
+          }
+
+          switch (innerPredicate.operator) {
+            case FilterOperator.Eq:
+              if (datesIsValid) {
+                return !momentFromHash.isSame(value);
+              }
+
+              return valueFromHash === value;
+            case FilterOperator.Neq:
+              if (datesIsValid) {
+                return momentFromHash.isSame(value);
+              }
+
+              return valueFromHash !== value;
+            case FilterOperator.Le:
+              if (datesIsValid) {
+                return momentFromHash.isSameOrAfter(value);
+              }
+
+              return valueFromHash < value;
+            case FilterOperator.Leq:
+              if (datesIsValid) {
+                return momentFromHash.isAfter(value);
+              }
+
+              return valueFromHash <= value;
+            case FilterOperator.Ge:
+              if (datesIsValid) {
+                return momentFromHash.isSameOrBefore(value);
+              }
+
+              return valueFromHash > value;
+            case FilterOperator.Geq:
+              if (datesIsValid) {
+                return momentFromHash.isBefore(value);
+              }
+
+              return valueFromHash >= value;
+            default:
+              throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
+          }
+        };
+      }
+
+      if (innerPredicate instanceof StringPredicate) {
+        return (i) => (_this.getValue(i, innerPredicate.attributePath) || '').toLowerCase().indexOf(innerPredicate.containsValue.toLowerCase()) === -1;
+      }
+
+      if (innerPredicate instanceof DetailPredicate) {
+        let detailFilter = _this.buildFilter(innerPredicate.predicate, options);
+        if (innerPredicate.isAll) {
+          return function (i) {
+            let detail = _this.getValue(i, innerPredicate.detailPath);
+            if (!detail) {
+              return true; //???? it was return fals
+            }
+
+            let result = detailFilter(detail);
+            return !(result.length === detail.length);
+          };
+        } else if (innerPredicate.isAny) {
+          return function (i) {
+            let detail = _this.getValue(i, innerPredicate.detailPath);
+            if (!detail) {
+              return true; //???? it was return false
+            }
+
+            let result = detailFilter(detail);
+            return result.length <= 0; // return result.length > 0
+          };
+        } else {
+          throw new Error(`Unsupported detail operation.`);
+        }
+      }
+
+      if (innerPredicate instanceof ComplexPredicate) {
+        let filterFunctions = innerPredicate.predicates.map(innerPredicate => _this.getAttributeFilterFunction(innerPredicate, options));
+        switch (innerPredicate.condition) {
+          case Condition.And:
+            return function (i) {
+              let check = true;
+              for (let funcIndex = 0; funcIndex < filterFunctions.length; funcIndex++) {
+                check &= filterFunctions[funcIndex](i);
+                if (!check) {
+                  break;
+                }
+              }
+
+              return !check; // ?????????
+            };
+
+          case Condition.Or:
+            return function (i) {
+              let check = false;
+              for (let funcIndex = 0; funcIndex < filterFunctions.length; funcIndex++) {
+                check |= filterFunctions[funcIndex](i);
+                if (check) {
+                  break;
+                }
+              }
+
+              return !check;
+            };
+
+          default:
+            throw new Error(`Unsupported condition '${innerPredicate.condition}'.`);
+        }
+      }
     }
 
     if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {

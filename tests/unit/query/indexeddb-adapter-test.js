@@ -4,7 +4,7 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import IndexedDbAdapter from 'ember-flexberry-data/query/indexeddb-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate, NotPredicate } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
 
 import startApp from '../../helpers/start-app';
@@ -69,6 +69,26 @@ test('adapter | indexeddb | simple predicate | eq', (assert) => {
     assert.equal(result.data.length, 2);
     assert.equal(result.data[0].id, 2);
     assert.equal(result.data[1].id, 3);
+  });
+});
+
+test('adapter | indexeddb | not predicate | simple predicate with eq', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Name: 'A' },
+      { id: 2, Name: 'B' },
+      { id: 3, Name: 'B' },
+    ],
+  };
+
+  let innerPredicate = new SimplePredicate('Name', FilterOperator.Eq, 'B');
+  let nP = new NotPredicate(innerPredicate);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
@@ -148,6 +168,27 @@ test('adapter | indexeddb | simple predicate | neq', (assert) => {
   });
 });
 
+test('adapter | indexeddb | not predicate | simple predicate with neq', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Name: 'A' },
+      { id: 2, Name: 'B' },
+      { id: 3, Name: 'B' },
+    ],
+  };
+
+  let innerPredicate = new SimplePredicate('Name', FilterOperator.Neq, 'B');
+  let nP = new NotPredicate(innerPredicate);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
+  });
+});
+
 test('adapter | indexeddb | simple predicate | le', (assert) => {
   let data = {
     employee: [
@@ -164,6 +205,26 @@ test('adapter | indexeddb | simple predicate | le', (assert) => {
     assert.equal(result.data.length, 2);
     assert.equal(result.data[0].id, 1);
     assert.equal(result.data[1].id, 2);
+  });
+});
+
+test('adapter | indexeddb | not predicate | simple predicate with le', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
+
+  let innerPredicate = new SimplePredicate('Age', FilterOperator.Le, 12);
+  let nP = new NotPredicate(innerPredicate);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 3);
   });
 });
 
@@ -186,6 +247,26 @@ test('adapter | indexeddb | simple predicate | leq', (assert) => {
   });
 });
 
+test('adapter | indexeddb | not predicate | simple predicate with leq', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
+
+  let innerPredicate = new SimplePredicate('Age', FilterOperator.Leq, 11);
+  let nP = new NotPredicate(innerPredicate);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 3);
+  });
+});
+
 test('adapter | indexeddb | simple predicate | ge', (assert) => {
   let data = {
     employee: [
@@ -202,6 +283,26 @@ test('adapter | indexeddb | simple predicate | ge', (assert) => {
     assert.equal(result.data.length, 2);
     assert.equal(result.data[0].id, 2);
     assert.equal(result.data[1].id, 3);
+  });
+});
+
+test('adapter | indexeddb | not predicate | simple predicate with ge', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
+
+  let innerPredicate = new SimplePredicate('Age', FilterOperator.Ge, 10);
+  let nP = new NotPredicate(innerPredicate);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
   });
 });
 
@@ -224,6 +325,26 @@ test('adapter | indexeddb | simple predicate | geq', (assert) => {
   });
 });
 
+test('adapter | indexeddb | not predicate | simple predicate with geq', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
+
+  let innerPredicate = new SimplePredicate('Age', FilterOperator.Geq, 11);
+  let nP = new NotPredicate(innerPredicate);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
+  });
+});
+
 test('adapter | indexeddb | string predicate | contains', (assert) => {
   let data = {
     employee: [
@@ -241,6 +362,26 @@ test('adapter | indexeddb | string predicate | contains', (assert) => {
     assert.equal(result.data.length, 2);
     assert.equal(result.data[0].id, 1);
     assert.equal(result.data[1].id, 3);
+  });
+});
+
+test('adapter | indexeddb | not predicate | string predicate with contains', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, CountryName: 'Argentina' },
+      { id: 2, CountryName: 'Paragwaj' },
+      { id: 3, CountryName: 'Russia' },
+    ],
+  };
+
+  let sp1 = new StringPredicate('CountryName').contains('i');
+  let nP = new NotPredicate(sp1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 2);
   });
 });
 
@@ -288,6 +429,30 @@ test('adapter | indexeddb | detail predicate | all | simple predicate', (assert)
     assert.ok(result.data);
     assert.equal(result.data.length, 1);
     assert.equal(result.data[0].id, 1);
+  });
+});
+
+test('adapter | indexeddb | not predicate | all |detail predicate with simple predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Tags: [1] },
+      { id: 2, Tags: [2] },
+      { id: 3 },
+    ],
+    tag: [
+      { id: 1, Name: 'Tag1' },
+      { id: 2, Name: 'Tag3' }
+    ],
+  };
+
+  let dp = new DetailPredicate('Tags').all(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
+  let nP = new NotPredicate(dp);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 2);
   });
 });
 
@@ -520,6 +685,29 @@ test('adapter | indexeddb | complex predicate | and', (assert) => {
   });
 });
 
+test('adapter | indexeddb | not predicate | complex predicate with and', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'A', Surname: 'Y', Age: 10 },
+      { id: 3, Name: 'B', Surname: 'Z', Age: 11 },
+    ],
+  };
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
+  let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 10);
+  let cp1 = new ComplexPredicate(Condition.And, sp1, sp2);
+
+  let nP = new NotPredicate(cp1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('Surname').where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].Surname, 'Z');
+  });
+});
+
 test('adapter | indexeddb | complex predicate | or', (assert) => {
   let data = {
     employee: [
@@ -540,6 +728,30 @@ test('adapter | indexeddb | complex predicate | or', (assert) => {
     assert.equal(result.data.length, 2);
     assert.equal(result.data[0].Surname, 'X');
     assert.equal(result.data[1].Surname, 'Z');
+  });
+});
+
+test('adapter | indexeddb | not predicate | complex predicate with or', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Cool', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
+  let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 12);
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+
+  let nP = new NotPredicate(cp1);
+
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('Surname').where(nP);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].Surname, 'Cool');
   });
 });
 
