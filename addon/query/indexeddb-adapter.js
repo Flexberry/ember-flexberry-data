@@ -308,10 +308,10 @@ export default class extends BaseAdapter {
                 }
 
                 let loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {nodeTable.toArray().then((data) => {
-                    node.data = data;
-                    node.sorting = node.primaryKeyName;
-                    loadResolve();
-                  }, loadReject);});
+                  node.data = data;
+                  node.sorting = node.primaryKeyName;
+                  loadResolve();
+                }, loadReject);});
                 loadPromises.push(loadPromise);
               }
 

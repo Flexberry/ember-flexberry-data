@@ -4,7 +4,7 @@ import QueryBuilder from 'ember-flexberry-data/query/builder';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate, NotPredicate } from 'ember-flexberry-data/query/predicate';
 
 import startApp from '../../helpers/start-app';
 
@@ -48,6 +48,24 @@ test('adapter | js | simple predicate | eq', (assert) => {
   assert.equal(result.length, 2);
   assert.equal(result[0].Surname, 'Y');
   assert.equal(result[1].Surname, 'Z');
+});
+
+test('adapter | js | not predicate | simple predicate with eq', (assert) => {
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'B', Surname: 'Z', Age: 12 }
+  ];
+
+  let nP = new NotPredicate(new SimplePredicate('Name', FilterOperator.Eq, 'B'));
+
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(nP);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Surname, 'X');
 });
 
 test('adapter | js | simple predicate | eq | null', (assert) => {

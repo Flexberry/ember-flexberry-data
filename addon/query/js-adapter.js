@@ -364,7 +364,7 @@ export default class JSAdapter extends BaseAdapter {
             }
 
             let result = detailFilter(detail);
-            return !(result.length === detail.length);
+            return result.length != detail.length;
           };
         } else if (innerPredicate.isAny) {
           return function (i) {
