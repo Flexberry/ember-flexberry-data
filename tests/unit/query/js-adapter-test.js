@@ -133,6 +133,22 @@ test('adapter | js | simple predicate | neq', (assert) => {
   assert.equal(result[1].Surname, 'Z');
 });
 
+test('adapter | js | not predicate | simple predicate with neq', (assert) => {
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'C', Surname: 'Z', Age: 12 }
+  ];
+  let np = new NotPredicate(new SimplePredicate('Name', FilterOperator.Neq, 'B'));
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(np);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Surname, 'Y');
+});
+
 test('adapter | js | simple predicate | le', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
@@ -148,6 +164,24 @@ test('adapter | js | simple predicate | le', (assert) => {
   assert.equal(result.length, 2);
   assert.equal(result[0].Surname, 'X');
   assert.equal(result[1].Surname, 'Y');
+});
+
+test('adapter | js | not predicate | simple predicate with le', (assert) => {
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'C', Surname: 'Z', Age: 12 }
+  ];
+
+  let np = new NotPredicate(new SimplePredicate('Age', FilterOperator.Le, 12));
+
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(np);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Surname, 'Z');
 });
 
 test('adapter | js | simple predicate | leq', (assert) => {
@@ -167,6 +201,24 @@ test('adapter | js | simple predicate | leq', (assert) => {
   assert.equal(result[1].Surname, 'Y');
 });
 
+test('adapter | js | not predicate | simple predicate with leq', (assert) => {
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'C', Surname: 'Z', Age: 12 }
+  ];
+
+  let np = new NotPredicate(new SimplePredicate('Age', FilterOperator.Leq, 11));
+
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(np);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Surname, 'Z');
+});
+
 test('adapter | js | simple predicate | ge', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
@@ -182,6 +234,22 @@ test('adapter | js | simple predicate | ge', (assert) => {
   assert.equal(result.length, 2);
   assert.equal(result[0].Surname, 'Y');
   assert.equal(result[1].Surname, 'Z');
+});
+
+test('adapter | js | not predicate | simple predicate with ge', (assert) => {
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'C', Surname: 'Z', Age: 12 }
+  ];
+  let np = new NotPredicate(new SimplePredicate('Age', FilterOperator.Ge, 10));
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(np);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Surname, 'X');
 });
 
 test('adapter | js | simple predicate | geq', (assert) => {
@@ -201,6 +269,23 @@ test('adapter | js | simple predicate | geq', (assert) => {
   assert.equal(result[1].Surname, 'Z');
 });
 
+test('adapter | js | not predicate | simple predicate with geq', (assert) => {
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'C', Surname: 'Z', Age: 12 }
+  ];
+  let np = new NotPredicate(new SimplePredicate('Age', FilterOperator.Geq, 11));
+
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(np);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Surname, 'X');
+});
+
 test('adapter | js | string predicate | contains', (assert) => {
   const data = [
     { id: 1, Country: 'Argentina' },
@@ -217,6 +302,24 @@ test('adapter | js | string predicate | contains', (assert) => {
   assert.equal(result.length, 2);
   assert.equal(result[0].id, 1);
   assert.equal(result[1].id, 3);
+});
+
+test('adapter | js | not predicate | string predicate with contains', (assert) => {
+  const data = [
+    { id: 1, Country: 'Argentina' },
+    { id: 2, Country: 'Paragwaj' },
+    { id: 3, Country: 'Russia' }
+  ];
+
+  let sp1 = new StringPredicate('Country').contains('i');
+  let np = new NotPredicate(sp1);
+  let builder = new QueryBuilder(store, 'employee').where(np);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].id, 2);
 });
 
 test('adapter | js | string predicate | contains | master field', (assert) => {
@@ -253,6 +356,26 @@ test('adapter | js | detail predicate | all | simple predicate', (assert) => {
   assert.ok(result);
   assert.equal(result.length, 1);
   assert.equal(result[0].id, 1);
+});
+
+test('adapter | js | not predicate | with detail predicate | all | simple predicate', (assert) => {
+  const data = [
+    { id: 1, Tags: [{ Name: 'Tag1' }] },
+    { id: 2 },
+    { id: 3 }
+  ];
+
+  let dp = new DetailPredicate('Tags').all(new SimplePredicate('Name', FilterOperator.Eq, 'Tag1'));
+  let np = new NotPredicate(dp);
+  let builder = new QueryBuilder(store, 'employee').where(np);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].id, 2);
+  assert.equal(result[1].id, 3);
 });
 
 test('adapter | js | detail predicate | all | simple predicate | master field', (assert) => {
@@ -418,6 +541,27 @@ test('adapter | js | complex predicate | and', (assert) => {
   assert.equal(result[1].Surname, 'Y');
 });
 
+test('adapter | js | not predicate with complex predicate with and', (assert) => {
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'A', Surname: 'Y', Age: 10 },
+    { Name: 'B', Surname: 'Z', Age: 11 }
+  ];
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
+  let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 10);
+  let cp1 = new ComplexPredicate(Condition.And, sp1, sp2);
+  let np = new NotPredicate(cp1);
+
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(np);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Surname, 'Z');
+});
+
 test('adapter | js | complex predicate | or', (assert) => {
   const data = [
     { Name: 'A', Surname: 'X', Age: 10 },
@@ -437,6 +581,28 @@ test('adapter | js | complex predicate | or', (assert) => {
   assert.equal(result.length, 2);
   assert.equal(result[0].Surname, 'X');
   assert.equal(result[1].Surname, 'Z');
+});
+
+test('adapter | js | not predicate with complex predicate with or', (assert) => {
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'C', Surname: 'Z', Age: 12 }
+  ];
+
+  let sp1 = new SimplePredicate('Name', FilterOperator.Eq, 'A');
+  let sp2 = new SimplePredicate('Age', FilterOperator.Eq, 12);
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, sp2);
+
+  let np = new NotPredicate(cp1);
+
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(np);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].Surname, 'Y');
 });
 
 test('adapter | js | complex predicate | with nested complex predicate', function (assert) {

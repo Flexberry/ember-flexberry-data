@@ -244,8 +244,9 @@ export default class JSAdapter extends BaseAdapter {
     let b3 = predicate instanceof DetailPredicate;
     let b4 = predicate instanceof DatePredicate;
     let b5 = predicate instanceof GeographyPredicate;
+    let b6 = predicate instanceof NotPredicate;
 
-    if (b1 || b2 || b3 || b4) {
+    if (b1 || b2 || b3 || b4 || b6) {
       let filterFunction = this.getAttributeFilterFunction(predicate, options);
       return this.getFilterFunctionAnd([filterFunction]);
     }
@@ -313,37 +314,37 @@ export default class JSAdapter extends BaseAdapter {
                 return !momentFromHash.isSame(value);
               }
 
-              return valueFromHash === value;
+              return valueFromHash !== value;
             case FilterOperator.Neq:
               if (datesIsValid) {
                 return momentFromHash.isSame(value);
               }
 
-              return valueFromHash !== value;
+              return valueFromHash === value;
             case FilterOperator.Le:
               if (datesIsValid) {
                 return momentFromHash.isSameOrAfter(value);
               }
 
-              return valueFromHash < value;
+              return valueFromHash >= value;
             case FilterOperator.Leq:
               if (datesIsValid) {
                 return momentFromHash.isAfter(value);
               }
 
-              return valueFromHash <= value;
+              return valueFromHash > value;
             case FilterOperator.Ge:
               if (datesIsValid) {
                 return momentFromHash.isSameOrBefore(value);
               }
 
-              return valueFromHash > value;
+              return valueFromHash <= value;
             case FilterOperator.Geq:
               if (datesIsValid) {
                 return momentFromHash.isBefore(value);
               }
 
-              return valueFromHash >= value;
+              return valueFromHash < value;
             default:
               throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
           }
@@ -364,7 +365,7 @@ export default class JSAdapter extends BaseAdapter {
             }
 
             let result = detailFilter(detail);
-            return result.length != detail.length;
+            return result.length !== detail.length;
           };
         } else if (innerPredicate.isAny) {
           return function (i) {
