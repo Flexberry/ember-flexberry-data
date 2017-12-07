@@ -1,9 +1,9 @@
 ---
+sudo: false
+
 language: node_js
 node_js:
-  - "5.10"
-
-sudo: false
+  - "6"
 
 cache:
   directories:
@@ -26,13 +26,18 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
 
-before_script:
+dist: trusty
+
+addons:
+  chrome: stable
+
+before_install:
   # Configuring NPM
   - npm config set spin false
   - npm install -g npm@^2
+  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
 
 install:
-  - npm install -g phantomjs-prebuilt
   - npm install -g bower
   - npm install -g firebase-tools
   - npm install
