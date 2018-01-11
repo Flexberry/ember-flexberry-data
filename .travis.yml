@@ -1,5 +1,5 @@
 ---
-sudo: false
+sudo: required
 
 language: node_js
 node_js:
@@ -32,7 +32,8 @@ addons:
   chrome: stable
 
 before_install:
-  # Configuring NPM
+  - sudo chown root /opt/google/chrome/chrome-sandbox
+  - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
   - npm config set spin false
   - npm install -g npm@^2
   - google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
