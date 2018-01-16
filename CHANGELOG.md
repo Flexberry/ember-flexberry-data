@@ -1,6 +1,14 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- The `hasChangedBelongsTo` function, in `Projection.Model`, to check 'belongsTo' relationship changes.
+
+### Changed
+- Getting of current user name is now able by calling `getCurrentUserName` method from `user` service.
+
+### Fixed
+- Tracking changes for `syncUp` when `belongsTo` relationships changes.
 
 ## [0.9.1-beta.2] - 2017-11-27
 ### Added
