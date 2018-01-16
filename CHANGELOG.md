@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.9.1-beta.3] - 2018-01-16
 ### Added
 - The `hasChangedBelongsTo` function, in `Projection.Model`, to check 'belongsTo' relationship changes.
 
