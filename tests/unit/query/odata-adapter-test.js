@@ -114,7 +114,7 @@ test('adapter | odata | simple predicate | neq', function (assert) {
   let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Neq, 'Vasya');
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=FirstName ne 'Vasya'&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=(FirstName ne 'Vasya' or FirstName eq null)&$select=CustomerID`);
 });
 
 test('adapter | odata | simple predicate | neq | null', function (assert) {

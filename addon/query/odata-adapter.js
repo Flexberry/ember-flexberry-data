@@ -376,6 +376,8 @@ export default class ODataAdapter extends BaseAdapter {
       attribute = `${prefix}/${attribute}`;
     }
 
+    let operator = this._getODataFilterOperator(predicate.operator);
+
     let value;
     if (predicate.value === null) {
       value = 'null';
@@ -404,9 +406,12 @@ export default class ODataAdapter extends BaseAdapter {
       } else {
         value = predicate.value;
       }
+
+      if (predicate.operator === 'neq') {
+        return `(${attribute} ${operator} ${value} or ${attribute} eq null)`;
+      }
     }
 
-    let operator = this._getODataFilterOperator(predicate.operator);
     return `${attribute} ${operator} ${value}`;
   }
 }

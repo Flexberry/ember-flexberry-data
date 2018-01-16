@@ -6,6 +6,7 @@
 
 ### Fixed
 - Tracking changes for `syncUp` when `belongsTo` relationships changes.
+- Fix neq predicate operator for `odata-adapter`.
 
 ## [0.9.1-beta.2] - 2017-11-27
 ### Added
