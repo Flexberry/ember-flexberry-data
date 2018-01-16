@@ -137,6 +137,7 @@ test('changedBelongsTo after saving the created model', function(assert) {
     });
 
     //Diff `belongsTo` relationships.
+    assert.ok(suggestion.hasChangedBelongsTo());
     assert.deepEqual(suggestion.changedBelongsTo(), {
       type: [null, type1],
       author: [null, user1],
@@ -147,6 +148,7 @@ test('changedBelongsTo after saving the created model', function(assert) {
     suggestion.didCreate();
 
     //Diff `belongsTo` relationships.
+    assert.notOk(suggestion.hasChangedBelongsTo());
     assert.deepEqual(suggestion.changedBelongsTo(), {
     }, `Results 'changedBelongsTo' function as expected.`);
   });

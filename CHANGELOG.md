@@ -1,6 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- The `hasChangedBelongsTo` function, in `Projection.Model`, to check 'belongsTo' relationship changes.
+
+### Fixed
+- Tracking changes for `syncUp` when `belongsTo` relationships changes.
 
 ## [0.9.1-beta.2] - 2017-11-27
 ### Added
