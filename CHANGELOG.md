@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.9.1-beta.4] - 2018-01-17
+### Changed
+- `setCurrentUserName` method in `user` service now should be used in applications for setting current user name instead of `getCurrentUserName`.
+
 ## [0.9.1-beta.3] - 2018-01-16
 ### Added
 - The `hasChangedBelongsTo` function, in `Projection.Model`, to check 'belongsTo' relationship changes.

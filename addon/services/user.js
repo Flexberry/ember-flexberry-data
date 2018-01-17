@@ -5,6 +5,18 @@
 import Ember from 'ember';
 
 export default Ember.Service.extend({
+
+  /* Current user name. */
+  _currentUserName: null,
+
+  /* Initialization of service. */
+  init() {
+    this._super(...arguments);
+
+    // Set current user name on initialization.
+    this.setCurrentUserName();
+  },
+
   /**
   */
   getCurrentUser() {
@@ -29,13 +41,24 @@ export default Ember.Service.extend({
   /**
 
     Returns current user name.
-    Method must be overridden if application uses some authentication.
 
     @method getCurrentUserName
-    @return {String} Current user name. Returns 'userName' as default value if method is not overridden.
+    @return {String} Current user name. Returns 'userName' as default value if `setCurrentUserName` method is not overridden.
   */
   getCurrentUserName() {
-    // TODO: add mechanism to return name of current user.
-    return 'userName';
-  }
+    return this._currentUserName;
+  },
+
+  /**
+
+    Sets current user name.
+    Method must be overridden if application uses some authentication.
+
+    @method setCurrentUserName
+  */
+  setCurrentUserName() {
+    // TODO: add mechanism to set name of current user. Name of current user should be set in `_currentUserName` property.
+    this.set('_currentUserName', 'userName');
+  },
+
 });
