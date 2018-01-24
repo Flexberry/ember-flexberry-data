@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- In `Projection.Model` when calling `validate` method for `hasMany` relationships, arguments are lost.
 
 ## [0.9.1-beta.3] - 2018-01-16
 ### Added

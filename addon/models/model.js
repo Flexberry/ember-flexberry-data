@@ -111,7 +111,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       }
 
       details.forEach((detailModel, i) => {
-        validationPromises[relationshipName + '.' + i] = detailModel.validate.apply(detailModel, options);
+        validationPromises[relationshipName + '.' + i] = detailModel.validate(options);
       });
     });
 
