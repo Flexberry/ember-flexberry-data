@@ -167,6 +167,21 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
+   * A method to make ajax requests.
+   *
+   * @method _makeRequest
+   * @param {Object} params
+   * @private
+   */
+  _makeRequest(params) {
+    if (!params.type || !params.url) {
+      return;
+    }
+
+    return Ember.$.ajax(params);
+  },
+
+  /**
    * Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.
    * Appends id as `(id)` (OData specification) instead of `/id`.
    *
