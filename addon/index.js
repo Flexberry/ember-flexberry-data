@@ -46,6 +46,7 @@ import { ComplexPredicate }from './query/predicate';
 import { StringPredicate }from './query/predicate';
 import { DetailPredicate } from './query/predicate';
 import { createPredicate } from './query/predicate';
+import { GeographyPredicate } from './query/predicate';
 
 import UserService from './services/user';
 import DexieService from './services/dexie';
@@ -133,6 +134,7 @@ Query.ComplexPredicate = ComplexPredicate;
 Query.StringPredicate = StringPredicate;
 Query.DetailPredicate = DetailPredicate;
 Query.createPredicate = createPredicate;
+Query.GeographyPredicate = GeographyPredicate;
 
 /**
   This namespace contains helper claseses.

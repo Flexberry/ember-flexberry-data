@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+## [0.10.0] - 2018-01-25
+### Added
+- `Projection.Model`:
+    - `hasChangedBelongsTo` function to check 'belongsTo' relationship changes.
+- Query language:
+    - `NotPredicate` for `not` expressions.
+- `Adapter.Odata`
+    - If errors are occured adapter now responses with errors expected in [OData JSON Format](http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766668).
+
+### Changed
+`user` service:
+     - Getting current user name for entire application is now able by calling `getCurrentUserName` method.
+
+### Fixed
+- `Projection.Model`:
+    - When calling `validate` method for `hasMany` relationships arguments are lost.
+    - When extending `Projection.Model` and using inheritance, the entire hierarchy of models has a shared `projections` object. Now each child model has its own `projections` object and copy of parent `projections` object.
+- `syncer` service:
+    - Tracking changes for `syncUp` when `belongsTo` relationships changes.
+- Query language:
+    - `GeographyPredicate` was fixed.
+
 ## [0.9.0] - 2017-09-29
 ### Added
 - Add `GeographyPredicate` for spatial data types.
