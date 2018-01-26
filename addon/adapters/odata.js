@@ -181,6 +181,16 @@ export default DS.RESTAdapter.extend({
     return Ember.$.ajax(params);
   },
 
+  /**
+   * A method to make any ajax requests.
+   *
+   * @method ajaxAbstraction
+   * @param {Object} params
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @return {Promise}
+   * @public
+   */
   ajaxAbstraction(params, successCallback, failCallback) {
     if (typeof params !== 'object') {
       throw new Error('Params must be Object!');
@@ -199,7 +209,7 @@ export default DS.RESTAdapter.extend({
         throw new Error('failCallback must be function!');
       }
 
-      if (params.method == 'POST') {
+      if (params.method === 'POST') {
         params.data = JSON.stringify(params.data);
       }
 
@@ -213,7 +223,7 @@ export default DS.RESTAdapter.extend({
         throw new Error('successCallback must be function!');
       }
 
-      if (params.method == 'POST') {
+      if (params.method === 'POST') {
         params.data = JSON.stringify(params.data);
       }
 
