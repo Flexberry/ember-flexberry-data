@@ -193,9 +193,8 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   ajaxAbstraction(params, successCallback, failCallback, alwaysCallback) {
-    if (typeof params !== 'object') {
-      throw new Error('Params must be Object!');
-    }
+    Ember.assert('Params must be Object!', typeof params === 'object');
+    Ember.assert('params.method or params.url is not defined.', (Ember.none(params.method) && Ember.none(params.url)));
 
     if (Ember.none(params.method) || Ember.none(params.url)) {
       throw new Error('params.method or params.url is not defined.');
@@ -208,17 +207,30 @@ export default DS.RESTAdapter.extend({
     return Ember.RVSP.Promise(function(resolve, reject) {
       Ember.$.ajax(params).done((msg) => {
         if (!Ember.none(successCallback)) {
-          successCallback(msg);
-          resolve();
+          if (typeof successCallback.then == 'function') {
+            successCallback(msg).then(resolve());
+          } else {
+            successCallback(msg);
+            resolve(msg);
+          }
         }
       }).fail((msg)=> {
         if (!Ember.none(failCallback)) {
-          failCallback(msg);
-          reject();s
+          if (typeof failCallback.then == 'function') {
+            failCallback(msg).then(reject(msg));
+          } else {
+            failCallback(msg);
+            reject(msg);
+          }
         }
       }).always(()=> {
-        if (!Ember.none(failCallback)) {
-          alwaysCallback();
+        if (!Ember.none(alwaysCallback)) {
+          if (typeof alwaysCallback.then == 'function') {
+            alwaysCallback(msg).then(reject(msg)); //TODO: REJECT OR RESOLVE HERE?
+          } else {
+            alwaysCallback(msg);
+            reject(msg);
+          }
         }
       });
     });
