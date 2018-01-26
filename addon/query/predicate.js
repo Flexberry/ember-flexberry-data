@@ -331,6 +331,64 @@ export class GeographyPredicate extends BasePredicate {
 }
 
 /**
+ * The predicate class for geometry attributes.
+ *
+ * @namespace Query
+ * @class GeometryPredicate
+ * @extends BasePredicate
+ *
+ * @param {String} attributePath The path to the attribute for predicate.
+ * @constructor
+ */
+export class GeometryPredicate extends BasePredicate {
+  constructor(attributePath) {
+    super();
+
+    if (!attributePath) {
+      throw new Error('Attribute path is required for GeometryPredicate constructor.');
+    }
+
+    this._attributePath = attributePath;
+    this._intersectsValue = null;
+  }
+
+  /**
+   * The path to the attribute for predicate.
+   *
+   * @property attributePath
+   * @type {String}
+   * @public
+   */
+  get attributePath() {
+    return this._attributePath;
+  }
+
+  /**
+   * The geometry value that has to intersect with the attribute.
+   *
+   * @property intersectsValue
+   * @type {String}
+   * @public
+   */
+  get intersectsValue() {
+    return this._intersectsValue;
+  }
+
+  /**
+   * Sets the value that the attribute has to contain.
+   *
+   * @method contains
+   * @param {String} geometry The geometry value that has to intersect with the attribute.
+   * @return {Query.StringPredicate} Returns this instance.
+   * @chainable
+   */
+  intersects(geometry) {
+    this._intersectsValue = geometry;
+    return this;
+  }
+}
+
+/**
  * The predicate class for details.
  *
  * @namespace Query

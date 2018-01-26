@@ -2,7 +2,8 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, NotPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate,
+  GeographyPredicate, GeometryPredicate, NotPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
@@ -232,6 +233,15 @@ export default class ODataAdapter extends BaseAdapter {
         return `not (geo.intersects(geography1=${attribute},geography2=geography'${predicate.intersectsValue}'))`;
       }
 
+      if (innerPredicate instanceof GeometryPredicate) {
+        let attribute = this._getODataAttributeName(modelName, innerPredicate.attributePath);
+        if (prefix) {
+          attribute = `${prefix}/${attribute}`;
+        }
+
+        return `not (geom.intersects(geometry1=${attribute},geometry2=geometry'${predicate.intersectsValue}'))`;
+      }
+
       if (innerPredicate instanceof DetailPredicate) {
         let func = '';
         if (innerPredicate.isAll) {
@@ -276,6 +286,15 @@ export default class ODataAdapter extends BaseAdapter {
       }
 
       return `geo.intersects(geography1=${attribute},geography2=geography'${predicate.intersectsValue}')`;
+    }
+
+    if (predicate instanceof GeometryPredicate) {
+      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+      if (prefix) {
+        attribute = `${prefix}/${attribute}`;
+      }
+
+      return `geom.intersects(geometry1=${attribute},geometry2=geometry'${predicate.intersectsValue}')`;
     }
 
     if (predicate instanceof DetailPredicate) {
