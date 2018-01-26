@@ -237,7 +237,7 @@ export default DS.RESTAdapter.extend({
         throw new Error('failCallback must be function!');
       }
 
-      if (params.method == 'POST') {
+      if (params.method === 'POST') {
         params.data = JSON.stringify(params.data);
       }
 
@@ -245,6 +245,14 @@ export default DS.RESTAdapter.extend({
         Ember.$.ajax(params).fail(failCallback());
       });
     }
+
+    if (params.method === 'POST') {
+      params.data = JSON.stringify(params.data);
+    }
+
+    return Ember.RVSP.Promise(function(resolve, reject) {
+      Ember.$.ajax(params);
+    });
   },
 
   /**
