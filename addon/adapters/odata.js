@@ -53,7 +53,7 @@ export default DS.RESTAdapter.extend({
 
     Ember.debug(`Flexberry ODataAdapter::query '${type}'`, data);
 
-    // TODO: think about moving request execution into query adapter
+    //f TODO: think about moving request execution into query adapter
     return this.ajax(url, 'GET', { data: data, timeout: timeout, dataType: query.dataType || 'json' });
   },
 
@@ -169,16 +169,72 @@ export default DS.RESTAdapter.extend({
   /**
    * A method to make ajax requests.
    *
-   * @method _makeRequest
+   * @method makeRequest
    * @param {Object} params
-   * @private
+   * @public
    */
-  _makeRequest(params) {
-    if (!params.type || !params.url) {
+  makeRequest(params) {
+    if (!params.method || !params.url) {
       return;
     }
 
     return Ember.$.ajax(params);
+  },
+
+  ajaxAbstraction(params, successCallback, failCallback) {
+    if (typeof params !== 'object') {
+      throw new Error('Params must be Object!');
+    }
+
+    if (Ember.none(params.method) || Ember.none(params.url)) {
+      throw new Error('params.method or params.url is not defined.');
+    }
+
+    if (!Ember.none(successCallback) && !Ember.none(failCallback)) {
+      if (typeof successCallback !== 'function') {
+        throw new Error('successCallback must be function!');
+      }
+
+      if (typeof failCallback !== 'function') {
+        throw new Error('failCallback must be function!');
+      }
+
+      if (params.method == 'POST') {
+        params.data = JSON.stringify(params.data);
+      }
+
+      return Ember.RVSP.Promise(function(resolve, reject) {
+        Ember.$.ajax(params).done(successCallback(msg)).fail(failCallback());
+      });
+    }
+
+    if (!Ember.none(successCallback) && Ember.none(failCallback)) {
+      if (typeof successCallback !== 'function') {
+        throw new Error('successCallback must be function!');
+      }
+
+      if (params.method == 'POST') {
+        params.data = JSON.stringify(params.data);
+      }
+
+      return Ember.RVSP.Promise(function(resolve, reject) {
+        Ember.$.ajax(params).done(successCallback(msg));
+      });
+    }
+
+    if (!Ember.none(failCallback) && Ember.none(successCallback)) {
+      if (typeof failCallback !== 'function') {
+        throw new Error('failCallback must be function!');
+      }
+
+      if (params.method == 'POST') {
+        params.data = JSON.stringify(params.data);
+      }
+
+      return Ember.RVSP.Promise(function(resolve, reject) {
+        Ember.$.ajax(params).fail(failCallback());
+      });
+    }
   },
 
   /**
