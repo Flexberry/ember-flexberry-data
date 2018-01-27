@@ -174,10 +174,7 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   makeRequest(params) {
-    if (!params.method || !params.url) {
-      return;
-    }
-
+    Ember.aserrt('You should specify both method and url', params.method || params.url);
     return Ember.$.ajax(params);
   },
 
@@ -196,10 +193,6 @@ export default DS.RESTAdapter.extend({
     Ember.assert('Params must be Object!', typeof params === 'object');
     Ember.assert('params.method or params.url is not defined.', (Ember.none(params.method) && Ember.none(params.url)));
 
-    if (Ember.none(params.method) || Ember.none(params.url)) {
-      throw new Error('params.method or params.url is not defined.');
-    }
-
     if (params.method === 'POST') {
       params.data = JSON.stringify(params.data);
     }
@@ -208,29 +201,49 @@ export default DS.RESTAdapter.extend({
       Ember.$.ajax(params).done((msg) => {
         if (!Ember.none(successCallback)) {
           if (typeof successCallback.then == 'function') {
-            successCallback(msg).then(resolve());
+            if (!Ember.none(alwaysCallback)) {
+              successCallback(msg).then(alwaysCallback(msg)).then(resolve(msg));
+            } else {
+              successCallback(msg).then(resolve(msg));
+            }
           } else {
             successCallback(msg);
+            if (!Ember.none(alwaysCallback)) {
+              alwaysCallback(msg);
+            }
+
             resolve(msg);
           }
+        } else {
+          if (!Ember.none(alwaysCallback)) {
+            alwaysCallback(msg);
+          }
+
+          resolve(msg);
         }
       }).fail((msg)=> {
         if (!Ember.none(failCallback)) {
           if (typeof failCallback.then == 'function') {
-            failCallback(msg).then(reject(msg));
+            if (!Ember.none(alwaysCallback)) {
+              failCallback(msg).then(alwaysCallback()).then(reject(msg));
+            } else {
+              failCallback(msg).then(reject(msg));
+            }
+
           } else {
             failCallback(msg);
+            if (!Ember.none(alwaysCallback)) {
+              alwaysCallback(msg);
+            }
+
             reject(msg);
           }
-        }
-      }).always(()=> {
-        if (!Ember.none(alwaysCallback)) {
-          if (typeof alwaysCallback.then == 'function') {
-            alwaysCallback(msg).then(reject(msg)); //TODO: REJECT OR RESOLVE HERE?
-          } else {
+        } else {
+          if (!Ember.none(alwaysCallback)) {
             alwaysCallback(msg);
-            reject(msg);
           }
+
+          reject(msg);
         }
       });
     });
