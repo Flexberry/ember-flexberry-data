@@ -200,7 +200,7 @@ export default DS.RESTAdapter.extend({
     return Ember.RVSP.Promise(function(resolve, reject) {
       Ember.$.ajax(params).done((msg) => {
         if (!Ember.none(successCallback)) {
-          if (typeof successCallback.then == 'function') {
+          if (typeof successCallback.then === 'function') {
             if (!Ember.none(alwaysCallback)) {
               successCallback(msg).then(alwaysCallback(msg)).then(resolve(msg));
             } else {
@@ -223,7 +223,7 @@ export default DS.RESTAdapter.extend({
         }
       }).fail((msg)=> {
         if (!Ember.none(failCallback)) {
-          if (typeof failCallback.then == 'function') {
+          if (typeof failCallback.then === 'function') {
             if (!Ember.none(alwaysCallback)) {
               failCallback(msg).then(alwaysCallback()).then(reject(msg));
             } else {
