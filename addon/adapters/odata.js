@@ -178,6 +178,20 @@ export default DS.RESTAdapter.extend({
     return Ember.$.ajax(params);
   },
 
+  callFunction(url, method, params, successCallback, failCallback, alwaysCallback) {
+    if (Ember.none(url)) {
+      //take URL from env
+    }
+
+  },
+
+  callAction(url, method, params, successCallback, failCallback, alwaysCallback){
+    if (Ember.none(url)) {
+      //take URL from env
+    }
+
+  },
+
   /**
    * A method to make any ajax requests.
    *
@@ -189,6 +203,12 @@ export default DS.RESTAdapter.extend({
    * @return {Promise}
    * @public
    */
+
+  /** вынести отдельно, в приватку, к приваткке обращение из
+   *  callAction, callFunction, в них формируется урл из параметров:
+   *  урл, имя функции, параметры.
+   */
+
   ajaxAbstraction(params, successCallback, failCallback, alwaysCallback) {
     Ember.assert('Params must be Object!', typeof params === 'object');
     Ember.assert('params.method or params.url is not defined.', (Ember.none(params.method) && Ember.none(params.url)));
@@ -202,7 +222,11 @@ export default DS.RESTAdapter.extend({
         if (!Ember.none(successCallback)) {
           if (typeof successCallback.then === 'function') {
             if (!Ember.none(alwaysCallback)) {
-              successCallback(msg).then(alwaysCallback(msg)).then(resolve(msg));
+              if (typeof alwaysCallback.then === 'function') {
+                successCallback(msg).then(() => {alwaysCallback(msg).then(resolve(msg));});
+              } else {
+                successCallback(msg).then(alwaysCallback(msg)).then(resolve(msg));
+              }
             } else {
               successCallback(msg).then(resolve(msg));
             }
@@ -235,7 +259,12 @@ export default DS.RESTAdapter.extend({
         if (!Ember.none(failCallback)) {
           if (typeof failCallback.then === 'function') {
             if (!Ember.none(alwaysCallback)) {
-              failCallback(msg).then(alwaysCallback()).then(reject(msg));
+              if (typeof alwaysCallback.then === 'function') {
+                failCallback(msg).then(() => {alwaysCallback(msg).then(reject(msg));});
+              } else {
+                failCallback(msg).then(alwaysCallback(msg)).then(reject(msg));
+              }
+
             } else {
               failCallback(msg).then(reject(msg));
             }
