@@ -209,17 +209,27 @@ export default DS.RESTAdapter.extend({
           } else {
             successCallback(msg);
             if (!Ember.none(alwaysCallback)) {
-              alwaysCallback(msg);
+              if (typeof alwaysCallback.then === 'function') {
+                alwaysCallback(msg).then(resolve(msg));
+              } else {
+                alwaysCallback(msg);
+                resolve(msg);
+              }
+            } else {
+              resolve(msg);
             }
-
-            resolve(msg);
           }
         } else {
           if (!Ember.none(alwaysCallback)) {
-            alwaysCallback(msg);
+            if (typeof alwaysCallback.then === 'function') {
+              alwaysCallback(msg).then(resolve(msg));
+            } else {
+              alwaysCallback(msg);
+              resolve(msg);
+            }
+          } else {
+            resolve(msg);
           }
-
-          resolve(msg);
         }
       }).fail((msg)=> {
         if (!Ember.none(failCallback)) {
@@ -233,17 +243,27 @@ export default DS.RESTAdapter.extend({
           } else {
             failCallback(msg);
             if (!Ember.none(alwaysCallback)) {
-              alwaysCallback(msg);
+              if (typeof alwaysCallback === 'function') {
+                alwaysCallback(msg).then(reject(msg));
+              } else {
+                alwaysCallback(msg);
+                reject(msg);
+              }
+            } else {
+              reject(msg);
             }
-
-            reject(msg);
           }
         } else {
           if (!Ember.none(alwaysCallback)) {
-            alwaysCallback(msg);
+            if (typeof alwaysCallback.then === 'function') {
+              alwaysCallback(msg).then(reject(msg));
+            } else {
+              alwaysCallback(msg);
+              reject(msg);
+            }
+          } else {
+            reject(msg);
           }
-
-          reject(msg);
         }
       });
     });
