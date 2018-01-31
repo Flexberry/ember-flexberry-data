@@ -247,7 +247,7 @@ export default DS.RESTAdapter.extend({
       let url = `${config.APP.backendUrls.api}`;
     }
 
-    params.data = JSON.stringify(data);
+    params.data = JSON.stringify(params.data);
     params.url =  `${url}/${func}`;
 
     return this._ajaxAbstraction(params, successCallback, failCallback, alwaysCallback);
