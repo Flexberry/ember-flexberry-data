@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import config from '../../config/environment';
 
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
@@ -178,24 +179,12 @@ export default DS.RESTAdapter.extend({
     return Ember.$.ajax(params);
   },
 
-  callFunction(url, method, params, successCallback, failCallback, alwaysCallback) {
-    if (Ember.none(url)) {
-      //take URL from env
-    }
-
-  },
-
-  callAction(url, method, params, successCallback, failCallback, alwaysCallback){
-    if (Ember.none(url)) {
-      //take URL from env
-    }
-
-  },
-
   /**
-   * A method to make any ajax requests.
+   * A method to call functions using ajax requests.
    *
-   * @method ajaxAbstraction
+   * @method callFunction
+   * @param {string} url
+   * @param {Object} func
    * @param {Object} params
    * @param {Function} successCallback
    * @param {Function} failCallback
@@ -203,19 +192,81 @@ export default DS.RESTAdapter.extend({
    * @return {Promise}
    * @public
    */
+  callFunction(url, func, params, successCallback, failCallback, alwaysCallback) {
+    if (Ember.none(url)) {
+      let url = `${config.APP.backendUrls.api}`;
+    }
 
-  /** вынести отдельно, в приватку, к приваткке обращение из
-   *  callAction, callFunction, в них формируется урл из параметров:
-   *  урл, имя функции, параметры.
+    let resultUrl = `${url}/${func}(`;
+    let counter = 0;
+    for (var key in params) {
+      counter++;
+    }
+
+    let i = 0;
+    for (key in params) {
+      //TODO: Check types and ''
+      if (typeof params[key] === 'number') {
+        resultUrl = resultUrl + `${key}=${params[key]}`;
+      } else {
+        resultUrl = resultUrl + `${key}="${params[key]}"`;
+      }
+
+      if (i < counter) {
+        resultUrl += ', ';
+      } else {
+        resultUrl += ')';
+      }
+
+      i++;
+    }
+
+    if (resultUrl[resultUrl.length - 1] !== ')') {
+      resultUrl += ')';
+    }
+
+    return this._ajaxAbstraction({ url: resultUrl, method: 'GET' }, successCallback, failCallback, alwaysCallback);
+
+  },
+
+  /**
+   * A method to call actions using ajax requests.
+   *
+   * @method callFunction
+   * @param {string} url
+   * @param {Object} func
+   * @param {Object} params
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
    */
+  callAction(url, func, params, successCallback, failCallback, alwaysCallback) {
+    if (Ember.none(url)) {
+      let url = `${config.APP.backendUrls.api}`;
+    }
 
-  ajaxAbstraction(params, successCallback, failCallback, alwaysCallback) {
+    params.data = JSON.stringify(data);
+    params.url =  `${url}/${func}`;
+
+    return this._ajaxAbstraction(params, successCallback, failCallback, alwaysCallback);
+  },
+
+  /**
+   * A method to make ajax requests.
+   *
+   * @method _ajaxAbstraction
+   * @param {Object} params
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @private
+   */
+  _ajaxAbstraction(params, successCallback, failCallback, alwaysCallback) {
     Ember.assert('Params must be Object!', typeof params === 'object');
     Ember.assert('params.method or params.url is not defined.', (Ember.none(params.method) && Ember.none(params.url)));
-
-    if (params.method === 'POST') {
-      params.data = JSON.stringify(params.data);
-    }
 
     return Ember.RVSP.Promise(function(resolve, reject) {
       Ember.$.ajax(params).done((msg) => {
