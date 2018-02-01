@@ -2,7 +2,7 @@
 
 ## [Unreleased] - 2018-01-25
 ### Added
-- The `makeRequest` method to make AJAX-requests
+- The `callAction` and `callFunction` methods to make AJAX-requests
 
 ## [0.9.1-beta.3] - 2018-01-16
 ### Added

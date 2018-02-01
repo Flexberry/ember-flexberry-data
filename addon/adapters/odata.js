@@ -195,8 +195,8 @@ export default DS.RESTAdapter.extend({
    */
   callFunction(url, functionName, params, successCallback, failCallback, alwaysCallback) {
     let config = getOwner(this)._lookupFactory('config:environment');
-    if (Ember.none(url)) {
-      url = `${config.APP.backendUrls.api}`;
+    if (Ember.isNone(url)) {
+      url = `${config.baseURL}`;
     }
 
     let resultUrl = `${url}/${functionName}(`;
@@ -246,8 +246,8 @@ export default DS.RESTAdapter.extend({
    */
   callAction(url, actionName, data, successCallback, failCallback, alwaysCallback) {
     let config = getOwner(this)._lookupFactory('config:environment');
-    if (Ember.none(url)) {
-      url = `${config.APP.backendUrls.api}`;
+    if (Ember.isNone(url)) {
+      url = `${config.baseURL}`;
     }
 
     data = JSON.stringify(data);
@@ -267,15 +267,15 @@ export default DS.RESTAdapter.extend({
    * @return {Promise}
    * @private
    */
-  _ajaxAbstraction(params, successCallback, failCallback, alwaysCallback) {
+  _callAjax(params, successCallback, failCallback, alwaysCallback) {
     Ember.assert('Params must be Object!', typeof params === 'object');
-    Ember.assert('params.method or params.url is not defined.', (Ember.none(params.method) && Ember.none(params.url)));
+    Ember.assert('params.method or params.url is not defined.', (Ember.isNone(params.method) && Ember.isNone(params.url)));
 
     return Ember.RVSP.Promise(function(resolve, reject) {
       Ember.$.ajax(params).done((msg) => {
-        if (!Ember.none(successCallback)) {
+        if (!Ember.isNone(successCallback)) {
           if (typeof successCallback.then === 'function') {
-            if (!Ember.none(alwaysCallback)) {
+            if (!Ember.isNone(alwaysCallback)) {
               if (typeof alwaysCallback.then === 'function') {
                 successCallback(msg).then(() => {alwaysCallback(msg).then(resolve(msg));});
               } else {
@@ -286,7 +286,7 @@ export default DS.RESTAdapter.extend({
             }
           } else {
             successCallback(msg);
-            if (!Ember.none(alwaysCallback)) {
+            if (!Ember.isNone(alwaysCallback)) {
               if (typeof alwaysCallback.then === 'function') {
                 alwaysCallback(msg).then(resolve(msg));
               } else {
@@ -298,7 +298,7 @@ export default DS.RESTAdapter.extend({
             }
           }
         } else {
-          if (!Ember.none(alwaysCallback)) {
+          if (!Ember.isNone(alwaysCallback)) {
             if (typeof alwaysCallback.then === 'function') {
               alwaysCallback(msg).then(resolve(msg));
             } else {
@@ -310,9 +310,9 @@ export default DS.RESTAdapter.extend({
           }
         }
       }).fail((msg)=> {
-        if (!Ember.none(failCallback)) {
+        if (!Ember.isNone(failCallback)) {
           if (typeof failCallback.then === 'function') {
-            if (!Ember.none(alwaysCallback)) {
+            if (!Ember.isNone(alwaysCallback)) {
               if (typeof alwaysCallback.then === 'function') {
                 failCallback(msg).then(() => {alwaysCallback(msg).then(reject(msg));});
               } else {
@@ -325,7 +325,7 @@ export default DS.RESTAdapter.extend({
 
           } else {
             failCallback(msg);
-            if (!Ember.none(alwaysCallback)) {
+            if (!Ember.isNone(alwaysCallback)) {
               if (typeof alwaysCallback === 'function') {
                 alwaysCallback(msg).then(reject(msg));
               } else {
@@ -337,7 +337,7 @@ export default DS.RESTAdapter.extend({
             }
           }
         } else {
-          if (!Ember.none(alwaysCallback)) {
+          if (!Ember.isNone(alwaysCallback)) {
             if (typeof alwaysCallback.then === 'function') {
               alwaysCallback(msg).then(reject(msg));
             } else {
