@@ -184,7 +184,7 @@ export default DS.RESTAdapter.extend({
    *
    * @method callFunction
    * @param {string} url
-   * @param {Object} func
+   * @param {Object} functionName
    * @param {Object} params
    * @param {Function} successCallback
    * @param {Function} failCallback
@@ -192,12 +192,12 @@ export default DS.RESTAdapter.extend({
    * @return {Promise}
    * @public
    */
-  callFunction(url, func, params, successCallback, failCallback, alwaysCallback) {
+  callFunction(url, functionName, params, successCallback, failCallback, alwaysCallback) {
     if (Ember.none(url)) {
-      let url = `${config.APP.backendUrls.api}`;
+      url = `${config.APP.backendUrls.api}`;
     }
 
-    let resultUrl = `${url}/${func}(`;
+    let resultUrl = `${url}/${functionName}(`;
     let counter = 0;
     for (var key in params) {
       counter++;
@@ -225,7 +225,7 @@ export default DS.RESTAdapter.extend({
       resultUrl += ')';
     }
 
-    return this._ajaxAbstraction({ url: resultUrl, method: 'GET' }, successCallback, failCallback, alwaysCallback);
+    return this._callAjax({ url: resultUrl, method: 'GET' }, successCallback, failCallback, alwaysCallback);
 
   },
 
@@ -233,30 +233,30 @@ export default DS.RESTAdapter.extend({
    * A method to call actions using ajax requests.
    *
    * @method callFunction
-   * @param {string} url
-   * @param {Object} func
-   * @param {Object} params
+   * @param {String} url
+   * @param {String} actionName
+   * @param {Object} data
    * @param {Function} successCallback
    * @param {Function} failCallback
    * @param {Function} alwaysCallback
    * @return {Promise}
    * @public
    */
-  callAction(url, func, params, successCallback, failCallback, alwaysCallback) {
+  callAction(url, actionName, data, successCallback, failCallback, alwaysCallback) {
     if (Ember.none(url)) {
-      let url = `${config.APP.backendUrls.api}`;
+      url = `${config.APP.backendUrls.api}`;
     }
 
-    params.data = JSON.stringify(params.data);
-    params.url =  `${url}/${func}`;
+    data = JSON.stringify(data);
+    url =  `${url}/${actionName}`;
 
-    return this._ajaxAbstraction(params, successCallback, failCallback, alwaysCallback);
+    return this._callAjax({ data: data, url: url, method: 'POST' }, successCallback, failCallback, alwaysCallback);
   },
 
   /**
    * A method to make ajax requests.
    *
-   * @method _ajaxAbstraction
+   * @method _callAjax
    * @param {Object} params
    * @param {Function} successCallback
    * @param {Function} failCallback
