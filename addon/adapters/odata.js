@@ -1,10 +1,11 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import config from '../../config/environment';
 
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
 import { capitalize, camelize } from '../utils/string-functions';
+
+const { getOwner } = Ember;
 
 /**
  * The OData adapter class.
@@ -193,6 +194,7 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   callFunction(url, functionName, params, successCallback, failCallback, alwaysCallback) {
+    let config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.none(url)) {
       url = `${config.APP.backendUrls.api}`;
     }
@@ -243,6 +245,7 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   callAction(url, actionName, data, successCallback, failCallback, alwaysCallback) {
+    let config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.none(url)) {
       url = `${config.APP.backendUrls.api}`;
     }
