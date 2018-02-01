@@ -209,7 +209,7 @@ export default DS.RESTAdapter.extend({
       if (typeof params[key] === 'number') {
         resultUrl = resultUrl + `${key}=${params[key]}`;
       } else {
-        resultUrl = resultUrl + `${key}="${params[key]}"`;
+        resultUrl = resultUrl + `${key}='${params[key]}'`;
       }
 
       if (i < counter) {
