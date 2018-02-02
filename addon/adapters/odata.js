@@ -252,7 +252,11 @@ export default DS.RESTAdapter.extend({
     data = JSON.stringify(data);
     url =  `${url}/${actionName}`;
 
-    return this._callAjax({ data: data, url: url, method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json' }, successCallback, failCallback, alwaysCallback);
+    return this._callAjax(
+      { data: data, url: url, method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json' },
+      successCallback,
+      failCallback,
+      alwaysCallback);
   },
 
   /**
