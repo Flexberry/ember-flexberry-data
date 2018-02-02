@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `Projection.Model`:
+    - When calling `save` method, `model` was always saved offline.
 
 ## [0.10.0] - 2018-01-25
 ### Added
