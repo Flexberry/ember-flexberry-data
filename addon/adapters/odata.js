@@ -196,7 +196,7 @@ export default DS.RESTAdapter.extend({
   callFunction(url, functionName, params, successCallback, failCallback, alwaysCallback) {
     let config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.isNone(url)) {
-      url = `${config.baseURL}`;
+      url = `${config.APP.backendUrls.api}`;
     }
 
     let resultUrl = `${url}/${functionName}(`;
@@ -214,13 +214,12 @@ export default DS.RESTAdapter.extend({
         resultUrl = resultUrl + `${key}='${params[key]}'`;
       }
 
+      i++;
       if (i < counter) {
-        resultUrl += ', ';
+        resultUrl += ',';
       } else {
         resultUrl += ')';
       }
-
-      i++;
     }
 
     if (resultUrl[resultUrl.length - 1] !== ')') {
@@ -247,13 +246,13 @@ export default DS.RESTAdapter.extend({
   callAction(url, actionName, data, successCallback, failCallback, alwaysCallback) {
     let config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.isNone(url)) {
-      url = `${config.baseURL}`;
+      url = `${config.APP.backendUrls.api}`;
     }
 
     data = JSON.stringify(data);
     url =  `${url}/${actionName}`;
 
-    return this._callAjax({ data: data, url: url, method: 'POST' }, successCallback, failCallback, alwaysCallback);
+    return this._callAjax({ data: data, url: url, method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json' }, successCallback, failCallback, alwaysCallback);
   },
 
   /**
@@ -269,9 +268,9 @@ export default DS.RESTAdapter.extend({
    */
   _callAjax(params, successCallback, failCallback, alwaysCallback) {
     Ember.assert('Params must be Object!', typeof params === 'object');
-    Ember.assert('params.method or params.url is not defined.', (Ember.isNone(params.method) && Ember.isNone(params.url)));
+    Ember.assert('params.method or params.url is not defined.', !(Ember.isNone(params.method) || Ember.isNone(params.url)));
 
-    return Ember.RVSP.Promise(function(resolve, reject) {
+    return new Ember.RSVP.Promise(function(resolve, reject) {
       Ember.$.ajax(params).done((msg) => {
         if (!Ember.isNone(successCallback)) {
           if (typeof successCallback.then === 'function') {
