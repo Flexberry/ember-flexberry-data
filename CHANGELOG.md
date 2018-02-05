@@ -12,20 +12,30 @@
 - Getting of current user name is now able by calling `getCurrentUserName` method from `user` service.
 
 ### Fixed
-- Tracking changes for `syncUp` when `belongsTo` relationships changes.
+- `Projection.Model`:
+    - When calling `save` method, `model` was always saved offline.
 
-## [0.9.1-beta.2] - 2017-11-27
+## [0.10.0] - 2018-01-25
 ### Added
-- `NotPredicate` for `not` expressions in query language.
+- `Projection.Model`:
+    - `hasChangedBelongsTo` function to check 'belongsTo' relationship changes.
+- Query language:
+    - `NotPredicate` for `not` expressions.
+- `Adapter.Odata`
+    - If errors are occured adapter now responses with errors expected in [OData JSON Format](http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766668).
 
-## [0.9.1-beta.1] - 2017-10-17
-### Added
-- `Adapter.Odata` responses with errors expected in [OData JSON Format](http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766668).
+### Changed
+`user` service:
+     - Getting current user name for entire application is now able by calling `getCurrentUserName` method.
 
-## [0.9.1-beta.0] - 2017-10-04
 ### Fixed
-- Fix `GeographyPredicate`.
-- When extend `Projection.Model` and using inheritance, the entire hierarchy of models has a shared `projections` object, now each child model has its own `projections` object and copy parent `projections` object.
+- `Projection.Model`:
+    - When calling `validate` method for `hasMany` relationships arguments are lost.
+    - When extending `Projection.Model` and using inheritance, the entire hierarchy of models has a shared `projections` object. Now each child model has its own `projections` object and copy of parent `projections` object.
+- `syncer` service:
+    - Tracking changes for `syncUp` when `belongsTo` relationships changes.
+- Query language:
+    - `GeographyPredicate` was fixed.
 
 ## [0.9.0] - 2017-09-29
 ### Added
