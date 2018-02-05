@@ -22,7 +22,7 @@ test('ajax functions tests', function(assert) {
     });
     return adapter.callAction('/test-models', 'test', { abcd: 'def' })
     .then((msg) => {
-      assert.equal(msg.ab, 'cd');
+      assert.equal(msg.ab, 'cd', 'getting POST response');
     })
 
     .then(() => {
@@ -33,7 +33,31 @@ test('ajax functions tests', function(assert) {
       });
       return adapter.callFunction('/test-models', 'test', { abcd: 'def' })
       .then((msg) => {
-        assert.equal(msg.ab, 'cd');
+        assert.equal(msg.ab, 'cd', 'getting GET response');
+      });
+    })
+    .then(() => {
+      $.mockjax({
+        url: '/test-models/test',
+        responseText: { ab: 'cd' }
+      });
+      return adapter.callAction(
+        '/test-models',
+        'test', { abcd: 'def' },
+        (msg) => {
+          assert.equal(msg.ab + ' success', 'cd success', 'successCallback works');
+          return msg.ab + ' success';
+        },
+        (msg) => {
+          assert.notEqual(msg.ab, 'cd', 'failCallback works');
+          return msg.ab + ' fail';
+        },
+        (msg) => {
+          assert.equal(msg.ab + ' always', 'cd always', 'alwaysCallback works');
+          return msg.ab + ' always';
+        })
+      .then((msg) => {
+        assert.equal(msg.ab, 'cd', 'getting GET response');
       });
     })
     .catch(e => {
