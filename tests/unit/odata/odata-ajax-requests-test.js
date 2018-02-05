@@ -1,35 +1,46 @@
 import Ember from 'ember';
-import QueryBuilder from 'ember-flexberry-data/query/builder';
-import executeTest from '../CRUD/odata/execute-odata-test';
+import { moduleFor, test } from 'ember-qunit';
+
+import { Adapter } from 'ember-flexberry-data';
+
 import startApp from '../../helpers/start-app';
 
-var App;
-executeTest('ajax | requests', (store, assert) => {
+moduleFor('adapter:odata', 'Unit | Adapter | odata | ajax', {
+  // Specify the other units that are required for this test.
+  // needs: ['serializer:foo']
+});
+
+test('ajax functions tests', function(assert) {
   let done = assert.async();
+  const app = startApp();
+  const adapter = Adapter.Odata.create(app.__container__.ownerInjection());
+
   Ember.run(() => {
-    (() => {
-        App = startApp();
-        adapter = App.__container__.lookup('adapter:application');
-        $.mockjax({
-          url: '/test-models',
-          data: function (json) {
-            assert.equal(JSON.parse(json).DecimalNumber, 555.5);
-            return true;
-          },
-          responseText: { ab: 'cd' }
-        });
-        return adapter.callAction('abcd', 'def', { abcd: 'def' })
-          .then((data) => {
-            assert.equal(data.get('length'), 6, 'Leq | length');
-            assert.ok(data.any(item => item.get('karma') === 5.5), 'Leq | data');
-          });
-      })
-      .then(() => {
+    $.mockjax({
+      url: '/test-models/test',
+      responseText: { ab: 'cd' }
+    });
+    return adapter.callAction('/test-models', 'test', { abcd: 'def' })
+    .then((msg) => {
+      assert.equal(msg.ab, 'cd');
+    })
 
-      })
-
-      .catch(e => console.log(e, e.message))
-      .finally(done);
+    .then(() => {
+      $.mockjax({
+        url: '/test-models/test(abcd=\'def\')',
+        type: 'GET',
+        responseText: { ab: 'cd' }
+      });
+      return adapter.callFunction('/test-models', 'test', { abcd: 'def' })
+      .then((msg) => {
+        assert.equal(msg.ab, 'cd');
+      });
+    })
+    .catch(e => {
+      console.log(e, e.message);
+      assert.ok(false, e.message);
+    })
+    .finally(done);
   });
   wait();
 });
