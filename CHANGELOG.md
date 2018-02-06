@@ -1,6 +1,10 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- - Query language:
+    - `Timeless` mode for `DatePredicate`.
+
 ### Fixed
 - `Projection.Model`:
     - When calling `save` method, `model` was always saved offline.
