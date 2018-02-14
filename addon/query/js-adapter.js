@@ -299,6 +299,10 @@ export default class JSAdapter extends BaseAdapter {
         let valueFromHash = _this.getValue(i, predicate.attributePath);
         let momentFromHash;
         if (predicate instanceof DatePredicate) {
+          if (predicate.timeless) {
+            valueFromHash = _this._moment.moment(valueFromHash, 'YYYY-MM-DD').format();
+          }
+
           momentFromHash = _this._moment.moment(valueFromHash);
           let momentFromValue = _this._moment.moment(value);
           datesIsValid = momentFromHash.isValid() && momentFromValue.isValid();

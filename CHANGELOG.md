@@ -1,8 +1,11 @@
 # Change Log
 
-## [Unreleased] - 2018-01-25
+## [Unreleased]
 ### Added
-- The `callAction` and `callFunction` methods to make AJAX-requests
+- Query language:
+    - `Timeless` mode for `DatePredicate`.
+- `Adapter.Odata`
+    - The `makeRequest`, `callAction` and `callFunction` methods to make AJAX-requests, OData-action and OData-function calls correspondingly.
 
 ## [0.9.1-beta.3] - 2018-01-16
 ### Added

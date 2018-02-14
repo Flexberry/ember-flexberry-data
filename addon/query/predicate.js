@@ -89,15 +89,17 @@ export class SimplePredicate extends BasePredicate {
  * @param attributePath {String} The path to the attribute for filtering.
  * @param operator {Query.FilterOperator|String} The filter operator.
  * @param value {String|Date} The value for filtering.
+ * @param timeless {Boolean} When true, dates will be filtered without time.
  * @constructor
  */
 export class DatePredicate extends BasePredicate {
-  constructor(attributePath, operator, value) {
+  constructor(attributePath, operator, value, timeless) {
     super();
 
     this._attributePath = attributePath;
     this._operator = FilterOperator.tryCreate(operator);
     this._value = value;
+    this._timeless = timeless;
   }
 
   /**
@@ -134,6 +136,17 @@ export class DatePredicate extends BasePredicate {
   }
 
   /**
+   * Flag for dates.
+   *
+   * @property timeless
+   * @type Boolean
+   * @public
+   */
+  get timeless() {
+    return this._timeless;
+  }
+
+  /**
    * Converts this instance to string.
    *
    * @method toString
@@ -141,7 +154,8 @@ export class DatePredicate extends BasePredicate {
    * @public
    */
   toString() {
-    return `(${this._attributePath} ${this._operator} ${this._value})`;
+    return this._timeless ? `(date(${this._attributePath}) ${this._operator} ${this._value})` :
+      `(${this._attributePath} ${this._operator} ${this._value})`;
   }
 }
 
