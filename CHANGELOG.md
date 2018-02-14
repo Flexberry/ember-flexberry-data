@@ -1,6 +1,16 @@
 # Change Log
 
-## [Unreleased]
+## [Unreleased] - 2018-01-25
+### Added
+- The `callAction` and `callFunction` methods to make AJAX-requests
+
+## [0.9.1-beta.3] - 2018-01-16
+### Added
+- The `hasChangedBelongsTo` function, in `Projection.Model`, to check 'belongsTo' relationship changes.
+
+### Changed
+- Getting of current user name is now able by calling `getCurrentUserName` method from `user` service.
+
 ### Fixed
 - `Projection.Model`:
     - When calling `save` method, `model` was always saved offline.
