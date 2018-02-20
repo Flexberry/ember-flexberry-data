@@ -5,7 +5,7 @@ import Condition from 'ember-flexberry-data/query/condition';
 import { SimplePredicate, ComplexPredicate, DatePredicate } from 'ember-flexberry-data/query/predicate';
 
 export default function readingDataTypes(store, assert, App) {
-  assert.expect(11);
+  assert.expect(13);
   let done = assert.async();
 
   Ember.run(() => {
@@ -69,6 +69,20 @@ export default function readingDataTypes(store, assert, App) {
       .then((data) => {
         assert.ok(data.every(item => item.get('name') === 'Vasya'), 'Reading Date as String with some format| Data');
         assert.equal(data.get('length'), 2, `Reading Date as String with some format | Length`);
+      });
+    })
+
+    // Timeless date as String with some format.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = moment.moment(new Date(1980, 1, 24, 0, 0, 0)).format('YYYY-MM-DD');
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate('birthday', FilterOperator.Eq, dateBirth, true));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.ok(data.every(item => item.get('name') === 'Kolya'), 'Reading timeless Date as String with some format| Data');
+        assert.equal(data.get('length'), 1, `Reading timeless Date as String with some format | Length`);
       });
     })
 
