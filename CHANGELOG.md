@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.11.0] - 2018-02-20
 ### Added
 - Query language:
     - `Timeless` mode for `DatePredicate`.
