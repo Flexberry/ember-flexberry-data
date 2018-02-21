@@ -9,13 +9,6 @@
 - `Adapter.Odata`
     - The `makeRequest`, `callAction` and `callFunction` methods to make AJAX-requests, OData-action and OData-function calls correspondingly.
 
-## [0.9.1-beta.3] - 2018-01-16
-### Added
-- The `hasChangedBelongsTo` function, in `Projection.Model`, to check 'belongsTo' relationship changes.
-
-### Changed
-- Getting of current user name is now able by calling `getCurrentUserName` method from `user` service.
-
 ### Fixed
 - `Projection.Model`:
     - When calling `save` method, `model` was always saved offline.
@@ -30,8 +23,8 @@
     - If errors are occured adapter now responses with errors expected in [OData JSON Format](http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766668).
 
 ### Changed
-`user` service:
-     - Getting current user name for entire application is now able by calling `getCurrentUserName` method.
+- `user` service:
+    - Getting of current user name is now able by calling `getCurrentUserName` method from `user` service.
 
 ### Fixed
 - `Projection.Model`:
