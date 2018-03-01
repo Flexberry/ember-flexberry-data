@@ -184,16 +184,17 @@ export default DS.RESTAdapter.extend({
    * A method to call functions using ajax requests.
    *
    * @method callFunction
-   * @param {string} url
    * @param {Object} functionName
    * @param {Object} params
+   * @param {string} url
+   * @param {Object} fields
    * @param {Function} successCallback
    * @param {Function} failCallback
    * @param {Function} alwaysCallback
    * @return {Promise}
    * @public
    */
-  callFunction(url, functionName, params, successCallback, failCallback, alwaysCallback) {
+  callFunction(functionName, params, url, fields, successCallback, failCallback, alwaysCallback) {
     let config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
@@ -205,13 +206,18 @@ export default DS.RESTAdapter.extend({
       counter++;
     }
 
+    let resultParams = {};
+    if (!Ember.isNone(params)) {
+      resultParams = params;
+    }
+
     let i = 0;
-    for (key in params) {
+    for (key in resultParams) {
       //TODO: Check types and ''
-      if (typeof params[key] === 'number') {
-        resultUrl = resultUrl + `${key}=${params[key]}`;
+      if (typeof resultParams[key] === 'number') {
+        resultUrl = resultUrl + `${key}=${resultParams[key]}`;
       } else {
-        resultUrl = resultUrl + `${key}='${params[key]}'`;
+        resultUrl = resultUrl + `${key}='${resultParams[key]}'`;
       }
 
       i++;
@@ -226,7 +232,12 @@ export default DS.RESTAdapter.extend({
       resultUrl += ')';
     }
 
-    return this._callAjax({ url: resultUrl, method: 'GET' }, successCallback, failCallback, alwaysCallback);
+    let resultFields = {};
+    if (!Ember.isNone(fields)) {
+      resultFields = fields;
+    }
+
+    return this._callAjax({ url: resultUrl, method: 'GET', xhrFields: resultFields }, successCallback, failCallback, alwaysCallback);
 
   },
 
@@ -234,16 +245,17 @@ export default DS.RESTAdapter.extend({
    * A method to call actions using ajax requests.
    *
    * @method callFunction
-   * @param {String} url
    * @param {String} actionName
    * @param {Object} data
+   * @param {String} url
+   * @param {Object} fields
    * @param {Function} successCallback
    * @param {Function} failCallback
    * @param {Function} alwaysCallback
    * @return {Promise}
    * @public
    */
-  callAction(url, actionName, data, successCallback, failCallback, alwaysCallback) {
+  callAction(actionName, data, url, fields, successCallback, failCallback, alwaysCallback) {
     let config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
@@ -252,8 +264,13 @@ export default DS.RESTAdapter.extend({
     data = JSON.stringify(data);
     url =  `${url}/${actionName}`;
 
+    let resultFields = {};
+    if (!Ember.isNone(fields)) {
+      resultFields = fields;
+    }
+
     return this._callAjax(
-      { data: data, url: url, method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json' },
+      { data: data, url: url, method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json', xhrFields: resultFields },
       successCallback,
       failCallback,
       alwaysCallback);
