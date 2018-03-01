@@ -44,6 +44,7 @@ test('ajax functions tests', function(assert) {
       return adapter.callAction(
         'test', { abcd: 'def' },
         '/test-models',
+        null,
         (msg) => {
           assert.equal(msg.ab + ' success', 'cd success', 'successCallback works');
           return msg.ab + ' success';
