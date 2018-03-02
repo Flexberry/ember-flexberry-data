@@ -59,17 +59,39 @@ export default Ember.Mixin.create({
   */
   save() {
     let currentDate = new Date();
-    let currentUser = this.get('currentUserName');
-    if (this.get('isNew')) {
-      this.set('createTime', currentDate);
-      this.set('creator', currentUser);
-    }
+    let superFunc = this._super;
+    let _this = this;
 
-    if (this.get('hasDirtyAttributes') && !this.get('isDeleted')) {
-      this.set('editTime', currentDate);
-      this.set('editor', currentUser);
-    }
+    let currentUserPromise = new Ember.RSVP.Promise((resolve, reject) => {
+      let userName = this.get('currentUserName');
+      if (userName instanceof Ember.RSVP.Promise) {
+        userName.then(name => {
+          resolve(name);
+        }).catch(() => {
+          reject();
+        });
+      }
 
-    return this._super(...arguments);
+      resolve(userName);
+    });
+
+    return currentUserPromise.then(currentUser => {
+      if (_this.get('isNew')) {
+        _this.set('createTime', currentDate);
+        _this.set('creator', currentUser);
+      }
+
+      if (_this.get('hasDirtyAttributes') && !_this.get('isDeleted')) {
+        _this.set('editTime', currentDate);
+        _this.set('editor', currentUser);
+      }
+
+      let result = superFunc.apply(_this, ...arguments);
+      if (!(result instanceof Ember.RSVP.Promise)) {
+        result = Ember.RSVP.resolve();
+      }
+
+      return result;
+    });
   },
 });
