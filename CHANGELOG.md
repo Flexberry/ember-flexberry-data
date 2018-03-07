@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `Audit.ModelMixin`:
+    - Fix audit fields saving when `currentUserName` is a promise.
 
 ## [0.11.0] - 2018-02-20
 ### Added
