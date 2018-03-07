@@ -67,8 +67,8 @@ export default Ember.Mixin.create({
       if (userName instanceof Ember.RSVP.Promise) {
         userName.then(name => {
           resolve(name);
-        }).catch(() => {
-          reject();
+        }).catch((reason) => {
+          reject(reason);
         });
       }
 
