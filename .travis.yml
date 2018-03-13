@@ -38,6 +38,7 @@ before_install:
   - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
   - yarn global add firebase-tools
   - yarn global add ember-cli@2.13.3
+  - yarn global add bower
   - google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
 
 install:
