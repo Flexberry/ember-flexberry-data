@@ -187,9 +187,7 @@ export default DS.Adapter.extend({
   query(store, type, query) {
     let modelName = type.modelName;
     let projection = this._extractProjectionFromQuery(modelName, type, query);
-    let originType = null;
     if (query && query.originType) {
-      originType = query.originType;
       delete query.originType;
     }
 

@@ -108,12 +108,14 @@ export default DS.RESTAdapter.extend({
    * @return {Promise} promise
   */
   /* jshint unused:vars */
+  /* eslint-disable no-unused-vars */
   findRecord(store, type, id, snapshot) {
     Ember.debug(`Flexberry ODataAdapter::findRecord '${type}(${id})'`);
 
     // TODO: query support for direct calls
     return this._super.apply(this, arguments);
   },
+  /* eslint-enable no-unused-vars */
   /* jshint unused:true */
 
   /**
@@ -128,12 +130,14 @@ export default DS.RESTAdapter.extend({
    * @return {Promise} promise
    */
   /* jshint unused:vars */
+  /* eslint-disable no-unused-vars */
   findAll(store, type, sinceToken, snapshotRecordArray) {
     Ember.debug(`Flexberry ODataAdapter::findAll '${type}'`);
 
     // TODO: query support for direct calls
     return this._super.apply(this, arguments);
   },
+  /* eslint-enable no-unused-vars */
   /* jshint unused:true */
 
   /**

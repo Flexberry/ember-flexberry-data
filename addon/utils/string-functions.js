@@ -66,8 +66,10 @@ function dasherize(str) {
   @return {String} the camelized string.
 */
 function camelize(str) {
+  /* eslint-disable no-unused-vars */
   return str.replace(STRING_CAMELIZE_REGEXP_1, (match, separator, chr) => chr ? chr.toUpperCase() : '')
     .replace(STRING_CAMELIZE_REGEXP_2, (match, separator, chr) => match.toLowerCase());
+  /* eslint-enable no-unused-vars */
 }
 
 /**
@@ -93,7 +95,9 @@ function classify(str) {
       .replace(STRING_CLASSIFY_REGEXP_2, replace2);
   }
 
+  /* eslint-disable no-unused-vars */
   return parts.join('/').replace(STRING_CLASSIFY_REGEXP_3, (match, separator, chr) => match.toUpperCase());
+  /* eslint-enable no-unused-vars */
 }
 
 /**
@@ -128,7 +132,9 @@ function underscore(str) {
   @return {String} The capitalized string.
 */
 function capitalize(str) {
+  /* eslint-disable no-unused-vars */
   return str.replace(STRING_CAPITALIZE_REGEXP, (match, separator, chr) => match.toUpperCase());
+  /* eslint-enable no-unused-vars */
 }
 
 export {

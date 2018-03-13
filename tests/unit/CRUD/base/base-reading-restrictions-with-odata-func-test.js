@@ -32,6 +32,7 @@ export default function readingRestrictionsOdataFunctions(store, assert) {
       });
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })

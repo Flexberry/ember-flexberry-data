@@ -115,14 +115,16 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       });
     });
 
-    return new Ember.RSVP.Promise((resolve, reject) => {
+  /* eslint-disable no-unused-vars */
+  return new Ember.RSVP.Promise((resolve, reject) => {
       Ember.RSVP.hash(validationPromises).then((hash) => {
         resolve(this.get('errors'));
       }).catch((reason) => {
         reject(this.get('errors'));
       });
     });
-  },
+  /* eslint-enable no-unused-vars */
+},
 
   /**
     Triggers model's 'preSave' event & allows to execute some additional async logic before model will be saved.
@@ -464,7 +466,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
 
     // Collect each detail's errors object into single array of error messages.
     let detailsErrorMessages = Ember.A();
-    details.forEach((detail, i) => {
+    details.forEach((detail) => {
       let detailErrors = Ember.get(detail, 'errors');
 
       for (let detailPropertyName in detailErrors) {

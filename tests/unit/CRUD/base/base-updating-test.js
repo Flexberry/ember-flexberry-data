@@ -58,6 +58,7 @@ export default function updating(store, assert) {
       .then(() => records);
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })

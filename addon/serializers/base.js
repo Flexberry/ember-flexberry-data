@@ -94,9 +94,11 @@ export default DS.RESTSerializer.extend({
    * @returns {string} Key for a given relationship.
    */
   /* jshint unused:vars */
+  /* eslint-disable no-unused-vars */
   keyForRelationship(key, relationship) {
     return capitalize(key) + '@odata.bind';
   },
+  /* eslint-enable no-unused-vars */
   /* jshint unused:true */
 
   /**

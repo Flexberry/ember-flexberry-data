@@ -347,7 +347,7 @@ export default class Builder extends BaseBuilder {
             break;
 
           case 'hasMany':
-          case 'belongsTo':
+          case 'belongsTo': {
             let relationshipsByName = Ember.get(model, 'relationshipsByName');
             let relationship = relationshipsByName.get(attrName);
             let ralatedModelName = relationship.type;
@@ -362,6 +362,7 @@ export default class Builder extends BaseBuilder {
             tree.select.push(attrName);
             tree.expand[attrName] = this._getQueryTreeByProjection(attr, relatedModel, ralatedModelName, relationshipProps, isOfflineMode);
             break;
+          }
 
           default:
             throw new Error(`Unknown kind of projection attribute: ${attr.kind}`);

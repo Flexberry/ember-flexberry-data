@@ -35,6 +35,7 @@ export default function baseCreatingTest(store, assert) {
       });
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })

@@ -25,16 +25,18 @@ export default StringTransform.extend({
   /**
     Deserializes serialized attribute value.
   */
-  deserialize(serialized) {
+  /* eslint-disable no-unused-vars */
     /* jshint unused:vars */
+    deserialize(serialized) {
     return this._super(...arguments);
   },
 
   /**
     Serializes deserialized attribute value.
   */
-  serialize(deserialized) {
     /* jshint unused:vars */
+    serialize(deserialized) {
     return this._super(...arguments);
   }
+  /* eslint-enable no-unused-vars */
 });

@@ -90,6 +90,7 @@ export default function readingDataTypes(store, assert, App) {
       });
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })
