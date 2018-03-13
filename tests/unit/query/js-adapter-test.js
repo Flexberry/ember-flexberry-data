@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import { module, test } from 'qunit';
 
 import QueryBuilder from 'ember-flexberry-data/query/builder';
@@ -8,12 +9,23 @@ import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate } f
 
 import startApp from '../../helpers/start-app';
 
-const app = startApp();
-const store = app.__container__.lookup('service:store');
-const moment = app.__container__.lookup('service:moment');
-const adapter = new JSAdapter(moment);
+let app;
+let store;
+let moment;
+let adapter;
 
-module('js-adapter-test');
+module('js-adapter-test', {
+  beforeEach() {
+    app = startApp();
+    store = app.__container__.lookup('service:store');
+    moment = app.__container__.lookup('service:moment');
+    adapter = new JSAdapter(moment);
+  },
+
+  afterEach() {
+    Ember.run(app, 'destroy');
+  },
+});
 
 test('adapter | js | without predicate', (assert) => {
   const data = [

@@ -1,14 +1,25 @@
+import Ember from 'ember';
 import { module, test } from 'qunit';
 
 import Information from 'ember-flexberry-data/utils/information';
 
 import startApp from '../../helpers/start-app';
 
-const app = startApp();
-const store = app.__container__.lookup('service:store');
-const information = new Information(store);
+let app;
+let store;
+let information;
 
-module('utils');
+module('utils', {
+  beforeEach() {
+    app = startApp();
+    store = app.__container__.lookup('service:store');
+    information = new Information(store);
+  },
+
+  afterEach() {
+    Ember.run(app, 'destroy');
+  },
+});
 
 test('information | constructor', assert => {
   assert.throws(() => new Information(), Error);

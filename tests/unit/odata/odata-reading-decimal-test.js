@@ -109,6 +109,7 @@ executeTest('reading | decimal', (store, assert) => {
           });
       })
 
+      // eslint-disable-next-line no-console
       .catch(e => console.log(e, e.message))
       .finally(done);
   });
