@@ -11,5 +11,9 @@ module.exports = function(defaults) {
     behave. You most likely want to be modifying `./index.js` or app's build file
   */
 
+  if (app.env !== 'production') {
+    app.import('bower_components/jquery-mockjax/dist/jquery.mockjax.js');
+  }
+
   return app.toTree();
 };

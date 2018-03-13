@@ -1,0 +1,7 @@
+{
+  "name": "ember-flexberry-data",
+  "version": "0.11.1-beta.1",
+  "dependencies": {
+    "jquery-mockjax": "~2.2.1"
+  }
+}

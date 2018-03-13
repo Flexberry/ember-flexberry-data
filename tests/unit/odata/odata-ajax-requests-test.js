@@ -1,3 +1,4 @@
+/*global wait $*/
 import Ember from 'ember';
 import { moduleFor, test } from 'ember-qunit';
 
@@ -62,6 +63,7 @@ test('ajax functions tests', function(assert) {
       });
     })
     .catch(e => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       assert.ok(false, e.message);
     })
