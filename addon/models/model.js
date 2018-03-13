@@ -111,7 +111,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       }
 
       details.forEach((detailModel, i) => {
-        validationPromises[relationshipName + '.' + i] = detailModel.validate.apply(detailModel, options);
+        validationPromises[relationshipName + '.' + i] = detailModel.validate(options);
       });
     });
 
@@ -273,6 +273,30 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
         }
       }
     });
+  },
+
+  /**
+    Сheck whether there is a changed `belongsTo` relationships.
+
+    @method hasChangedBelongsTo
+    @return {Boolean} Returns `true` if `belongsTo` relationships have changed, else `false`.
+  */
+  hasChangedBelongsTo() {
+    let hasChangedBelongsTo = false;
+    let changedBelongsTo = this.changedBelongsTo();
+    for (let changes in changedBelongsTo) {
+      if (changedBelongsTo.hasOwnProperty(changes)) {
+        let [oldValue, newValue] = changedBelongsTo[changes];
+        let oldValueId = oldValue ? oldValue.get('id') : null;
+        let newValueId = newValue ? newValue.get('id') : null;
+        if (oldValue !== newValue || oldValueId !== newValueId) {
+          hasChangedBelongsTo = true;
+          break;
+        }
+      }
+    }
+
+    return hasChangedBelongsTo;
   },
 
   /**
@@ -557,7 +581,12 @@ Model.reopenClass({
 
     if (!this.projections) {
       this.reopenClass({
-        projections: Ember.Object.create()
+        projections: Ember.Object.create({ modelName }),
+      });
+    } else if (this.projections.get('modelName') !== modelName) {
+      let baseProjections = Ember.merge({}, this.projections);
+      this.reopenClass({
+        projections: Ember.Object.create(Ember.merge(baseProjections, { modelName })),
       });
     }
 

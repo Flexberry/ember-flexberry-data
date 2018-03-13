@@ -45,6 +45,7 @@ export default function executeTest(testName, callback) {
     Ember.set(adapter, 'host', baseUrl);
     store.get('onlineStore').reopen({
       adapterFor() {
+
         return adapter;
       }
     });

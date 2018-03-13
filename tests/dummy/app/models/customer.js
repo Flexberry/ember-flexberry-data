@@ -6,6 +6,7 @@ export default Model.extend({
   firstName: attr('string'),
   lastName: attr('string'),
   age: attr('number'),
+  coordinates: attr('string'),
   Manager: DS.belongsTo('employee', {
     inverse: null,
     async: false

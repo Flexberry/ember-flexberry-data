@@ -1,11 +1,7 @@
 {
   "name": "ember-flexberry-data",
-  "version": "0.9.0-beta.6",
-  "description": "Support of database projections, JavaScript Query Language and working with several kinds of backends.",
-  "keywords": [
-    "ember-addon",
-    "flexberry"
-  ],
+  "version": "0.11.1-beta.1",
+  "description": "Support of database projections, JavaScript Query Language and working with several kinds of backends",
   "license": "MIT",
   "author": {
     "name": "Flexberry Team",
@@ -61,5 +57,9 @@
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"
-  }
+  },
+  "keywords": [
+    "ember-addon",
+    "flexberry"
+  ]
 }

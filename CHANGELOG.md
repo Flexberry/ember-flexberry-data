@@ -1,54 +1,70 @@
 # Change Log
 
 ## [Unreleased]
+## [0.11.1-beta.1] - 2018-03-07
+### Fixed
+- `Audit.ModelMixin`:
+    - Fix audit fields saving when `currentUserName` is a promise.
 
-## [0.9.0-beta.6] - 2017-07-23
+## [0.11.0] - 2018-02-20
 ### Added
+- Query language:
+    - `Timeless` mode for `DatePredicate`.
+- `Adapter.Odata`
+    - The `makeRequest`, `callAction` and `callFunction` methods to make AJAX-requests, OData-action and OData-function calls correspondingly.
+
+### Fixed
+- `Projection.Model`:
+    - When calling `save` method, `model` was always saved offline.
+
+## [0.10.0] - 2018-01-25
+### Added
+- `Projection.Model`:
+    - `hasChangedBelongsTo` function to check 'belongsTo' relationship changes.
+- Query language:
+    - `NotPredicate` for `not` expressions.
+- `Adapter.Odata`
+    - If errors are occured adapter now responses with errors expected in [OData JSON Format](http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766668).
+
+### Changed
+- `user` service:
+    - Getting of current user name is now able by calling `getCurrentUserName` method from `user` service.
+
+### Fixed
+- `Projection.Model`:
+    - When calling `validate` method for `hasMany` relationships arguments are lost.
+    - When extending `Projection.Model` and using inheritance, the entire hierarchy of models has a shared `projections` object. Now each child model has its own `projections` object and copy of parent `projections` object.
+- `syncer` service:
+    - Tracking changes for `syncUp` when `belongsTo` relationships changes.
+- Query language:
+    - `GeographyPredicate` was fixed.
+
+## [0.9.0] - 2017-09-29
+### Added
+- Add `GeographyPredicate` for spatial data types.
 - Add `DatePredicate` for dates.
+- `Query.Builder`:
+    - Add `customQueryParams` and `dataType` properties.
+- `Adapter.Odata`:
+    - Add `buildExportExcelURL` function to receive exported excel file URL.
+- `Utils`:
+    - Add `firstLoadOfflineObjects` function for initial loading and saving objects to IndexedDB.
 
 ### Changed
 - Now if record saving fail, audit record won't be created.
-
-## [0.9.0-beta.5] - 2017-05-29
-### Changed
 - Replace `Ember.String` functions usage by functions with cyrillic support.
+- `Adapter.Odata`:
+    - Improve `buildExportExcelURL` function to receive exported excel file URL.
+    - Now `query` method can return files.
 
 ### Fixed
 - `Projection.Model`:
     - Fix `_aggregateHasManyRelationshipValidationErrors` method validation error when deleting new unsaved detail.
-
-## [0.9.0-beta.4] - 2017-04-14
-### Fixed
+    - Fix `_saveCanonicalBelongsTo` method error when `canonicalBelongsTo` value changed to `null`.
 - `Adapter.Offline`:
     - Fix `syncDownTime` property addition for offline models.
-
-## [0.9.0-beta.3] - 2017-04-12
-### Fixed
-- `Projection.Model`:
-    - Fix `_saveCanonicalBelongsTo` method error when `canonicalBelongsTo` value changed to `null`.
-
-## [0.9.0-beta.2] - 2017-04-07
-### Added
-- `Query.Builder`:
-    - Add `customQueryParams` and `dataType` properties.
-- `Adapter.Odata`:
-    - Now `query` method can return files.
-
-## [0.9.0-beta.1] - 2017-03-18
-### Changed
-- `Adapter.Odata`:
-    - Improve `buildExportExcelURL` function to receive exported excel file URL.
-
-### Fixed
 - `syncer` service:
     - Fix wrong converting of `'true'` strings to boolean value when performing sync up process.
-
-## [0.9.0-beta.0] - 2017-02-22
-### Added
-- `Utils`:
-    - Add `firstLoadOfflineObjects` function for initial loading and saving objects to IndexedDB.
-- `Adapter.Odata`:
-    - Add `buildExportExcelURL` function to receive exported excel file URL.
 
 ## [0.8.4] - 2017-02-09
 ### Fixed

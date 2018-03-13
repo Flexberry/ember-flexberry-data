@@ -4,7 +4,7 @@
 
 import Ember from 'ember';
 import FilterOperator from './filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
@@ -592,6 +592,11 @@ function updateWhereClause(store, table, query) {
     }
   }
 
+  if (predicate instanceof GeographyPredicate) {
+    Ember.warn('GeographyPredicate is not supported in indexedDB-adapter');
+    return table;
+  }
+
   if (!predicate) {
     return table;
   }
@@ -606,7 +611,7 @@ function updateWhereClause(store, table, query) {
         break;
 
       case 'date':
-        value = getSerializedDateValue.call(store, predicate.value);
+        value = getSerializedDateValue.call(store, predicate.value, predicate.timeless);
         break;
 
       default:
@@ -621,21 +626,36 @@ function updateWhereClause(store, table, query) {
       return table.filter(jsAdapter.getAttributeFilterFunction(predicate));
     }
 
+    let moment;
+    let nextValue;
+    if (predicate.timeless) {
+      moment = Ember.getOwner(store).lookup('service:moment');
+      nextValue = moment.moment(value, 'YYYY-MM-DD').add(1, 'd').format('YYYY-MM-DD');
+    }
+
     switch (predicate.operator) {
       case FilterOperator.Eq:
-        return table.where(predicate.attributePath).equals(value);
+        return predicate.timeless ?
+          table.where(predicate.attributePath).between(value, nextValue, false) :
+          table.where(predicate.attributePath).equals(value);
 
       case FilterOperator.Neq:
-        return table.where(predicate.attributePath).notEqual(value);
+        return predicate.timeless ?
+          table.where(predicate.attributePath).below(value).or(predicate.attributePath).aboveOrEqual(nextValue) :
+          table.where(predicate.attributePath).notEqual(value);
 
       case FilterOperator.Le:
         return table.where(predicate.attributePath).below(value);
 
       case FilterOperator.Leq:
-        return table.where(predicate.attributePath).belowOrEqual(value);
+        return predicate.timeless ?
+          table.where(predicate.attributePath).below(nextValue) :
+          table.where(predicate.attributePath).belowOrEqual(value);
 
       case FilterOperator.Ge:
-        return table.where(predicate.attributePath).above(value);
+        return predicate.timeless ?
+          table.where(predicate.attributePath).aboveOrEqual(nextValue) :
+          table.where(predicate.attributePath).above(value);
 
       case FilterOperator.Geq:
         return table.where(predicate.attributePath).aboveOrEqual(value);

@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, NotPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
@@ -207,6 +207,59 @@ export default class ODataAdapter extends BaseAdapter {
       return this._buildODataSimplePredicate(predicate, modelName, prefix);
     }
 
+    if (predicate instanceof NotPredicate) {
+      let innerPredicate = predicate._predicate;
+
+      if (innerPredicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
+        return `not (${this._buildODataSimplePredicate(innerPredicate, modelName, prefix)})`;
+      }
+
+      if (innerPredicate instanceof StringPredicate) {
+        let attribute = this._getODataAttributeName(modelName, innerPredicate.attributePath);
+        if (prefix) {
+          attribute = `${prefix}/${attribute}`;
+        }
+
+        return `not (contains(${attribute},'${innerPredicate.containsValue}'))`;
+      }
+
+      if (innerPredicate instanceof GeographyPredicate) {
+        let attribute = this._getODataAttributeName(modelName, innerPredicate.attributePath);
+        if (prefix) {
+          attribute = `${prefix}/${attribute}`;
+        }
+
+        return `not (geo.intersects(geography1=${attribute},geography2=geography'${predicate.intersectsValue}'))`;
+      }
+
+      if (innerPredicate instanceof DetailPredicate) {
+        let func = '';
+        if (innerPredicate.isAll) {
+          func = 'all';
+        } else if (innerPredicate.isAny) {
+          func = 'any';
+        } else {
+          throw new Error(`OData supports only 'any' or 'or' operations for details`);
+        }
+
+        let additionalPrefix = 'f';
+        let meta = this._info.getMeta(modelName, innerPredicate.detailPath);
+        let detailPredicate = this._convertPredicateToODataFilterClause(innerPredicate.predicate, meta.type, prefix + additionalPrefix, level);
+        let detailPath = this._getODataAttributeName(modelName, innerPredicate.detailPath);
+
+        return `not (${detailPath}/${func}(${additionalPrefix}:${detailPredicate}))`;
+      }
+
+      if (innerPredicate instanceof ComplexPredicate) {
+        let separator = ` ${innerPredicate.condition} `;
+        let result = innerPredicate.predicates
+          .map(i => this._convertPredicateToODataFilterClause(i, modelName, prefix, level + 1)).join(separator);
+        let lp = level > 0 ? '(' : '';
+        let rp = level > 0 ? ')' : '';
+        return 'not (' + lp + result + rp + ')';
+      }
+    }
+
     if (predicate instanceof StringPredicate) {
       let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
       if (prefix) {
@@ -214,6 +267,15 @@ export default class ODataAdapter extends BaseAdapter {
       }
 
       return `contains(${attribute},'${predicate.containsValue}')`;
+    }
+
+    if (predicate instanceof GeographyPredicate) {
+      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+      if (prefix) {
+        attribute = `${prefix}/${attribute}`;
+      }
+
+      return `geo.intersects(geography1=${attribute},geography2=geography'${predicate.intersectsValue}')`;
     }
 
     if (predicate instanceof DetailPredicate) {
@@ -314,6 +376,10 @@ export default class ODataAdapter extends BaseAdapter {
       attribute = `${prefix}/${attribute}`;
     }
 
+    if (predicate.timeless) {
+      attribute = `date(${attribute})`;
+    }
+
     let value;
     if (predicate.value === null) {
       value = 'null';
@@ -338,7 +404,7 @@ export default class ODataAdapter extends BaseAdapter {
       } else if (meta.type === 'string') {
         value = `'${predicate.value}'`;
       } else if (meta.type === 'date') {
-        value = getSerializedDateValue.call(this._store, predicate.value);
+        value = getSerializedDateValue.call(this._store, predicate.value, predicate.timeless);
       } else {
         value = predicate.value;
       }
