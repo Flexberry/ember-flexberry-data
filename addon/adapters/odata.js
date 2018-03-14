@@ -199,7 +199,7 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   callFunction(functionName, params, url, fields, successCallback, failCallback, alwaysCallback) {
-    let config = getOwner(this)._lookupFactory('config:environment');
+    let config = getOwner(this).factoryFor('config:environment');
     if (Ember.isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
     }
@@ -260,7 +260,7 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   callAction(actionName, data, url, fields, successCallback, failCallback, alwaysCallback) {
-    let config = getOwner(this)._lookupFactory('config:environment');
+    let config = getOwner(this).factoryFor('config:environment');
     if (Ember.isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
     }
