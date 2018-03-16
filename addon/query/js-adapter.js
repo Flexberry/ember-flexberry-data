@@ -251,7 +251,9 @@ export default class JSAdapter extends BaseAdapter {
     }
 
     if (b5) {
-      Ember.warn('GeographyPredicate is not supported in js-adapter');
+      Ember.warn('GeographyPredicate is not supported in js-adapter',
+      false,
+      { id: 'ember-flexberry-data-debug.js-adapter.geography-predicate-is-not-supported' });
       return function (data) {
         return data;
       };

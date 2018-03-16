@@ -593,7 +593,9 @@ function updateWhereClause(store, table, query) {
   }
 
   if (predicate instanceof GeographyPredicate) {
-    Ember.warn('GeographyPredicate is not supported in indexedDB-adapter');
+    Ember.warn('GeographyPredicate is not supported in indexedDB-adapter',
+    false,
+    { id: 'ember-flexberry-data-debug.offline.geography-predicate-is-not-supported' });
     return table;
   }
 
