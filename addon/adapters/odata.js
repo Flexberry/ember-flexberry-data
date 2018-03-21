@@ -4,6 +4,7 @@ import DS from 'ember-data';
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
 import { capitalize, camelize } from '../utils/string-functions';
+import { pluralize } from 'ember-inflector';
 
 const { getOwner } = Ember;
 
@@ -169,7 +170,7 @@ export default DS.RESTAdapter.extend({
   pathForType(modelName) {
     var camelized = camelize(modelName);
     var capitalized = capitalize(camelized);
-    return Ember.String.pluralize(capitalized);
+    return pluralize(capitalized);
   },
 
   /**
