@@ -231,6 +231,14 @@ test('adapter | indexeddb | date predicate | eq', (assert) => {
 
   let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
 
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1 },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2 },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3 },
+    ],
+  };
+
   let dp1 = new DatePredicate('employmentDate', FilterOperator.Eq, sampleDt);
   let dp2 = new DatePredicate('employmentDate', FilterOperator.Eq, sampleDt, true);
 
