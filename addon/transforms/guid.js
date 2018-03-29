@@ -3,7 +3,7 @@
 */
 
 import Ember from 'ember';
-import StringTransform from 'ember-data/-private/transforms/string';
+import StringTransform from 'ember-data/transforms/string';
 
 /**
   Transformation for model's attributes defined as <a href="http://emberjs.com/api/data/#method_attr">DS.attr</a> with type 'guid'.

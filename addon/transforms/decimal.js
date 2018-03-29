@@ -3,7 +3,7 @@
 */
 
 import Ember from 'ember';
-import NumberTransform from 'ember-data/-private/transforms/number';
+import NumberTransform from 'ember-data/transforms/number';
 
 /**
   Transformation for model's attributes defined as <a href="http://emberjs.com/api/data/#method_attr">DS.attr</a> with type 'decimal'.
