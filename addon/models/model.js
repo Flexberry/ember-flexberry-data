@@ -242,8 +242,8 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       if (kind === 'hasMany') {
         if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           changedHasMany[key] = [
-            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel.record : undefined),
-            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel.record : undefined),
+            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel._record : undefined),
+            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel._record : undefined),
           ];
         }
       }
