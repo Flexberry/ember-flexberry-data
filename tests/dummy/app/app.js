@@ -4,9 +4,7 @@ import loadInitializers from 'ember-load-initializers';
 import config from './config/environment';
 import './models/custom-inflector-rules';
 
-let App;
-
-App = Ember.Application.extend({
+const App = Ember.Application.extend({
   modulePrefix: config.modulePrefix,
   podModulePrefix: config.podModulePrefix,
   Resolver
