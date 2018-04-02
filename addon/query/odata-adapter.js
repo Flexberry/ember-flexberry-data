@@ -386,8 +386,10 @@ export default class ODataAdapter extends BaseAdapter {
     } else {
       let meta = this._info.getMeta(modelName, predicate.attributePath);
       if (meta.isKey) {
-        if (meta.keyType === 'guid') {
+        if ((meta.keyType === 'guid') || (meta.keyType === 'number')) {
           value = predicate.value;
+        } else if (meta.keyType === 'string') {
+          value = `'${predicate.value}'`;
         } else {
           throw new Error(`Unsupported key type '${meta.keyType}'.`);
         }
