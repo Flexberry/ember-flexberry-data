@@ -169,7 +169,7 @@ class Information {
             isKey: isMaster,
             isEnum: false,
             type: relationship.type,
-            keyType: model.idType
+            keyType: model.idType || 'guid'
           };
         }
 
@@ -180,7 +180,7 @@ class Information {
             isKey: true,
             isEnum: false,
             type: 'string',
-            keyType: model.idType
+            keyType: model.idType || 'guid'
           };
         }
 
