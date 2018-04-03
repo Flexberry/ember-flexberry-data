@@ -5,6 +5,11 @@
 - Query language:
     - Fix `timeless` mode of `DatePredicate` for js adapter.
 
+## [0.11.1-beta.1] - 2018-03-07
+### Fixed
+- `Audit.ModelMixin`:
+    - Fix audit fields saving when `currentUserName` is a promise.
+
 ## [0.11.0] - 2018-02-20
 ### Added
 - Query language:
