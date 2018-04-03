@@ -5,6 +5,10 @@
 - Query language:
     - Fix `timeless` mode of `DatePredicate` for js adapter.
 
+### Changed
+- Query language:
+    - Now impossible create `DatePredicate` with invalid date value or null. 
+
 ## [0.11.1-beta.1] - 2018-03-07
 ### Fixed
 - `Audit.ModelMixin`:

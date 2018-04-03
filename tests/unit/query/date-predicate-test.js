@@ -22,6 +22,32 @@ test('predicate | date | constructor', function (assert) {
   assert.equal(p2.timeless, true);
 });
 
+test('predicate | date | constructor | invalid', function (assert) {
+  let isNull;
+  let isInvalid;
+  let p1;
+  let p2;
+
+  try {
+    p1 = new DatePredicate('StartDate', FilterOperator.Eq, null);
+  } catch (e) {
+    isNull = true;
+    assert.equal(e.message, `Date isn't valid or null (for null values use SimplePredicate)`);
+  }
+
+  try {
+    p2 = new DatePredicate('StartDate', FilterOperator.Eq, 'qwerty', true);
+  } catch (e) {
+    isInvalid = true;
+    assert.equal(e.message, `Date isn't valid or null (for null values use SimplePredicate)`);
+  }
+
+  assert.notOk(p1);
+  assert.notOk(p2);
+  assert.ok(isNull);
+  assert.ok(isInvalid);
+});
+
 test('predicate | date | or', function (assert) {
   let now = Date();
 
