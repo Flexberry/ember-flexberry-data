@@ -9,6 +9,7 @@ let Employee = Projection.Model.extend({
   Age: attr('number'),
   Name: attr('string'),
   Surname: attr('string'),
+  employmentDate: attr('date'),
   CountryName: attr('string'),
   Price: attr('decimal'),
   Active: attr('boolean'),
