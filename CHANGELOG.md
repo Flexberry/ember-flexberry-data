@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Query language:
+    - Fix `timeless` mode of `DatePredicate` for js adapter.
 
 ## [0.11.0] - 2018-02-20
 ### Added

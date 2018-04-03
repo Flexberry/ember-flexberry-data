@@ -233,9 +233,9 @@ test('adapter | indexeddb | date predicate | eq', (assert) => {
 
   let data = {
     employee: [
-      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1 },
-      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2 },
-      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3 },
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
     ],
   };
 
@@ -270,8 +270,8 @@ test('adapter | indexeddb | date predicate | eq | master field', function (asser
       { id: 1, Manager: 4 },
       { id: 2 },
       { id: 3, Manager: 5 },
-      { id: 4, employmentDate: dt1 },
-      { id: 5, employmentDate: dt2 },
+      { id: 4, employmentDate: dt1.toISOString() },
+      { id: 5, employmentDate: dt2.toISOString() },
     ],
   };
 
@@ -304,9 +304,9 @@ test('adapter | indexeddb | date predicate | neq', (assert) => {
 
   let data = {
     employee: [
-      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1 },
-      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2 },
-      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3 },
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
     ],
   };
 
@@ -339,9 +339,9 @@ test('adapter | indexeddb | date predicate | le', (assert) => {
 
   let data = {
     employee: [
-      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1 },
-      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2 },
-      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3 },
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
     ],
   };
 
@@ -374,9 +374,9 @@ test('adapter | indexeddb | date predicate | leq', (assert) => {
 
   let data = {
     employee: [
-      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1 },
-      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2 },
-      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3 },
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
     ],
   };
 
@@ -394,9 +394,10 @@ test('adapter | indexeddb | date predicate | leq', (assert) => {
 
   executeTest(data, builder2.build(), assert, (result) => {
     assert.ok(result.data);
-    assert.equal(result.data.length, 2);
+    assert.equal(result.data.length, 3);
     assert.equal(result.data[0].id, 1);
     assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 3);
   });
 });
 
@@ -405,13 +406,13 @@ test('adapter | indexeddb | date predicate | ge', (assert) => {
   let dt2 = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
   let dt3 = new Date(2018, 0, 31, 9, 30);  // Wed Jan 31 2018 09:30:00
 
-  let sampleDt = new Date(2018, 0, 31, 8);  // Wed Jan 31 2018 08:00:00
+  let sampleDt = new Date(2018, 0, 30, 9);  // Wed Jan 30 2018 09:00:00
 
   let data = {
     employee: [
-      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1 },
-      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2 },
-      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3 },
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
     ],
   };
 
@@ -419,18 +420,20 @@ test('adapter | indexeddb | date predicate | ge', (assert) => {
   let dp2 = new DatePredicate('employmentDate', FilterOperator.Ge, sampleDt, true);
 
   let builder1 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp1).orderBy('id');
-  let builder2 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp2);
+  let builder2 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp2).orderBy('id');
 
   executeTest(data, builder1.build(), assert, (result) => {
     assert.ok(result.data);
-    assert.equal(result.data.length, 2);
-    assert.equal(result.data[0].id, 2);
-    assert.equal(result.data[0].id, 3);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 3);
   });
 
   executeTest(data, builder2.build(), assert, (result) => {
     assert.ok(result.data);
-    assert.equal(result.data.length, 1);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
     assert.equal(result.data[1].id, 3);
   });
 });
@@ -444,9 +447,9 @@ test('adapter | indexeddb | date predicate | geq', (assert) => {
 
   let data = {
     employee: [
-      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1 },
-      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2 },
-      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3 },
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
     ],
   };
 
