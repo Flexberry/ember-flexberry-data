@@ -37,15 +37,16 @@ You will need the following things properly installed on your computer.
 
 ## Running
 
-* `ember server`
-* Visit your app at http://localhost:4201.
+* `ember serve`
+* Visit your app at [http://localhost:4201](http://localhost:4201).
 
 ## Running Tests
 
 * `npm test` (Runs `ember try:each` to test your addon against multiple Ember versions)
 * `ember test`
 * `ember test --server`
-* `ember test --testODataSerivce` (Also runs integration tests for OData service, needs corresponding backend)
+
+If `TEST_ODATA_SERVICE_URL` variable is declared in environment of process then integration tests for OData service are also run (needs corresponding backend).
 
 ## Building
 

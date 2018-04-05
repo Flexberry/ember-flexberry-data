@@ -1,9 +1,14 @@
-sudo: required
-
+---
 language: node_js
 
 node_js:
   - "6"
+
+sudo: required
+dist: trusty
+
+addons:
+  chrome: stable
 
 cache:
   yarn: true
@@ -28,18 +33,13 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
 
-dist: trusty
-
-addons:
-  chrome: stable
-
 before_install:
   - sudo chown root /opt/google/chrome/chrome-sandbox
   - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
   - curl -o- -L https://yarnpkg.com/install.sh | bash
   - export PATH=$HOME/.yarn/bin:$PATH
   - yarn global add firebase-tools
-  - yarn global add ember-cli@2.13.3
+  - yarn global add ember-cli@2.15.1
   - yarn global add bower
   - google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
 

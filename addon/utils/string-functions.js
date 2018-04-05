@@ -2,6 +2,7 @@
   @module ember-flexberry-data
 */
 
+/* eslint-disable no-useless-escape */
 const STRING_DASHERIZE_REGEXP = (/[ _]/g);
 
 const STRING_CAMELIZE_REGEXP_1 = (/(\-|\_|\.|\s)+(.)?/g);
@@ -17,6 +18,7 @@ const STRING_UNDERSCORE_REGEXP_2 = (/\-|\s+/g);
 const STRING_CAPITALIZE_REGEXP = (/(^|\/)([a-zа-яё])/g);
 
 const STRING_DECAMELIZE_REGEXP = (/([a-zа-яё\d])([A-ZА-ЯЁ])/g);
+/* eslint-enable no-useless-escape */
 
 /**
   Converts a camelized string into all lower case separated by underscores.

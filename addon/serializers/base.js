@@ -175,7 +175,9 @@ export default DS.RESTSerializer.extend({
     @return {String}
   */
   modelNameFromPayloadKey(key) {
+    /* eslint-disable no-useless-escape */
     return singularize(dasherize(key.replace(/[#\.]/g, '')));
+    /* eslint-enable no-useless-escape */
   },
 
   /**
