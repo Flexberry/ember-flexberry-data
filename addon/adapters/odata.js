@@ -176,7 +176,7 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   makeRequest(params) {
-    Ember.aserrt('You should specify both method and url', params.method || params.url);
+    Ember.assert('You should specify both method and url', params.method || params.url);
     return Ember.$.ajax(params);
   },
 
@@ -441,6 +441,17 @@ export default DS.RESTAdapter.extend({
 
   deleteRecord(store, type, snapshot) {
     return this._sendRecord(store, type, snapshot, 'deleteRecord');
+  },
+
+  deleteAllRecords(store, modelName, filter) {
+    let url = this._buildURL(modelName);
+    let pathName  = this.pathForType(modelName);
+    let builder = new ODataQueryAdapter(url, store);
+    let filterVelue = builder._buildODataFilters(filter);
+    let filterQuery = !Ember.isNone(filterVelue) ? '$filter=' + filterVelue : '';
+    let data = { pathName: pathName, filterQuery: filterQuery };
+
+    return this.callAction('DeleteAllSelect', data, null, { withCredentials: true });
   },
 
   /**
