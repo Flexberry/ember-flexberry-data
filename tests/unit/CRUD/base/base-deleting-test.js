@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import { DetailPredicate } from 'ember-flexberry-data/query/predicate';
 
@@ -6,7 +7,7 @@ export default function deleting(store, assert) {
   assert.expect(4);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
     // Without relationships.
@@ -25,7 +26,7 @@ export default function deleting(store, assert) {
             .where(new DetailPredicate('userVotes').any('id', 'eq', voteId));
           return store.queryRecord('ember-flexberry-dummy-comment', builder.build()).then((comment) => {
             vote.deleteRecord();
-            return Ember.RSVP.all([comment.save(), vote.save()]);
+            return RSVP.all([comment.save(), vote.save()]);
           });
         }
       })
@@ -60,7 +61,7 @@ export default function deleting(store, assert) {
         vote.deleteRecord();
 
         // In offline when delete 'detail' need to update 'master'.
-        return store._isOnline() ? vote.save() : Ember.RSVP.all([comment.save(), vote.save()]);
+        return store._isOnline() ? vote.save() : RSVP.all([comment.save(), vote.save()]);
       })
 
       .then(() => {
@@ -101,7 +102,7 @@ export default function deleting(store, assert) {
         vote.deleteRecord();
 
         // In offline when delete 'detail' need to update 'master'.
-        return store._isOnline() ? vote.save() : Ember.RSVP.all([comments.get('firstObject').save(), vote.save()]);
+        return store._isOnline() ? vote.save() : RSVP.all([comments.get('firstObject').save(), vote.save()]);
       })
 
       .then(() => {
@@ -124,7 +125,7 @@ export default function deleting(store, assert) {
       return store.findRecord('ember-flexberry-dummy-comment', commentId)
         .then((comment) => {
           comment.deleteRecord();
-          return Ember.RSVP.all([comment.save(), comment.get('suggestion').save()]);
+          return RSVP.all([comment.save(), comment.get('suggestion').save()]);
         })
 
         .then(() => {
@@ -156,7 +157,7 @@ function initTestData(store) {
 
   // Attrs for creating suggestion.
   .then((parentType) =>
-    Ember.RSVP.Promise.all([
+    RSVP.Promise.all([
       store.createRecord('ember-flexberry-dummy-application-user', {
         name: 'Vasya',
         eMail: '1@mail.ru',
@@ -196,11 +197,11 @@ function initTestData(store) {
       }).save()
 
       // It is necessary to fill 'detail' at 'master' in offline.
-      .then((commentItem) => store._isOnline() ? Ember.RSVP.resolve(commentItem) : sug.save().then(() => Ember.RSVP.resolve(commentItem)))
+      .then((commentItem) => store._isOnline() ? RSVP.resolve(commentItem) : sug.save().then(() => RSVP.resolve(commentItem)))
 
       // Creating votes.
       .then((commentItem) =>
-        Ember.RSVP.Promise.all([
+        RSVP.Promise.all([
           store.createRecord('ember-flexberry-dummy-comment-vote', {
             applicationUser: sugAttrs[0],
             comment: commentItem
@@ -218,11 +219,11 @@ function initTestData(store) {
         ])
 
         // It is necessary to fill 'detail' at 'master' in offline.
-        .then((votes) => store._isOnline() ? Ember.RSVP.resolve(votes) : commentItem.save().then(() => Ember.RSVP.resolve(votes)))
+        .then((votes) => store._isOnline() ? RSVP.resolve(votes) : commentItem.save().then(() => RSVP.resolve(votes)))
 
         // Returns.
         .then((votes) =>
-          new Ember.RSVP.Promise(resolve =>
+          new RSVP.Promise(resolve =>
             resolve({
               people: sugAttrs.slice(0, 3).map(item => item.get('id')),
               type: sugAttrs[3].get('id'),

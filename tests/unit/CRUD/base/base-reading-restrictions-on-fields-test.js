@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import { DetailPredicate, StringPredicate } from 'ember-flexberry-data/query/predicate';
 
@@ -6,7 +7,7 @@ export default function readingRestrictionsOnFields(store, assert) {
   assert.expect(6);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
     // Reading by master field.
@@ -64,7 +65,7 @@ export default function readingRestrictionsOnFields(store, assert) {
 
 function initTestData(store) {
   // Attrs for creating suggestion.
-  return Ember.RSVP.Promise.all([
+  return RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Vasya',
       eMail: '1@mail.ru',
@@ -100,7 +101,7 @@ function initTestData(store) {
 
     // Creating comments.
     .then((sug) =>
-      Ember.RSVP.Promise.all([
+      RSVP.Promise.all([
         store.createRecord('ember-flexberry-dummy-comment', {
           author: sugAttrs[0],
           text: 'Comment 1',
@@ -127,11 +128,11 @@ function initTestData(store) {
       ])
 
       // It is necessary to fill 'detail' at 'master' in offline.
-      .then((comments) => store._isOnline() ? Ember.RSVP.resolve(comments) : sug.save().then(() => Ember.RSVP.resolve(comments)))
+      .then((comments) => store._isOnline() ? RSVP.resolve(comments) : sug.save().then(() => RSVP.resolve(comments)))
 
       // Creating votes.
       .then((comments) =>
-        Ember.RSVP.Promise.all([
+        RSVP.Promise.all([
           store.createRecord('ember-flexberry-dummy-comment-vote', {
             applicationUser: sugAttrs[3],
             comment: comments[0]
@@ -155,10 +156,10 @@ function initTestData(store) {
         ])
 
         // It is necessary to fill 'detail' at 'master' in offline.
-        .then(() => Ember.RSVP.all(store._isOnline() ? [] : comments.map(comment => comment.save())))
+        .then(() => RSVP.all(store._isOnline() ? [] : comments.map(comment => comment.save())))
 
         .then(() =>
-          new  Ember.RSVP.Promise((resolve) =>
+          new  RSVP.Promise((resolve) =>
             resolve({
               people: sugAttrs.slice(0, 4).map(item => item.get('id')),
               comments: comments.map(item => item.get('id'))

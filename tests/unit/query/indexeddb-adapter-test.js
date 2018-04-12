@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import Dexie from 'npm:dexie';
 import { module, test } from 'qunit';
 
@@ -48,7 +48,7 @@ module('indexeddb-adapter-test query', {
   },
 
   afterEach() {
-    Ember.run(appIndexedbAdapterTest, 'destroy');
+    run(appIndexedbAdapterTest, 'destroy');
   },
 });
 
@@ -724,7 +724,7 @@ module('indexeddb-adapter-test performance', {
   },
 
   afterEach() {
-    Ember.run(appIndexedbAdapterTest, 'destroy');
+    run(appIndexedbAdapterTest, 'destroy');
   },
 });
 
@@ -890,7 +890,7 @@ module('indexeddb-adapter-test joins performance', {
   },
 
   afterEach() {
-    Ember.run(appIndexedbAdapterTest, 'destroy');
+    run(appIndexedbAdapterTest, 'destroy');
   },
 });
 
@@ -965,7 +965,7 @@ module('performance query masters', {
   },
 
   afterEach() {
-    Ember.run(appIndexedbAdapterTest, 'destroy');
+    run(appIndexedbAdapterTest, 'destroy');
   },
 });
 

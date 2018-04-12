@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { moduleForModel, test } from 'ember-qunit';
 import { Offline, Serializer } from 'ember-flexberry-data';
 import startApp from 'dummy/tests/helpers/start-app';
@@ -19,7 +19,7 @@ moduleForModel('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', 
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   },
 });
 

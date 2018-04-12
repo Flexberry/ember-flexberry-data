@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import startApp from 'dummy/tests/helpers/start-app';
 import destroyApp from 'dummy/tests/helpers/destroy-app';
@@ -30,7 +30,7 @@ export default function executeTest(testName, callback) {
     afterEach(assert) {
       let cleanUpDone = assert.async();
 
-      Ember.run(() => {
+      run(() => {
         let dexieService = AppExecuteOfflineTest.__container__.lookup('service:dexie');
         dexieService.close(testDbName);
         storeExecuteOfflineTest.adapterFor('application').delete().then(() => {

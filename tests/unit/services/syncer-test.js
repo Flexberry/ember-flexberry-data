@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { moduleFor, test } from 'ember-qunit';
 import startApp from 'dummy/tests/helpers/start-app';
 
@@ -14,7 +14,7 @@ moduleFor('service:syncer', 'Unit | Service | syncer', {
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   },
 });
 
@@ -40,7 +40,7 @@ test('changes from record', function(assert) {
   let syncer = this.subject(App.__container__.ownerInjection());
   let store = App.__container__.lookup('service:store');
 
-  Ember.run(() => {
+  run(() => {
     let record = store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'name',
       eMail: 'eMail',
@@ -69,7 +69,7 @@ test('get object type', function(assert) {
   let syncer = this.subject(App.__container__.ownerInjection());
   syncer.set('offlineStore', App.__container__.lookup('service:store').get('offlineStore'));
 
-  Ember.run(() => {
+  run(() => {
     syncer._getObjectType('ember-flexberry-dummy-application-user').then((newObjectType) => {
       let id = newObjectType.get('id');
       assert.equal(newObjectType.get('name'), 'ember-flexberry-dummy-application-user', `Created 'objectType' model instance.`);

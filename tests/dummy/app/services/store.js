@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { getOwner } from '@ember/application';
 import DS from 'ember-data';
 import { Offline, Projection } from 'ember-flexberry-data';
 
@@ -49,7 +49,7 @@ export default Offline.Store.extend({
         }
       },
     });
-    let owner = Ember.getOwner(this);
+    let owner = getOwner(this);
     this.set('onlineStore', DS.Store.extend(Projection.StoreMixin).create(owner.ownerInjection()));
     this._super(...arguments);
     this.set('offlineStore.dbName', 'TestDB');

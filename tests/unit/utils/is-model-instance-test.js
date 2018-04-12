@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import DS from 'ember-data';
 import { module, test } from 'qunit';
 import startApp from 'dummy/tests/helpers/start-app';
@@ -16,12 +16,12 @@ module('Unit | Utility | is model instance', {
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   },
 });
 
 test('it works', function(assert) {
-  Ember.run(() => {
+  run(() => {
     let notModel;
     let model = App.__container__.lookup('service:store').createRecord('customer', {
       contactName: 'John',

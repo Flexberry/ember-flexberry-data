@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { moduleFor, test } from 'ember-qunit';
 import { Offline } from 'ember-flexberry-data';
 import startApp from 'dummy/tests/helpers/start-app';
@@ -18,7 +18,7 @@ moduleFor('service:user', 'Unit | Service | user', {
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   },
 });
 

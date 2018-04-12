@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { moduleFor, test } from 'ember-qunit';
 import startApp from 'dummy/tests/helpers/start-app';
 
@@ -10,13 +10,13 @@ moduleFor('service:store', 'Integration | Service | store', {
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   },
 });
 
 test('create unload create', function(assert) {
   let done = assert.async();
-  Ember.run(() => {
+  run(() => {
     let store = App.__container__.lookup('service:store');
     store.get('offlineGlobals').setOnlineAvailable(false);
     store.createRecord('ember-flexberry-dummy-application-user', {

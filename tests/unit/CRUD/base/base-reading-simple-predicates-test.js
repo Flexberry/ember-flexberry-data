@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
@@ -7,7 +8,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
   assert.expect(24);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     let builderStrOp = null;
     let builderConstOp = null;
 
@@ -130,7 +131,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
 }
 
 function initTestData(store) {
-  return Ember.RSVP.Promise.all([
+  return RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Vasya',
       eMail: '1@mail.ru',

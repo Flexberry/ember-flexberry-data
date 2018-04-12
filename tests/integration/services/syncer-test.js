@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import DS from 'ember-data';
 import Dexie from 'npm:dexie';
 import { moduleFor, test } from 'ember-qunit';
@@ -37,7 +38,7 @@ if (config.APP.testODataService) {
     },
 
     afterEach() {
-      Ember.run(App, 'destroy');
+      run(App, 'destroy');
     },
   });
 
@@ -60,7 +61,7 @@ if (config.APP.testODataService) {
               .byId(user.get('id'));
             return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
               assert.equal(onlineRecord.get('name'), 'SuperMan', 'Now SuperMan is omnipresent.');
-              return new Ember.RSVP.resolve(onlineRecord);
+              return new RSVP.resolve(onlineRecord);
             });
           });
         });
@@ -86,7 +87,7 @@ if (config.APP.testODataService) {
               .byId(user.get('id'));
             return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
               assert.equal(onlineRecord.get('name'), 'SuperMan', 'Now SuperMan is omnipresent.');
-              return new Ember.RSVP.resolve(onlineRecord);
+              return new RSVP.resolve(onlineRecord);
             });
           });
         });
@@ -119,7 +120,7 @@ if (config.APP.testODataService) {
                 return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
                   assert.equal(onlineRecord.get('name'), 'SuperMan', `Now he's SuperMan.`);
                   assert.equal(onlineRecord.get('eMail'), 'super.man@example.com', 'Now he has a new email address.');
-                  return new Ember.RSVP.resolve(onlineRecord);
+                  return new RSVP.resolve(onlineRecord);
                 });
               });
             });
@@ -153,7 +154,7 @@ if (config.APP.testODataService) {
                 return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
                   assert.equal(onlineRecord.get('name'), 'SuperMan', `Now he's SuperMan.`);
                   assert.equal(onlineRecord.get('eMail'), 'super.man@example.com', 'Now he has a new email address.');
-                  return new Ember.RSVP.resolve(onlineRecord);
+                  return new RSVP.resolve(onlineRecord);
                 });
               });
             });
@@ -323,5 +324,5 @@ function runTest(app, expect, assert, test) {
   let syncer = store.get('syncer');
   let done = assert.async();
   assert.expect(expect);
-  Ember.run(null, test, store, syncer, done);
+  run(null, test, store, syncer, done);
 }

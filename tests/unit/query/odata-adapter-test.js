@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 
 import QueryBuilder from 'ember-flexberry-data/query/builder';
@@ -19,7 +19,7 @@ module('query', {
   },
 
   afterEach() {
-    Ember.run(app, 'destroy');
+    run(app, 'destroy');
   },
 });
 

@@ -1,11 +1,12 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 export default function baseCreatingTest(store, assert) {
   assert.expect(5);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
     // With master relationship.
@@ -70,7 +71,7 @@ function initTestData(store) {
       }).save()
 
       // It is necessary to fill 'detail' at 'master' in offline.
-      .then((comment) => store._isOnline() ? Ember.RSVP.resolve(comment) : sug.save().then(() => Ember.RSVP.resolve(comment)))
+      .then((comment) => store._isOnline() ? RSVP.resolve(comment) : sug.save().then(() => RSVP.resolve(comment)))
 
       .then((comment) =>
         store.createRecord('ember-flexberry-dummy-comment-vote', {
@@ -79,10 +80,10 @@ function initTestData(store) {
         }).save()
 
         // It is necessary to fill 'detail' at 'master' in offline.
-        .then((vote) => store._isOnline() ? Ember.RSVP.resolve(vote) : comment.save().then(() => Ember.RSVP.resolve(vote)))
+        .then((vote) => store._isOnline() ? RSVP.resolve(vote) : comment.save().then(() => RSVP.resolve(vote)))
 
         .then((vote) =>
-          new Ember.RSVP.Promise((resolve) =>
+          new RSVP.Promise((resolve) =>
             resolve({
               user: user.get('id'),
               suggestion: sug.get('id'),

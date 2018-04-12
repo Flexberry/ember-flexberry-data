@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { moduleFor, test } from 'ember-qunit';
 
 import startApp from '../../helpers/start-app';
@@ -14,7 +14,7 @@ moduleFor('service:offline-globals', 'Unit | Service | offline globals', {
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   }
 });
 

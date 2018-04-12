@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import startApp from 'dummy/tests/helpers/start-app';
 import getSerializedDateValue from 'ember-flexberry-data/utils/get-serialized-date-value';
@@ -11,7 +11,7 @@ module('Unit | Utility | get serialized date value', {
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   },
 });
 

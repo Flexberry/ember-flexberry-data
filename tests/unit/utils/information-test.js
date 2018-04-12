@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 
 import Information from 'ember-flexberry-data/utils/information';
@@ -17,7 +17,7 @@ module('utils', {
   },
 
   afterEach() {
-    Ember.run(app, 'destroy');
+    run(app, 'destroy');
   },
 });
 

@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { set } from '@ember/object';
+import { A } from '@ember/array';
 import DS from 'ember-data';
 import { module, test } from 'qunit';
 
@@ -35,14 +36,14 @@ export default function executeTest(testName, callback) {
 
       // Clean up type maps otherwise internal models won't be cleaned from stores,
       // and it will cause some exceptions related to store's internal-models statuses.
-      Ember.A([store, store.get('onlineStore'), store.get('offlineStore')]).forEach((s) => {
-        Ember.set(s, 'typeMaps', {});
+      A([store, store.get('onlineStore'), store.get('offlineStore')]).forEach((s) => {
+        set(s, 'typeMaps', {});
       });
     };
 
     // Define OData-adapter as default adapter for online store.
     const adapter = Adapter.Odata.create(app.__container__.ownerInjection());
-    Ember.set(adapter, 'host', baseUrl);
+    set(adapter, 'host', baseUrl);
     store.get('onlineStore').reopen({
       adapterFor() {
 

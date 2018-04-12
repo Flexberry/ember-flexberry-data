@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import { get } from '@ember/object';
 import { module, test } from 'qunit';
 import startApp from '../../helpers/start-app';
 import destroyApp from '../../helpers/destroy-app';
@@ -7,8 +8,6 @@ import { Query } from 'ember-flexberry-data';
 
 var AppOfflineCrudTest;
 var storeOfflineCrudTest;
-var run = Ember.run;
-var get = Ember.get;
 const dbNameOfflineCrudTest = 'TestDbOCT';
 
 module('offline-CRUD', {

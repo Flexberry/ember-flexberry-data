@@ -1,5 +1,5 @@
 /*global wait $*/
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { moduleFor, test } from 'ember-qunit';
 
 import { Adapter } from 'ember-flexberry-data';
@@ -16,7 +16,7 @@ test('ajax functions tests', function(assert) {
   const app = startApp();
   const adapter = Adapter.Odata.create(app.__container__.ownerInjection());
 
-  Ember.run(() => {
+  run(() => {
     $.mockjax({
       url: '/test-models/test',
       responseText: { ab: 'cd' }
