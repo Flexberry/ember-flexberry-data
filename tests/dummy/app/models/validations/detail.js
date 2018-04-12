@@ -1,7 +1,8 @@
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
+import EmberFlexberryDataModel from 'ember-flexberry-data/models/model';
+import { attr } from 'ember-flexberry-data/utils/attributes';
 
-let Model = Projection.Model.extend({
+let Model = EmberFlexberryDataModel.extend({
   aggregator: DS.belongsTo('validations/base', {
     inverse: 'details',
     async: false
@@ -28,7 +29,7 @@ let Model = Projection.Model.extend({
 
 // Edit form projection.
 Model.defineProjection('DetailE', 'validations/detail', {
-  number: Projection.attr('Number')
+  number: attr('Number')
 });
 
 export default Model;

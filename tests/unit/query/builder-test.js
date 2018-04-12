@@ -1,9 +1,8 @@
 import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
-import { Query } from 'ember-flexberry-data';
+import Builder from 'ember-flexberry-data/query/builder';
 import startApp from 'dummy/tests/helpers/start-app';
 
-const { Builder } = Query;
 let app;
 let store;
 

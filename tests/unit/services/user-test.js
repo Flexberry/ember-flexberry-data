@@ -1,6 +1,7 @@
 import { run } from '@ember/runloop';
 import { moduleFor, test } from 'ember-qunit';
-import { Offline } from 'ember-flexberry-data';
+import BaseStore from 'ember-flexberry-data/stores/base-store';
+import LocalStore from 'ember-flexberry-data/stores/local-store';
 import startApp from 'dummy/tests/helpers/start-app';
 
 let App;
@@ -13,8 +14,8 @@ moduleFor('service:user', 'Unit | Service | user', {
   beforeEach() {
     App = startApp();
     App.unregister('service:store');
-    App.register('service:store', Offline.Store);
-    App.register('store:local', Offline.LocalStore);
+    App.register('service:store', BaseStore);
+    App.register('store:local', LocalStore);
   },
 
   afterEach() {

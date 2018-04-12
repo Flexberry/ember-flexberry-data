@@ -4,7 +4,8 @@ import { module, test } from 'qunit';
 import startApp from '../../helpers/start-app';
 import destroyApp from '../../helpers/destroy-app';
 import Dexie from 'npm:dexie';
-import { Query } from 'ember-flexberry-data';
+import Builder from 'ember-flexberry-data/query/builder';
+import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 
 var AppOfflineCrudTest;
 var storeOfflineCrudTest;
@@ -181,7 +182,7 @@ test('query record via query', function (assert) {
   var done2 = assert.async();
   run(function () {
     let modelName = 'ember-flexberry-dummy-suggestion';
-    let builder = new Query.Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
+    let builder = new Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', FilterOperator.Eq, 'Street, 20');
     storeOfflineCrudTest.query(modelName, builder.build()).then(function(records) {
       var firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found with query language');
@@ -201,7 +202,7 @@ test('query record via queryRecord', function (assert) {
   var done2 = assert.async();
   run(function () {
     let modelName = 'ember-flexberry-dummy-suggestion';
-    let builder = new Query.Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
+    let builder = new Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', FilterOperator.Eq, 'Street, 20');
     storeOfflineCrudTest.queryRecord(modelName, builder.build()).then(function(record) {
       assert.equal(get(record, 'address'), 'Street, 20', '1 record was found with query language');
     }).finally(done2);

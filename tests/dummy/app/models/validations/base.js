@@ -1,7 +1,8 @@
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
+import EmberFlexberryDataModel from 'ember-flexberry-data/models/model';
+import { attr, belongsTo, hasMany } from 'ember-flexberry-data/utils/attributes';
 
-let Model = Projection.Model.extend({
+let Model = EmberFlexberryDataModel.extend({
   flag: DS.attr('boolean'),
 
   master: DS.belongsTo('validations/master', {
@@ -35,16 +36,16 @@ let Model = Projection.Model.extend({
 
 // Edit form projection.
 Model.defineProjection('BaseE', 'validations/base', {
-  flag: Projection.attr('Flag'),
-  master: Projection.belongsTo('validations/master', 'Master', {
-    text: Projection.attr('Text', {
+  flag: attr('Flag'),
+  master: belongsTo('validations/master', 'Master', {
+    text: attr('Text', {
       hidden: true
     })
   }, {
     displayMemberPath: 'text'
   }),
-  details: Projection.hasMany('validations/detail', 'details', {
-    number: Projection.attr('Number')
+  details: hasMany('validations/detail', 'details', {
+    number: attr('Number')
   })
 });
 

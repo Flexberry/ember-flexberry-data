@@ -1,7 +1,8 @@
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
+import EmberFlexberryDataModel from 'ember-flexberry-data/models/model';
+import { attr, belongsTo } from 'ember-flexberry-data/utils/attributes';
 
-let Model = Projection.Model.extend({
+let Model = EmberFlexberryDataModel.extend({
   selfPole: DS.attr('string'),
   relation: DS.belongsTo('ember-flexberry-dummy-test-poly-base', { inverse: null, async: false, polymorphic: true }),
 
@@ -16,16 +17,16 @@ let Model = Projection.Model.extend({
 });
 
 Model.defineProjection('TestPolyEdit', 'ember-flexberry-dummy-test-poly', {
-  selfPole: Projection.attr('Self Pole'),
-  relation: Projection.belongsTo('ember-flexberry-dummy-test-poly-base', 'Relation', {
-    pole: Projection.attr('Pole', { hidden: true })
+  selfPole: attr('Self Pole'),
+  relation: belongsTo('ember-flexberry-dummy-test-poly-base', 'Relation', {
+    pole: attr('Pole', { hidden: true })
   }, { displayMemberPath: 'pole' })
 });
 
 Model.defineProjection('TestPolyList', 'ember-flexberry-dummy-test-poly', {
-  selfPole: Projection.attr('SelfPole'),
-  relation: Projection.belongsTo('ember-flexberry-dummy-test-poly-base', '', {
-    pole: Projection.attr('Pole', { hidden: true })
+  selfPole: attr('SelfPole'),
+  relation: belongsTo('ember-flexberry-dummy-test-poly-base', '', {
+    pole: attr('Pole', { hidden: true })
   }, { displayMemberPath: 'pole' })
 });
 

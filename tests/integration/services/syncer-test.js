@@ -3,7 +3,8 @@ import RSVP from 'rsvp';
 import DS from 'ember-data';
 import Dexie from 'npm:dexie';
 import { moduleFor, test } from 'ember-qunit';
-import { Adapter, Query, } from 'ember-flexberry-data';
+import OdataAdapter from 'ember-flexberry-data/adapters/odata';
+import Builder from 'ember-flexberry-data/query/builder';
 import config from 'dummy/config/environment';
 import startApp from 'dummy/tests/helpers/start-app';
 
@@ -32,7 +33,7 @@ if (config.APP.testODataService) {
       let done = assert.async();
       Dexie.delete('TestDB').then(() => {
         App = startApp();
-        App.register('adapter:application', Adapter.Odata.extend({ host: baseUrl }));
+        App.register('adapter:application', OdataAdapter.extend({ host: baseUrl }));
         done();
       });
     },
@@ -56,7 +57,7 @@ if (config.APP.testODataService) {
           store.get('offlineGlobals').setOnlineAvailable(true);
           return syncer.syncUp().then((result) => {
             assert.equal(result, 1, 'Only one operation was executed.');
-            let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+            let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
               .selectByProjection('ApplicationUserE')
               .byId(user.get('id'));
             return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
@@ -82,7 +83,7 @@ if (config.APP.testODataService) {
           store.get('offlineGlobals').setOnlineAvailable(true);
           return syncer.syncUp().then((result) => {
             assert.equal(result, 2, 'Two operations were executed.');
-            let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+            let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
               .selectByProjection('ApplicationUserE')
               .byId(user.get('id'));
             return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
@@ -103,7 +104,7 @@ if (config.APP.testODataService) {
         eMail: 'man@example.com',
       }).save().then(user => syncer.syncDown(user).then(() => {
         store.get('offlineGlobals').setOnlineAvailable(false);
-        let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+        let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
           .selectByProjection('ApplicationUserE')
           .byId(user.get('id'));
         return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
@@ -114,7 +115,7 @@ if (config.APP.testODataService) {
               store.get('offlineGlobals').setOnlineAvailable(true);
               return syncer.syncUp().then((result) => {
                 assert.equal(result, 1, 'Only one operation was executed.');
-                let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+                let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
                   .selectByProjection('ApplicationUserE')
                   .byId(user.get('id'));
                 return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
@@ -137,7 +138,7 @@ if (config.APP.testODataService) {
         eMail: 'man@example.com',
       }).save().then(user => syncer.syncDown(user).then(() => {
         store.get('offlineGlobals').setOnlineAvailable(false);
-        let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+        let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
           .selectByProjection('ApplicationUserE')
           .byId(user.get('id'));
         return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
@@ -148,7 +149,7 @@ if (config.APP.testODataService) {
               store.get('offlineGlobals').setOnlineAvailable(true);
               return syncer.syncUp().then((result) => {
                 assert.equal(result, 2, 'Two operations were executed.');
-                let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+                let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
                   .selectByProjection('ApplicationUserE')
                   .byId(user.get('id'));
                 return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
@@ -172,7 +173,7 @@ if (config.APP.testODataService) {
         eMail: 'man@example.com',
       }).save().then(user => syncer.syncDown(user).then(() => {
         store.get('offlineGlobals').setOnlineAvailable(false);
-        let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+        let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
           .selectByProjection('ApplicationUserE')
           .byId(user.get('id'));
         return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
@@ -182,7 +183,7 @@ if (config.APP.testODataService) {
             store.get('offlineGlobals').setOnlineAvailable(true);
             return syncer.syncUp().then((result) => {
               assert.equal(result, 1, 'Only one operation was executed.');
-              let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+              let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
                 .selectByProjection('ApplicationUserE')
                 .byId(user.get('id'));
               return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
@@ -202,7 +203,7 @@ if (config.APP.testODataService) {
         eMail: 'man@example.com',
       }).save().then(user => syncer.syncDown(user).then(() => {
         store.get('offlineGlobals').setOnlineAvailable(false);
-        let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+        let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
           .selectByProjection('ApplicationUserE')
           .byId(user.get('id'));
         return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
@@ -212,7 +213,7 @@ if (config.APP.testODataService) {
             store.get('offlineGlobals').setOnlineAvailable(true);
             return syncer.syncUp().then((result) => {
               assert.equal(result, 2, 'Two operations were executed.');
-              let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+              let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
                 .selectByProjection('ApplicationUserE')
                 .byId(user.get('id'));
               return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
@@ -241,7 +242,7 @@ if (config.APP.testODataService) {
         store.get('offlineGlobals').setOnlineAvailable(true);
         return syncer.syncUp().catch((rejectedJob) => {
           assert.equal(rejectedJob.get('executionResult'), 'Ошибка', 'Job not executed.');
-          let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+          let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
             .selectByProjection('ApplicationUserE')
             .byId(user.get('id'));
           return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
@@ -261,7 +262,7 @@ if (config.APP.testODataService) {
         let id = user.get('id');
         return syncer.syncDown(user).then(() => {
           store.get('offlineGlobals').setOnlineAvailable(false);
-          let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+          let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
             .selectByProjection('ApplicationUserE')
             .byId(id);
           return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((offlineRecord) => {
@@ -269,7 +270,7 @@ if (config.APP.testODataService) {
             offlineRecord.set('eMail', 'super.man@example.com');
             return offlineRecord.save().then(() => {
               store.get('offlineGlobals').setOnlineAvailable(true);
-              let builder = new Query.Builder(store, 'ember-flexberry-dummy-application-user')
+              let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
                 .selectByProjection('ApplicationUserE')
                 .byId(id);
               return store.queryRecord('ember-flexberry-dummy-application-user', builder.build()).then((onlineRecord) => {
@@ -278,7 +279,7 @@ if (config.APP.testODataService) {
                   let options = { continueOnError: true };
                   return syncer.syncUp(null, options).then((result) => {
                     assert.equal(result, 0, 'He never managed to become a SuperMan.');
-                    let query = new Query.Builder(store, 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity')
+                    let query = new Builder(store, 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity')
                       .select('id,objectPrimaryKey,operationType,executionResult,objectType,auditFields')
                       .where('objectPrimaryKey', 'eq', id).build();
                     return store.queryRecord(query.modelName, query).then((auditEntity) => {

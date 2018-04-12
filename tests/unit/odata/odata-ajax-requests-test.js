@@ -2,7 +2,7 @@
 import { run } from '@ember/runloop';
 import { moduleFor, test } from 'ember-qunit';
 
-import { Adapter } from 'ember-flexberry-data';
+import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 
 import startApp from '../../helpers/start-app';
 
@@ -14,7 +14,7 @@ moduleFor('adapter:odata', 'Unit | Adapter | odata | ajax', {
 test('ajax functions tests', function(assert) {
   let done = assert.async();
   const app = startApp();
-  const adapter = Adapter.Odata.create(app.__container__.ownerInjection());
+  const adapter = OdataAdapter.create(app.__container__.ownerInjection());
 
   run(() => {
     $.mockjax({
