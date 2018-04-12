@@ -14,7 +14,6 @@ import Queue from '../utils/queue';
 
 /**
   @class Syncer
-  @namespace Offline
   @extends Ember.Object
 */
 export default Service.extend({
@@ -234,9 +233,9 @@ export default Service.extend({
     @example
       ```javascript
       // app/services/syncer.js
-      import { Offline } from 'ember-flexberry-data';
+      import Syncer from 'ember-flexberry-data/services/syncer';
 
-      export default Offline.Syncer.extend({
+      export default Syncer.extend({
         ...
         resolveServerError(job, error) {
           let _this = this;
@@ -279,9 +278,9 @@ export default Service.extend({
     @example
       ```javascript
       // app/services/syncer.js
-      import { Offline } from 'ember-flexberry-data';
+      import Syncer from 'ember-flexberry-data/services/syncer';
 
-      export default Offline.Syncer.extend({
+      export default Syncer.extend({
         ...
         resolveNotFoundRecord(job) {
           if (job.get('operationType') === 'UPDATE') {

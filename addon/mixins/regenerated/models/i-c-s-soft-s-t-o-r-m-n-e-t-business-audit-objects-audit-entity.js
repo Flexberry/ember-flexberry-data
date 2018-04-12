@@ -1,6 +1,6 @@
 import Mixin from '@ember/object/mixin';
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
+import { attr, belongsTo, hasMany } from '../../../utils/attributes';
 
 export let Model = Mixin.create({
   objectPrimaryKey: DS.attr('string'),
@@ -20,64 +20,64 @@ export let Model = Mixin.create({
 
 export let defineProjections = function (model) {
   model.defineProjection('AuditEntityE', 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
-    objectPrimaryKey: Projection.attr('Идентификатор'),
-    objectType: Projection.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', '', {
-      name: Projection.attr('Тип объекта'),
+    objectPrimaryKey: attr('Идентификатор'),
+    objectType: belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', '', {
+      name: attr('Тип объекта'),
     }, { hidden: true }),
-    operationTime: Projection.attr('Время операции'),
-    operationType: Projection.attr('Тип операции'),
-    executionResult: Projection.attr('Результат'),
-    source: Projection.attr('Источник'),
-    user: Projection.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', 'Имя', {
-      name: Projection.attr('Имя'),
-      login: Projection.attr('Логин'),
+    operationTime: attr('Время операции'),
+    operationType: attr('Тип операции'),
+    executionResult: attr('Результат'),
+    source: attr('Источник'),
+    user: belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', 'Имя', {
+      name: attr('Имя'),
+      login: attr('Логин'),
     }, { hidden: true }),
-    createTime: Projection.attr('Создание'),
-    creator: Projection.attr('Создатель'),
-    editTime: Projection.attr('Редактирование'),
-    editor: Projection.attr('Редактор'),
-    auditFields: Projection.hasMany('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', 'Изменения', {
-      field: Projection.attr('Поле', { hidden: true }),
-      caption: Projection.attr('Имя поля'),
-      oldValue: Projection.attr('Старое значение'),
-      newValue: Projection.attr('Новое значение'),
-      mainChange: Projection.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', '', {
+    createTime: attr('Создание'),
+    creator: attr('Создатель'),
+    editTime: attr('Редактирование'),
+    editor: attr('Редактор'),
+    auditFields: hasMany('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', 'Изменения', {
+      field: attr('Поле', { hidden: true }),
+      caption: attr('Имя поля'),
+      oldValue: attr('Старое значение'),
+      newValue: attr('Новое значение'),
+      mainChange: belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', '', {
 
       }, { hidden: true }),
     }),
   });
 
   model.defineProjection('AuditEntityL', 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
-    objectPrimaryKey: Projection.attr('Идентификатор'),
-    objectType: Projection.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', '', {
-      name: Projection.attr('Тип объекта'),
+    objectPrimaryKey: attr('Идентификатор'),
+    objectType: belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type', '', {
+      name: attr('Тип объекта'),
     }, { hidden: true }),
-    operationTime: Projection.attr('Время операции'),
-    operationType: Projection.attr('Тип операции'),
-    executionResult: Projection.attr('Результат'),
-    user: Projection.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', 'Инициатор', {
-      name: Projection.attr('Инициатор'),
+    operationTime: attr('Время операции'),
+    operationType: attr('Тип операции'),
+    executionResult: attr('Результат'),
+    user: belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', 'Инициатор', {
+      name: attr('Инициатор'),
     }, { hidden: true }),
-    source: Projection.attr('Источник'),
+    source: attr('Источник'),
   });
 
   model.defineProjection('AuditEntityUpdateView', 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
-    operationTime: Projection.attr(''),
-    executionResult: Projection.attr(''),
-    auditFields: Projection.hasMany('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', '', {
-      field: Projection.attr(''),
-      oldValue: Projection.attr(''),
-      newValue: Projection.attr(''),
+    operationTime: attr(''),
+    executionResult: attr(''),
+    auditFields: hasMany('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', '', {
+      field: attr(''),
+      oldValue: attr(''),
+      newValue: attr(''),
     })
   });
 
   model.defineProjection('ConstructNotStoredAttr', 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', {
-    objectPrimaryKey: Projection.attr(''),
-    operationTime: Projection.attr(''),
-    operationType: Projection.attr(''),
-    user: Projection.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', '', {
-      name: Projection.attr(''),
+    objectPrimaryKey: attr(''),
+    operationTime: attr(''),
+    operationType: attr(''),
+    user: belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', '', {
+      name: attr(''),
     }, { hidden: true }),
-    executionResult: Projection.attr(''),
+    executionResult: attr(''),
   });
 };
