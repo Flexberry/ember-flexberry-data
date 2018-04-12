@@ -1,7 +1,7 @@
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
 import DS from 'ember-data';
 import { Projection } from 'ember-flexberry-data';
-export let Model = Ember.Mixin.create({
+export let Model = Mixin.create({
   name: DS.attr('string'),
   login: DS.attr('string'),
   pwd: DS.attr('string'),

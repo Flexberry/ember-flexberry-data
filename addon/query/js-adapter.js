@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { isNone } from '@ember/utils';
+import { warn } from '@ember/debug';
 import BaseAdapter from './base-adapter';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
 import FilterOperator from './filter-operator';
@@ -211,7 +212,7 @@ export default class JSAdapter extends BaseAdapter {
               }
             } else {
               r[expandKey] = [];
-              let detailsCount = Ember.isNone(item[expandKey]) ? 0 : item[expandKey].length;
+              let detailsCount = isNone(item[expandKey]) ? 0 : item[expandKey].length;
               for (let j = 0; j < detailsCount; j++) {
                 let itemValue = item[expandKey][j];
                 if (itemValue) {
@@ -251,7 +252,7 @@ export default class JSAdapter extends BaseAdapter {
     }
 
     if (b5) {
-      Ember.warn('GeographyPredicate is not supported in js-adapter',
+      warn('GeographyPredicate is not supported in js-adapter',
       false,
       { id: 'ember-flexberry-data-debug.js-adapter.geography-predicate-is-not-supported' });
       return function (data) {

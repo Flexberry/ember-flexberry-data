@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
 
 /**
  * Mixin for {{#crossLink "DS.Adapter"}}Adapter{{/crossLink}} to support
@@ -9,7 +9,7 @@ import Ember from 'ember';
  * @class AdapterMixin
  * @extends Ember.Mixin
  */
-export default Ember.Mixin.create({
+export default Mixin.create({
   /**
    * Builds a URL for a given type and query.
    * Optionally, it supports an ID in the query parameters for fetching

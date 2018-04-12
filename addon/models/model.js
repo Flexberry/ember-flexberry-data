@@ -1,4 +1,10 @@
-import Ember from 'ember';
+import Evented from '@ember/object/evented';
+import RSVP from 'rsvp';
+import EmberObject, { get, set, computed } from '@ember/object';
+import { A, isArray } from '@ember/array';
+import { merge } from '@ember/polyfills';
+import { addObserver, removeObserver } from '@ember/object/observers';
+import { once } from '@ember/runloop';
 import DS from 'ember-data';
 import createProj from '../utils/create';
 import EmberValidations from 'ember-validations';
@@ -19,7 +25,7 @@ import EmberValidations from 'ember-validations';
 
   @public
  */
-var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
+var Model = DS.Model.extend(EmberValidations, Evented, {
   /**
     Stored canonical `belongsTo` relationships.
 
@@ -27,7 +33,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @type Object
     @private
   */
-  _canonicalBelongsTo: Ember.computed(() => ({})),
+  _canonicalBelongsTo: computed(() => ({})),
 
   /**
     Model validation rules.
@@ -83,10 +89,10 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Promise} A promise that will be resolved if model satisfies validation rules defined in 'validations' property
   */
   validate(options) {
-    options = Ember.merge({ validateDeleted: true }, options || {});
+    options = merge({ validateDeleted: true }, options || {});
     if (options.validateDeleted === false && this.get('isDeleted')) {
       // Return resolved promise, because validation is unnecessary for deleted model.
-      return new Ember.RSVP.Promise((resolve) => {
+      return new RSVP.Promise((resolve) => {
         resolve();
       });
     }
@@ -96,7 +102,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       base: this._super(options)
     };
 
-    let hasManyRelationships = Ember.A();
+    let hasManyRelationships = A();
     this.eachRelationship((name, attrs) => {
       if (attrs.kind === 'hasMany') {
         hasManyRelationships.pushObject(attrs.key);
@@ -106,8 +112,8 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     // Validate hasMany relationships.
     hasManyRelationships.forEach((relationshipName) => {
       let details = this.get(relationshipName);
-      if (!Ember.isArray(details)) {
-        details = Ember.A();
+      if (!isArray(details)) {
+        details = A();
       }
 
       details.forEach((detailModel, i) => {
@@ -116,8 +122,8 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     });
 
   /* eslint-disable no-unused-vars */
-  return new Ember.RSVP.Promise((resolve, reject) => {
-      Ember.RSVP.hash(validationPromises).then((hash) => {
+  return new RSVP.Promise((resolve, reject) => {
+      RSVP.hash(validationPromises).then((hash) => {
         resolve(this.get('errors'));
       }).catch((reason) => {
         reject(this.get('errors'));
@@ -138,20 +144,20 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Promise} A promise that will be resolved after all 'preSave' event handlers promises will be resolved
   */
   beforeSave(options) {
-    options = Ember.merge({ softSave: false, promises: [] }, options || {});
+    options = merge({ softSave: false, promises: [] }, options || {});
 
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new RSVP.Promise((resolve, reject) => {
       // Trigger 'preSave' event, and  give its handlers possibility to run some 'preSave' asynchronous logic,
       // by adding it's promises to options.promises array.
       this.trigger('preSave', options);
 
       // Promises array could be totally changed in 'preSave' event handlers, we should prevent possible errors.
-      options.promises = Ember.isArray(options.promises) ? options.promises : [];
+      options.promises = isArray(options.promises) ? options.promises : [];
       options.promises = options.promises.filter(function(item) {
-        return item instanceof Ember.RSVP.Promise;
+        return item instanceof RSVP.Promise;
       });
 
-      Ember.RSVP.all(options.promises).then(values => {
+      RSVP.all(options.promises).then(values => {
         resolve(values);
       }).catch(reason => {
         reject(reason);
@@ -170,13 +176,13 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @return {Promise} A promise that will be resolved after model will be successfully saved
   */
   save(options) {
-    options = Ember.merge({ softSave: false }, options || {});
+    options = merge({ softSave: false }, options || {});
 
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new RSVP.Promise((resolve, reject) => {
       // If we are updating while syncing up then checking of validation rules should be skipped
       // because they can be violated by unfilled fields of model.
       let promise = this.get('isSyncingUp') && this.get('dirtyType') === 'updated' ?
-        Ember.RSVP.resolve() : this.validate({ validateDeleted: false });
+        RSVP.resolve() : this.validate({ validateDeleted: false });
       promise.then(() => this.beforeSave(options)).then(() => {
         // Call to base class 'save' method with right context.
         // The problem is that call to current save method will be already finished,
@@ -387,14 +393,14 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     let errors = this.get('errors');
     this.eachAttribute((name) => {
       if (!errors.get(name)) {
-        errors.set(name, Ember.A());
+        errors.set(name, A());
       }
     });
 
     // Attach validation observers for hasMany relationships.
     this.eachRelationship((name, attrs) => {
       if (!errors.get(name)) {
-        errors.set(name, Ember.A());
+        errors.set(name, A());
       }
 
       if (attrs.kind !== 'hasMany') {
@@ -402,8 +408,8 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       }
 
       let detailsName = attrs.key;
-      Ember.addObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
-      Ember.addObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
+      addObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
+      addObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
     });
   },
 
@@ -453,8 +459,8 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
       }
 
       let detailsName = attrs.key;
-      Ember.removeObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
-      Ember.removeObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
+      removeObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
+      removeObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
     });
   },
 
@@ -467,7 +473,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     @private
   */
   _onChangeHasManyRelationship(changedObject, changedPropertyPath) {
-    Ember.run.once(this, '_aggregateHasManyRelationshipValidationErrors', changedObject, changedPropertyPath);
+    once(this, '_aggregateHasManyRelationshipValidationErrors', changedObject, changedPropertyPath);
   },
 
   /**
@@ -480,27 +486,27 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
   */
   _aggregateHasManyRelationshipValidationErrors(changedObject, changedPropertyPath) {
     // Retrieve aggregator's validation errors object.
-    let errors = Ember.get(this, 'errors');
+    let errors = get(this, 'errors');
 
     let detailsName = changedPropertyPath.split('.')[0];
-    let details = Ember.get(this, detailsName);
-    if (!Ember.isArray(details)) {
+    let details = get(this, detailsName);
+    if (!isArray(details)) {
       return;
     }
 
     // Collect each detail's errors object into single array of error messages.
-    let detailsErrorMessages = Ember.A();
+    let detailsErrorMessages = A();
     details.forEach((detail) => {
-      let detailErrors = Ember.get(detail, 'errors');
+      let detailErrors = get(detail, 'errors');
 
       for (let detailPropertyName in detailErrors) {
         let detailPropertyErrorMessages = detailErrors[detailPropertyName];
-        if (detailErrors.hasOwnProperty(detailPropertyName) && Ember.isArray(detailPropertyErrorMessages)) {
+        if (detailErrors.hasOwnProperty(detailPropertyName) && isArray(detailPropertyErrorMessages)) {
           detailPropertyErrorMessages.forEach((detailPropertyErrorMessage) => {
-            Ember.removeObserver(this, `${detailsName}.@each.${detailPropertyName}`, this, this._onChangeHasManyRelationship);
+            removeObserver(this, `${detailsName}.@each.${detailPropertyName}`, this, this._onChangeHasManyRelationship);
 
-            if (!Ember.get(detail, 'isDeleted')) {
-              Ember.addObserver(this, `${detailsName}.@each.${detailPropertyName}`, this, this._onChangeHasManyRelationship);
+            if (!get(detail, 'isDeleted')) {
+              addObserver(this, `${detailsName}.@each.${detailPropertyName}`, this, this._onChangeHasManyRelationship);
               detailsErrorMessages.pushObject(detailPropertyErrorMessage);
             }
           });
@@ -509,7 +515,7 @@ var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
     });
 
     // Remember array of error messages in aggregator's errors object.
-    Ember.set(errors, detailsName, detailsErrorMessages);
+    set(errors, detailsName, detailsErrorMessages);
   },
 
   /**
@@ -581,12 +587,12 @@ Model.reopenClass({
 
     if (!this.projections) {
       this.reopenClass({
-        projections: Ember.Object.create({ modelName }),
+        projections: EmberObject.create({ modelName }),
       });
     } else if (this.projections.get('modelName') !== modelName) {
-      let baseProjections = Ember.merge({}, this.projections);
+      let baseProjections = merge({}, this.projections);
       this.reopenClass({
-        projections: Ember.Object.create(Ember.merge(baseProjections, { modelName })),
+        projections: EmberObject.create(merge(baseProjections, { modelName })),
       });
     }
 

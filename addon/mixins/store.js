@@ -1,4 +1,7 @@
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
+import RSVP from 'rsvp';
+import { debug } from '@ember/debug';
+import { isArray } from '@ember/array';
 
 import QueryBuilder from '../query/builder';
 
@@ -11,7 +14,7 @@ import QueryBuilder from '../query/builder';
  * @class StoreMixin
  * @extends Ember.Mixin
  */
-export default Ember.Mixin.create({
+export default Mixin.create({
   /**
    *
    * @method query
@@ -20,12 +23,12 @@ export default Ember.Mixin.create({
    * @return {Promise} promise
    */
   query(modelName, query) {
-    Ember.debug(`Flexberry Store::query ${modelName}`, query);
+    debug(`Flexberry Store::query ${modelName}`, query);
 
     let promise = this._super(...arguments);
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new RSVP.Promise((resolve, reject) => {
       promise.then((results) => {
-        if (results && Ember.isArray(results)) {
+        if (results && isArray(results)) {
           results.forEach((result) => {
             result.didLoad();
           });
@@ -44,9 +47,9 @@ export default Ember.Mixin.create({
    * @return {Promise} promise
    */
   queryRecord(modelName, query) {
-    Ember.debug(`Flexberry Store::queryRecord ${modelName}`, query);
+    debug(`Flexberry Store::queryRecord ${modelName}`, query);
 
-    return this.query(modelName, query).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
+    return this.query(modelName, query).then(result => new RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
   },
 
   /**
@@ -63,12 +66,12 @@ export default Ember.Mixin.create({
    * @return {DS.AdapterPopulatedRecordArray} Records promise.
    */
   findAll(modelName, options) {
-    Ember.debug(`Flexberry Store::findAll ${modelName}`);
+    debug(`Flexberry Store::findAll ${modelName}`);
 
     let builder = new QueryBuilder(this, modelName);
 
     if (options && options.projection) {
-      Ember.debug(`Flexberry Store::findAll using projection '${options.projection}'`);
+      debug(`Flexberry Store::findAll using projection '${options.projection}'`);
 
       builder.selectByProjection(options.projection);
       return this.query(modelName, builder.build());
@@ -96,21 +99,21 @@ export default Ember.Mixin.create({
    * @return {Promise} Record promise.
    */
   findRecord(modelName, id, options) {
-    Ember.debug(`Flexberry Store::findRecord ${modelName}(${id})`);
+    debug(`Flexberry Store::findRecord ${modelName}(${id})`);
 
     let builder = new QueryBuilder(this, modelName).byId(id);
 
     if (options && options.projection) {
-      Ember.debug(`Flexberry Store::findRecord using projection '${options.projection}'`);
+      debug(`Flexberry Store::findRecord using projection '${options.projection}'`);
 
       builder.selectByProjection(options.projection);
-      return this.query(modelName, builder.build()).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
+      return this.query(modelName, builder.build()).then(result => new RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
     }
 
     let queryObject = builder.build();
 
     // Now if projection is not specified then only 'id' field will be selected.
     queryObject.select = [];
-    return this.query(modelName, queryObject).then(result => new Ember.RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
+    return this.query(modelName, queryObject).then(result => new RSVP.Promise((resolve) => resolve(result.get('firstObject'))));
   }
 });

@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { merge } from '@ember/polyfills';
 import DS from 'ember-data';
 import { singularize } from 'ember-inflector';
 import { capitalize, camelize, dasherize } from '../utils/string-functions';
@@ -126,7 +126,7 @@ export default DS.RESTSerializer.extend({
     options.includeId = true;
 
     // {...} instead of {"application": {...}}
-    Ember.merge(hash, this.serialize(record, options));
+    merge(hash, this.serialize(record, options));
   },
 
   /**

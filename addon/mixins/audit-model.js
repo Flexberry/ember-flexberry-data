@@ -2,10 +2,13 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
+import RSVP from 'rsvp';
+import { getOwner } from '@ember/application';
+import { computed } from '@ember/object';
 import DS from 'ember-data';
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   /**
     Creation date and time of model.
 
@@ -44,8 +47,8 @@ export default Ember.Mixin.create({
     @property currentUserName
     @readOnly
   */
-  currentUserName: Ember.computed(function() {
-    let userService = Ember.getOwner(this).lookup('service:user');
+  currentUserName: computed(function() {
+    let userService = getOwner(this).lookup('service:user');
     return userService.getCurrentUserName();
   }).readOnly(),
 
@@ -62,9 +65,9 @@ export default Ember.Mixin.create({
     let superFunc = this._super;
     let _this = this;
 
-    let currentUserPromise = new Ember.RSVP.Promise((resolve, reject) => {
+    let currentUserPromise = new RSVP.Promise((resolve, reject) => {
       let userName = this.get('currentUserName');
-      if (userName instanceof Ember.RSVP.Promise) {
+      if (userName instanceof RSVP.Promise) {
         userName.then(name => {
           resolve(name);
         }).catch((reason) => {
@@ -87,8 +90,8 @@ export default Ember.Mixin.create({
       }
 
       let result = superFunc.apply(_this, ...arguments);
-      if (!(result instanceof Ember.RSVP.Promise)) {
-        result = Ember.RSVP.resolve();
+      if (!(result instanceof RSVP.Promise)) {
+        result = RSVP.resolve();
       }
 
       return result;

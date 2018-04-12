@@ -1,8 +1,8 @@
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
 import DS from 'ember-data';
 import { Projection } from 'ember-flexberry-data';
 
-export let Model = Ember.Mixin.create({
+export let Model = Mixin.create({
   objectPrimaryKey: DS.attr('string'),
   operationTime: DS.attr('date'),
   operationType: DS.attr('string'),

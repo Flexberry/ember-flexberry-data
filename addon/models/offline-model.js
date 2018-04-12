@@ -2,7 +2,7 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import { isNone } from '@ember/utils';
 import Model from './model';
 import OfflineModelMixin from '../mixins/offline-model';
 import { attr } from '../utils/attributes';
@@ -36,7 +36,7 @@ OfflineModel.reopenClass({
       /* Add meta properties to all relationships in projection so they can
 		    be serialized and deserialized in embedded records.*/
       for (let key in attrs) {
-        if (attrs.hasOwnProperty(key) && !Ember.isNone(attrs[key].kind) &&
+        if (attrs.hasOwnProperty(key) && !isNone(attrs[key].kind) &&
           (attrs[key].kind === 'belongsTo' || attrs[key].kind === 'hasMany')) {
           addSycPropertiesToProjection(attrs[key], attrs[key].attributes);
         }

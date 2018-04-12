@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { isNone } from '@ember/utils';
 import DS from 'ember-data';
 
 import BaseSerializer from './base';
@@ -36,7 +36,7 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
     var key = relationship.key;
     var belongsToId = snapshot.belongsTo(key, { id: true });
     var payloadKey = this.keyForRelationship(key, relationship.kind, 'serialize');
-    if (Ember.isNone(belongsToId)) {
+    if (isNone(belongsToId)) {
       json[payloadKey] = null;
     } else {
       json[payloadKey] = pluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';

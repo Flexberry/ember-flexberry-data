@@ -1,4 +1,10 @@
-import Ember from 'ember';
+import { inject as service } from '@ember/service';
+import { isNone, isEmpty } from '@ember/utils';
+import { computed } from '@ember/object';
+import { merge } from '@ember/polyfills';
+import $ from 'jquery';
+import { copy } from '@ember/object/internals';
+import { getOwner } from '@ember/application';
 import DS from 'ember-data';
 import decorateAdapter from './base-store/decorate-adapter';
 import decorateAPICall from './base-store/decorate-api-call';
@@ -62,7 +68,7 @@ export default DS.Store.extend({
     @type <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
   */
   offlineStore: null,
-  offlineGlobals: Ember.inject.service('offline-globals'),
+  offlineGlobals: service('offline-globals'),
 
   /**
     Set schema for your database.
@@ -99,7 +105,7 @@ export default DS.Store.extend({
     @property offlineSchema
     @type Object
   */
-  offlineSchema: Ember.computed({
+  offlineSchema: computed({
     get() {
       return this.get('_offlineSchema');
     },
@@ -109,7 +115,7 @@ export default DS.Store.extend({
         if (offlineSchema.hasOwnProperty(db)) {
           for (let version in value[db]) {
             let schema = offlineSchema[db][version] || {};
-            offlineSchema[db][version] = Ember.merge(schema, value[db][version]);
+            offlineSchema[db][version] = merge(schema, value[db][version]);
           }
         } else {
           offlineSchema[db] = value[db];
@@ -146,7 +152,7 @@ export default DS.Store.extend({
     @type Syncer
     @readOnly
   */
-  syncer: Ember.inject.service('syncer'),
+  syncer: service('syncer'),
 
   /**
     Instance of dexie service.
@@ -154,17 +160,17 @@ export default DS.Store.extend({
     @property dexieService
     @type Offline.DexieService
   */
-  dexieService: Ember.inject.service('dexie'),
+  dexieService: service('dexie'),
 
   /*
     Store initialization.
   */
   init() {
     this._super(...arguments);
-    let owner = Ember.getOwner(this);
+    let owner = getOwner(this);
 
     // Set online store if it is not specified in application explicitly.
-    if (Ember.isNone(this.get('onlineStore'))) {
+    if (isNone(this.get('onlineStore'))) {
       let onlineStore = DS.Store.create(owner.ownerInjection());
       this.set('onlineStore', onlineStore);
     }
@@ -189,7 +195,7 @@ export default DS.Store.extend({
   findAll(modelName, options) {
     if (this.get('offlineGlobals.isOfflineEnabled')) {
       let offlineStore = this.get('offlineStore');
-      let useOnlineStoreParam = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
+      let useOnlineStoreParam = !isEmpty(options) && !isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
       let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
       return useOnlineStoreCondition ? this._decorateMethodAndCall('all', 'findAll', arguments, 1) : offlineStore.findAll.apply(offlineStore, arguments);
     } else {
@@ -212,7 +218,7 @@ export default DS.Store.extend({
   findRecord(modelName, id, options) {
     if (this.get('offlineGlobals.isOfflineEnabled')) {
       let offlineStore = this.get('offlineStore');
-      let useOnlineStoreParam = !Ember.isEmpty(options) && !Ember.isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
+      let useOnlineStoreParam = !isEmpty(options) && !isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
       let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
       return useOnlineStoreCondition ?
         this._decorateMethodAndCall('single', 'findRecord', arguments, 2) :
@@ -234,12 +240,12 @@ export default DS.Store.extend({
   */
   query(modelName, query) {
     // TODO: Method `copy` bewitch `QueryObject` into `Object`.
-    let _query = query instanceof QueryObject ? query : Ember.copy(query);
+    let _query = query instanceof QueryObject ? query : copy(query);
 
     if (this.get('offlineGlobals.isOfflineEnabled')) {
       let offlineStore = this.get('offlineStore');
-      let useOnlineStoreParam = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
-      if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
+      let useOnlineStoreParam = !isEmpty(_query) && !isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
+      if (!isEmpty(_query) && !isEmpty(_query.useOnlineStore)) {
         delete _query.useOnlineStore;
       }
 
@@ -263,12 +269,12 @@ export default DS.Store.extend({
   */
   queryRecord(modelName, query) {
     // TODO: Method `copy` bewitch `QueryObject` into `Object`.
-    let _query = query instanceof QueryObject ? query : Ember.copy(query);
+    let _query = query instanceof QueryObject ? query : copy(query);
 
     if (this.get('offlineGlobals.isOfflineEnabled')) {
       let offlineStore = this.get('offlineStore');
-      let useOnlineStoreParam = !Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
-      if (!Ember.isEmpty(_query) && !Ember.isEmpty(_query.useOnlineStore)) {
+      let useOnlineStoreParam = !isEmpty(_query) && !isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
+      if (!isEmpty(_query) && !isEmpty(_query.useOnlineStore)) {
         delete _query.useOnlineStore;
       }
 
@@ -429,7 +435,7 @@ export default DS.Store.extend({
     let offlineStore = this.get('offlineStore');
     let adapter = onlineStore.adapterFor(modelName);
     if (this.get('offlineGlobals.isOfflineEnabled')) {
-      let useOnlineStoreCondition = this._useOnlineStore(modelName, !Ember.isNone(useOnlineStore) ? useOnlineStore : null);
+      let useOnlineStoreCondition = this._useOnlineStore(modelName, !isNone(useOnlineStore) ? useOnlineStore : null);
       return useOnlineStoreCondition ? decorateAdapter.call(this, adapter, modelName) : offlineStore.adapterFor.call(offlineStore, modelName);
     } else {
       return adapter;
@@ -448,7 +454,7 @@ export default DS.Store.extend({
     let offlineStore = this.get('offlineStore');
     let serializer = onlineStore.serializerFor(modelName);
     if (this.get('offlineGlobals.isOfflineEnabled')) {
-      let useOnlineStoreCondition = this._useOnlineStore(modelName, !Ember.isNone(useOnlineStore) ? useOnlineStore : null);
+      let useOnlineStoreCondition = this._useOnlineStore(modelName, !isNone(useOnlineStore) ? useOnlineStore : null);
       return useOnlineStoreCondition ? onlineStore.serializerFor.call(onlineStore, modelName) : offlineStore.serializerFor.call(offlineStore, modelName);
     } else {
       return serializer;
@@ -464,7 +470,7 @@ export default DS.Store.extend({
     let decoratedMethod = decorateAPICall(finderType, originMethod);
     if (optionsIndex > -1) {
       let options = originMethodArguments[optionsIndex];
-      options = this.get('offlineGlobals.isOfflineEnabled') ? options : Ember.$.extend(true, { bypass: true }, options);
+      options = this.get('offlineGlobals.isOfflineEnabled') ? options : $.extend(true, { bypass: true }, options);
       originMethodArguments[optionsIndex] = options;
     }
 
@@ -514,7 +520,7 @@ export default DS.Store.extend({
       let hash = methodArguments[0].data;
       if (isObject(hash)) {
         return hash.type;
-      } else if (Ember.$.isArray(hash)) {
+      } else if ($.isArray(hash)) {
         return hash.length > 0 ? hash[0].type : '';
       } else if (isObject(methodArguments[0]) && methodArguments[0].hasOwnProperty('type')) {
         return methodArguments[0].type;
@@ -522,7 +528,7 @@ export default DS.Store.extend({
         return '';
       }
     } else if (methodName === 'pushPayload' || methodName === 'unloadAll') {
-      if (!Ember.isNone(methodArguments[0]) && typeof methodArguments[0] === 'string') {
+      if (!isNone(methodArguments[0]) && typeof methodArguments[0] === 'string') {
         return methodArguments[0];
       } else {
         return '';
@@ -536,7 +542,7 @@ export default DS.Store.extend({
     Detect which store should be used for specified modelName.
   */
   _useOnlineStore(modelName, useOnlineStoreParam) {
-    let isOfflineModel = !Ember.isEmpty(modelName) ? this.get(`offlineModels.${modelName}`) : undefined;
+    let isOfflineModel = !isEmpty(modelName) ? this.get(`offlineModels.${modelName}`) : undefined;
     let useOnlineStore = useOnlineStoreParam === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStoreParam;
     return (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
   },

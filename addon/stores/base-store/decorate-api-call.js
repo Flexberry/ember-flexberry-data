@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { getOwner } from '@ember/application';
+import { isNone } from '@ember/utils';
 import isObject from '../../utils/is-object';
 
 /*
@@ -11,7 +12,7 @@ export default function decorateAPICall(finderType, superFunc) {
   return function apiCall() {
     var _this = this;
     var args = arguments;
-    var syncer = Ember.getOwner(_this).lookup('service:syncer');
+    var syncer = getOwner(_this).lookup('service:syncer');
     var _superFinder = superFunc;
 
     if (args.length > 0) {
@@ -25,12 +26,12 @@ export default function decorateAPICall(finderType, superFunc) {
     return _superFinder.apply(_this, args).then(function(result) {
       let queryOrOptions = isObject(args[1]) ? args[1] : isObject(args[2]) ? args[2] : null;
       let projectionName = null;
-      if (!Ember.isNone(queryOrOptions)) {
+      if (!isNone(queryOrOptions)) {
         projectionName = queryOrOptions.projectionName ? queryOrOptions.projectionName :
           queryOrOptions.projection && typeof queryOrOptions.projection === 'string' ? queryOrOptions.projection : null;
       }
 
-      if (Ember.getOwner(_this).lookup('service:offline-globals').get('isSyncDownWhenOnlineEnabled')) {
+      if (getOwner(_this).lookup('service:offline-globals').get('isSyncDownWhenOnlineEnabled')) {
         return syncDown(result, false, projectionName, { unloadSyncedRecords: false });
       } else {
         return result;

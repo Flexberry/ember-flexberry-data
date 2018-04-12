@@ -2,7 +2,7 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import { isEmpty } from '@ember/utils';
 import NumberTransform from 'ember-data/transforms/number';
 
 /**
@@ -26,13 +26,13 @@ export default NumberTransform.extend({
     Deserializes serialized attribute value.
    */
   deserialize(serialized) {
-    return Ember.isEmpty(serialized) ? null : this._super(serialized.toString().replace(',', '.'));
+    return isEmpty(serialized) ? null : this._super(serialized.toString().replace(',', '.'));
   },
 
   /**
     Serializes deserialized attribute value.
    */
   serialize(deserialized) {
-    return Ember.isEmpty(deserialized) ? null : this._super(deserialized.toString().replace(',', '.'));
+    return isEmpty(deserialized) ? null : this._super(deserialized.toString().replace(',', '.'));
   }
 });

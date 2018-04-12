@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { getOwner } from '@ember/application';
+import { get } from '@ember/object';
 import DS from 'ember-data';
 
 import FlexberryEnum from '../transforms/flexberry-enum';
@@ -140,14 +141,14 @@ class Information {
 
     for (let i = 0; i < fields.length; i++) {
       if (fields.length - 1 === i) {
-        let attributes = Ember.get(model, 'attributes');
+        let attributes = get(model, 'attributes');
         if (!attributes) {
           throw new Error(`Attributes not found at model '${modelName}'.`);
         }
 
         let attribute = attributes.get(fields[i]);
         if (attribute) {
-          let transform = Ember.getOwner(this._store).lookup('transform:' + attribute.type);
+          let transform = getOwner(this._store).lookup('transform:' + attribute.type);
           return {
             isMaster: false,
             isDetail: false,
@@ -158,7 +159,7 @@ class Information {
           };
         }
 
-        let relationships = Ember.get(model, 'relationshipsByName');
+        let relationships = get(model, 'relationshipsByName');
         let relationship = relationships.get(fields[i]);
         if (relationship) {
           let isMaster = relationship.kind === 'belongsTo';
@@ -186,7 +187,7 @@ class Information {
 
         throw new Error(`Field '${attributePath}' not found at model '${modelName}'.`);
       } else {
-        let relationships = Ember.get(model, 'relationshipsByName');
+        let relationships = get(model, 'relationshipsByName');
         let relationship = relationships.get(fields[i]);
         if (relationship) {
           model = this._store.modelFor(relationship.type);
