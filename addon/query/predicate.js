@@ -5,7 +5,6 @@ import Condition from './condition';
  * The base class of logical predicate.
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class BasePredicate
  */
 export class BasePredicate {
@@ -16,7 +15,6 @@ export class BasePredicate {
 /**
  * The class of simple predicate for filtering attribute by value and filter operator.
  *
- * @namespace Query
  * @class SimplePredicate
  * @extends BasePredicate
  *
@@ -82,7 +80,6 @@ export class SimplePredicate extends BasePredicate {
 /**
  * The class of date predicate for filtering attribute by value and filter operator.
  *
- * @namespace Query
  * @class DatePredicate
  * @extends BasePredicate
  *
@@ -162,7 +159,6 @@ export class DatePredicate extends BasePredicate {
 /**
  * The class of complex predicate which include multiple predicates unioned with logical condition.
  *
- * @namespace Query
  * @class ComplexPredicate
  * @extends BasePredicate
  *
@@ -231,7 +227,6 @@ export class ComplexPredicate extends BasePredicate {
 /**
  * The predicate class for string attributes.
  *
- * @namespace Query
  * @class StringPredicate
  * @extends BasePredicate
  *
@@ -289,7 +284,6 @@ export class StringPredicate extends BasePredicate {
 /**
  * The predicate class for geography attributes.
  *
- * @namespace Query
  * @class GeographyPredicate
  * @extends BasePredicate
  *
@@ -347,7 +341,6 @@ export class GeographyPredicate extends BasePredicate {
 /**
  * The predicate class for details.
  *
- * @namespace Query
  * @class DetailPredicate
  * @extends BasePredicate
  *
@@ -458,7 +451,6 @@ export class DetailPredicate extends BasePredicate {
 /**
  * The class of not predicate.
  *
- * @namespace Query
  * @class NotPredicate
  * @extends BasePredicate
  *
@@ -541,7 +533,6 @@ function validatePredicate(predicate) {
 /**
  * Creates predicate by various parameters.
  *
- * @namespace Query
  * @method createPredicate
  * @param args Arguments for the predicate.
  * @return {BasePredicate}

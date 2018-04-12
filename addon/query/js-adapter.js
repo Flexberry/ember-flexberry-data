@@ -27,7 +27,6 @@ import Information from '../utils/information';
  * All filters uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class JsAdapter
  * @extends Query.BaseAdapter
  */

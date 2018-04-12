@@ -8,7 +8,6 @@ import { pluralize } from 'ember-inflector';
  * Base serializer class.
  *
  * @module ember-flexberry-data
- * @namespace Serializer
  * @class Base
  */
 export default DS.RESTSerializer.extend({

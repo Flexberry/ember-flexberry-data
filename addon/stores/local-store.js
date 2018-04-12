@@ -15,7 +15,6 @@ import QueryBuilder from '../query/builder';
   Store that used in offline mode by default.
 
   @class LocalStore
-  @namespace Offline
   @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
   @private
 */

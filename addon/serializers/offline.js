@@ -11,7 +11,6 @@ import isObject from '../utils/is-object';
 /**
   Base serializer for {{#crossLink "Offline.LocalStore"}}{{/crossLink}}.
 
-  @namespace Serializer
   @class Offline
   @extends <a href="http://emberjs.com/api/data/classes/DS.JSONSerializer.html">JSONSerializer</a>
 */

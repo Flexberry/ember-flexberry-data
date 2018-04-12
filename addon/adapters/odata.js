@@ -17,7 +17,6 @@ import { pluralize } from 'ember-inflector';
  * Uses Flexberry Query as a language for requesting server.
  *
  * @module ember-flexberry-data
- * @namespace Adapter
  * @class OData
  * @extends DS.RESTAdapter
  * @public

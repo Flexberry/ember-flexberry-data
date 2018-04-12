@@ -12,7 +12,6 @@ import { attr } from '../utils/attributes';
   All metadata properties will be added to all projections (also for relationships).
 
   @class Model
-  @namespace Offline
   @extends <a href="http://flexberry.github.io/Documentation/develop/classes/Projection.Model.html">DS.Projection.Model</a>
   @uses Offline.ModelMixin
   @public

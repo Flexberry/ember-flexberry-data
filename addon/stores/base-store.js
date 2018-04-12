@@ -16,7 +16,6 @@ import isObject from '../utils/is-object';
   service:store should point to instance of that class.
 
   @class Store
-  @namespace Offline
   @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
 */
 export default DS.Store.extend({

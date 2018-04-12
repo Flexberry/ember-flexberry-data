@@ -27,7 +27,6 @@ import Information from '../utils/information';
   Default adapter for {{#crossLink "Offline.LocalStore"}}{{/crossLink}}.
 
   @class Offline
-  @namespace Adapter
   @extends <a href="http://emberjs.com/api/data/classes/DS.Adapter.html">DS.Adapter</a>
 */
 export default DS.Adapter.extend({

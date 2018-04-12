@@ -11,7 +11,6 @@ import { isNone } from '@ember/utils';
   Service for operate with global online and offline properties and events.
 
   @class GlobalsService
-  @namespace Offline
   @extends Ember.Service
   @public
 */

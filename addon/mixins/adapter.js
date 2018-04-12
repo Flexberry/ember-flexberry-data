@@ -5,7 +5,6 @@ import Mixin from '@ember/object/mixin';
  * fetching models using projection.
  *
  * @module ember-flexberry-data
- * @namespace Projection
  * @class AdapterMixin
  * @extends Ember.Mixin
  */

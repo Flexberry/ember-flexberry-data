@@ -2,7 +2,6 @@
  * Object that passes as query parameter to [DS.Store](http://emberjs.com/api/data/classes/DS.Store.html) methods for reading data.
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class QueryObject
  */
 export default class QueryObject {

@@ -18,7 +18,6 @@ import Queue from '../utils/queue';
 /**
   Class of query language adapter that allows to load data from IndexedDB.
 
-  @namespace Query
   @class IndexedDBAdapter
   @extends Query.BaseAdapter
 */

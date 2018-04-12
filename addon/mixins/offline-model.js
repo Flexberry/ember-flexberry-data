@@ -19,7 +19,6 @@ import AuditModelMixin from './audit-model';
   then it's recommended to extend model class from {{#crossLink "Offline.Model"}}{{/crossLink}}.
 
   @class ModelMixin
-  @namespace Offline
   @extends <a href="http://emberjs.com/api/classes/Ember.Mixin.html">Ember.Mixin</a>
   @public
 */

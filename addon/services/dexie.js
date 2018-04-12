@@ -12,7 +12,6 @@ import Queue from '../utils/queue';
   Service for storing [Dexie](https://github.com/dfahlander/Dexie.js) instance for application.
 
   @class DexieService
-  @namespace Offline
   @extends Ember.Service
   @public
 */

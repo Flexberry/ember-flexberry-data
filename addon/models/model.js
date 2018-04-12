@@ -14,7 +14,6 @@ import EmberValidations from 'ember-validations';
 
   @module ember-flexberry-data
   @class Model
-  @namespace Projection
   @extends DS.Model
   @uses EmberValidationsMixin
   @uses Ember.EventedMixin

@@ -8,7 +8,6 @@ import FlexberryEnum from '../transforms/flexberry-enum';
  * Class for loading metadata about models.
  *
  * @module ember-flexberry-data
- * @namespace Utils
  * @class Information
  *
  * @param {DS.Store} store Store for loading metadata.

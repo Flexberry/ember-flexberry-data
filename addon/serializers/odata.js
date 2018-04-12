@@ -9,7 +9,6 @@ import { pluralize } from 'ember-inflector';
  * Serializer class for OData.
  *
  * @module ember-flexberry-data
- * @namespace Serializer
  * @class OData
  */
 export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {

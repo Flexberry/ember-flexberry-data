@@ -14,7 +14,6 @@ import isEmbedded from '../utils/is-embedded';
  * Uses method chaining.
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class Builder
  * @extends BaseBuilder
  */
