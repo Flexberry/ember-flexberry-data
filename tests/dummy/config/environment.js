@@ -59,6 +59,7 @@ module.exports = function(environment) {
     var testODataServiceURL = process.env.TEST_ODATA_SERVICE_URL;
     ENV.APP.testODataService = !!testODataServiceURL;
     ENV.APP.testODataServiceURL = testODataServiceURL;
+    ENV.APP.autoboot = false;
   }
 
   if (environment === 'production') {
