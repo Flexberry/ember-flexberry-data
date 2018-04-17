@@ -1,17 +1,20 @@
 import { getOwner } from '@ember/application';
+import { computed } from '@ember/object';
 import DS from 'ember-data';
 import BaseStore from 'ember-flexberry-data/stores/base-store';
 import StoreMixin from 'ember-flexberry-data/mixins/store';
 
 export default BaseStore.extend({
-  offlineModels: {
-    'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-security-session': true,
-  },
+  offlineModels: computed(function() {
+    return {
+      'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-security-session': true,
+    };
+  }),
 
   init() {
     this.set('offlineSchema', {

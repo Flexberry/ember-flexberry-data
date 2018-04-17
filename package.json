@@ -22,7 +22,8 @@
   },
   "scripts": {
     "build": "ember build",
-    "start": "ember server",
+    "lint:js": "eslint ./*.js addon addon-test-support app config lib server test-support tests",
+    "start": "ember serve",
     "test": "ember try:each"
   },
   "dependencies": {
@@ -34,7 +35,7 @@
     "dexie": "^2.0.2",
     "ember-ajax": "^3.0.0",
     "ember-browserify": "1.1.9",
-    "ember-cli": "~2.17.2",
+    "ember-cli": "~2.18.2",
     "ember-cli-dependency-checker": "^2.0.0",
     "ember-cli-deprecation-workflow": "^0.2.4",
     "ember-cli-eslint": "^4.2.1",
@@ -45,18 +46,20 @@
     "ember-cli-qunit": "^4.1.1",
     "ember-cli-release": "0.2.9",
     "ember-cli-shims": "^1.2.0",
-    "ember-cli-sri": "^2.1.1",
+    "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^2.0.0",
-    "ember-data": "~2.17.1",
+    "ember-data": "2.18.0",
     "ember-disable-prototype-extensions": "^1.1.2",
     "ember-export-application-global": "^2.0.0",
     "ember-load-initializers": "^1.0.0",
     "ember-moment": "7.6.0",
     "ember-resolver": "^4.0.0",
-    "ember-source": "~2.17.0",
+    "ember-source": "~2.18.0",
     "ember-welcome-page": "^3.0.0",
-    "loader.js": "^4.2.3",
-    "node-uuid": "^1.4.7"
+    "node-uuid": "^1.4.7",
+    "eslint-plugin-ember": "^5.0.0",
+    "eslint-plugin-node": "^5.2.1",
+    "loader.js": "^4.2.3"
   },
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"

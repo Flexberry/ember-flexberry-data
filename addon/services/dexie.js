@@ -25,7 +25,7 @@ export default Service.extend(Evented, {
     @property _dexie
     @type Object
   */
-  _dexie: {},
+  _dexie: undefined,
 
   /**
     Count of objects that should be synced down.
@@ -73,6 +73,8 @@ export default Service.extend(Evented, {
   queueContinueOnError: true,
 
   init() {
+    this._super(...arguments);
+    this.set('_dexie', {});
     this.get('_queue').set('continueOnError', this.get('queueContinueOnError'));
   },
 

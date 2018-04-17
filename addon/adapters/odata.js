@@ -1,6 +1,6 @@
 import { assert, debug } from '@ember/debug';
 import { isNone } from '@ember/utils';
-import { get } from '@ember/object';
+import { get, computed } from '@ember/object';
 import { getOwner } from '@ember/application';
 import RSVP from 'rsvp';
 import $ from 'jquery';
@@ -22,9 +22,11 @@ import { pluralize } from 'ember-inflector';
  * @public
  */
 export default DS.RESTAdapter.extend({
-  headers: {
-    Prefer: 'return=representation'
-  },
+  headers: computed(function() {
+    return {
+      'Prefer': 'return=representation'
+    };
+  }),
 
   idType: 'number',
 

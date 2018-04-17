@@ -61,6 +61,7 @@ export default Service.extend({
    * @private
    */
   init: function() {
+    this._super(...arguments);
     let _this = this;
 
     let localStore = getOwner(this).lookup('store:local');

@@ -41,7 +41,7 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
     @type Object
     @default {}
   */
-  validations: {},
+  validations: undefined,
 
   /**
     Flag that indicates sync up process of model is processing.
@@ -388,6 +388,9 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
   */
   init() {
     this._super(...arguments);
+
+    // Set default value for `validations` property.
+    this.set('validations', {});
 
     let errors = this.get('errors');
     this.eachAttribute((name) => {

@@ -25,28 +25,30 @@ export default DS.Store.extend({
     @property _offlineSchema
     @type Object
     @private
-    @default 'Schema of 1 version for internal models addon'
+    @default 'Schema of 1 version for internal models of addon'
   */
-  _offlineSchema: {
-    'ember-flexberry-data': {
-      1: {
-        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity':
-          'id,objectPrimaryKey,operationTime,operationType,executionResult,source,serializedField,' +
-          'createTime,creator,editTime,editor,user,objectType,*auditFields',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field':
-          'id,field,caption,oldValue,newValue,mainChange,auditEntity',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type':
-          'id,name',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent':
-          'id,name,login,pwd,isUser,isGroup,isRole,connString,enabled,email,full,read,insert,update,' +
-          'delete,execute,createTime,creator,editTime,editor',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group':
-          'id,createTime,creator,editTime,editor,group,user',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-security-session':
-          'id,userKey,startedAt,lastAccess,closed',
+  _offlineSchema: computed(function() {
+    return {
+      'ember-flexberry-data': {
+        1: {
+          'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity':
+            'id,objectPrimaryKey,operationTime,operationType,executionResult,source,serializedField,' +
+            'createTime,creator,editTime,editor,user,objectType,*auditFields',
+          'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field':
+            'id,field,caption,oldValue,newValue,mainChange,auditEntity',
+          'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type':
+            'id,name',
+          'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent':
+            'id,name,login,pwd,isUser,isGroup,isRole,connString,enabled,email,full,read,insert,update,' +
+            'delete,execute,createTime,creator,editTime,editor',
+          'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group':
+            'id,createTime,creator,editTime,editor,group,user',
+          'i-c-s-soft-s-t-o-r-m-n-e-t-security-session':
+            'id,userKey,startedAt,lastAccess,closed',
+        },
       },
-    },
-  },
+    };
+  }),
 
   /**
     Store that use for making requests in online mode.
@@ -142,7 +144,7 @@ export default DS.Store.extend({
     @type Object
     @default {}
   */
-  offlineModels: {},
+  offlineModels: undefined,
 
   /**
     Global instance of {{#crossLink "Syncer"}}{{/crossLink}} class that contains methods to sync model.
@@ -167,6 +169,9 @@ export default DS.Store.extend({
   init() {
     this._super(...arguments);
     let owner = getOwner(this);
+
+    // Set default value for `offlineModels` property.
+    this.set('offlineModels', {});
 
     // Set online store if it is not specified in application explicitly.
     if (isNone(this.get('onlineStore'))) {
