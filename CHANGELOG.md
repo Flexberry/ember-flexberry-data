@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.12.0-beta.0] - 2018-04-20
 ### Added
 - `Projection.OnlineStore` with the implementation of the method `deleteAllRecords`.
 - Implementation of the method `deleteAllRecords` for `Offline.LocalStore` and `Offline.Store`.
