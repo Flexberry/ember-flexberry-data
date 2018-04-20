@@ -1,13 +1,22 @@
 # Change Log
 
 ## [Unreleased]
-### Fixed
-- Query language:
-    - Fix `timeless` mode of `DatePredicate` for js adapter.
+### Added
+- `Projection.OnlineStore` with the implementation of the method `deleteAllRecords`.
+- Implementation of the method `deleteAllRecords` for `Offline.LocalStore` and `Offline.Store`.
+- Implementation of the method `deleteAllRecords` for `Adapter.OData` through calling `DeleteAllSelect` action on backend.
 
 ### Changed
 - Query language:
-    - Now impossible create `DatePredicate` with invalid date value or null. 
+    - Now impossible create `Query.DatePredicate` with invalid date value or null.
+
+### Fixed
+- Query language:
+    - The `timeless` mode of `Query.DatePredicate` for `Query.JsAdapter`.
+    - Building queries for models that have `string` primary key type.
+
+### Breaking changes
+- Property `idType`, for define primary key type on backed, moved from `Adapter.OData` adapter to `Projection.Model` model.
 
 ## [0.11.1-beta.1] - 2018-03-07
 ### Fixed
