@@ -22,8 +22,6 @@ export default DS.RESTAdapter.extend({
     Prefer: 'return=representation'
   },
 
-  idType: 'number',
-
   /**
     Timeout for AJAX-requests.
 
@@ -406,7 +404,7 @@ export default DS.RESTAdapter.extend({
 
     if (id != null) {
       // Append id as `(id)` (OData specification) instead of `/id`.
-      url = this._appendIdToURL(id, url);
+      url = this._appendIdToURL(id, url, modelName);
     }
 
     return url;
@@ -420,10 +418,10 @@ export default DS.RESTAdapter.extend({
    * @param {String} url
    * @private
    */
-  _appendIdToURL(id, url) {
+  _appendIdToURL(id, url, modelName) {
     let encId = encodeURIComponent(id);
-    let idType = Ember.get(this, 'idType');
-    if (idType !== 'number') {
+    let model = this.store.modelFor(modelName);
+    if (model.idType === 'string') {
       encId = `'${encId}'`;
     }
 
