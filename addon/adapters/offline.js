@@ -270,6 +270,11 @@ export default DS.Adapter.extend({
       this._deleteParentModels(store, type, snapshot.id));
   },
 
+  deleteAllRecords(store, modelName, filter) {
+    // TODO Implement the method of removing all objects.
+    Ember.assert('Unsupported this metod in offline');
+  },
+
   /**
     Create record if it does not exist, or update changed fields of record.
 

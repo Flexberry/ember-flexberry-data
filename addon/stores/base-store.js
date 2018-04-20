@@ -4,6 +4,7 @@ import decorateAdapter from './base-store/decorate-adapter';
 import decorateAPICall from './base-store/decorate-api-call';
 import QueryObject from '../query/query-object';
 import isObject from '../utils/is-object';
+import OnlineStore from './online-store';
 
 /**
   Base class for application store.
@@ -165,7 +166,7 @@ export default DS.Store.extend({
 
     // Set online store if it is not specified in application explicitly.
     if (Ember.isNone(this.get('onlineStore'))) {
-      let onlineStore = DS.Store.create(owner.ownerInjection());
+      let onlineStore = OnlineStore.create(owner.ownerInjection());
       this.set('onlineStore', onlineStore);
     }
 
@@ -302,6 +303,16 @@ export default DS.Store.extend({
   */
   deleteRecord() {
     return this._callSuperMethod('deleteRecord', 1, arguments);
+  },
+
+  /**
+    Delete all record from the current store.
+    @method deleteRecord
+    @param {DS.Model} record
+    @param {Boolean} [useOnlineStore] Allow to explicitly specify online or offline store using independently of global online status
+  */
+  deleteAllRecords() {
+    return this._callSuperMethod('deleteAllRecords', 2, arguments);
   },
 
   /**
