@@ -46,25 +46,6 @@ var Model = EmberFlexberryDataModel.extend({
     inverse: 'suggestion',
     async: false
   }),
-
-  // Model validation rules.
-  validations: {
-    type: {
-      presence: {
-        message: 'Type is required'
-      }
-    },
-    author: {
-      presence: {
-        message: 'Author is required'
-      }
-    },
-    editor1: {
-      presence: {
-        message: 'Editor is required'
-      }
-    }
-  }
 });
 
 // Edit form projection.

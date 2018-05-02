@@ -18,15 +18,6 @@ var Model = EmberFlexberryDataModel.extend({
     inverse: 'suggestionType',
     async: false
   }),
-
-  // Model validation rules.
-  validations: {
-    name: {
-      presence: {
-        message: 'Name is required'
-      }
-    }
-  }
 });
 
 // Edit form projection.

@@ -1,21 +1,17 @@
 import Evented from '@ember/object/evented';
 import RSVP from 'rsvp';
-import EmberObject, { get, set, computed } from '@ember/object';
-import { A, isArray } from '@ember/array';
+import EmberObject, { computed } from '@ember/object';
+import { isArray } from '@ember/array';
 import { merge } from '@ember/polyfills';
-import { addObserver, removeObserver } from '@ember/object/observers';
-import { once } from '@ember/runloop';
 import DS from 'ember-data';
 import createProj from '../utils/create';
-import EmberValidations from 'ember-validations';
 
 /**
-  Base model that supports projections and validations.
+  Base model that supports projections.
 
   @module ember-flexberry-data
   @class Model
   @extends DS.Model
-  @uses EmberValidationsMixin
   @uses Ember.EventedMixin
 
   @event preSave
@@ -23,8 +19,8 @@ import EmberValidations from 'ember-validations';
   @param {Promise[]} promises Array to which custom 'preSave' promises could be pushed
 
   @public
- */
-var Model = DS.Model.extend(EmberValidations, Evented, {
+*/
+let Model = DS.Model.extend(Evented, {
   /**
     Stored canonical `belongsTo` relationships.
 
@@ -33,15 +29,6 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
     @private
   */
   _canonicalBelongsTo: computed(() => ({})),
-
-  /**
-    Model validation rules.
-
-    @property validations
-    @type Object
-    @default {}
-  */
-  validations: undefined,
 
   /**
     Flag that indicates sync up process of model is processing.
@@ -80,58 +67,6 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
   isDestroyedDuringSyncUp: false,
 
   /**
-    Checks that model satisfies validation rules defined in 'validations' property.
-
-    @method validate
-    @param {Object} [options] Method options
-    @param {Boolean} [options.validateDeleted = true] Flag: indicates whether to validate model, if it is deleted, or not
-    @return {Promise} A promise that will be resolved if model satisfies validation rules defined in 'validations' property
-  */
-  validate(options) {
-    options = merge({ validateDeleted: true }, options || {});
-    if (options.validateDeleted === false && this.get('isDeleted')) {
-      // Return resolved promise, because validation is unnecessary for deleted model.
-      return new RSVP.Promise((resolve) => {
-        resolve();
-      });
-    }
-
-    // Validate model.
-    let validationPromises = {
-      base: this._super(options)
-    };
-
-    let hasManyRelationships = A();
-    this.eachRelationship((name, attrs) => {
-      if (attrs.kind === 'hasMany') {
-        hasManyRelationships.pushObject(attrs.key);
-      }
-    });
-
-    // Validate hasMany relationships.
-    hasManyRelationships.forEach((relationshipName) => {
-      let details = this.get(relationshipName);
-      if (!isArray(details)) {
-        details = A();
-      }
-
-      details.forEach((detailModel, i) => {
-        validationPromises[relationshipName + '.' + i] = detailModel.validate(options);
-      });
-    });
-
-  /* eslint-disable no-unused-vars */
-  return new RSVP.Promise((resolve, reject) => {
-      RSVP.hash(validationPromises).then((hash) => {
-        resolve(this.get('errors'));
-      }).catch((reason) => {
-        reject(this.get('errors'));
-      });
-    });
-  /* eslint-enable no-unused-vars */
-},
-
-  /**
     Triggers model's 'preSave' event & allows to execute some additional async logic before model will be saved.
 
     @method beforeSave
@@ -165,7 +100,7 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
   },
 
   /**
-    Validates model, triggers 'preSave' event, and finally saves model.
+    The 'preSave' event is called and finally saves model.
 
     @method save
 
@@ -178,11 +113,7 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
     options = merge({ softSave: false }, options || {});
 
     return new RSVP.Promise((resolve, reject) => {
-      // If we are updating while syncing up then checking of validation rules should be skipped
-      // because they can be violated by unfilled fields of model.
-      let promise = this.get('isSyncingUp') && this.get('dirtyType') === 'updated' ?
-        RSVP.resolve() : this.validate({ validateDeleted: false });
-      promise.then(() => this.beforeSave(options)).then(() => {
+      this.beforeSave(options).then(() => {
         // Call to base class 'save' method with right context.
         // The problem is that call to current save method will be already finished,
         // and traditional _this._super will point to something else, but not to DS.Model 'save' method,
@@ -194,13 +125,12 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
         // Assuming that record is not updated during sync up;
         this.set('isUpdatedDuringSyncUp', false);
 
-        // Model validation was successful (model is valid or deleted),
-        // all 'preSave' event promises has been successfully resolved,
+        // All 'preSave' event promises has been successfully resolved,
         // finally model has been successfully saved,
         // so we can resolve 'save' promise.
         resolve(value);
       }).catch(reason => {
-        // Any of 'validate', 'beforeSave' or 'save' promises has been rejected,
+        // Any of 'beforeSave' or 'save' promises has been rejected,
         // so we should reject 'save' promise.
         reject(reason);
       });
@@ -384,38 +314,6 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
   },
 
   /**
-    Initializes model.
-  */
-  init() {
-    this._super(...arguments);
-
-    // Set default value for `validations` property.
-    this.set('validations', {});
-
-    let errors = this.get('errors');
-    this.eachAttribute((name) => {
-      if (!errors.get(name)) {
-        errors.set(name, A());
-      }
-    });
-
-    // Attach validation observers for hasMany relationships.
-    this.eachRelationship((name, attrs) => {
-      if (!errors.get(name)) {
-        errors.set(name, A());
-      }
-
-      if (attrs.kind !== 'hasMany') {
-        return;
-      }
-
-      let detailsName = attrs.key;
-      addObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
-      addObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
-    });
-  },
-
-  /**
     Fired when the record is loaded from the server.
     [More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).
 
@@ -446,78 +344,6 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
   didCreate() {
     this._super(...arguments);
     this._saveCanonicalBelongsTo();
-  },
-
-  /**
-    Destroys model.
-  */
-  willDestroy() {
-    this._super(...arguments);
-
-    // Attach validation observers for hasMany relationships.
-    this.eachRelationship((name, attrs) => {
-      if (attrs.kind !== 'hasMany') {
-        return;
-      }
-
-      let detailsName = attrs.key;
-      removeObserver(this, `${detailsName}.[]`, this, this._onChangeHasManyRelationship);
-      removeObserver(this, `${detailsName}.@each.isDeleted`, this, this._onChangeHasManyRelationship);
-    });
-  },
-
-  /**
-    Observes & handles changes in each hasMany relationship.
-
-    @method _onChangeHasManyRelationship
-    @param {Object} changedObject Reference to changed object.
-    @param {changedPropertyPath} changedPropertyPath Path to changed property.
-    @private
-  */
-  _onChangeHasManyRelationship(changedObject, changedPropertyPath) {
-    once(this, '_aggregateHasManyRelationshipValidationErrors', changedObject, changedPropertyPath);
-  },
-
-  /**
-    Aggregates validation error messages for hasMany relationships.
-
-    @method _aggregateHasManyRelationshipValidationErrors
-    @param {Object} changedObject Reference to changed object.
-    @param {changedPropertyPath} changedPropertyPath Path to changed property.
-    @private
-  */
-  _aggregateHasManyRelationshipValidationErrors(changedObject, changedPropertyPath) {
-    // Retrieve aggregator's validation errors object.
-    let errors = get(this, 'errors');
-
-    let detailsName = changedPropertyPath.split('.')[0];
-    let details = get(this, detailsName);
-    if (!isArray(details)) {
-      return;
-    }
-
-    // Collect each detail's errors object into single array of error messages.
-    let detailsErrorMessages = A();
-    details.forEach((detail) => {
-      let detailErrors = get(detail, 'errors');
-
-      for (let detailPropertyName in detailErrors) {
-        let detailPropertyErrorMessages = detailErrors[detailPropertyName];
-        if (detailErrors.hasOwnProperty(detailPropertyName) && isArray(detailPropertyErrorMessages)) {
-          detailPropertyErrorMessages.forEach((detailPropertyErrorMessage) => {
-            removeObserver(this, `${detailsName}.@each.${detailPropertyName}`, this, this._onChangeHasManyRelationship);
-
-            if (!get(detail, 'isDeleted')) {
-              addObserver(this, `${detailsName}.@each.${detailPropertyName}`, this, this._onChangeHasManyRelationship);
-              detailsErrorMessages.pushObject(detailPropertyErrorMessage);
-            }
-          });
-        }
-      }
-    });
-
-    // Remember array of error messages in aggregator's errors object.
-    set(errors, detailsName, detailsErrorMessages);
   },
 
   /**
@@ -563,27 +389,27 @@ var Model = DS.Model.extend(EmberValidations, Evented, {
 
 Model.reopenClass({
   /**
-   * Defined projections for current model type.
-   *
-   * @property projections
-   * @type Ember.Object
-   * @default null
-   * @public
-   * @static
-   */
+    Defined projections for current model type.
+
+    @property projections
+    @type Ember.Object
+    @default null
+    @public
+    @static
+  */
   projections: null,
 
   /**
-   * Defines projection for specified model type.
-   *
-   * @method defineProjection
-   * @param {String} projectionName Projection name, eg 'EmployeeE'.
-   * @param {String} modelName The name of the model type.
-   * @param {Object} attributes Projection attributes.
-   * @return {Object} Created projection.
-   * @public
-   * @static
-   */
+    Defines projection for specified model type.
+
+    @method defineProjection
+    @param {String} projectionName Projection name, eg 'EmployeeE'.
+    @param {String} modelName The name of the model type.
+    @param {Object} attributes Projection attributes.
+    @return {Object} Created projection.
+    @public
+    @static
+  */
   defineProjection: function (projectionName, modelName, attributes) {
     let proj = createProj(modelName, attributes, projectionName);
 
@@ -603,14 +429,14 @@ Model.reopenClass({
   },
 
   /**
-   * Parent model type name.
-   *
-   * @property _parentModelName
-   * @type String
-   * @default null
-   * @private
-   * @static
-   */
+    Parent model type name.
+
+    @property _parentModelName
+    @type String
+    @default null
+    @private
+    @static
+  */
   _parentModelName: null
 });
 

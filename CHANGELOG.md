@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Breaking changes
+- From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
+
 ## [0.11.1-beta.1] - 2018-03-07
 ### Fixed
 - `Audit.ModelMixin`:

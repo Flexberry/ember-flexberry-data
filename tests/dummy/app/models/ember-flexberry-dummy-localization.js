@@ -4,15 +4,6 @@ import { attr } from 'ember-flexberry-data/utils/attributes';
 
 var Model = EmberFlexberryDataModel.extend({
   name: DS.attr('string'),
-
-  // Model validation rules.
-  validations: {
-    name: {
-      presence: {
-        message: 'Name is required'
-      }
-    }
-  }
 });
 
 // Edit form projection.

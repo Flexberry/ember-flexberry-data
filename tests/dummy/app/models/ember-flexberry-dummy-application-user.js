@@ -18,20 +18,6 @@ let Model = EmberFlexberryDataModel.extend(OfflineModelMixin, {
   vip: DS.attr('boolean'),
   karma: DS.attr('decimal'),
   coordinates: DS.attr('string'),
-
-  // Model validation rules.
-  validations: {
-    name: {
-      presence: {
-        message: 'Name is required'
-      }
-    },
-    eMail: {
-      presence: {
-        message: 'User email is required'
-      }
-    }
-  }
 });
 
 // Edit form projection.
