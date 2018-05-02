@@ -1,23 +1,12 @@
-import Ember from 'ember';
-import OfflineModelMixin from 'ember-flexberry-data/mixins/offline-model';
+import EmberObject from '@ember/object';
 import { module, test } from 'qunit';
+import OfflineModelMixin from 'ember-flexberry-data/mixins/offline-model';
 
-import startApp from '../../helpers/start-app';
-
-let App;
-
-module('Unit | Mixin | offline model', {
-  setup: function () {
-    App = startApp();
-  },
-  teardown: function () {
-    Ember.run(App, 'destroy');
-  }
-});
+module('Unit | Mixin | offline model');
 
 // Replace this with your real tests.
 test('it works', function(assert) {
-  let OfflineModelObject = Ember.Object.extend(App.__container__.ownerInjection(), OfflineModelMixin);
+  let OfflineModelObject = EmberObject.extend(OfflineModelMixin);
   let subject = OfflineModelObject.create();
   assert.ok(subject);
 });

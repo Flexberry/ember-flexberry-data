@@ -1,16 +1,20 @@
-import Ember from 'ember';
+import { getOwner } from '@ember/application';
+import { computed } from '@ember/object';
 import DS from 'ember-data';
-import { Offline, Projection } from 'ember-flexberry-data';
+import BaseStore from 'ember-flexberry-data/stores/base-store';
+import StoreMixin from 'ember-flexberry-data/mixins/store';
 
-export default Offline.Store.extend({
-  offlineModels: {
-    'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group': true,
-    'i-c-s-soft-s-t-o-r-m-n-e-t-security-session': true,
-  },
+export default BaseStore.extend({
+  offlineModels: computed(function() {
+    return {
+      'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group': true,
+      'i-c-s-soft-s-t-o-r-m-n-e-t-security-session': true,
+    };
+  }),
 
   init() {
     this.set('offlineSchema', {
@@ -49,8 +53,8 @@ export default Offline.Store.extend({
         }
       },
     });
-    let owner = Ember.getOwner(this);
-    this.set('onlineStore', DS.Store.extend(Projection.StoreMixin).create(owner.ownerInjection()));
+    let owner = getOwner(this);
+    this.set('onlineStore', DS.Store.extend(StoreMixin).create(owner.ownerInjection()));
     this._super(...arguments);
     this.set('offlineStore.dbName', 'TestDB');
   }

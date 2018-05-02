@@ -1,6 +1,8 @@
-import Ember from 'ember';
+import EmberObject from '@ember/object';
+import RSVP from 'rsvp';
+import { warn } from '@ember/debug';
 
-export default Ember.Object.extend({
+export default EmberObject.extend({
 
   /* The queue of promises */
   _queue: null,
@@ -16,7 +18,7 @@ export default Ember.Object.extend({
 
   /* Init instance of queue */
   init() {
-    this.set('_queue', [Ember.RSVP.resolve()]);
+    this.set('_queue', [RSVP.resolve()]);
   },
 
   /**
@@ -29,9 +31,9 @@ export default Ember.Object.extend({
   attach(callback) {
     const queueKey = this._queue.length;
 
-    this._queue[queueKey] = new Ember.RSVP.Promise((resolve, reject) => this._queue[queueKey - 1].then(() => callback(resolve, reject)).catch((reason) => {
+    this._queue[queueKey] = new RSVP.Promise((resolve, reject) => this._queue[queueKey - 1].then(() => callback(resolve, reject)).catch((reason) => {
       if (this.get('continueOnError')) {
-        Ember.warn(`Promise in queue was rejected with reason: "${reason}"`,
+        warn(`Promise in queue was rejected with reason: "${reason}"`,
           false,
           { id: 'ember-flexberry-data-debug.queue.promise-was-rejected' });
         resolve();

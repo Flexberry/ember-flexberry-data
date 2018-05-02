@@ -2,7 +2,6 @@
  * Class of order-by part of the query.
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class OrderByClause
  */
 export default class OrderByClause {

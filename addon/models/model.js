@@ -1,4 +1,8 @@
-import Ember from 'ember';
+import Evented from '@ember/object/evented';
+import RSVP from 'rsvp';
+import EmberObject, { computed } from '@ember/object';
+import { isArray } from '@ember/array';
+import { merge } from '@ember/polyfills';
 import DS from 'ember-data';
 import createProj from '../utils/create';
 
@@ -7,7 +11,6 @@ import createProj from '../utils/create';
 
   @module ember-flexberry-data
   @class Model
-  @namespace Projection
   @extends DS.Model
   @uses Ember.EventedMixin
 
@@ -17,7 +20,7 @@ import createProj from '../utils/create';
 
   @public
 */
-let Model = DS.Model.extend(Ember.Evented, {
+let Model = DS.Model.extend(Evented, {
   /**
     Stored canonical `belongsTo` relationships.
 
@@ -25,7 +28,7 @@ let Model = DS.Model.extend(Ember.Evented, {
     @type Object
     @private
   */
-  _canonicalBelongsTo: Ember.computed(() => ({})),
+  _canonicalBelongsTo: computed(() => ({})),
 
   /**
     Flag that indicates sync up process of model is processing.
@@ -75,20 +78,20 @@ let Model = DS.Model.extend(Ember.Evented, {
     @return {Promise} A promise that will be resolved after all 'preSave' event handlers promises will be resolved
   */
   beforeSave(options) {
-    options = Ember.merge({ softSave: false, promises: [] }, options || {});
+    options = merge({ softSave: false, promises: [] }, options || {});
 
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new RSVP.Promise((resolve, reject) => {
       // Trigger 'preSave' event, and  give its handlers possibility to run some 'preSave' asynchronous logic,
       // by adding it's promises to options.promises array.
       this.trigger('preSave', options);
 
       // Promises array could be totally changed in 'preSave' event handlers, we should prevent possible errors.
-      options.promises = Ember.isArray(options.promises) ? options.promises : [];
+      options.promises = isArray(options.promises) ? options.promises : [];
       options.promises = options.promises.filter(function(item) {
-        return item instanceof Ember.RSVP.Promise;
+        return item instanceof RSVP.Promise;
       });
 
-      Ember.RSVP.all(options.promises).then(values => {
+      RSVP.all(options.promises).then(values => {
         resolve(values);
       }).catch(reason => {
         reject(reason);
@@ -107,9 +110,9 @@ let Model = DS.Model.extend(Ember.Evented, {
     @return {Promise} A promise that will be resolved after model will be successfully saved
   */
   save(options) {
-    options = Ember.merge({ softSave: false }, options || {});
+    options = merge({ softSave: false }, options || {});
 
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new RSVP.Promise((resolve, reject) => {
       this.beforeSave(options).then(() => {
         // Call to base class 'save' method with right context.
         // The problem is that call to current save method will be already finished,
@@ -174,8 +177,8 @@ let Model = DS.Model.extend(Ember.Evented, {
       if (kind === 'hasMany') {
         if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           changedHasMany[key] = [
-            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel.record : undefined),
-            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel.record : undefined),
+            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel._record : undefined),
+            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel._record : undefined),
           ];
         }
       }
@@ -205,6 +208,30 @@ let Model = DS.Model.extend(Ember.Evented, {
         }
       }
     });
+  },
+
+  /**
+    Сheck whether there is a changed `belongsTo` relationships.
+
+    @method hasChangedBelongsTo
+    @return {Boolean} Returns `true` if `belongsTo` relationships have changed, else `false`.
+  */
+  hasChangedBelongsTo() {
+    let hasChangedBelongsTo = false;
+    let changedBelongsTo = this.changedBelongsTo();
+    for (let changes in changedBelongsTo) {
+      if (changedBelongsTo.hasOwnProperty(changes)) {
+        let [oldValue, newValue] = changedBelongsTo[changes];
+        let oldValueId = oldValue ? oldValue.get('id') : null;
+        let newValueId = newValue ? newValue.get('id') : null;
+        if (oldValue !== newValue || oldValueId !== newValueId) {
+          hasChangedBelongsTo = true;
+          break;
+        }
+      }
+    }
+
+    return hasChangedBelongsTo;
   },
 
   /**
@@ -388,12 +415,12 @@ Model.reopenClass({
 
     if (!this.projections) {
       this.reopenClass({
-        projections: Ember.Object.create({ modelName }),
+        projections: EmberObject.create({ modelName }),
       });
     } else if (this.projections.get('modelName') !== modelName) {
-      let baseProjections = Ember.merge({}, this.projections);
+      let baseProjections = merge({}, this.projections);
       this.reopenClass({
-        projections: Ember.Object.create(Ember.merge(baseProjections, { modelName })),
+        projections: EmberObject.create(merge(baseProjections, { modelName })),
       });
     }
 

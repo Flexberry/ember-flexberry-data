@@ -2,7 +2,10 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import RSVP from 'rsvp';
+import EmberMap from '@ember/map';
+import { getOwner } from '@ember/application';
+import { warn } from '@ember/debug';
 import FilterOperator from './filter-operator';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
@@ -15,7 +18,6 @@ import Queue from '../utils/queue';
 /**
   Class of query language adapter that allows to load data from IndexedDB.
 
-  @namespace Query
   @class IndexedDBAdapter
   @extends Query.BaseAdapter
 */
@@ -44,7 +46,7 @@ export default class extends BaseAdapter {
     @return {Promise} Promise with loaded data.
   */
   query(store, query) {
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new RSVP.Promise((resolve, reject) => {
       let _this = this;
       let jsAdapter;
       let datePredicates = [];
@@ -53,7 +55,7 @@ export default class extends BaseAdapter {
       }
 
       if (query.predicate instanceof DatePredicate || datePredicates.length > 0) {
-        let moment = Ember.getOwner(store).lookup('service:moment');
+        let moment = getOwner(store).lookup('service:moment');
         jsAdapter = new JSAdapter(moment);
       } else {
         jsAdapter = new JSAdapter();
@@ -74,7 +76,7 @@ export default class extends BaseAdapter {
       };
 
       let getDetailsHashMap = function(data, primaryKeyName) {
-        let ret = Ember.Map.create();
+        let ret = EmberMap.create();
         let dataLength = data.length;
         for (let i = 0; i < dataLength; i++) {
           let obj = data[i];
@@ -240,7 +242,7 @@ export default class extends BaseAdapter {
 
         // Sort data and merge join data level by level.
         let scanDeepLevel = function(node, deepLevel) {
-          return new Ember.RSVP.Promise((resolve, reject) => {
+          return new RSVP.Promise((resolve, reject) => {
             if (node.deepLevel === deepLevel) {
               let processData = () => {
                 if (node.relationType === 'belongsTo') {
@@ -289,7 +291,7 @@ export default class extends BaseAdapter {
               if (!node.parent.data) {
                 // Load parent data.
                 let nodeTable = _this._db.table(node.parent.modelName);
-                let loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {
+                let loadPromise = new RSVP.Promise((loadResolve, loadReject) => {
                   nodeTable.toArray().then((data) => {
                     node.parent.data = data;
                     node.parent.sorting = node.parent.primaryKeyName;
@@ -307,7 +309,7 @@ export default class extends BaseAdapter {
                   nodeTable = nodeTable.where(node.primaryKeyName).equals(filterById);
                 }
 
-                let loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {nodeTable.toArray().then((data) => {
+                let loadPromise = new RSVP.Promise((loadResolve, loadReject) => {nodeTable.toArray().then((data) => {
                   node.data = data;
                   node.sorting = node.primaryKeyName;
                   loadResolve();
@@ -315,7 +317,7 @@ export default class extends BaseAdapter {
                 loadPromises.push(loadPromise);
               }
 
-              Ember.RSVP.all(loadPromises).then(() => {
+              RSVP.all(loadPromises).then(() => {
                 processData();
                 resolve();
               }, reject);
@@ -355,7 +357,7 @@ export default class extends BaseAdapter {
                         if (anyOfKeys.length === 0) {
                           skipScan = true;
                         } else {
-                          loadPromise = new Ember.RSVP.Promise((loadResolve, loadReject) => {
+                          loadPromise = new RSVP.Promise((loadResolve, loadReject) => {
                             _this._db.table(expandedMaster.modelName)
                             .where(expandedMaster.primaryKeyName)
                             .anyOf(anyOfKeys)
@@ -370,7 +372,7 @@ export default class extends BaseAdapter {
                       }
                     }
 
-                    Ember.RSVP.all([loadPromise]).then(() => {
+                    RSVP.all([loadPromise]).then(() => {
                       if (!skipScan) {
                         scanDeepLevel(expandedMaster, deepLevel).then(queryItemResolve, queryItemReject);
                       } else {
@@ -593,7 +595,9 @@ function updateWhereClause(store, table, query) {
   }
 
   if (predicate instanceof GeographyPredicate) {
-    Ember.warn('GeographyPredicate is not supported in indexedDB-adapter');
+    warn('GeographyPredicate is not supported in indexedDB-adapter',
+    false,
+    { id: 'ember-flexberry-data-debug.offline.geography-predicate-is-not-supported' });
     return table;
   }
 
@@ -611,7 +615,7 @@ function updateWhereClause(store, table, query) {
         break;
 
       case 'date':
-        value = getSerializedDateValue.call(store, predicate.value);
+        value = getSerializedDateValue.call(store, predicate.value, predicate.timeless);
         break;
 
       default:
@@ -621,26 +625,41 @@ function updateWhereClause(store, table, query) {
     if (value === null) {
       // IndexedDB (and Dexie) doesn't support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
-      let jsAdapter = predicate instanceof DatePredicate ? new JSAdapter(Ember.getOwner(store).lookup('service:moment')) : new JSAdapter();
+      let jsAdapter = predicate instanceof DatePredicate ? new JSAdapter(getOwner(store).lookup('service:moment')) : new JSAdapter();
 
       return table.filter(jsAdapter.getAttributeFilterFunction(predicate));
     }
 
+    let moment;
+    let nextValue;
+    if (predicate.timeless) {
+      moment = getOwner(store).lookup('service:moment');
+      nextValue = moment.moment(value, 'YYYY-MM-DD').add(1, 'd').format('YYYY-MM-DD');
+    }
+
     switch (predicate.operator) {
       case FilterOperator.Eq:
-        return table.where(predicate.attributePath).equals(value);
+        return predicate.timeless ?
+          table.where(predicate.attributePath).between(value, nextValue, false) :
+          table.where(predicate.attributePath).equals(value);
 
       case FilterOperator.Neq:
-        return table.where(predicate.attributePath).notEqual(value);
+        return predicate.timeless ?
+          table.where(predicate.attributePath).below(value).or(predicate.attributePath).aboveOrEqual(nextValue) :
+          table.where(predicate.attributePath).notEqual(value);
 
       case FilterOperator.Le:
         return table.where(predicate.attributePath).below(value);
 
       case FilterOperator.Leq:
-        return table.where(predicate.attributePath).belowOrEqual(value);
+        return predicate.timeless ?
+          table.where(predicate.attributePath).below(nextValue) :
+          table.where(predicate.attributePath).belowOrEqual(value);
 
       case FilterOperator.Ge:
-        return table.where(predicate.attributePath).above(value);
+        return predicate.timeless ?
+          table.where(predicate.attributePath).aboveOrEqual(nextValue) :
+          table.where(predicate.attributePath).above(value);
 
       case FilterOperator.Geq:
         return table.where(predicate.attributePath).aboveOrEqual(value);
@@ -657,7 +676,7 @@ function updateWhereClause(store, table, query) {
 
   if (predicate instanceof ComplexPredicate) {
     let datePredicates = predicate.predicates.filter(pred => pred instanceof DatePredicate);
-    let jsAdapter = datePredicates.length > 0 ? new JSAdapter(Ember.getOwner(store).lookup('service:moment')) : new JSAdapter();
+    let jsAdapter = datePredicates.length > 0 ? new JSAdapter(getOwner(store).lookup('service:moment')) : new JSAdapter();
 
     return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
   }

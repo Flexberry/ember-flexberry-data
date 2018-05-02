@@ -1,12 +1,11 @@
-import Ember from 'ember';
-import {module, test} from 'qunit';
+import { run } from '@ember/runloop';
+import { module, test } from 'qunit';
 import startApp from '../helpers/start-app';
 import destroyApp from '../helpers/destroy-app';
 import Dexie from 'npm:dexie';
 
 var AppDisplayDeepModel;
 var storeDisplayDeepModel;
-var run = Ember.run;
 const dbNameDisplayDeepModel = 'TestDbDDM';
 
 module('Display deep model', {

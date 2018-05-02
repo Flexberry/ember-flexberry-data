@@ -1,13 +1,13 @@
-import Ember from 'ember';
+import { merge } from '@ember/polyfills';
 import DS from 'ember-data';
 import { singularize } from 'ember-inflector';
 import { capitalize, camelize, dasherize } from '../utils/string-functions';
+import { pluralize } from 'ember-inflector';
 
 /**
  * Base serializer class.
  *
  * @module ember-flexberry-data
- * @namespace Serializer
  * @class Base
  */
 export default DS.RESTSerializer.extend({
@@ -50,7 +50,7 @@ export default DS.RESTSerializer.extend({
    * @returns {object} Valid {http://jsonapi.org/format/#document-top-level|@link JSON API document}.
    */
   normalizeArrayResponse(store, typeClass, payload) {
-    let rootKey = Ember.String.pluralize(typeClass.modelName);
+    let rootKey = pluralize(typeClass.modelName);
     payload[rootKey] = payload.value;
     delete payload.value;
 
@@ -94,9 +94,11 @@ export default DS.RESTSerializer.extend({
    * @returns {string} Key for a given relationship.
    */
   /* jshint unused:vars */
+  /* eslint-disable no-unused-vars */
   keyForRelationship(key, relationship) {
     return capitalize(key) + '@odata.bind';
   },
+  /* eslint-enable no-unused-vars */
   /* jshint unused:true */
 
   /**
@@ -123,7 +125,7 @@ export default DS.RESTSerializer.extend({
     options.includeId = true;
 
     // {...} instead of {"application": {...}}
-    Ember.merge(hash, this.serialize(record, options));
+    merge(hash, this.serialize(record, options));
   },
 
   /**
@@ -139,7 +141,7 @@ export default DS.RESTSerializer.extend({
     let belongsTo = snapshot.belongsTo(relationship.key);
     if (belongsTo) {
       let payloadKey = this.keyForRelationship(relationship.key, relationship.kind, 'serialize');
-      json[payloadKey] = Ember.String.pluralize(this.modelNameFromRelationshipType(belongsTo.modelName)) + '(' + belongsTo.id + ')';
+      json[payloadKey] = pluralize(this.modelNameFromRelationshipType(belongsTo.modelName)) + '(' + belongsTo.id + ')';
     }
   },
 
@@ -172,7 +174,9 @@ export default DS.RESTSerializer.extend({
     @return {String}
   */
   modelNameFromPayloadKey(key) {
+    /* eslint-disable no-useless-escape */
     return singularize(dasherize(key.replace(/[#\.]/g, '')));
+    /* eslint-enable no-useless-escape */
   },
 
   /**

@@ -1,8 +1,10 @@
-import Ember from 'ember';
+import { set } from '@ember/object';
+import { A } from '@ember/array';
 import DS from 'ember-data';
 import { module, test } from 'qunit';
 
-import { Adapter, Projection } from 'ember-flexberry-data';
+import OdataAdapter from 'ember-flexberry-data/adapters/odata';
+import StoreMixin from 'ember-flexberry-data/mixins/store';
 
 import startApp from '../../../helpers/start-app';
 import config from '../../../../../dummy/config/environment';
@@ -25,7 +27,7 @@ export default function executeTest(testName, callback) {
 
     const app = startApp();
     const store = app.__container__.lookup('service:store');
-    let onlineStore = DS.Store.reopen(Projection.StoreMixin).create(app.__container__.ownerInjection());
+    let onlineStore = DS.Store.reopen(StoreMixin).create(app.__container__.ownerInjection());
     store.set('onlineStore', onlineStore);
 
     // Override store.unloadAll method.
@@ -35,16 +37,17 @@ export default function executeTest(testName, callback) {
 
       // Clean up type maps otherwise internal models won't be cleaned from stores,
       // and it will cause some exceptions related to store's internal-models statuses.
-      Ember.A([store, store.get('onlineStore'), store.get('offlineStore')]).forEach((s) => {
-        Ember.set(s, 'typeMaps', {});
+      A([store, store.get('onlineStore'), store.get('offlineStore')]).forEach((s) => {
+        set(s, 'typeMaps', {});
       });
     };
 
     // Define OData-adapter as default adapter for online store.
-    const adapter = Adapter.Odata.create(app.__container__.ownerInjection());
-    Ember.set(adapter, 'host', baseUrl);
+    const adapter = OdataAdapter.create(app.__container__.ownerInjection());
+    set(adapter, 'host', baseUrl);
     store.get('onlineStore').reopen({
       adapterFor() {
+
         return adapter;
       }
     });

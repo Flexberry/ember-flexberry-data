@@ -1,7 +1,9 @@
 import DS from 'ember-data';
-import { Projection, Offline } from 'ember-flexberry-data';
+import EmberFlexberryDataModel from 'ember-flexberry-data/models/model';
+import OfflineModelMixin from 'ember-flexberry-data/mixins/offline-model';
+import { attr } from 'ember-flexberry-data/utils/attributes';
 
-let Model = Projection.Model.extend(Offline.ModelMixin, {
+let Model = EmberFlexberryDataModel.extend(OfflineModelMixin, {
   name: DS.attr('string'),
   eMail: DS.attr('string'),
   phone1: DS.attr('string'),
@@ -20,29 +22,29 @@ let Model = Projection.Model.extend(Offline.ModelMixin, {
 
 // Edit form projection.
 Model.defineProjection('ApplicationUserE', 'ember-flexberry-dummy-application-user', {
-  name: Projection.attr('Name'),
-  eMail: Projection.attr('E-mail'),
-  phone1: Projection.attr('Phone1'),
-  phone2: Projection.attr('Phone2'),
-  phone3: Projection.attr('Phone3'),
-  activated: Projection.attr('Activated'),
-  vK: Projection.attr('VK'),
-  facebook: Projection.attr('Facebook'),
-  twitter: Projection.attr('Twitter'),
-  birthday: Projection.attr('Birthday'),
-  gender: Projection.attr('Gender'),
-  vip: Projection.attr('Vip'),
-  karma: Projection.attr('Karma')
+  name: attr('Name'),
+  eMail: attr('E-mail'),
+  phone1: attr('Phone1'),
+  phone2: attr('Phone2'),
+  phone3: attr('Phone3'),
+  activated: attr('Activated'),
+  vK: attr('VK'),
+  facebook: attr('Facebook'),
+  twitter: attr('Twitter'),
+  birthday: attr('Birthday'),
+  gender: attr('Gender'),
+  vip: attr('Vip'),
+  karma: attr('Karma')
 });
 
 // List form projection.
 Model.defineProjection('ApplicationUserL', 'ember-flexberry-dummy-application-user', {
-  name: Projection.attr('Name'),
-  eMail: Projection.attr('E-mail'),
-  activated: Projection.attr('Activated'),
-  birthday: Projection.attr('Birthday'),
-  gender: Projection.attr('Gender'),
-  karma: Projection.attr('Karma')
+  name: attr('Name'),
+  eMail: attr('E-mail'),
+  activated: attr('Activated'),
+  birthday: attr('Birthday'),
+  gender: attr('Gender'),
+  karma: attr('Karma')
 });
 
 export default Model;

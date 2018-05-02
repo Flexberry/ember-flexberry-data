@@ -1,7 +1,7 @@
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
+import Model from 'ember-flexberry-data/models/model';
 
-let Country = Projection.Model.extend({
+let Country = Model.extend({
   Name: DS.attr('string')
 });
 

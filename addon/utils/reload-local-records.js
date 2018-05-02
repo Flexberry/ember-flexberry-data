@@ -1,7 +1,11 @@
-import Ember from 'ember';
+import RSVP from 'rsvp';
+import { getOwner } from '@ember/application';
+import $ from 'jquery';
+import { isNone } from '@ember/utils';
+import { warn } from '@ember/debug';
+import { get } from '@ember/object';
+import { A } from '@ember/array';
 import isEmbedded from './is-embedded';
-
-var RSVP = Ember.RSVP;
 
 /*
   This method saves specified models by type in offline storage.
@@ -20,11 +24,11 @@ var RSVP = Ember.RSVP;
 */
 export function reloadLocalRecords(type, reload, projectionName, params) {
   let _this = this;
-  var store = Ember.getOwner(this).lookup('service:store');
+  var store = getOwner(this).lookup('service:store');
   var modelType = store.modelFor(type);
   let modelName = modelType.modelName;
 
-  var localStore = Ember.getOwner(this).lookup('store:local');
+  var localStore = getOwner(this).lookup('store:local');
   var localAdapter = localStore.adapterFor(modelName);
 
   var reloadedRecords = localAdapter.clear(modelName).then(createAll);
@@ -32,10 +36,10 @@ export function reloadLocalRecords(type, reload, projectionName, params) {
   return reloadedRecords;
 
   function createAll() {
-    var projection = Ember.isNone(projectionName) ? null : modelType.projections[projectionName];
+    var projection = isNone(projectionName) ? null : modelType.projections[projectionName];
     if (reload) {
       if (params && params.queryObject) {
-        params.queryObject = Ember.$.extend(true, params.queryObject, { useOnlineStore: true });
+        params.queryObject = $.extend(true, params.queryObject, { useOnlineStore: true });
         return store.query(type, params.queryObject).then(function(records) {
           return createLocalRecords.call(_this, store, localAdapter, localStore, modelType, records, projection, params);
         });
@@ -44,7 +48,7 @@ export function reloadLocalRecords(type, reload, projectionName, params) {
           reload: true,
           useOnlineStore: true
         };
-        options = Ember.isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
+        options = isNone(projectionName) ? options : $.extend(true, options, { projection: projectionName });
         return store.findAll(type, options).then(function(records) {
           return createLocalRecords.call(_this, store, localAdapter, localStore, modelType, records, projection, params);
         });
@@ -58,7 +62,7 @@ export function reloadLocalRecords(type, reload, projectionName, params) {
 
 export function createLocalRecord(store, localAdapter, localStore, modelType, record, projection, params) {
   let _this = this;
-  let dexieService = Ember.getOwner(store).lookup('service:dexie');
+  let dexieService = getOwner(store).lookup('service:dexie');
   if (params && params.unloadSyncedRecords) {
     _this.get('_recordsToUnload').push(record);
   }
@@ -67,15 +71,15 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
   if (record.get('id')) {
     var snapshot = record._createSnapshot();
     let fieldsToUpdate = projection ? projection.attributes : null;
-    return new Ember.RSVP.Promise((resolve, reject) => localAdapter.addHashForBulkUpdateOrCreate(localStore, modelType, snapshot, fieldsToUpdate, true)
+    return new RSVP.Promise((resolve, reject) => localAdapter.addHashForBulkUpdateOrCreate(localStore, modelType, snapshot, fieldsToUpdate, true)
     .then(() => {
-      let offlineGlobals = Ember.getOwner(_this).lookup('service:offline-globals');
+      let offlineGlobals = getOwner(_this).lookup('service:offline-globals');
       if (projection || (!projection && offlineGlobals.get('allowSyncDownRelatedRecordsWithoutProjection'))) {
         return syncDownRelatedRecords.call(_this, store, record, localAdapter, localStore, projection, params).then(() => {
           resolve(record);
         }, reject);
       } else {
-        Ember.warn('It does not allow to sync down related records without specified projection. ' +
+        warn('It does not allow to sync down related records without specified projection. ' +
           'Please specify option "allowSyncDownRelatedRecordsWithoutProjection" in environment.js',
           false,
           { id: 'ember-flexberry-data-debug.offline.sync-down-without-projection' });
@@ -90,7 +94,7 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
 
     var recordData = record.toJSON && record.toJSON();
 
-    Ember.warn(warnMessage + recordData,
+    warn(warnMessage + recordData,
       false,
       { id: 'ember-flexberry-data-debug.offline.record-does-not-have-id' });
 
@@ -122,7 +126,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
   let _this = this;
 
   function isAsync(modelType, relationshipName) {
-    return Ember.get(modelType, 'relationshipsByName').get(relationshipName).options.async;
+    return get(modelType, 'relationshipsByName').get(relationshipName).options.async;
   }
 
   function createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, projection) {
@@ -131,7 +135,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
   }
 
   function createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, projection) {
-    let promises = Ember.A();
+    let promises = A();
     for (let i = 0; i < relatedRecords.get('length'); i++) {
       let relatedRecord = relatedRecords.objectAt(i);
       let modelType = store.modelFor(relatedRecord.constructor.modelName);
@@ -142,13 +146,13 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
   }
 
   function createRelatedRecords(store, mainRecord, localAdapter, localStore, projection) {
-    var promises = Ember.A();
+    var promises = A();
     var modelType = store.modelFor(mainRecord.constructor.modelName);
-    var attrs = Ember.isNone(projection) ? null : projection.attributes;
-    var relationshipNames = Ember.get(modelType, 'relationshipNames');
+    var attrs = isNone(projection) ? null : projection.attributes;
+    var relationshipNames = get(modelType, 'relationshipNames');
     var createRelatedBelongsToRecordFunction = (relatedRecord) => {
-      if (!Ember.isNone(relatedRecord)) {
-        promises.pushObject(createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[belongToName]));
+      if (!isNone(relatedRecord)) {
+        promises.pushObject(createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, isNone(attrs) ? null : attrs[belongToName]));
       }
     };
 
@@ -156,7 +160,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
       var belongToName = relationshipNames.belongsTo[i];
 
       // Save related record into local store only if relationship included into projection (if projection is set).
-      if (Ember.isNone(projection) || (attrs && attrs.hasOwnProperty(belongToName))) {
+      if (isNone(projection) || (attrs && attrs.hasOwnProperty(belongToName))) {
         let async = isAsync(modelType, belongToName);
         if (async) {
           mainRecord.get(belongToName).then(createRelatedBelongsToRecordFunction);
@@ -170,13 +174,13 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
     }
 
     var createRelatedHasManyRecordsFunction = (relatedRecords) =>
-      promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, Ember.isNone(attrs) ? null : attrs[hasManyName]));
+      promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, isNone(attrs) ? null : attrs[hasManyName]));
 
     for (let i = 0; i < relationshipNames.hasMany.length; i++) {
       var hasManyName = relationshipNames.hasMany[i];
 
       // Save related records into local store only if relationship included into projection (if projection is set).
-      if (Ember.isNone(projection) || (attrs && attrs.hasOwnProperty(hasManyName))) {
+      if (isNone(projection) || (attrs && attrs.hasOwnProperty(hasManyName))) {
         let async = isAsync(modelType, hasManyName);
         if (async) {
           mainRecord.get(hasManyName).then(createRelatedHasManyRecordsFunction);

@@ -2,10 +2,13 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
+import RSVP from 'rsvp';
+import { getOwner } from '@ember/application';
+import { computed } from '@ember/object';
 import DS from 'ember-data';
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   /**
     Creation date and time of model.
 
@@ -44,8 +47,9 @@ export default Ember.Mixin.create({
     @property currentUserName
     @readOnly
   */
-  currentUserName: Ember.computed(function() {
-    return 'userName';
+  currentUserName: computed(function() {
+    let userService = getOwner(this).lookup('service:user');
+    return userService.getCurrentUserName();
   }).readOnly(),
 
   /**
@@ -58,17 +62,39 @@ export default Ember.Mixin.create({
   */
   save() {
     let currentDate = new Date();
-    let currentUser = this.get('currentUserName');
-    if (this.get('isNew')) {
-      this.set('createTime', currentDate);
-      this.set('creator', currentUser);
-    }
+    let superFunc = this._super;
+    let _this = this;
 
-    if (this.get('hasDirtyAttributes') && !this.get('isDeleted')) {
-      this.set('editTime', currentDate);
-      this.set('editor', currentUser);
-    }
+    let currentUserPromise = new RSVP.Promise((resolve, reject) => {
+      let userName = this.get('currentUserName');
+      if (userName instanceof RSVP.Promise) {
+        userName.then(name => {
+          resolve(name);
+        }).catch((reason) => {
+          reject(reason);
+        });
+      }
 
-    return this._super(...arguments);
+      resolve(userName);
+    });
+
+    return currentUserPromise.then(currentUser => {
+      if (_this.get('isNew')) {
+        _this.set('createTime', currentDate);
+        _this.set('creator', currentUser);
+      }
+
+      if (_this.get('hasDirtyAttributes') && !_this.get('isDeleted')) {
+        _this.set('editTime', currentDate);
+        _this.set('editor', currentUser);
+      }
+
+      let result = superFunc.apply(_this, ...arguments);
+      if (!(result instanceof RSVP.Promise)) {
+        result = RSVP.resolve();
+      }
+
+      return result;
+    });
   },
 });

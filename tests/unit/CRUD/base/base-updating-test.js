@@ -1,11 +1,12 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 export default function updating(store, assert) {
   assert.expect(2);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
     // Without relationships.
@@ -58,6 +59,7 @@ export default function updating(store, assert) {
       .then(() => records);
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })
@@ -73,7 +75,7 @@ function initTestData(store) {
 
   // Attrs for creating suggestion.
   .then((parentType) =>
-    Ember.RSVP.Promise.all([
+    RSVP.Promise.all([
       store.createRecord('ember-flexberry-dummy-application-user', {
         name: 'Vasya',
         eMail: '1@mail.ru',
@@ -106,7 +108,7 @@ function initTestData(store) {
 
     // Creating comment.
     .then((sug) =>
-      Ember.RSVP.Promise.all([
+      RSVP.Promise.all([
         store.createRecord('ember-flexberry-dummy-comment', {
           author: sugAttrs[0],
           text: 'Comment 1',
@@ -122,7 +124,7 @@ function initTestData(store) {
 
       // Creating votes.
       .then((comments) =>
-        Ember.RSVP.Promise.all([
+        RSVP.Promise.all([
           store.createRecord('ember-flexberry-dummy-comment-vote', {
             applicationUser: sugAttrs[1],
             comment: comments[0]
@@ -135,7 +137,7 @@ function initTestData(store) {
         ])
 
         .then((votes) =>
-          new Ember.RSVP.Promise((resolve) =>
+          new RSVP.Promise((resolve) =>
             resolve({
               people: sugAttrs.slice(0, 3).map(item => item.get('id')),
               comments: comments.map(item => item.get('id')),

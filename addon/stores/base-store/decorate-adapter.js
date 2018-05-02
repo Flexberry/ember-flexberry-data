@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { getOwner } from '@ember/application';
 import backup from '../../utils/backup';
 import isObject from '../../utils/is-object';
 import generateUniqueId from '../../utils/generate-unique-id';
@@ -13,7 +13,7 @@ export default function decorateAdapter(adapter, modelName) {
 
   adapter.set('flexberry', {});
 
-  var localAdapter = Ember.getOwner(this).lookup('store:local').adapterFor(modelName);
+  var localAdapter = getOwner(this).lookup('store:local').adapterFor(modelName);
 
   // findRecord()
   // findAll()
@@ -40,7 +40,7 @@ function decorateAdapterMethod(adapter, localAdapter, methodName) {
   var backupMethod = createBackupMethod(localAdapter, methodName);
 
   adapter[methodName] = function() {
-    var offlineGlobals = Ember.getOwner(this).lookup('service:offline-globals');
+    var offlineGlobals = getOwner(this).lookup('service:offline-globals');
     return originMethod.apply(adapter, arguments)
       .catch(backup(offlineGlobals.get('isModeSwitchOnErrorsEnabled'), backupMethod, arguments));
   };
@@ -95,7 +95,7 @@ function addIdToSnapshot(snapshot) {
 }
 /*
 function createJobInSyncer(container, methodName, snapshot) {
-  var syncer = Ember.getOwner(this).lookup('syncer:main');
+  var syncer = getOwner(this).lookup('syncer:main');
   syncer.createJob(methodName, snapshot);
 }
 */

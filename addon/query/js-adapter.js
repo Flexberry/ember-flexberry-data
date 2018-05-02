@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { isNone } from '@ember/utils';
+import { warn } from '@ember/debug';
 import BaseAdapter from './base-adapter';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
 import FilterOperator from './filter-operator';
@@ -26,7 +27,6 @@ import Information from '../utils/information';
  * All filters uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class JsAdapter
  * @extends Query.BaseAdapter
  */
@@ -211,7 +211,7 @@ export default class JSAdapter extends BaseAdapter {
               }
             } else {
               r[expandKey] = [];
-              let detailsCount = Ember.isNone(item[expandKey]) ? 0 : item[expandKey].length;
+              let detailsCount = isNone(item[expandKey]) ? 0 : item[expandKey].length;
               for (let j = 0; j < detailsCount; j++) {
                 let itemValue = item[expandKey][j];
                 if (itemValue) {
@@ -251,7 +251,9 @@ export default class JSAdapter extends BaseAdapter {
     }
 
     if (b5) {
-      Ember.warn('GeographyPredicate is not supported in js-adapter');
+      warn('GeographyPredicate is not supported in js-adapter',
+      false,
+      { id: 'ember-flexberry-data-debug.js-adapter.geography-predicate-is-not-supported' });
       return function (data) {
         return data;
       };
@@ -299,6 +301,10 @@ export default class JSAdapter extends BaseAdapter {
         let valueFromHash = _this.getValue(i, predicate.attributePath);
         let momentFromHash;
         if (predicate instanceof DatePredicate) {
+          if (predicate.timeless) {
+            valueFromHash = _this._moment.moment(valueFromHash, 'YYYY-MM-DD').format();
+          }
+
           momentFromHash = _this._moment.moment(valueFromHash);
           let momentFromValue = _this._moment.moment(value);
           datesIsValid = momentFromHash.isValid() && momentFromValue.isValid();

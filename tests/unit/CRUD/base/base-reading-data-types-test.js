@@ -1,14 +1,15 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
 import { SimplePredicate, ComplexPredicate, DatePredicate } from 'ember-flexberry-data/query/predicate';
 
 export default function readingDataTypes(store, assert, App) {
-  assert.expect(11);
+  assert.expect(13);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
     // String.
@@ -72,6 +73,20 @@ export default function readingDataTypes(store, assert, App) {
       });
     })
 
+    // Timeless date as String with some format.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = moment.moment(new Date(1980, 1, 24, 0, 0, 0)).format('YYYY-MM-DD');
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate('birthday', FilterOperator.Eq, dateBirth, true));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.ok(data.every(item => item.get('name') === 'Kolya'), 'Reading timeless Date as String with some format| Data');
+        assert.equal(data.get('length'), 1, `Reading timeless Date as String with some format | Length`);
+      });
+    })
+
     // Defferent types in complex.
     .then(() => {
       let predicate = new ComplexPredicate(Condition.And, ...[
@@ -90,6 +105,7 @@ export default function readingDataTypes(store, assert, App) {
       });
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })
@@ -98,7 +114,7 @@ export default function readingDataTypes(store, assert, App) {
 }
 
 function initTestData(store) {
-  return Ember.RSVP.Promise.all([
+  return RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Vasya',
       eMail: '1@mail.ru',

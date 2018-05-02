@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { getOwner } from '@ember/application';
+import { get } from '@ember/object';
 import DS from 'ember-data';
 
 import BaseBuilder from './base-builder';
@@ -13,7 +14,6 @@ import isEmbedded from '../utils/is-embedded';
  * Uses method chaining.
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class Builder
  * @extends BaseBuilder
  */
@@ -32,7 +32,7 @@ export default class Builder extends BaseBuilder {
     }
 
     this._store = store;
-    this._localStore = Ember.getOwner(store).lookup('store:local');
+    this._localStore = getOwner(store).lookup('store:local');
     this._modelName = modelName;
 
     this._id = null;
@@ -279,11 +279,11 @@ export default class Builder extends BaseBuilder {
 
   _buildQueryForProperty(data, property, model, modelName, isOfflineMode) {
     let pathItems = Information.parseAttributePath(property);
-    let relationshipsByName = Ember.get(model, 'relationshipsByName');
+    let relationshipsByName = get(model, 'relationshipsByName');
 
     if (pathItems.length === 1) {
       let attributeName = pathItems[0];
-      let modelAttributes = Ember.get(model, 'attributes');
+      let modelAttributes = get(model, 'attributes');
       if (attributeName === 'id' || modelAttributes.has(attributeName) || relationshipsByName.has(attributeName)) {
         data.select.push(attributeName);
       } else {
@@ -347,8 +347,8 @@ export default class Builder extends BaseBuilder {
             break;
 
           case 'hasMany':
-          case 'belongsTo':
-            let relationshipsByName = Ember.get(model, 'relationshipsByName');
+          case 'belongsTo': {
+            let relationshipsByName = get(model, 'relationshipsByName');
             let relationship = relationshipsByName.get(attrName);
             let ralatedModelName = relationship.type;
             let relatedModel = this._store.modelFor(ralatedModelName);
@@ -362,6 +362,7 @@ export default class Builder extends BaseBuilder {
             tree.select.push(attrName);
             tree.expand[attrName] = this._getQueryTreeByProjection(attr, relatedModel, ralatedModelName, relationshipProps, isOfflineMode);
             break;
+          }
 
           default:
             throw new Error(`Unknown kind of projection attribute: ${attr.kind}`);
@@ -425,12 +426,12 @@ export default class Builder extends BaseBuilder {
           return;
         }
 
-        let modelAttributes = Ember.get(model, 'attributes');
+        let modelAttributes = get(model, 'attributes');
         modelAttributes.forEach(function(meta, name) {
           extend[`${path}${name}`] = true;
         });
 
-        let relationshipsByName = Ember.get(model, 'relationshipsByName');
+        let relationshipsByName = get(model, 'relationshipsByName');
         relationshipsByName.forEach(function(meta, name) {
           extend[`${path}${name}`] = true;
           let ralatedModelName = meta.type;

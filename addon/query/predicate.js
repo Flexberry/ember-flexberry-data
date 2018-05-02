@@ -5,7 +5,6 @@ import Condition from './condition';
  * The base class of logical predicate.
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class BasePredicate
  */
 export class BasePredicate {
@@ -16,7 +15,6 @@ export class BasePredicate {
 /**
  * The class of simple predicate for filtering attribute by value and filter operator.
  *
- * @namespace Query
  * @class SimplePredicate
  * @extends BasePredicate
  *
@@ -82,22 +80,23 @@ export class SimplePredicate extends BasePredicate {
 /**
  * The class of date predicate for filtering attribute by value and filter operator.
  *
- * @namespace Query
  * @class DatePredicate
  * @extends BasePredicate
  *
  * @param attributePath {String} The path to the attribute for filtering.
  * @param operator {Query.FilterOperator|String} The filter operator.
  * @param value {String|Date} The value for filtering.
+ * @param timeless {Boolean} When true, dates will be filtered without time.
  * @constructor
  */
 export class DatePredicate extends BasePredicate {
-  constructor(attributePath, operator, value) {
+  constructor(attributePath, operator, value, timeless) {
     super();
 
     this._attributePath = attributePath;
     this._operator = FilterOperator.tryCreate(operator);
     this._value = value;
+    this._timeless = timeless;
   }
 
   /**
@@ -134,6 +133,17 @@ export class DatePredicate extends BasePredicate {
   }
 
   /**
+   * Flag for dates.
+   *
+   * @property timeless
+   * @type Boolean
+   * @public
+   */
+  get timeless() {
+    return this._timeless;
+  }
+
+  /**
    * Converts this instance to string.
    *
    * @method toString
@@ -141,14 +151,14 @@ export class DatePredicate extends BasePredicate {
    * @public
    */
   toString() {
-    return `(${this._attributePath} ${this._operator} ${this._value})`;
+    return this._timeless ? `(date(${this._attributePath}) ${this._operator} ${this._value})` :
+      `(${this._attributePath} ${this._operator} ${this._value})`;
   }
 }
 
 /**
  * The class of complex predicate which include multiple predicates unioned with logical condition.
  *
- * @namespace Query
  * @class ComplexPredicate
  * @extends BasePredicate
  *
@@ -217,7 +227,6 @@ export class ComplexPredicate extends BasePredicate {
 /**
  * The predicate class for string attributes.
  *
- * @namespace Query
  * @class StringPredicate
  * @extends BasePredicate
  *
@@ -275,7 +284,6 @@ export class StringPredicate extends BasePredicate {
 /**
  * The predicate class for geography attributes.
  *
- * @namespace Query
  * @class GeographyPredicate
  * @extends BasePredicate
  *
@@ -333,7 +341,6 @@ export class GeographyPredicate extends BasePredicate {
 /**
  * The predicate class for details.
  *
- * @namespace Query
  * @class DetailPredicate
  * @extends BasePredicate
  *
@@ -442,6 +449,49 @@ export class DetailPredicate extends BasePredicate {
 }
 
 /**
+ * The class of not predicate.
+ *
+ * @class NotPredicate
+ * @extends BasePredicate
+ *
+ * @param predicate {Object} Another predicate.
+ * @constructor
+ */
+export class NotPredicate extends BasePredicate {
+  constructor(predicate) {
+    if (!predicate) {
+      throw new Error('Inner predicate is required.');
+    }
+
+    super();
+
+    this._predicate = predicate;
+  }
+
+  /**
+   * Predicate getter.
+   *
+   * @property predicate
+   * @type String
+   * @public
+   */
+  get predicate() {
+    return this._predicate;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of result predicate.
+   * @public
+   */
+  toString() {
+    return `not ${this._predicate}`;
+  }
+}
+
+/**
  * Combines specified predicates using `and` logic condition.
  *
  * @for BasePredicate
@@ -470,7 +520,7 @@ BasePredicate.prototype.or = function (...predicates) {
 };
 
 /**
- * Throws error if specified arguemnt is not a predicate.
+ * Throws error if specified argument is not a predicate.
  *
  * @param {Object} predicate Object for validate.
  */
@@ -483,7 +533,6 @@ function validatePredicate(predicate) {
 /**
  * Creates predicate by various parameters.
  *
- * @namespace Query
  * @method createPredicate
  * @param args Arguments for the predicate.
  * @return {BasePredicate}
@@ -501,5 +550,5 @@ export function createPredicate(...args) {
     return new SimplePredicate(args[0], args[1], args[2]);
   }
 
-  throw new Error(`Couldn not create predicate from arguments`);
+  throw new Error(`Could not create predicate from arguments`);
 }

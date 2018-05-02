@@ -1,8 +1,8 @@
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
+import { attr, belongsTo } from '../../../utils/attributes';
 
-export let Model = Ember.Mixin.create({
+export let Model = Mixin.create({
   field: DS.attr('string'),
   caption: DS.attr('string'),
   oldValue: DS.attr('string'),
@@ -13,17 +13,17 @@ export let Model = Ember.Mixin.create({
 
 export let defineProjections = function (model) {
   model.defineProjection('AuditEntityUpdateView', 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', {
-    field: Projection.attr(''),
-    oldValue: Projection.attr(''),
-    newValue: Projection.attr(''),
+    field: attr(''),
+    oldValue: attr(''),
+    newValue: attr(''),
   });
 
   model.defineProjection('AuditFieldE', 'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', {
-    field: Projection.attr('Поле', { hidden: true }),
-    caption: Projection.attr('Имя поля'),
-    oldValue: Projection.attr('Старое значение'),
-    newValue: Projection.attr('Новое значение'),
-    mainChange: Projection.belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', '', {
+    field: attr('Поле', { hidden: true }),
+    caption: attr('Имя поля'),
+    oldValue: attr('Старое значение'),
+    newValue: attr('Новое значение'),
+    mainChange: belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field', '', {
     }, { hidden: true }),
   });
 };

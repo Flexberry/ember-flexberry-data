@@ -1,14 +1,14 @@
-import Ember from 'ember';
+import { isNone } from '@ember/utils';
 import DS from 'ember-data';
 
 import BaseSerializer from './base';
 import { capitalize, camelize } from '../utils/string-functions';
+import { pluralize } from 'ember-inflector';
 
 /**
  * Serializer class for OData.
  *
  * @module ember-flexberry-data
- * @namespace Serializer
  * @class OData
  */
 export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
@@ -35,10 +35,10 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
     var key = relationship.key;
     var belongsToId = snapshot.belongsTo(key, { id: true });
     var payloadKey = this.keyForRelationship(key, relationship.kind, 'serialize');
-    if (Ember.isNone(belongsToId)) {
+    if (isNone(belongsToId)) {
       json[payloadKey] = null;
     } else {
-      json[payloadKey] = Ember.String.pluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';
+      json[payloadKey] = pluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';
     }
 
     if (relationship.options.polymorphic) {
