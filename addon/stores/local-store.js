@@ -5,7 +5,8 @@
 import { computed } from '@ember/object';
 import { getOwner } from '@ember/application';
 import { isArray } from '@ember/array';
-import { debug } from '@ember/debug';
+import { assert, debug } from '@ember/debug';
+import { isNone } from '@ember/utils';
 import RSVP from 'rsvp';
 import DS from 'ember-data';
 import OfflineAdapter from '../adapters/offline';
@@ -224,8 +225,8 @@ export default DS.Store.extend({
   */
   deleteAllRecords: function(modelName, filter) {
     let adapter = this.adapterFor(modelName);
-    if (Ember.isNone(adapter.deleteAllRecords)) {
-      Ember.assert('Method \'deleteAllRecords\' is missing');
+    if (isNone(adapter.deleteAllRecords)) {
+      assert('Method \'deleteAllRecords\' is missing');
     }
 
     return adapter.deleteAllRecords(adapter.store, modelName, filter);

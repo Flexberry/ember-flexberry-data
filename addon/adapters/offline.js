@@ -10,7 +10,7 @@ import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { isNone, isEmpty } from '@ember/utils';
 import { merge } from '@ember/polyfills';
-import { warn } from '@ember/debug';
+import { assert, warn } from '@ember/debug';
 import DS from 'ember-data';
 import isObject from '../utils/is-object';
 import generateUniqueId from '../utils/generate-unique-id';
@@ -273,10 +273,14 @@ export default DS.Adapter.extend({
       this._deleteParentModels(store, type, snapshot.id));
   },
 
+  /* jshint unused:vars */
+  /* eslint-disable no-unused-vars */
   deleteAllRecords(store, modelName, filter) {
     // TODO Implement the method of removing all objects.
-    Ember.assert('Unsupported this metod in offline');
+    assert('Unsupported this metod in offline');
   },
+  /* eslint-enable no-unused-vars */
+  /* jshint unused:true */
 
   /**
     Create record if it does not exist, or update changed fields of record.

@@ -30,13 +30,13 @@ function initTests () {
     let object = {};
     object[dbName] = {
       1: {
-        employee: 'id,Age,Name,Surname,CountryName,Price,Active,Country,Creator,Manager,*Tags',
+        employee: 'id,Age,Name,Surname,employmentDate,CountryName,Price,Active,Country,Creator,Manager,*Tags',
         creator: 'id,Name,Age,Country',
         man: 'id,Name,Age,Country,EyesColor',
         bot: 'id,Name,Age,Country,IsClever',
         country: 'id,Name',
         tag: 'id,Name,Creator'
-      },
+      }
     };
     return object;
   };

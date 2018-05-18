@@ -2,7 +2,9 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import { assert } from '@ember/debug';
+import { isNone } from '@ember/utils';
+
 import DS from 'ember-data';
 
 /**
@@ -23,8 +25,8 @@ export default DS.Store.extend({
   */
   deleteAllRecords: function(modelName, filter) {
     let adapter = this.adapterFor(modelName);
-    if (Ember.isNone(adapter.deleteAllRecords)) {
-      Ember.assert('Method \'deleteAllRecords\' is missing');
+    if (isNone(adapter.deleteAllRecords)) {
+      assert('Method \'deleteAllRecords\' is missing');
     }
 
     return adapter.deleteAllRecords(adapter.store, modelName, filter);
