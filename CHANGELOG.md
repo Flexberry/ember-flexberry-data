@@ -4,6 +4,24 @@
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
 
+## [0.12.0-beta.0] - 2018-04-20
+### Added
+- `Projection.OnlineStore` with the implementation of the method `deleteAllRecords`.
+- Implementation of the method `deleteAllRecords` for `Offline.LocalStore` and `Offline.Store`.
+- Implementation of the method `deleteAllRecords` for `Adapter.OData` through calling `DeleteAllSelect` action on backend.
+
+### Changed
+- Query language:
+    - Now impossible create `Query.DatePredicate` with invalid date value or null.
+
+### Fixed
+- Query language:
+    - The `timeless` mode of `Query.DatePredicate` for `Query.JsAdapter`.
+    - Building queries for models that have `string` primary key type.
+
+### Breaking changes
+- Property `idType`, for define primary key type on backed, moved from `Adapter.OData` adapter to `Projection.Model` model.
+
 ## [0.11.1-beta.1] - 2018-03-07
 ### Fixed
 - `Audit.ModelMixin`:

@@ -28,8 +28,6 @@ export default DS.RESTAdapter.extend({
     };
   }),
 
-  idType: 'number',
-
   /**
     Timeout for AJAX-requests.
 
@@ -416,7 +414,7 @@ export default DS.RESTAdapter.extend({
 
     if (id != null) {
       // Append id as `(id)` (OData specification) instead of `/id`.
-      url = this._appendIdToURL(id, url);
+      url = this._appendIdToURL(id, url, modelName);
     }
 
     return url;
@@ -430,10 +428,10 @@ export default DS.RESTAdapter.extend({
    * @param {String} url
    * @private
    */
-  _appendIdToURL(id, url) {
+  _appendIdToURL(id, url, modelName) {
     let encId = encodeURIComponent(id);
-    let idType = get(this, 'idType');
-    if (idType !== 'number') {
+    let model = this.store.modelFor(modelName);
+    if (model.idType === 'string') {
       encId = `'${encId}'`;
     }
 
@@ -451,6 +449,17 @@ export default DS.RESTAdapter.extend({
 
   deleteRecord(store, type, snapshot) {
     return this._sendRecord(store, type, snapshot, 'deleteRecord');
+  },
+
+  deleteAllRecords(store, modelName, filter) {
+    let url = this._buildURL(modelName);
+    let pathName  = this.pathForType(modelName);
+    let builder = new ODataQueryAdapter(url, store);
+    let filterVelue = builder._buildODataFilters(filter);
+    let filterQuery = !isNone(filterVelue) ? '$filter=' + filterVelue : '';
+    let data = { pathName: pathName, filterQuery: filterQuery };
+
+    return this.callAction('DeleteAllSelect', data, null, { withCredentials: true });
   },
 
   /**

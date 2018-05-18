@@ -169,7 +169,7 @@ class Information {
             isKey: isMaster,
             isEnum: false,
             type: relationship.type,
-            keyType: 'guid' // TODO: other key types
+            keyType: model.idType || 'guid'
           };
         }
 
@@ -180,7 +180,7 @@ class Information {
             isKey: true,
             isEnum: false,
             type: 'string',
-            keyType: 'guid' // TODO: other key types
+            keyType: model.idType || 'guid'
           };
         }
 

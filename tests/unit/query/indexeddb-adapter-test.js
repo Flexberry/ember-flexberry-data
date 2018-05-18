@@ -5,7 +5,7 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import IndexedDbAdapter from 'ember-flexberry-data/query/indexeddb-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, DatePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
 
 import startApp from '../../helpers/start-app';
@@ -236,6 +236,255 @@ test('adapter | indexeddb | simple predicate | geq', (assert) => {
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where('Age', FilterOperator.Geq, 11);
 
   executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
+  });
+});
+
+test('adapter | indexeddb | date predicate | eq', (assert) => {
+  let dt1 = new Date(2018, 0, 30, 9, 30);  // Tue Jan 30 2018 09:30:00
+  let dt2 = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+  let dt3 = new Date(2018, 0, 31, 9, 30);  // Wed Jan 31 2018 09:30:00
+
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
+    ],
+  };
+
+  let dp1 = new DatePredicate('employmentDate', FilterOperator.Eq, sampleDt);
+  let dp2 = new DatePredicate('employmentDate', FilterOperator.Eq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp1);
+  let builder2 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp2).orderBy('id');
+
+  executeTest(data, builder1.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 2);
+  });
+
+  executeTest(data, builder2.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
+  });
+});
+
+test('adapter | indexeddb | date predicate | eq | master field', function (assert) {
+  let dt1 = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+  let dt2 = new Date(2018, 0, 31, 9, 30);  // Wed Jan 31 2018 09:30:00
+
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let data = {
+    employee: [
+      { id: 1, Manager: 4 },
+      { id: 2 },
+      { id: 3, Manager: 5 },
+      { id: 4, employmentDate: dt1.toISOString() },
+      { id: 5, employmentDate: dt2.toISOString() },
+    ],
+  };
+
+  let dp1 = new DatePredicate('Manager.employmentDate', FilterOperator.Eq, sampleDt);
+  let dp2 = new DatePredicate('Manager.employmentDate', FilterOperator.Eq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp1);
+  let builder2 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp2).orderBy('id');
+
+  executeTest(data, builder1.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
+  });
+
+  executeTest(data, builder2.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
+  });
+});
+
+test('adapter | indexeddb | date predicate | neq', (assert) => {
+  let dt1 = new Date(2018, 0, 30, 9, 30);  // Tue Jan 30 2018 09:30:00
+  let dt2 = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+  let dt3 = new Date(2018, 0, 31, 9, 30);  // Wed Jan 31 2018 09:30:00
+
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
+    ],
+  };
+
+  let dp1 = new DatePredicate('employmentDate', FilterOperator.Neq, sampleDt);
+  let dp2 = new DatePredicate('employmentDate', FilterOperator.Neq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp1).orderBy('id');
+  let builder2 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp2);
+
+  executeTest(data, builder1.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
+  });
+
+  executeTest(data, builder2.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
+  });
+});
+
+test('adapter | indexeddb | date predicate | le', (assert) => {
+  let dt1 = new Date(2018, 0, 30, 9);  // Tue Jan 30 2018 09:00:00
+  let dt2 = new Date(2018, 0, 31, 8);  // Wed Jan 31 2018 08:00:00
+  let dt3 = new Date(2018, 0, 31, 9);  // Wed Jan 31 2018 09:00:00
+
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
+    ],
+  };
+
+  let dp1 = new DatePredicate('employmentDate', FilterOperator.Le, sampleDt);
+  let dp2 = new DatePredicate('employmentDate', FilterOperator.Le, sampleDt, true);
+
+  let builder1 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp1).orderBy('id');
+  let builder2 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp2);
+
+  executeTest(data, builder1.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+  });
+
+  executeTest(data, builder2.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
+  });
+});
+
+test('adapter | indexeddb | date predicate | leq', (assert) => {
+  let dt1 = new Date(2018, 0, 30, 9, 30);  // Tue Jan 30 2018 09:30:00
+  let dt2 = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+  let dt3 = new Date(2018, 0, 31, 9, 30);  // Wed Jan 31 2018 09:30:00
+
+  let sampleDt = new Date(2018, 0, 31, 8);  // Wed Jan 31 2018 08:00:00
+
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
+    ],
+  };
+
+  let dp1 = new DatePredicate('employmentDate', FilterOperator.Leq, sampleDt);
+  let dp2 = new DatePredicate('employmentDate', FilterOperator.Leq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp1);
+  let builder2 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp2).orderBy('id');
+
+  executeTest(data, builder1.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
+  });
+
+  executeTest(data, builder2.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 3);
+  });
+});
+
+test('adapter | indexeddb | date predicate | ge', (assert) => {
+  let dt1 = new Date(2018, 0, 30, 9, 30);  // Tue Jan 30 2018 09:30:00
+  let dt2 = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+  let dt3 = new Date(2018, 0, 31, 9, 30);  // Wed Jan 31 2018 09:30:00
+
+  let sampleDt = new Date(2018, 0, 30, 9);  // Wed Jan 30 2018 09:00:00
+
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
+    ],
+  };
+
+  let dp1 = new DatePredicate('employmentDate', FilterOperator.Ge, sampleDt);
+  let dp2 = new DatePredicate('employmentDate', FilterOperator.Ge, sampleDt, true);
+
+  let builder1 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp1).orderBy('id');
+  let builder2 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp2).orderBy('id');
+
+  executeTest(data, builder1.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 3);
+  });
+
+  executeTest(data, builder2.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 2);
+    assert.equal(result.data[1].id, 3);
+  });
+});
+
+test('adapter | indexeddb | date predicate | geq', (assert) => {
+  let dt1 = new Date(2018, 0, 30, 9);  // Tue Jan 30 2018 09:00:00
+  let dt2 = new Date(2018, 0, 31, 8);  // Wed Jan 31 2018 08:00:00
+  let dt3 = new Date(2018, 0, 31, 9);  // Wed Jan 31 2018 09:00:00
+
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', employmentDate: dt1.toISOString() },
+      { id: 2, Name: 'B', Surname: 'Y', employmentDate: dt2.toISOString() },
+      { id: 3, Name: 'C', Surname: 'Z', employmentDate: dt3.toISOString() },
+    ],
+  };
+
+  let dp1 = new DatePredicate('employmentDate', FilterOperator.Geq, sampleDt);
+  let dp2 = new DatePredicate('employmentDate', FilterOperator.Geq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp1);
+  let builder2 = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('employmentDate').where(dp2).orderBy('id');
+
+  executeTest(data, builder1.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 3);
+  });
+
+  executeTest(data, builder2.build(), assert, (result) => {
     assert.ok(result.data);
     assert.equal(result.data.length, 2);
     assert.equal(result.data[0].id, 2);

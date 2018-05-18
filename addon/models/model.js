@@ -400,16 +400,39 @@ Model.reopenClass({
   projections: null,
 
   /**
-    Defines projection for specified model type.
+    Flag that indicates model id type.
 
-    @method defineProjection
-    @param {String} projectionName Projection name, eg 'EmployeeE'.
-    @param {String} modelName The name of the model type.
-    @param {Object} attributes Projection attributes.
-    @return {Object} Created projection.
-    @public
-    @static
+    @property isType
+    @type string
+    @default 'guid'
   */
+  idType: 'guid',
+
+  /**
+   * Defines idType for specified model type.
+   *
+   * @method defineIdType
+   * @param {String} newIdType Model id type.
+   * @public
+   * @static
+   */
+  defineIdType: function (newIdType) {
+    this.reopenClass({
+      idType: newIdType,
+    });
+  },
+
+  /**
+   * Defines projection for specified model type.
+   *
+   * @method defineProjection
+   * @param {String} projectionName Projection name, eg 'EmployeeE'.
+   * @param {String} modelName The name of the model type.
+   * @param {Object} attributes Projection attributes.
+   * @return {Object} Created projection.
+   * @public
+   * @static
+   */
   defineProjection: function (projectionName, modelName, attributes) {
     let proj = createProj(modelName, attributes, projectionName);
 

@@ -1,5 +1,6 @@
 import FilterOperator from './filter-operator';
 import Condition from './condition';
+import moment from 'moment';
 
 /**
  * The base class of logical predicate.
@@ -92,6 +93,11 @@ export class SimplePredicate extends BasePredicate {
 export class DatePredicate extends BasePredicate {
   constructor(attributePath, operator, value, timeless) {
     super();
+
+    let momentFromValue = moment(value);
+    if (!momentFromValue.isValid()) {
+      throw new Error(`Date isn't valid or null (for null values use SimplePredicate)`);
+    }
 
     this._attributePath = attributePath;
     this._operator = FilterOperator.tryCreate(operator);

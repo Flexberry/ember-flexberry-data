@@ -4,7 +4,8 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, GeographyPredicate, NotPredicate } from 'ember-flexberry-data/query/predicate';
+import { SimplePredicate, DatePredicate, ComplexPredicate, StringPredicate,
+  DetailPredicate, GeographyPredicate, NotPredicate } from 'ember-flexberry-data/query/predicate';
 import ODataAdapter from 'ember-flexberry-data/query/odata-adapter';
 import startApp from '../../helpers/start-app';
 
@@ -165,6 +166,111 @@ test('adapter | odata | simple predicate | leq', function (assert) {
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', `$filter=FirstName le 'Vasya'&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | eq', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Eq, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Eq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate eq ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) eq ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | eq | master field', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('Manager.employmentDate', FilterOperator.Eq, sampleDt);
+  let dp2 = new DatePredicate('Manager.employmentDate', FilterOperator.Eq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=Manager/EmploymentDate eq ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(Manager/EmploymentDate) eq ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | neq', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Neq, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Neq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate ne ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) ne ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | le', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Le, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Le, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate lt ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) lt ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | leq', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Leq, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Leq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate le ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) le ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | ge', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Ge, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Ge, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate gt ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) gt ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | geq', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Geq, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Geq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate ge ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) ge ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
 });
 
 test('adapter | odata | string predicate', function (assert) {

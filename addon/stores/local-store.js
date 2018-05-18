@@ -215,4 +215,19 @@ export default DS.Store.extend({
       }, reject);
     });
   },
+
+  /**
+    Delete all record from the current store.
+    @method deleteRecord
+    @param {String} modelName modelName
+    @param {Object} filter filter
+  */
+  deleteAllRecords: function(modelName, filter) {
+    let adapter = this.adapterFor(modelName);
+    if (Ember.isNone(adapter.deleteAllRecords)) {
+      Ember.assert('Method \'deleteAllRecords\' is missing');
+    }
+
+    return adapter.deleteAllRecords(adapter.store, modelName, filter);
+  },
 });

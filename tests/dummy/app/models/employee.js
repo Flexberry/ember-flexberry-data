@@ -9,6 +9,7 @@ let Employee = EmberFlexberryDataModel.extend({
   Age: DS.attr('number'),
   Name: DS.attr('string'),
   Surname: DS.attr('string'),
+  employmentDate: attr('date'),
   CountryName: DS.attr('string'),
   Price: DS.attr('decimal'),
   Active: DS.attr('boolean'),
