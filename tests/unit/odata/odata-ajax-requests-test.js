@@ -20,7 +20,7 @@ test('ajax functions tests', function(assert) {
       url: '/test-models/test',
       responseText: { ab: 'cd' }
     });
-    return adapter.callAction('/test-models', 'test', { abcd: 'def' })
+    return adapter.callAction('test', { abcd: 'def' }, '/test-models')
     .then((msg) => {
       assert.equal(msg.ab, 'cd', 'getting POST response');
     })
@@ -31,7 +31,7 @@ test('ajax functions tests', function(assert) {
         type: 'GET',
         responseText: { ab: 'cd' }
       });
-      return adapter.callFunction('/test-models', 'test', { abcd: 'def' })
+      return adapter.callFunction('test', { abcd: 'def' }, '/test-models')
       .then((msg) => {
         assert.equal(msg.ab, 'cd', 'getting GET response');
       });
@@ -42,8 +42,9 @@ test('ajax functions tests', function(assert) {
         responseText: { ab: 'cd' }
       });
       return adapter.callAction(
-        '/test-models',
         'test', { abcd: 'def' },
+        '/test-models',
+        null,
         (msg) => {
           assert.equal(msg.ab + ' success', 'cd success', 'successCallback works');
           return msg.ab + ' success';

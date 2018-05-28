@@ -22,8 +22,6 @@ export default DS.RESTAdapter.extend({
     Prefer: 'return=representation'
   },
 
-  idType: 'number',
-
   /**
     Timeout for AJAX-requests.
 
@@ -176,7 +174,7 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   makeRequest(params) {
-    Ember.aserrt('You should specify both method and url', params.method || params.url);
+    Ember.assert('You should specify both method and url', params.method || params.url);
     return Ember.$.ajax(params);
   },
 
@@ -184,16 +182,17 @@ export default DS.RESTAdapter.extend({
    * A method to call functions using ajax requests.
    *
    * @method callFunction
-   * @param {string} url
    * @param {Object} functionName
    * @param {Object} params
+   * @param {string} url
+   * @param {Object} fields
    * @param {Function} successCallback
    * @param {Function} failCallback
    * @param {Function} alwaysCallback
    * @return {Promise}
    * @public
    */
-  callFunction(url, functionName, params, successCallback, failCallback, alwaysCallback) {
+  callFunction(functionName, params, url, fields, successCallback, failCallback, alwaysCallback) {
     let config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
@@ -205,13 +204,18 @@ export default DS.RESTAdapter.extend({
       counter++;
     }
 
+    let resultParams = {};
+    if (!Ember.isNone(params)) {
+      resultParams = params;
+    }
+
     let i = 0;
-    for (key in params) {
+    for (key in resultParams) {
       //TODO: Check types and ''
-      if (typeof params[key] === 'number') {
-        resultUrl = resultUrl + `${key}=${params[key]}`;
+      if (typeof resultParams[key] === 'number') {
+        resultUrl = resultUrl + `${key}=${resultParams[key]}`;
       } else {
-        resultUrl = resultUrl + `${key}='${params[key]}'`;
+        resultUrl = resultUrl + `${key}='${resultParams[key]}'`;
       }
 
       i++;
@@ -226,7 +230,12 @@ export default DS.RESTAdapter.extend({
       resultUrl += ')';
     }
 
-    return this._callAjax({ url: resultUrl, method: 'GET' }, successCallback, failCallback, alwaysCallback);
+    let resultFields = {};
+    if (!Ember.isNone(fields)) {
+      resultFields = fields;
+    }
+
+    return this._callAjax({ url: resultUrl, method: 'GET', xhrFields: resultFields }, successCallback, failCallback, alwaysCallback);
 
   },
 
@@ -234,16 +243,17 @@ export default DS.RESTAdapter.extend({
    * A method to call actions using ajax requests.
    *
    * @method callFunction
-   * @param {String} url
    * @param {String} actionName
    * @param {Object} data
+   * @param {String} url
+   * @param {Object} fields
    * @param {Function} successCallback
    * @param {Function} failCallback
    * @param {Function} alwaysCallback
    * @return {Promise}
    * @public
    */
-  callAction(url, actionName, data, successCallback, failCallback, alwaysCallback) {
+  callAction(actionName, data, url, fields, successCallback, failCallback, alwaysCallback) {
     let config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
@@ -252,8 +262,13 @@ export default DS.RESTAdapter.extend({
     data = JSON.stringify(data);
     url =  `${url}/${actionName}`;
 
+    let resultFields = {};
+    if (!Ember.isNone(fields)) {
+      resultFields = fields;
+    }
+
     return this._callAjax(
-      { data: data, url: url, method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json' },
+      { data: data, url: url, method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json', xhrFields: resultFields },
       successCallback,
       failCallback,
       alwaysCallback);
@@ -389,7 +404,7 @@ export default DS.RESTAdapter.extend({
 
     if (id != null) {
       // Append id as `(id)` (OData specification) instead of `/id`.
-      url = this._appendIdToURL(id, url);
+      url = this._appendIdToURL(id, url, modelName);
     }
 
     return url;
@@ -403,10 +418,10 @@ export default DS.RESTAdapter.extend({
    * @param {String} url
    * @private
    */
-  _appendIdToURL(id, url) {
+  _appendIdToURL(id, url, modelName) {
     let encId = encodeURIComponent(id);
-    let idType = Ember.get(this, 'idType');
-    if (idType !== 'number') {
+    let model = this.store.modelFor(modelName);
+    if (model.idType === 'string') {
       encId = `'${encId}'`;
     }
 
@@ -424,6 +439,17 @@ export default DS.RESTAdapter.extend({
 
   deleteRecord(store, type, snapshot) {
     return this._sendRecord(store, type, snapshot, 'deleteRecord');
+  },
+
+  deleteAllRecords(store, modelName, filter) {
+    let url = this._buildURL(modelName);
+    let pathName  = this.pathForType(modelName);
+    let builder = new ODataQueryAdapter(url, store);
+    let filterVelue = builder._buildODataFilters(filter);
+    let filterQuery = !Ember.isNone(filterVelue) ? '$filter=' + filterVelue : '';
+    let data = { pathName: pathName, filterQuery: filterQuery };
+
+    return this.callAction('DeleteAllSelect', data, null, { withCredentials: true });
   },
 
   /**

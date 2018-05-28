@@ -18,6 +18,7 @@ import OfflineModel from './models/offline-model';
 import OfflineModelMixin from './mixins/offline-model';
 import BaseStore from './stores/base-store';
 import LocalStore from './stores/local-store';
+import OnlineStore from './stores/online-store';
 import OfflineSerializer from './serializers/offline';
 import OfflineAdapter from './adapters/offline';
 import OfflineGlobalsService from './services/offline-globals';
@@ -84,6 +85,7 @@ Projection.create = create;
 Projection.attr = attr;
 Projection.belongsTo = belongsTo;
 Projection.hasMany = hasMany;
+Projection.OnlineStore = OnlineStore;
 
 /**
   This namespace contains base adapter classes for different kind of backends.
