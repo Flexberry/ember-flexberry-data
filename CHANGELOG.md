@@ -2,28 +2,24 @@
 
 ## [Unreleased]
 
-## [0.12.0-beta.0] - 2018-04-20
+## [0.12.0] - 2018-05-28
 ### Added
-- `Projection.OnlineStore` with the implementation of the method `deleteAllRecords`.
-- Implementation of the method `deleteAllRecords` for `Offline.LocalStore` and `Offline.Store`.
-- Implementation of the method `deleteAllRecords` for `Adapter.OData` through calling `DeleteAllSelect` action on backend.
+- `Projection.OnlineStore` as online store for `Offline.Store`.
+- Implemented `deleteAllRecords` method for online and offline stores of `Offline.Store`.
 
 ### Changed
 - Query language:
-    - Now impossible create `Query.DatePredicate` with invalid date value or null.
+    - Now it's impossible to create `Query.DatePredicate` with invalid date or `null` value.
 
 ### Fixed
+- `Audit.ModelMixin`:
+    - Fix audit fields saving when `currentUserName` property returns promise.
 - Query language:
     - The `timeless` mode of `Query.DatePredicate` for `Query.JsAdapter`.
     - Building queries for models that have `string` primary key type.
 
 ### Breaking changes
-- Property `idType`, for define primary key type on backed, moved from `Adapter.OData` adapter to `Projection.Model` model.
-
-## [0.11.1-beta.1] - 2018-03-07
-### Fixed
-- `Audit.ModelMixin`:
-    - Fix audit fields saving when `currentUserName` is a promise.
+- `idType` property for defining primary key type on backed, moved from `Adapter.OData` to `Projection.Model`.
 
 ## [0.11.0] - 2018-02-20
 ### Added
