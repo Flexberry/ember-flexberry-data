@@ -177,8 +177,8 @@ let Model = DS.Model.extend(Evented, {
       if (kind === 'hasMany') {
         if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           changedHasMany[key] = [
-            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel._record : undefined),
-            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel._record : undefined),
+            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel.getRecord() : undefined),
+            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel.getRecord() : undefined),
           ];
         }
       }
@@ -197,7 +197,7 @@ let Model = DS.Model.extend(Evented, {
       if (kind === 'hasMany' && (!forOnlyKey || forOnlyKey === key)) {
         if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           [this.get(`${key}.canonicalState`), this.get(`${key}.currentState`)].forEach((state, i) => {
-            let records = state.map(internalModel => internalModel.record);
+            let records = state.map(internalModel => internalModel.getRecord());
             records.forEach((record) => {
               record.rollbackAll();
             });
