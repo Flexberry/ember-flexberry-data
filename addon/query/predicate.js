@@ -506,6 +506,77 @@ export class NotPredicate extends BasePredicate {
 }
 
 /**
+ * The predicate class that implements the isof function.
+ *
+ * Its constructor implements the following signatures:
+ *   - `new IsOfPredicate(typeName)`
+ *   - `new IsOfPredicate(expression, typeName)`
+ *
+ * Where:
+ *   - `typeName` - type name to which the current instance will be assigned.
+ *   - `expression` - an expression relative to the current instance that must point to an object for assigning a type.
+ *
+ * @namespace Query
+ * @class IsOfPredicate
+ * @extends BasePredicate
+ *
+ * @param ...args
+ * @constructor
+ */
+export class IsOfPredicate extends BasePredicate {
+  constructor(...args) {
+    super();
+
+    let expression;
+    let typeName = args[0];
+    if (args.length === 2) {
+      expression = args[0];
+      typeName = args[1];
+    }
+
+    if (!typeName) {
+      throw new Error('Type name is required.');
+    }
+
+    this._expression = expression;
+    this._typeName = typeName;
+  }
+
+  /**
+   * Expression getter.
+   *
+   * @property expression
+   * @type String
+   * @public
+   */
+  get expression() {
+    return this._expression;
+  }
+
+  /**
+   * Type name getter.
+   *
+   * @property typeName
+   * @type String
+   * @public
+   */
+  get typeName() {
+    return this._typeName;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of result predicate.
+   * @public
+   */
+  toString() {
+    return `isof(${this._expression ? `${this._expression}, ` : ''}'${this._typeName}')`;
+  }
+}
+
+/**
  * Combines specified predicates using `and` logic condition.
  *
  * @for BasePredicate
