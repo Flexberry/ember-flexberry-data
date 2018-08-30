@@ -48,6 +48,7 @@ import {
   StringPredicate,
   DetailPredicate,
   GeographyPredicate,
+  NotPredicate,
   IsOfPredicate,
   createPredicate,
 } from './query/predicate';
@@ -139,6 +140,7 @@ Query.ComplexPredicate = ComplexPredicate;
 Query.StringPredicate = StringPredicate;
 Query.DetailPredicate = DetailPredicate;
 Query.GeographyPredicate = GeographyPredicate;
+Query.NotPredicate = NotPredicate;
 Query.IsOfPredicate = IsOfPredicate;
 Query.createPredicate = createPredicate;
 
