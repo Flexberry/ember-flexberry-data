@@ -562,6 +562,16 @@ Model.reopenClass({
   idType: 'guid',
 
   /**
+    The namespace in which this model is defined.
+
+    @property namespace
+    @type string
+    @default ''
+    @static
+  */
+  namespace: '',
+
+  /**
    * Defines idType for specified model type.
    *
    * @method defineIdType
