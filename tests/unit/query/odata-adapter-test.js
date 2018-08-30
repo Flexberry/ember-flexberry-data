@@ -3,8 +3,16 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, DatePredicate, ComplexPredicate, StringPredicate,
-  DetailPredicate, GeographyPredicate, NotPredicate } from 'ember-flexberry-data/query/predicate';
+import {
+  SimplePredicate,
+  DatePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  GeographyPredicate,
+  NotPredicate,
+  IsOfPredicate,
+} from 'ember-flexberry-data/query/predicate';
 import ODataAdapter from 'ember-flexberry-data/query/odata-adapter';
 import startApp from '../../helpers/start-app';
 
@@ -585,6 +593,50 @@ test('adapter | odata | not predicate | any | with string predicate', function (
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', `$filter=not (contains(FirstName,'a'))&$select=CustomerID`);
+});
+
+test('adapter | odata | isof predicate | only type', function (assert) {
+  // Arrange.
+  let predicate = new IsOfPredicate('bot');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=isof($it,'.Bot')&$select=CreatorID`);
+});
+
+test('adapter | odata | isof predicate | with expression', function (assert) {
+  // Arrange.
+  let predicate = new IsOfPredicate('Creator', 'bot');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'tag').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Tag', `$filter=isof(Creator,'.Bot')&$select=id`);
+});
+
+test('adapter | odata | isof predicate | inside complex', function (assert) {
+  // Arrange.
+  let predicate = new SimplePredicate('Age', 'geq', 0).and(new IsOfPredicate('bot'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=Age ge 0 and isof($it,'.Bot')&$select=CreatorID`);
+});
+
+test('adapter | odata | isof predicate | inside not', function (assert) {
+  // Arrange.
+  let predicate = new NotPredicate(new IsOfPredicate('bot'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=not(isof($it,'.Bot'))&$select=CreatorID`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {

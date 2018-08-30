@@ -2,7 +2,16 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, NotPredicate } from './predicate';
+import {
+  SimplePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  DatePredicate,
+  GeographyPredicate,
+  NotPredicate,
+  IsOfPredicate,
+} from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
@@ -267,6 +276,15 @@ export default class ODataAdapter extends BaseAdapter {
       }
 
       return `contains(${attribute},'${predicate.containsValue}')`;
+    }
+
+    if (predicate instanceof IsOfPredicate) {
+      let type = this._store.modelFor(predicate.typeName);
+      let typeName = Ember.get(type, 'modelName');
+      let namespace = Ember.get(type, 'namespace');
+      let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : '$it';
+
+      return `isof(${expression},'${namespace}.${classify(typeName)}')`;
     }
 
     if (predicate instanceof GeographyPredicate) {
