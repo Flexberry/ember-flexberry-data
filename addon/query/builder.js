@@ -4,7 +4,7 @@ import DS from 'ember-data';
 import BaseBuilder from './base-builder';
 import OrderByClause from './order-by-clause';
 import QueryObject from './query-object';
-import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate } from './predicate';
+import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, IsOfPredicate } from './predicate';
 import Information from '../utils/information';
 import isEmbedded from '../utils/is-embedded';
 
@@ -72,6 +72,27 @@ export default class Builder extends BaseBuilder {
    */
   from(modelName) {
     this._modelName = modelName;
+    return this;
+  }
+
+  /**
+   * Restricts the selectable objects to the specified type.
+   *
+   * @method isOf
+   * @param typeName {String} The model name of which the selectable objects should be assigned.
+   * @return {Query.Builder} Returns this instance.
+   * @public
+   * @chainable
+   */
+  isOf(typeName) {
+    let model = this._store.modelFor(typeName);
+    if (!(model.prototype instanceof DS.Model)) {
+      throw new Error(`Unknown type: '${typeName}'.`);
+    }
+
+    let predicate = new IsOfPredicate(typeName);
+    this._predicate = this._predicate ? this._predicate.and(predicate) : predicate;
+
     return this;
   }
 
