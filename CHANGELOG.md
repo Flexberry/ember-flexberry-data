@@ -1,6 +1,13 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Query language:
+    - The `IsOfPredicate` with implementation for `OData`.
+    - The `isOf` method in `Query.Builder` for simple usage `IsOfPredicate`.
+
+### Fixed
+- Loss of `intersectsValue` in the `GeographyPredicate` when it inside `NotPredicate`.
 
 ## [0.12.0] - 2018-05-28
 ### Added
