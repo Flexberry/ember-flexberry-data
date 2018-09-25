@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- `Serializer.Base`:
+    - The `normalize` method for update typeClass.
 
 ## [0.13.0-beta.0] - 2018-09-17
 ### Added
