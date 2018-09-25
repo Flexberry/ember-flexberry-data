@@ -1,9 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+
+## [0.2.0-beta.0] - 2018-09-25
 ### Added
 - `Serializer.Base`:
-    - The `normalize` method for update typeClass.
+    - The `normalize` method for update typeClass in case of polymorphic relationships.
 
 ## [0.13.0-beta.0] - 2018-09-17
 ### Added
