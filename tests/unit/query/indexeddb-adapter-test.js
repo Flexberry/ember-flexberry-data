@@ -4,14 +4,14 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import IndexedDbAdapter from 'ember-flexberry-data/query/indexeddb-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
-import { 
-  SimplePredicate, 
-  DatePredicate, 
-  ComplexPredicate, 
-  StringPredicate, 
-  DetailPredicate, 
-  GeographyPredicate, 
-  GeometryPredicate 
+import {
+  SimplePredicate,
+  DatePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  GeographyPredicate,
+  GeometryPredicate
 } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
 

@@ -632,7 +632,7 @@ test('adapter | odata | not predicate | with geometry predicate', function (asse
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (geom.intersects(geometry1=Coordinates,geometry2=geometry'${$POLYGON}'))&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not(geom.intersects(geometry1=Coordinates,geometry2=geometry'${POLYGON}'))&$select=CustomerID`);
 });
 
 test('adapter | odata | not predicate | with detail predicate', function (assert) {
