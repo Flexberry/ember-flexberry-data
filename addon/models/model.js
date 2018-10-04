@@ -553,6 +553,39 @@ Model.reopenClass({
   projections: null,
 
   /**
+    Flag that indicates model id type.
+
+    @property isType
+    @type string
+    @default 'guid'
+  */
+  idType: 'guid',
+
+  /**
+    The namespace in which this model is defined.
+
+    @property namespace
+    @type string
+    @default ''
+    @static
+  */
+  namespace: '',
+
+  /**
+   * Defines idType for specified model type.
+   *
+   * @method defineIdType
+   * @param {String} newIdType Model id type.
+   * @public
+   * @static
+   */
+  defineIdType: function (newIdType) {
+    this.reopenClass({
+      idType: newIdType,
+    });
+  },
+
+  /**
    * Defines projection for specified model type.
    *
    * @method defineProjection

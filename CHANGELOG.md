@@ -2,6 +2,50 @@
 
 ## [Unreleased]
 
+## [0.2.0-beta.0] - 2018-09-25
+### Added
+- `Serializer.Base`:
+    - The `normalize` method for update typeClass in case of polymorphic relationships.
+
+## [0.13.0-beta.0] - 2018-09-17
+### Added
+- Query language:
+    - The `IsOfPredicate` with implementation for `OData`.
+    - The `isOf` method in `Query.Builder` for simple usage `IsOfPredicate`.
+
+### Fixed
+- Loss of `intersectsValue` in the `GeographyPredicate` when it inside `NotPredicate`.
+
+## [0.12.0] - 2018-05-28
+### Added
+- `Projection.OnlineStore` as online store for `Offline.Store`.
+- Implemented `deleteAllRecords` method for online and offline stores of `Offline.Store`.
+
+### Changed
+- Query language:
+    - Now it's impossible to create `Query.DatePredicate` with invalid date or `null` value.
+
+### Fixed
+- `Audit.ModelMixin`:
+    - Fix audit fields saving when `currentUserName` property returns promise.
+- Query language:
+    - The `timeless` mode of `Query.DatePredicate` for `Query.JsAdapter`.
+    - Building queries for models that have `string` primary key type.
+
+### Breaking changes
+- `idType` property for defining primary key type on backed, moved from `Adapter.OData` to `Projection.Model`.
+
+## [0.11.0] - 2018-02-20
+### Added
+- Query language:
+    - `Timeless` mode for `DatePredicate`.
+- `Adapter.Odata`
+    - The `makeRequest`, `callAction` and `callFunction` methods to make AJAX-requests, OData-action and OData-function calls correspondingly.
+
+### Fixed
+- `Projection.Model`:
+    - When calling `save` method, `model` was always saved offline.
+
 ## [0.10.0] - 2018-01-25
 ### Added
 - `Projection.Model`:
@@ -12,8 +56,8 @@
     - If errors are occured adapter now responses with errors expected in [OData JSON Format](http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766668).
 
 ### Changed
-`user` service:
-     - Getting current user name for entire application is now able by calling `getCurrentUserName` method.
+- `user` service:
+    - Getting of current user name is now able by calling `getCurrentUserName` method from `user` service.
 
 ### Fixed
 - `Projection.Model`:

@@ -5,6 +5,8 @@ import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
 import { capitalize, camelize } from '../utils/string-functions';
 
+const { getOwner } = Ember;
+
 /**
  * The OData adapter class.
  * Uses Flexberry Query as a language for requesting server.
@@ -19,8 +21,6 @@ export default DS.RESTAdapter.extend({
   headers: {
     Prefer: 'return=representation'
   },
-
-  idType: 'number',
 
   /**
     Timeout for AJAX-requests.
@@ -53,7 +53,7 @@ export default DS.RESTAdapter.extend({
 
     Ember.debug(`Flexberry ODataAdapter::query '${type}'`, data);
 
-    // TODO: think about moving request execution into query adapter
+    //f TODO: think about moving request execution into query adapter
     return this.ajax(url, 'GET', { data: data, timeout: timeout, dataType: query.dataType || 'json' });
   },
 
@@ -167,6 +167,210 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
+   * A method to make ajax requests.
+   *
+   * @method makeRequest
+   * @param {Object} params
+   * @public
+   */
+  makeRequest(params) {
+    Ember.assert('You should specify both method and url', params.method || params.url);
+    return Ember.$.ajax(params);
+  },
+
+  /**
+   * A method to call functions using ajax requests.
+   *
+   * @method callFunction
+   * @param {Object} functionName
+   * @param {Object} params
+   * @param {string} url
+   * @param {Object} fields
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
+   */
+  callFunction(functionName, params, url, fields, successCallback, failCallback, alwaysCallback) {
+    let config = getOwner(this)._lookupFactory('config:environment');
+    if (Ember.isNone(url)) {
+      url = `${config.APP.backendUrls.api}`;
+    }
+
+    let resultUrl = `${url}/${functionName}(`;
+    let counter = 0;
+    for (var key in params) {
+      counter++;
+    }
+
+    let resultParams = {};
+    if (!Ember.isNone(params)) {
+      resultParams = params;
+    }
+
+    let i = 0;
+    for (key in resultParams) {
+      //TODO: Check types and ''
+      if (typeof resultParams[key] === 'number') {
+        resultUrl = resultUrl + `${key}=${resultParams[key]}`;
+      } else {
+        resultUrl = resultUrl + `${key}='${resultParams[key]}'`;
+      }
+
+      i++;
+      if (i < counter) {
+        resultUrl += ',';
+      } else {
+        resultUrl += ')';
+      }
+    }
+
+    if (resultUrl[resultUrl.length - 1] !== ')') {
+      resultUrl += ')';
+    }
+
+    let resultFields = {};
+    if (!Ember.isNone(fields)) {
+      resultFields = fields;
+    }
+
+    return this._callAjax({ url: resultUrl, method: 'GET', xhrFields: resultFields }, successCallback, failCallback, alwaysCallback);
+
+  },
+
+  /**
+   * A method to call actions using ajax requests.
+   *
+   * @method callFunction
+   * @param {String} actionName
+   * @param {Object} data
+   * @param {String} url
+   * @param {Object} fields
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
+   */
+  callAction(actionName, data, url, fields, successCallback, failCallback, alwaysCallback) {
+    let config = getOwner(this)._lookupFactory('config:environment');
+    if (Ember.isNone(url)) {
+      url = `${config.APP.backendUrls.api}`;
+    }
+
+    data = JSON.stringify(data);
+    url =  `${url}/${actionName}`;
+
+    let resultFields = {};
+    if (!Ember.isNone(fields)) {
+      resultFields = fields;
+    }
+
+    return this._callAjax(
+      { data: data, url: url, method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json', xhrFields: resultFields },
+      successCallback,
+      failCallback,
+      alwaysCallback);
+  },
+
+  /**
+   * A method to make ajax requests.
+   *
+   * @method _callAjax
+   * @param {Object} params
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @private
+   */
+  _callAjax(params, successCallback, failCallback, alwaysCallback) {
+    Ember.assert('Params must be Object!', typeof params === 'object');
+    Ember.assert('params.method or params.url is not defined.', !(Ember.isNone(params.method) || Ember.isNone(params.url)));
+
+    return new Ember.RSVP.Promise(function(resolve, reject) {
+      Ember.$.ajax(params).done((msg) => {
+        if (!Ember.isNone(successCallback)) {
+          if (typeof successCallback.then === 'function') {
+            if (!Ember.isNone(alwaysCallback)) {
+              if (typeof alwaysCallback.then === 'function') {
+                successCallback(msg).then(() => {alwaysCallback(msg).then(resolve(msg));});
+              } else {
+                successCallback(msg).then(alwaysCallback(msg)).then(resolve(msg));
+              }
+            } else {
+              successCallback(msg).then(resolve(msg));
+            }
+          } else {
+            successCallback(msg);
+            if (!Ember.isNone(alwaysCallback)) {
+              if (typeof alwaysCallback.then === 'function') {
+                alwaysCallback(msg).then(resolve(msg));
+              } else {
+                alwaysCallback(msg);
+                resolve(msg);
+              }
+            } else {
+              resolve(msg);
+            }
+          }
+        } else {
+          if (!Ember.isNone(alwaysCallback)) {
+            if (typeof alwaysCallback.then === 'function') {
+              alwaysCallback(msg).then(resolve(msg));
+            } else {
+              alwaysCallback(msg);
+              resolve(msg);
+            }
+          } else {
+            resolve(msg);
+          }
+        }
+      }).fail((msg)=> {
+        if (!Ember.isNone(failCallback)) {
+          if (typeof failCallback.then === 'function') {
+            if (!Ember.isNone(alwaysCallback)) {
+              if (typeof alwaysCallback.then === 'function') {
+                failCallback(msg).then(() => {alwaysCallback(msg).then(reject(msg));});
+              } else {
+                failCallback(msg).then(alwaysCallback(msg)).then(reject(msg));
+              }
+
+            } else {
+              failCallback(msg).then(reject(msg));
+            }
+
+          } else {
+            failCallback(msg);
+            if (!Ember.isNone(alwaysCallback)) {
+              if (typeof alwaysCallback === 'function') {
+                alwaysCallback(msg).then(reject(msg));
+              } else {
+                alwaysCallback(msg);
+                reject(msg);
+              }
+            } else {
+              reject(msg);
+            }
+          }
+        } else {
+          if (!Ember.isNone(alwaysCallback)) {
+            if (typeof alwaysCallback.then === 'function') {
+              alwaysCallback(msg).then(reject(msg));
+            } else {
+              alwaysCallback(msg);
+              reject(msg);
+            }
+          } else {
+            reject(msg);
+          }
+        }
+      });
+    });
+  },
+
+  /**
    * Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.
    * Appends id as `(id)` (OData specification) instead of `/id`.
    *
@@ -200,7 +404,7 @@ export default DS.RESTAdapter.extend({
 
     if (id != null) {
       // Append id as `(id)` (OData specification) instead of `/id`.
-      url = this._appendIdToURL(id, url);
+      url = this._appendIdToURL(id, url, modelName);
     }
 
     return url;
@@ -214,10 +418,10 @@ export default DS.RESTAdapter.extend({
    * @param {String} url
    * @private
    */
-  _appendIdToURL(id, url) {
+  _appendIdToURL(id, url, modelName) {
     let encId = encodeURIComponent(id);
-    let idType = Ember.get(this, 'idType');
-    if (idType !== 'number') {
+    let model = this.store.modelFor(modelName);
+    if (model.idType === 'string') {
       encId = `'${encId}'`;
     }
 
@@ -235,6 +439,17 @@ export default DS.RESTAdapter.extend({
 
   deleteRecord(store, type, snapshot) {
     return this._sendRecord(store, type, snapshot, 'deleteRecord');
+  },
+
+  deleteAllRecords(store, modelName, filter) {
+    let url = this._buildURL(modelName);
+    let pathName  = this.pathForType(modelName);
+    let builder = new ODataQueryAdapter(url, store);
+    let filterVelue = builder._buildODataFilters(filter);
+    let filterQuery = !Ember.isNone(filterVelue) ? '$filter=' + filterVelue : '';
+    let data = { pathName: pathName, filterQuery: filterQuery };
+
+    return this.callAction('DeleteAllSelect', data, null, { withCredentials: true });
   },
 
   /**

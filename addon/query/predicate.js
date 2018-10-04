@@ -1,5 +1,6 @@
 import FilterOperator from './filter-operator';
 import Condition from './condition';
+import moment from 'moment';
 
 /**
  * The base class of logical predicate.
@@ -89,15 +90,22 @@ export class SimplePredicate extends BasePredicate {
  * @param attributePath {String} The path to the attribute for filtering.
  * @param operator {Query.FilterOperator|String} The filter operator.
  * @param value {String|Date} The value for filtering.
+ * @param timeless {Boolean} When true, dates will be filtered without time.
  * @constructor
  */
 export class DatePredicate extends BasePredicate {
-  constructor(attributePath, operator, value) {
+  constructor(attributePath, operator, value, timeless) {
     super();
+
+    let momentFromValue = moment(value);
+    if (!momentFromValue.isValid()) {
+      throw new Error(`Date isn't valid or null (for null values use SimplePredicate)`);
+    }
 
     this._attributePath = attributePath;
     this._operator = FilterOperator.tryCreate(operator);
     this._value = value;
+    this._timeless = timeless;
   }
 
   /**
@@ -134,6 +142,17 @@ export class DatePredicate extends BasePredicate {
   }
 
   /**
+   * Flag for dates.
+   *
+   * @property timeless
+   * @type Boolean
+   * @public
+   */
+  get timeless() {
+    return this._timeless;
+  }
+
+  /**
    * Converts this instance to string.
    *
    * @method toString
@@ -141,7 +160,8 @@ export class DatePredicate extends BasePredicate {
    * @public
    */
   toString() {
-    return `(${this._attributePath} ${this._operator} ${this._value})`;
+    return this._timeless ? `(date(${this._attributePath}) ${this._operator} ${this._value})` :
+      `(${this._attributePath} ${this._operator} ${this._value})`;
   }
 }
 
@@ -540,6 +560,77 @@ export class NotPredicate extends BasePredicate {
    */
   toString() {
     return `not ${this._predicate}`;
+  }
+}
+
+/**
+ * The predicate class that implements the isof function.
+ *
+ * Its constructor implements the following signatures:
+ *   - `new IsOfPredicate(typeName)`
+ *   - `new IsOfPredicate(expression, typeName)`
+ *
+ * Where:
+ *   - `typeName` - type name to which the current instance will be assigned.
+ *   - `expression` - an expression relative to the current instance that must point to an object for assigning a type.
+ *
+ * @namespace Query
+ * @class IsOfPredicate
+ * @extends BasePredicate
+ *
+ * @param ...args
+ * @constructor
+ */
+export class IsOfPredicate extends BasePredicate {
+  constructor(...args) {
+    super();
+
+    let expression;
+    let typeName = args[0];
+    if (args.length === 2) {
+      expression = args[0];
+      typeName = args[1];
+    }
+
+    if (!typeName) {
+      throw new Error('Type name is required.');
+    }
+
+    this._expression = expression;
+    this._typeName = typeName;
+  }
+
+  /**
+   * Expression getter.
+   *
+   * @property expression
+   * @type String
+   * @public
+   */
+  get expression() {
+    return this._expression;
+  }
+
+  /**
+   * Type name getter.
+   *
+   * @property typeName
+   * @type String
+   * @public
+   */
+  get typeName() {
+    return this._typeName;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of result predicate.
+   * @public
+   */
+  toString() {
+    return `isof(${this._expression ? `${this._expression}, ` : ''}'${this._typeName}')`;
   }
 }
 

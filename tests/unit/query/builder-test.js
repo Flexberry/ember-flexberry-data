@@ -26,6 +26,15 @@ test('query builder | constructor', assert => {
   assert.ok(new Builder(store, 'Customer').where('Name', 'eq', 'Vasya'));
 });
 
+test('query builder | isOf method', (assert) => {
+  let builder1 = new Builder(store, 'creator').isOf('bot');
+  let builder2 = new Builder(store, 'creator').where('Age', 'ge', 0).isOf('bot');
+
+  assert.throws(() => new Builder(store, 'creator').isOf('inavlid-model-name'));
+  assert.ok(builder1._predicate instanceof Query.IsOfPredicate);
+  assert.ok(builder2._predicate instanceof Query.ComplexPredicate);
+});
+
 test('query builder | select by projection', assert => {
   // Arrange.
   let builder = new Builder(store, 'ember-flexberry-dummy-comment').selectByProjection('CommentE');

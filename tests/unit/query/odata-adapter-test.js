@@ -3,8 +3,17 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate,
-  GeographyPredicate, GeometryPredicate, NotPredicate } from 'ember-flexberry-data/query/predicate';
+import {
+  SimplePredicate,
+  DatePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  GeographyPredicate,
+  GeometryPredicate,
+  NotPredicate,
+  IsOfPredicate,
+} from 'ember-flexberry-data/query/predicate';
 import ODataAdapter from 'ember-flexberry-data/query/odata-adapter';
 import startApp from '../../helpers/start-app';
 
@@ -156,6 +165,111 @@ test('adapter | odata | simple predicate | leq', function (assert) {
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', `$filter=FirstName le 'Vasya'&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | eq', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Eq, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Eq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate eq ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) eq ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | eq | master field', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('Manager.employmentDate', FilterOperator.Eq, sampleDt);
+  let dp2 = new DatePredicate('Manager.employmentDate', FilterOperator.Eq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=Manager/EmploymentDate eq ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(Manager/EmploymentDate) eq ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | neq', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Neq, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Neq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate ne ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) ne ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | le', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Le, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Le, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate lt ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) lt ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | leq', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Leq, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Leq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate le ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) le ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | ge', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Ge, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Ge, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate gt ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) gt ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
+});
+
+test('adapter | odata | date predicate | geq', function (assert) {
+  // Arrange.
+  let sampleDt = new Date(2018, 0, 31, 8, 30);  // Wed Jan 31 2018 08:30:00
+
+  let dp1 = new DatePredicate('regDate', FilterOperator.Geq, sampleDt);
+  let dp2 = new DatePredicate('regDate', FilterOperator.Geq, sampleDt, true);
+
+  let builder1 = new QueryBuilder(store, 'customer').where(dp1);
+  let builder2 = new QueryBuilder(store, 'customer').where(dp2);
+
+  // Act && Assert.
+  runTest(assert, builder1, 'Customers', `$filter=RegDate ge ${sampleDt.toISOString()}&$select=CustomerID`);
+  runTest(assert, builder2, 'Customers', `$filter=date(RegDate) ge ${sampleDt.toISOString().substr(0, 10)}&$select=CustomerID`);
 });
 
 test('adapter | odata | string predicate', function (assert) {
@@ -469,7 +583,7 @@ test('adapter | odata | detail predicate | any | with geometry predicate', funct
      `geometry2=geometry'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
 });
 
-test('adapter | odata | not predicate | any | with simple predicate', function (assert) {
+test('adapter | odata | not predicate | with simple predicate', function (assert) {
   // Arrange.
   let innerPredicate = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
   let np = new NotPredicate(innerPredicate);
@@ -478,10 +592,10 @@ test('adapter | odata | not predicate | any | with simple predicate', function (
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (FirstName eq 'Vasya')&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not(FirstName eq 'Vasya')&$select=CustomerID`);
 });
 
-test('adapter | odata | not predicate | any | with complex predicate', function (assert) {
+test('adapter | odata | not predicate | with complex predicate', function (assert) {
   // Arrange.
   let sp1 = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
   let sp2 = new SimplePredicate('firstName', FilterOperator.Eq, 'Petya');
@@ -492,38 +606,36 @@ test('adapter | odata | not predicate | any | with complex predicate', function 
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (FirstName eq 'Vasya' or FirstName eq 'Petya')&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not(FirstName eq 'Vasya' or FirstName eq 'Petya')&$select=CustomerID`);
 });
 
-test('adapter | odata | not predicate | any | with geography predicate', function (assert) {
+test('adapter | odata | not predicate | with geography predicate', function (assert) {
   // Arrange.
-  let innerPredicate = new GeographyPredicate('coordinates').
-  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  const POLYGON = 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))';
+  let innerPredicate = new GeographyPredicate('coordinates').intersects(POLYGON);
   let np = new NotPredicate(innerPredicate);
 
   // Act.
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers',
-  `$filter=not (geo.intersects(geography1=Coordinates,geography2=geography'undefined'))&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not(geo.intersects(geography1=Coordinates,geography2=geography'${POLYGON}'))&$select=CustomerID`);
 });
 
-test('adapter | odata | not predicate | any | with geometry predicate', function (assert) {
+test('adapter | odata | not predicate | with geometry predicate', function (assert) {
   // Arrange.
-  let innerPredicate = new GeometryPredicate('coordinates').
-  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  const POLYGON = 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))';
+  let innerPredicate = new GeometryPredicate('coordinates').intersects(POLYGON);
   let np = new NotPredicate(innerPredicate);
 
   // Act.
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers',
-  `$filter=not (geom.intersects(geometry1=Coordinates,geometry2=geometry'undefined'))&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not (geom.intersects(geometry1=Coordinates,geometry2=geometry'${$POLYGON}'))&$select=CustomerID`);
 });
 
-test('adapter | odata | not predicate | any | with detail predicate', function (assert) {
+test('adapter | odata | not predicate | with detail predicate', function (assert) {
   // Arrange.
   let innerPredicate = new DetailPredicate('userVotes').all(new SimplePredicate('applicationUser.name', FilterOperator.Eq, 'Vasya'));
 
@@ -533,11 +645,10 @@ test('adapter | odata | not predicate | any | with detail predicate', function (
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=not (UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya'))&$select=__PrimaryKey`);
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=not(UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya'))&$select=__PrimaryKey`);
 });
 
-test('adapter | odata | not predicate | any | with string predicate', function (assert) {
-
+test('adapter | odata | not predicate | with string predicate', function (assert) {
   // Arrange.
   let innerPredicate = new StringPredicate('firstName').contains('a');
   let np = new NotPredicate(innerPredicate);
@@ -546,7 +657,51 @@ test('adapter | odata | not predicate | any | with string predicate', function (
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (contains(FirstName,'a'))&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not(contains(FirstName,'a'))&$select=CustomerID`);
+});
+
+test('adapter | odata | isof predicate | only type', function (assert) {
+  // Arrange.
+  let predicate = new IsOfPredicate('bot');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=isof($it,'.Bot')&$select=CreatorID`);
+});
+
+test('adapter | odata | isof predicate | with expression', function (assert) {
+  // Arrange.
+  let predicate = new IsOfPredicate('Creator', 'bot');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'tag').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Tag', `$filter=isof(Creator,'.Bot')&$select=id`);
+});
+
+test('adapter | odata | isof predicate | inside complex', function (assert) {
+  // Arrange.
+  let predicate = new SimplePredicate('Age', 'geq', 0).and(new IsOfPredicate('bot'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=Age ge 0 and isof($it,'.Bot')&$select=CreatorID`);
+});
+
+test('adapter | odata | isof predicate | inside not', function (assert) {
+  // Arrange.
+  let predicate = new NotPredicate(new IsOfPredicate('bot'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=not(isof($it,'.Bot'))&$select=CreatorID`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {

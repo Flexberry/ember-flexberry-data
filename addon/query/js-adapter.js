@@ -314,37 +314,37 @@ export default class JSAdapter extends BaseAdapter {
         switch (predicate.operator) {
           case FilterOperator.Eq:
             if (datesIsValid) {
-              return momentFromHash.isSame(value);
+              return predicate.timeless ? momentFromHash.isSame(value, 'day') : momentFromHash.isSame(value);
             }
 
             return valueFromHash === value;
           case FilterOperator.Neq:
             if (datesIsValid) {
-              return !momentFromHash.isSame(value);
+              return predicate.timeless ? !momentFromHash.isSame(value, 'day') : !momentFromHash.isSame(value);
             }
 
             return valueFromHash !== value;
           case FilterOperator.Le:
             if (datesIsValid) {
-              return momentFromHash.isBefore(value);
+              return predicate.timeless ? momentFromHash.isBefore(value, 'day') : momentFromHash.isBefore(value);
             }
 
             return valueFromHash < value;
           case FilterOperator.Leq:
             if (datesIsValid) {
-              return momentFromHash.isSameOrBefore(value);
+              return predicate.timeless ? momentFromHash.isSameOrBefore(value, 'day') : momentFromHash.isSameOrBefore(value);
             }
 
             return valueFromHash <= value;
           case FilterOperator.Ge:
             if (datesIsValid) {
-              return momentFromHash.isAfter(value);
+              return predicate.timeless ? momentFromHash.isAfter(value, 'day') : momentFromHash.isAfter(value);
             }
 
             return valueFromHash > value;
           case FilterOperator.Geq:
             if (datesIsValid) {
-              return momentFromHash.isSameOrAfter(value);
+              return predicate.timeless ? momentFromHash.isSameOrAfter(value, 'day') : momentFromHash.isSameOrAfter(value);
             }
 
             return valueFromHash >= value;

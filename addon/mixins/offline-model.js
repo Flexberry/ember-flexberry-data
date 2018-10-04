@@ -63,7 +63,7 @@ export default Ember.Mixin.create({
     return new Ember.RSVP.Promise((resolve, reject) => {
       if (_this.get('readOnly')) {
         reject(new Error('Attempt to save readonly model instance.'));
-      } else if (!_this.get('offlineGlobals.isOnline') && _this.get('hasDirtyAttributes') || _this.hasChangedBelongsTo()) {
+      } else if (!_this.get('offlineGlobals.isOnline') && (_this.get('hasDirtyAttributes') || _this.hasChangedBelongsTo())) {
         _this.get('syncer').createJob(_this).then((auditEntity) => {
           __super.call(_this, ...arguments).then((record) => {
             if (!auditEntity.get('objectPrimaryKey')) {
