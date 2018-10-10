@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.2.0-beta.1] - 2018-10-10
+### Added
+- Query language:
+    - `GeometryPredicate` for geometry data types.
+
 ## [0.2.0-beta.0] - 2018-09-25
 ### Added
 - `Serializer.Base`:
