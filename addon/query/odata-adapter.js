@@ -9,6 +9,7 @@ import {
   DetailPredicate,
   DatePredicate,
   GeographyPredicate,
+  GeometryPredicate,
   NotPredicate,
   IsOfPredicate,
 } from './predicate';
@@ -245,6 +246,15 @@ export default class ODataAdapter extends BaseAdapter {
       }
 
       return `geo.intersects(geography1=${attribute},geography2=geography'${predicate.intersectsValue}')`;
+    }
+
+    if (predicate instanceof GeometryPredicate) {
+      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+      if (prefix) {
+        attribute = `${prefix}/${attribute}`;
+      }
+
+      return `geom.intersects(geometry1=${attribute},geometry2=geometry'${predicate.intersectsValue}')`;
     }
 
     if (predicate instanceof DetailPredicate) {
