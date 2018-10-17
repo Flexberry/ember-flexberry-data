@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `Serializer.OData`:
+    - The `normalize` method for update type in case of hasMany polymorphic relationships.
 
 ## [0.2.0-beta.1] - 2018-10-10
 ### Added
