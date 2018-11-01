@@ -1,4 +1,5 @@
 import { isNone } from '@ember/utils';
+import { get } from '@ember/object';
 import DS from 'ember-data';
 
 import BaseSerializer from './base';
@@ -60,4 +61,21 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
       return capitalize(key) + '@odata.bind';
     }
   },
+
+  /**
+    Fixes error with hasMany polymorphic relationships.
+    Delete this after ember-data 3.5.0 update.
+
+    @method _normalizeEmbeddedRelationship
+    @private
+  */
+  /* eslint-disable no-unused-vars */
+  _normalizeEmbeddedRelationship(store, relationshipMeta, relationshipHash) {
+    if (relationshipMeta.kind === 'hasMany' && get(relationshipMeta, 'options.polymorphic')) {
+      relationshipHash = this.extractPolymorphicRelationship(undefined, relationshipHash);
+    }
+
+    return this._super(...arguments);
+  }
+  /* eslint-enable no-unused-vars */
 });

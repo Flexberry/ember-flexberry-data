@@ -1,7 +1,7 @@
 import { isNone } from '@ember/utils';
 import { warn } from '@ember/debug';
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, GeometryPredicate } from './predicate';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
 import Information from '../utils/information';
@@ -244,7 +244,7 @@ export default class JSAdapter extends BaseAdapter {
     let b3 = predicate instanceof DetailPredicate;
     let b4 = predicate instanceof DatePredicate;
     let b5 = predicate instanceof GeographyPredicate;
-
+    let b6 = predicate instanceof GeometryPredicate;
     if (b1 || b2 || b3 || b4) {
       let filterFunction = this.getAttributeFilterFunction(predicate, options);
       return this.getFilterFunctionAnd([filterFunction]);
@@ -254,6 +254,15 @@ export default class JSAdapter extends BaseAdapter {
       warn('GeographyPredicate is not supported in js-adapter',
       false,
       { id: 'ember-flexberry-data-debug.js-adapter.geography-predicate-is-not-supported' });
+      return function (data) {
+        return data;
+      };
+    }
+
+    if (b6) {
+      warn('GeometryPredicate is not supported in js-adapter',
+      false,
+      { id: 'ember-flexberry-data-debug.js-adapter.geometry-predicate-is-not-supported' });
       return function (data) {
         return data;
       };

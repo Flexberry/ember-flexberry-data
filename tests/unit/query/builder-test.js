@@ -2,6 +2,7 @@ import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import Builder from 'ember-flexberry-data/query/builder';
 import startApp from 'dummy/tests/helpers/start-app';
+import { IsOfPredicate, ComplexPredicate } from 'ember-flexberry-data/query/predicate';
 
 let app;
 let store;
@@ -22,6 +23,15 @@ test('query builder | constructor', assert => {
   assert.ok(new Builder(store).from('Customer'));
 
   assert.ok(new Builder(store, 'Customer').where('Name', 'eq', 'Vasya'));
+});
+
+test('query builder | isOf method', (assert) => {
+  let builder1 = new Builder(store, 'creator').isOf('bot');
+  let builder2 = new Builder(store, 'creator').where('Age', 'ge', 0).isOf('bot');
+
+  assert.throws(() => new Builder(store, 'creator').isOf('inavlid-model-name'));
+  assert.ok(builder1._predicate instanceof IsOfPredicate);
+  assert.ok(builder2._predicate instanceof ComplexPredicate);
 });
 
 test('query builder | select by projection', assert => {
