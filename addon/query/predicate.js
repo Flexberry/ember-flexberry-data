@@ -345,6 +345,64 @@ export class GeographyPredicate extends BasePredicate {
 }
 
 /**
+ * The predicate class for geometry attributes.
+ *
+ * @namespace Query
+ * @class GeometryPredicate
+ * @extends BasePredicate
+ *
+ * @param {String} attributePath The path to the attribute for predicate.
+ * @constructor
+ */
+export class GeometryPredicate extends BasePredicate {
+  constructor(attributePath) {
+    super();
+
+    if (!attributePath) {
+      throw new Error('Attribute path is required for GeometryPredicate constructor.');
+    }
+
+    this._attributePath = attributePath;
+    this._intersectsValue = null;
+  }
+
+  /**
+   * The path to the attribute for predicate.
+   *
+   * @property attributePath
+   * @type {String}
+   * @public
+   */
+  get attributePath() {
+    return this._attributePath;
+  }
+
+  /**
+   * The geometry value that has to intersect with the attribute.
+   *
+   * @property intersectsValue
+   * @type {String}
+   * @public
+   */
+  get intersectsValue() {
+    return this._intersectsValue;
+  }
+
+  /**
+   * Sets the value that the attribute has to contain.
+   *
+   * @method contains
+   * @param {String} geometry The geometry value that has to intersect with the attribute.
+   * @return {Query.StringPredicate} Returns this instance.
+   * @chainable
+   */
+  intersects(geometry) {
+    this._intersectsValue = geometry;
+    return this;
+  }
+}
+
+/**
  * The predicate class for details.
  *
  * @class DetailPredicate
@@ -494,6 +552,77 @@ export class NotPredicate extends BasePredicate {
    */
   toString() {
     return `not ${this._predicate}`;
+  }
+}
+
+/**
+ * The predicate class that implements the isof function.
+ *
+ * Its constructor implements the following signatures:
+ *   - `new IsOfPredicate(typeName)`
+ *   - `new IsOfPredicate(expression, typeName)`
+ *
+ * Where:
+ *   - `typeName` - type name to which the current instance will be assigned.
+ *   - `expression` - an expression relative to the current instance that must point to an object for assigning a type.
+ *
+ * @namespace Query
+ * @class IsOfPredicate
+ * @extends BasePredicate
+ *
+ * @param ...args
+ * @constructor
+ */
+export class IsOfPredicate extends BasePredicate {
+  constructor(...args) {
+    super();
+
+    let expression;
+    let typeName = args[0];
+    if (args.length === 2) {
+      expression = args[0];
+      typeName = args[1];
+    }
+
+    if (!typeName) {
+      throw new Error('Type name is required.');
+    }
+
+    this._expression = expression;
+    this._typeName = typeName;
+  }
+
+  /**
+   * Expression getter.
+   *
+   * @property expression
+   * @type String
+   * @public
+   */
+  get expression() {
+    return this._expression;
+  }
+
+  /**
+   * Type name getter.
+   *
+   * @property typeName
+   * @type String
+   * @public
+   */
+  get typeName() {
+    return this._typeName;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of result predicate.
+   * @public
+   */
+  toString() {
+    return `isof(${this._expression ? `${this._expression}, ` : ''}'${this._typeName}')`;
   }
 }
 

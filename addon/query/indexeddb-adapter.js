@@ -7,7 +7,7 @@ import EmberMap from '@ember/map';
 import { getOwner } from '@ember/application';
 import { warn } from '@ember/debug';
 import FilterOperator from './filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate } from './predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, GeometryPredicate } from './predicate';
 import BaseAdapter from './base-adapter';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
@@ -598,6 +598,13 @@ function updateWhereClause(store, table, query) {
     warn('GeographyPredicate is not supported in indexedDB-adapter',
     false,
     { id: 'ember-flexberry-data-debug.offline.geography-predicate-is-not-supported' });
+    return table;
+  }
+
+  if (predicate instanceof GeometryPredicate) {
+    warn('GeometryPredicate is not supported in indexedDB-adapter',
+    false,
+    { id: 'ember-flexberry-data-debug.offline.geometry-predicate-is-not-supported' });
     return table;
   }
 

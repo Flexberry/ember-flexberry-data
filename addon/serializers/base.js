@@ -58,6 +58,27 @@ export default DS.RESTSerializer.extend({
   },
 
   /**
+   * Normalization method for objects.
+   *
+   * @param typeClass Type of received object.
+   * @param hash Target hash.
+   * @returns {object} Valid {http://jsonapi.org/format/#document-top-level|@link JSON API document}.
+   */
+  normalize(typeClass, hash) {
+    let odataType = this.get('metaPropertiesPrefix') + 'type';
+
+    if (hash.hasOwnProperty(`${odataType}`)) {
+      let hashModel = this.modelNameFromPayloadKey(hash[odataType]);
+      if (hashModel !== typeClass.modelName) {
+        let newTypeClass = this.store.modelFor(hashModel);
+        return this._super(newTypeClass, hash);
+      }
+    }
+
+    return this._super(typeClass, hash);
+  },
+
+  /**
    * Extracts metadata from received object.
    *
    * @param store Storage.
