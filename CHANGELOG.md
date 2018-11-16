@@ -1,20 +1,22 @@
 # Change Log
 
 ## [Unreleased]
+
+## [3.0.0-beta.0] - 2018-11-16
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
 
-## [0.2.0-beta.2] - 2018-10-17
+## [2.0.0-beta.2] - 2018-10-17
 ### Fixed
 - `Serializer.OData`:
     - The `normalize` method for update type in case of hasMany polymorphic relationships.
 
-## [0.2.0-beta.1] - 2018-10-10
+## [2.0.0-beta.1] - 2018-10-10
 ### Added
 - Query language:
     - `GeometryPredicate` for geometry data types.
 
-## [0.2.0-beta.0] - 2018-09-25
+## [2.0.0-beta.0] - 2018-09-25
 ### Added
 - `Serializer.Base`:
     - The `normalize` method for update typeClass in case of polymorphic relationships.
