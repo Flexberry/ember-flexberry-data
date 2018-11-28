@@ -4,7 +4,7 @@ module.exports = {
     var _this = this;
     return _this.addAddonsToProject({
       packages: [
-        { name: 'ember-browserify', target: '1.1.9' }
+        { name: 'ember-moment', target: '7.6.0' }
       ]
     }).then(function () {
       return _this.addPackagesToProject([

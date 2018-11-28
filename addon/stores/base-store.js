@@ -3,7 +3,7 @@ import { isNone, isEmpty } from '@ember/utils';
 import { computed } from '@ember/object';
 import { merge } from '@ember/polyfills';
 import $ from 'jquery';
-import { copy } from '@ember/object/internals';
+import { copy } from 'ember-copy';
 import { getOwner } from '@ember/application';
 import DS from 'ember-data';
 import decorateAdapter from './base-store/decorate-adapter';

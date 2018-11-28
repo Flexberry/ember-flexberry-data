@@ -1,4 +1,4 @@
-import uuid from 'npm:node-uuid';
+import uuid from 'node-uuid';
 
 /**
  * @return { String } RFC4122 version 4 UUID

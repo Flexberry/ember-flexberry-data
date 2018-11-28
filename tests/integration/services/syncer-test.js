@@ -1,7 +1,7 @@
 import { run } from '@ember/runloop';
 import RSVP from 'rsvp';
 import DS from 'ember-data';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 import { moduleFor, test } from 'ember-qunit';
 import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 import Builder from 'ember-flexberry-data/query/builder';

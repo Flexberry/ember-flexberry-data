@@ -2,7 +2,7 @@ import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import startApp from '../helpers/start-app';
 import destroyApp from '../helpers/destroy-app';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 
 var AppDisplayDeepModel;
 var storeDisplayDeepModel;

@@ -1,6 +1,12 @@
 # Change Log
 
 ## [Unreleased]
+### Changed
+- `ember` updated to 3.5.1 and `ember-data` updated to 3.5.0.
+- Bower dependencies removed and replaced with npm packages.
+- `ember-browserify` with some deprecated dependencies replaced with `ember-autoimport` so `dexie` and `node-uuid` are importing without browserify now.
+- Deprecated copy functions from `@ember/object/internals` replased with functions from `ember-copy`.
+- Deprecated `Ember.Map` replaced with native `Map` class.
 
 ## [3.0.0-beta.0] - 2018-11-16
 ### Breaking changes

@@ -1,5 +1,5 @@
 import { run } from '@ember/runloop';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 import { module, test } from 'qunit';
 
 import QueryBuilder from 'ember-flexberry-data/query/builder';

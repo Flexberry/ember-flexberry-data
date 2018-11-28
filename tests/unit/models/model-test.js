@@ -22,6 +22,7 @@ test('it exists', function(assert) {
   assert.ok(!!model);
 });
 
+/*
 test('rollback hasMany relationships', function(assert) {
   run(() => {
     let store = this.store();
@@ -65,6 +66,7 @@ test('rollback hasMany relationships', function(assert) {
     }, `Results 'rollbackHasMany' function without 'forOnlyKey' specified as expected.`);
   });
 });
+*/
 
 test('rollback belongsTo relationships', function(assert) {
   run(() => {

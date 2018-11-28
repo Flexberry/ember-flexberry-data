@@ -5,7 +5,7 @@
 import { merge } from '@ember/polyfills';
 import Evented from '@ember/object/evented';
 import Service from '@ember/service';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 import Queue from '../utils/queue';
 
 /**

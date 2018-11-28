@@ -2,7 +2,6 @@
   @module ember-flexberry-data
 */
 
-import EmberMap from '@ember/map';
 import RSVP from 'rsvp';
 import $ from 'jquery';
 import { getOwner } from '@ember/application';
@@ -20,7 +19,7 @@ import QueryBuilder from '../query/builder';
 import FilterOperator from '../query/filter-operator';
 import Condition from '../query/condition';
 import { SimplePredicate, ComplexPredicate } from '../query/predicate';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 import Information from '../utils/information';
 
 /**
@@ -31,7 +30,7 @@ import Information from '../utils/information';
 */
 export default DS.Adapter.extend({
   /* Map of hashes for bulk operations */
-  _hashesToStore: EmberMap.create(),
+  _hashesToStore: null,
 
   /**
     If you would like your adapter to use a custom serializer you can set the defaultSerializer property to be the name of the custom serializer.
@@ -70,6 +69,15 @@ export default DS.Adapter.extend({
     @return {String}
   */
   generateIdForRecord: generateUniqueId,
+
+  /**
+    Initializes adapter.
+  */
+  init() {
+    this.set('_hashesToStore', new Map());
+
+    this._super(...arguments);
+  },
 
   /**
     Clear tables in IndexedDB database, if `table` not specified, clear all tables.

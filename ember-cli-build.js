@@ -15,7 +15,7 @@ module.exports = function(defaults) {
   */
 
   if (app.env !== 'production') {
-    app.import('bower_components/jquery-mockjax/dist/jquery.mockjax.js');
+    app.import('node_modules/jquery-mockjax/dist/jquery.mockjax.js');
   }
 
   return app.toTree();
