@@ -5,6 +5,7 @@ module.exports = {
     return _this.addAddonsToProject({
       packages: [
         { name: 'ember-auto-import', target: '1.2.16' },
+        { name: 'ember-copy', target: '1.0.0' },
         { name: 'ember-data', target: '3.5.0' },
         { name: 'ember-moment', target: '7.8.0' }
       ]
