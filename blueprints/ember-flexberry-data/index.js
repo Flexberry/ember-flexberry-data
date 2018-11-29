@@ -4,8 +4,8 @@ module.exports = {
     var _this = this;
     return _this.addAddonsToProject({
       packages: [
-        { name: 'ember-auto-import': '1.2.16' },
-        { name: 'ember-data': '3.5.0' },
+        { name: 'ember-auto-import', target: '1.2.16' },
+        { name: 'ember-data', target: '3.5.0' },
         { name: 'ember-moment', target: '7.8.0' }
       ]
     }).then(function () {
