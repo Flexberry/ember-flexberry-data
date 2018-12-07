@@ -40,14 +40,19 @@ import JsAdapter from './query/js-adapter';
 import QueryOdataAdapter from './query/odata-adapter';
 import OrderByClause from './query/order-by-clause';
 import QueryObject from './query/query-object';
-import { BasePredicate } from './query/predicate';
-import { SimplePredicate } from './query/predicate';
-import { DatePredicate } from './query/predicate';
-import { ComplexPredicate }from './query/predicate';
-import { StringPredicate }from './query/predicate';
-import { DetailPredicate } from './query/predicate';
-import { createPredicate } from './query/predicate';
-import { GeographyPredicate } from './query/predicate';
+import {
+  BasePredicate,
+  SimplePredicate,
+  DatePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  GeographyPredicate,
+  GeometryPredicate,
+  NotPredicate,
+  IsOfPredicate,
+  createPredicate,
+} from './query/predicate';
 
 import UserService from './services/user';
 import DexieService from './services/dexie';
@@ -135,8 +140,11 @@ Query.DatePredicate = DatePredicate;
 Query.ComplexPredicate = ComplexPredicate;
 Query.StringPredicate = StringPredicate;
 Query.DetailPredicate = DetailPredicate;
-Query.createPredicate = createPredicate;
 Query.GeographyPredicate = GeographyPredicate;
+Query.GeometryPredicate = GeometryPredicate;
+Query.NotPredicate = NotPredicate;
+Query.IsOfPredicate = IsOfPredicate;
+Query.createPredicate = createPredicate;
 
 /**
   This namespace contains helper claseses.

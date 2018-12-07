@@ -60,4 +60,19 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
       return capitalize(key) + '@odata.bind';
     }
   },
+
+  /**
+    Fixes error with hasMany polymorphic relationships.
+    Delete this after ember-data 3.5.0 update.
+
+    @method _normalizeEmbeddedRelationship
+    @private
+  */
+  _normalizeEmbeddedRelationship(store, relationshipMeta, relationshipHash) {
+    if (relationshipMeta.kind === 'hasMany' && Ember.get(relationshipMeta, 'options.polymorphic')) {
+      relationshipHash = this.extractPolymorphicRelationship(undefined, relationshipHash);
+    }
+
+    return this._super(...arguments);
+  }
 });

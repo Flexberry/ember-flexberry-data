@@ -3,8 +3,17 @@ import { module, test } from 'qunit';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, DatePredicate, ComplexPredicate, StringPredicate,
-  DetailPredicate, GeographyPredicate, NotPredicate } from 'ember-flexberry-data/query/predicate';
+import {
+  SimplePredicate,
+  DatePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  GeographyPredicate,
+  GeometryPredicate,
+  NotPredicate,
+  IsOfPredicate,
+} from 'ember-flexberry-data/query/predicate';
 import ODataAdapter from 'ember-flexberry-data/query/odata-adapter';
 import startApp from '../../helpers/start-app';
 
@@ -521,7 +530,60 @@ test('adapter | odata | detail predicate | any | with geography predicate', func
      `geography2=geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
 });
 
-test('adapter | odata | not predicate | any | with simple predicate', function (assert) {
+test('adapter | odata | geometry predicate | intersect', function (assert) {
+  // Arrange.
+  let gp = new GeometryPredicate('coordinates').
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(gp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=geom.intersects(geometry1=Coordinates,geometry2=geometry'SRID=12345;` +
+       `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))')&$select=CustomerID`);
+});
+
+test('adapter | odata | geometry predicate | inside complex', function (assert) {
+  // Arrange.
+  let gp = new GeometryPredicate('coordinates').
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  let sp = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(gp.and(sp));
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=geom.intersects(geometry1=Coordinates,geometry2=geometry'SRID=12345;` +
+  `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') and FirstName eq 'Vasya'&$select=CustomerID`);
+});
+
+test('adapter | odata | detail predicate | all | with geometry predicate', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').all(new GeometryPredicate('applicationUser.coordinates').
+    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:geom.intersects(geometry1=f/ApplicationUser/Coordinates,` +
+    `geometry2=geometry'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
+});
+
+test('adapter | odata | detail predicate | any | with geometry predicate', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').any(new GeometryPredicate('applicationUser.coordinates').
+    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:geom.intersects(geometry1=f/ApplicationUser/Coordinates,` +
+     `geometry2=geometry'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
+});
+
+test('adapter | odata | not predicate | with simple predicate', function (assert) {
   // Arrange.
   let innerPredicate = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
   let np = new NotPredicate(innerPredicate);
@@ -530,10 +592,10 @@ test('adapter | odata | not predicate | any | with simple predicate', function (
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (FirstName eq 'Vasya')&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not(FirstName eq 'Vasya')&$select=CustomerID`);
 });
 
-test('adapter | odata | not predicate | any | with complex predicate', function (assert) {
+test('adapter | odata | not predicate | with complex predicate', function (assert) {
   // Arrange.
   let sp1 = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
   let sp2 = new SimplePredicate('firstName', FilterOperator.Eq, 'Petya');
@@ -544,24 +606,36 @@ test('adapter | odata | not predicate | any | with complex predicate', function 
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (FirstName eq 'Vasya' or FirstName eq 'Petya')&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not(FirstName eq 'Vasya' or FirstName eq 'Petya')&$select=CustomerID`);
 });
 
-test('adapter | odata | not predicate | any | with geography predicate', function (assert) {
+test('adapter | odata | not predicate | with geography predicate', function (assert) {
   // Arrange.
-  let innerPredicate = new GeographyPredicate('coordinates').
-  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  const POLYGON = 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))';
+  let innerPredicate = new GeographyPredicate('coordinates').intersects(POLYGON);
   let np = new NotPredicate(innerPredicate);
 
   // Act.
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers',
-  `$filter=not (geo.intersects(geography1=Coordinates,geography2=geography'undefined'))&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not(geo.intersects(geography1=Coordinates,geography2=geography'${POLYGON}'))&$select=CustomerID`);
 });
 
-test('adapter | odata | not predicate | any | with detail predicate', function (assert) {
+test('adapter | odata | not predicate | with geometry predicate', function (assert) {
+  // Arrange.
+  const POLYGON = 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))';
+  let innerPredicate = new GeometryPredicate('coordinates').intersects(POLYGON);
+  let np = new NotPredicate(innerPredicate);
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(np);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=not(geom.intersects(geometry1=Coordinates,geometry2=geometry'${POLYGON}'))&$select=CustomerID`);
+});
+
+test('adapter | odata | not predicate | with detail predicate', function (assert) {
   // Arrange.
   let innerPredicate = new DetailPredicate('userVotes').all(new SimplePredicate('applicationUser.name', FilterOperator.Eq, 'Vasya'));
 
@@ -571,11 +645,10 @@ test('adapter | odata | not predicate | any | with detail predicate', function (
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=not (UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya'))&$select=__PrimaryKey`);
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=not(UserVotes/all(f:f/ApplicationUser/Name eq 'Vasya'))&$select=__PrimaryKey`);
 });
 
-test('adapter | odata | not predicate | any | with string predicate', function (assert) {
-
+test('adapter | odata | not predicate | with string predicate', function (assert) {
   // Arrange.
   let innerPredicate = new StringPredicate('firstName').contains('a');
   let np = new NotPredicate(innerPredicate);
@@ -584,7 +657,51 @@ test('adapter | odata | not predicate | any | with string predicate', function (
   let builder = new QueryBuilder(store, 'customer').where(np);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=not (contains(FirstName,'a'))&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=not(contains(FirstName,'a'))&$select=CustomerID`);
+});
+
+test('adapter | odata | isof predicate | only type', function (assert) {
+  // Arrange.
+  let predicate = new IsOfPredicate('bot');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=isof($it,'.Bot')&$select=CreatorID`);
+});
+
+test('adapter | odata | isof predicate | with expression', function (assert) {
+  // Arrange.
+  let predicate = new IsOfPredicate('Creator', 'bot');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'tag').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Tag', `$filter=isof(Creator,'.Bot')&$select=id`);
+});
+
+test('adapter | odata | isof predicate | inside complex', function (assert) {
+  // Arrange.
+  let predicate = new SimplePredicate('Age', 'geq', 0).and(new IsOfPredicate('bot'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=Age ge 0 and isof($it,'.Bot')&$select=CreatorID`);
+});
+
+test('adapter | odata | isof predicate | inside not', function (assert) {
+  // Arrange.
+  let predicate = new NotPredicate(new IsOfPredicate('bot'));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=not(isof($it,'.Bot'))&$select=CreatorID`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {

@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+## [2.0.0] - 2018-12-07
+### Added
+- `Serializer.Base`:
+    - The `normalize` method for update `typeClass` in case of polymorphic relationships.
+- Query language:
+    - `GeometryPredicate` for geometry data types.
+
+### Fixed
+- `Serializer.OData`:
+    - The `normalize` method for update `typeClass` in case of hasMany polymorphic relationships.
+
+## [0.13.0-beta.0] - 2018-09-17
+### Added
+- Query language:
+    - The `IsOfPredicate` with implementation for `OData`.
+    - The `isOf` method in `Query.Builder` for simple usage `IsOfPredicate`.
+
+### Fixed
+- Loss of `intersectsValue` in the `GeographyPredicate` when it inside `NotPredicate`.
+
 ## [0.12.0] - 2018-05-28
 ### Added
 - `Projection.OnlineStore` as online store for `Offline.Store`.
