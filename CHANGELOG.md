@@ -2,20 +2,16 @@
 
 ## [Unreleased]
 
-## [0.2.0-beta.2] - 2018-10-17
-### Fixed
-- `Serializer.OData`:
-    - The `normalize` method for update type in case of hasMany polymorphic relationships.
-
-## [0.2.0-beta.1] - 2018-10-10
+## [2.0.0] - 2018-12-07
 ### Added
+- `Serializer.Base`:
+    - The `normalize` method for update `typeClass` in case of polymorphic relationships.
 - Query language:
     - `GeometryPredicate` for geometry data types.
 
-## [0.2.0-beta.0] - 2018-09-25
-### Added
-- `Serializer.Base`:
-    - The `normalize` method for update typeClass in case of polymorphic relationships.
+### Fixed
+- `Serializer.OData`:
+    - The `normalize` method for update `typeClass` in case of hasMany polymorphic relationships.
 
 ## [0.13.0-beta.0] - 2018-09-17
 ### Added
