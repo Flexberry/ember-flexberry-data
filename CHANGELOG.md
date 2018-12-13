@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [3.0.0-beta.0] - 2018-11-16
+## [3.0.0] - 2018-12-13
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
 
