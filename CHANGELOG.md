@@ -1,7 +1,7 @@
 # Change Log
 
 ## [Unreleased]
-###Fixed
+### Add
 - Add package ember-moment to project
 
 ## [2.0.0] - 2018-12-07
