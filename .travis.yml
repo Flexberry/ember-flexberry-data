@@ -58,6 +58,11 @@ after_success:
     && test $TRAVIS_BRANCH == "master"
     && ember build && firebase deploy --project flexberry-ember-data --token "$FIREBASE_TOKEN" -m "Travis Build №$TRAVIS_BUILD_NUMBER."
     && bash scripts/update-docs.sh
+  - test $EMBER_TRY_SCENARIO == "default"
+    && test $TRAVIS_PULL_REQUEST == "false"
+    && test $TRAVIS_BRANCH == "feature-ember-update"
+    && ember build && firebase deploy --project flexberry-ember-data --token "$FIREBASE_TOKEN" -m "Travis Build №$TRAVIS_BUILD_NUMBER."
+    && bash scripts/update-docs.sh
 
 after_script:
   - test $EMBER_TRY_SCENARIO == "default"
