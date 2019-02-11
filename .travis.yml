@@ -50,18 +50,8 @@ script:
 after_success:
   - test $EMBER_TRY_SCENARIO == "default"
     && test $TRAVIS_PULL_REQUEST == "false"
-    && test $TRAVIS_BRANCH == "develop"
+    && (test $TRAVIS_BRANCH == "develop" || test $TRAVIS_BRANCH == "master" || test $TRAVIS_BRANCH == "feature-ember-update")
     && ember build && firebase deploy --project flexberry-ember-data-dev --token "$FIREBASE_TOKEN" -m "Travis Build №$TRAVIS_BUILD_NUMBER."
-    && bash scripts/update-docs.sh
-  - test $EMBER_TRY_SCENARIO == "default"
-    && test $TRAVIS_PULL_REQUEST == "false"
-    && test $TRAVIS_BRANCH == "master"
-    && ember build && firebase deploy --project flexberry-ember-data --token "$FIREBASE_TOKEN" -m "Travis Build №$TRAVIS_BUILD_NUMBER."
-    && bash scripts/update-docs.sh
-  - test $EMBER_TRY_SCENARIO == "default"
-    && test $TRAVIS_PULL_REQUEST == "false"
-    && test $TRAVIS_BRANCH == "feature-ember-update"
-    && ember build && firebase deploy --project flexberry-ember-data --token "$FIREBASE_TOKEN" -m "Travis Build №$TRAVIS_BUILD_NUMBER."
     && bash scripts/update-docs.sh
 
 after_script:
