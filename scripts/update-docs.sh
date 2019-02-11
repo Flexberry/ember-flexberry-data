@@ -10,8 +10,8 @@ echo "Clone ${repositoryRelativeGitHubAddress} repository & checkout latest vers
 git clone --recursive "https://github.com/${repositoryRelativeGitHubAddress}.git" emberFlexberryDataRepository
 cd emberFlexberryDataRepository
 
-# Checkout gh-pages branch & pull it's latest version.
-git checkout gh-pages
+# Checkout and pull same branch.
+git checkout ${TRAVIS_BRANCH}
 git pull
 
 cd ..
@@ -28,19 +28,21 @@ echo "Clone ${repositoryYuidocTheme} repository & checkout latest version of gh-
 git clone --recursive "https://github.com/${repositoryYuidocTheme}.git" repositoryYuidocTheme
 cd repositoryYuidocTheme
 
-# Checkout and pull same branch.
-git checkout ${TRAVIS_BRANCH}
-git pull
-
 echo "Copy ember addon source (for ${TRAVIS_BRANCH} branch) into addon directory."
 mkdir addon
-cp -r ../addon/* addon
+cp -r ../emberFlexberryDataRepository/addon/* addon
 
 echo "Execute yuidoc autodocumentation generator."
 yuidoc
 
+cd "../emberFlexberryDataRepository"
+
+# Checkout gh-pages branch & pull it's latest version.
+git checkout gh-pages
+git pull
+
 echo "Navigate to target directory for autodoc in gh-pages."
-cd "../emberFlexberryDataRepository/autodoc"
+cd "autodoc"
 
 # Remove results of previous deploy (for current branch) & recreate directory.
 rm -rf "${TRAVIS_BRANCH}"
