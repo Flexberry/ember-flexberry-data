@@ -236,12 +236,12 @@ export default DS.RESTAdapter.extend({
    * @return {String}
    */
   generateActionUrl(actionName, data, url) {
-    let config = getOwner(this)._lookupFactory('config:environment');
+    const config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
     }
 
-    resultUrl =  `${url}/${actionName}`;
+    const resultUrl =  `${url}/${actionName}`;
 
     return resultUrl;
   },

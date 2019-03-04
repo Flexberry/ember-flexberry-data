@@ -74,9 +74,9 @@ test('ajax functions tests', function(assert) {
       $.mockjax({
         url: '/test-models/test-odata-function()',
         type: 'GET',
-        responseText: [{ __PrimaryKey: '1', Name: 'Russia' }, { __PrimaryKey: '2', Name: 'Kongo'}]
+        responseText: [{ __PrimaryKey: '1', Name: 'Russia' }, { __PrimaryKey: '2', Name: 'Kongo' }]
       });
-      return adapter.callEmberOdataFunction('test-odata-function', { }, '/test-models', null, store, 'country' )
+      return adapter.callEmberOdataFunction('test-odata-function', { }, '/test-models', null, store, 'country')
       .then((msg) => {
         assert.equal(msg.length, 2, 'correct record number');
         msg.forEach(record => {
@@ -88,9 +88,9 @@ test('ajax functions tests', function(assert) {
     .then(() => {
       $.mockjax({
         url: '/test-models/test-odata-action()',
-        responseText: [{ __PrimaryKey: '1', Name: 'Russia' }, { __PrimaryKey: '2', Name: 'Kongo'}]
+        responseText: [{ __PrimaryKey: '1', Name: 'Russia' }, { __PrimaryKey: '2', Name: 'Kongo' }]
       });
-      return adapter.callEmberOdataFunction('test-odata-action', { }, '/test-models', null, store, 'country' )
+      return adapter.callEmberOdataFunction('test-odata-action', { }, '/test-models', null, store, 'country')
       .then((msg) => {
         assert.equal(msg.length, 2, 'correct record number');
         msg.forEach(record => {
