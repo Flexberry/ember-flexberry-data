@@ -363,7 +363,7 @@ export default DS.RESTAdapter.extend({
       Ember.$.ajax(params).done((msg) => {
         if (!Ember.isNone(store) && !Ember.isNone(modelname)) {
           const normalizedRecords = { data: [] };
-          Object.values(msg).forEach(record => {
+          Object.values(msg.value).forEach(record => {
             normalizedRecords.data.push(store.normalize(modelname, record).data);
           });
           msg = store.push(normalizedRecords);
