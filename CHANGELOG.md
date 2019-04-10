@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- `Utils`:
+    - Add `isOrdered` function in `Information` utils for check ordered attribute.
 
 ## [2.1.0-beta.0] - 2019-03-05
 ### Added
