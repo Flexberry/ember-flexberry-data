@@ -2,7 +2,7 @@ import { assert, debug } from '@ember/debug';
 import { isNone } from '@ember/utils';
 import { get, computed } from '@ember/object';
 import { getOwner } from '@ember/application';
-import RSVP from 'rsvp';
+import { Promise } from 'rsvp';
 import $ from 'jquery';
 import DS from 'ember-data';
 
@@ -189,22 +189,16 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-   * A method to call functions using ajax requests.
+   * A method to generate url for ajax request to odata function.
    *
-   * @method callFunction
-   * @param {Object} functionName
+   * @param {String} functionName
    * @param {Object} params
-   * @param {string} url
-   * @param {Object} fields
-   * @param {Function} successCallback
-   * @param {Function} failCallback
-   * @param {Function} alwaysCallback
-   * @return {Promise}
-   * @public
+   * @param {String} url
+   * @return {String}
    */
-  callFunction(functionName, params, url, fields, successCallback, failCallback, alwaysCallback) {
+  generateFunctionUrl(functionName, params, url) {
+    const config = getOwner(this).factoryFor('config:environment').class;
     if (isNone(url)) {
-      let config = getOwner(this).factoryFor('config:environment').class;
       url = `${config.APP.backendUrls.api}`;
     }
 
@@ -240,13 +234,97 @@ export default DS.RESTAdapter.extend({
       resultUrl += ')';
     }
 
-    let resultFields = {};
-    if (!isNone(fields)) {
-      resultFields = fields;
+    return resultUrl;
+  },
+
+  /**
+   * A method to generate url for ajax request to odata action.
+   *
+   * @param {String} actionName
+   * @param {Oject} data
+   * @param {String} url
+   * @return {String}
+   */
+  generateActionUrl(actionName, data, url) {
+    const config = getOwner(this).factoryFor('config:environment').class;
+    if (isNone(url)) {
+      url = `${config.APP.backendUrls.api}`;
     }
 
-    return this._callAjax({ url: resultUrl, method: 'GET', xhrFields: resultFields }, successCallback, failCallback, alwaysCallback);
+    const resultUrl =  `${url}/${actionName}`;
 
+    return resultUrl;
+  },
+
+  /**
+   * A method to call functions that returns model records using ajax requests.
+   *
+   * @param {String} functionName
+   * @param {Object} params
+   * @param {String} url
+   * @param {Object} fields
+   * @param {DS.Store} store
+   * @param {String} modelName
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
+   */
+  callEmberOdataFunction(functionName, params, url, fields, store, modelName, successCallback, failCallback, alwaysCallback) {
+    const resultUrl = this.generateFunctionUrl(functionName, params, url);
+    return this._callAjax(
+      { url: resultUrl, method: 'GET', xhrFields: isNone(fields) ? {} : fields },
+        store, modelName, successCallback, failCallback, alwaysCallback);
+  },
+
+  /**
+   * A method to call functions using ajax requests.
+   *
+   * @method callFunction
+   * @param {Object} functionName
+   * @param {Object} params
+   * @param {String} url
+   * @param {Object} fields
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
+   */
+  callFunction(functionName, params, url, fields, successCallback, failCallback, alwaysCallback) {
+    const resultUrl = this.generateFunctionUrl(functionName, params, url);
+    return this._callAjax(
+      { url: resultUrl, method: 'GET', xhrFields: isNone(fields) ? {} : fields },
+        null, null, successCallback, failCallback, alwaysCallback);
+
+  },
+
+  /**
+   * A method to call actions that returns model records using ajax requests.
+   *
+   * @param {String} actionName
+   * @param {Object} data
+   * @param {String} url
+   * @param {Object} fields
+   * @param {DS.Store} store
+   * @param {String} modelName
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
+   */
+  callEmberOdataAction(actionName, data, url, fields, store, modelName, successCallback, failCallback, alwaysCallback) {
+    const resultUrl = this.generateActionUrl(actionName, data, url);
+    return this._callAjax(
+      { data: JSON.stringify(data),
+        url: resultUrl,
+        method: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        xhrFields: isNone(fields) ? {} : fields
+      }, store, modelName, successCallback, failCallback, alwaysCallback);
   },
 
   /**
@@ -264,43 +342,43 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   callAction(actionName, data, url, fields, successCallback, failCallback, alwaysCallback) {
-    if (isNone(url)) {
-      let config = getOwner(this).factoryFor('config:environment').class;
-      url = `${config.APP.backendUrls.api}`;
-    }
-
-    data = JSON.stringify(data);
-    url =  `${url}/${actionName}`;
-
-    let resultFields = {};
-    if (!isNone(fields)) {
-      resultFields = fields;
-    }
-
+    const resultUrl = this.generateActionUrl(actionName, data, url);
     return this._callAjax(
-      { data: data, url: url, method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json', xhrFields: resultFields },
-      successCallback,
-      failCallback,
-      alwaysCallback);
+      { data: JSON.stringify(data),
+        url: resultUrl,
+        method: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        xhrFields: isNone(fields) ? {} : fields
+      }, null, null, successCallback, failCallback, alwaysCallback);
   },
 
   /**
    * A method to make ajax requests.
    *
-   * @method _callAjax
    * @param {Object} params
+   * @param {Store} store
+   * @param {String} modelname
    * @param {Function} successCallback
    * @param {Function} failCallback
    * @param {Function} alwaysCallback
    * @return {Promise}
    * @private
    */
-  _callAjax(params, successCallback, failCallback, alwaysCallback) {
+  _callAjax(params, store, modelname, successCallback, failCallback, alwaysCallback) {
     assert('Params must be Object!', typeof params === 'object');
     assert('params.method or params.url is not defined.', !(isNone(params.method) || isNone(params.url)));
 
-    return new RSVP.Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
       $.ajax(params).done((msg) => {
+        if (!isNone(store) && !isNone(modelname)) {
+          const normalizedRecords = { data: [] };
+          Object.values(msg.value).forEach(record => {
+            normalizedRecords.data.push(store.normalize(modelname, record).data);
+          });
+          msg = store.push(normalizedRecords);
+        }
+
         if (!isNone(successCallback)) {
           if (typeof successCallback.then === 'function') {
             if (!isNone(alwaysCallback)) {

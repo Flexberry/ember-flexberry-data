@@ -112,6 +112,20 @@ class Information {
   }
 
   /**
+   Checks if the specified attribute path is a ordered field.
+
+   @method isOrdered
+   @param {String} modelName The name of the model.
+   @param {String} attributePath The path to the attribute.
+   @returns {Boolean} True if the specified attribute path is a detail field.
+   @public
+   */
+  isOrdered(modelName, attributePath) {
+    let meta = this.getMeta(modelName, attributePath);
+    return meta.isOrdered;
+  }
+
+  /**
    Returns the type of the specified attribute path.
 
    @method getType
@@ -148,11 +162,13 @@ class Information {
         let attribute = attributes.get(fields[i]);
         if (attribute) {
           let transform = getOwner(this._store).lookup('transform:' + attribute.type);
+          let ordered = get(attribute, 'options.ordered');
           return {
             isMaster: false,
             isDetail: false,
             isKey: false,
             isEnum: transform instanceof FlexberryEnum,
+            isOrdered: ordered || false,
             sourceType: transform.get('sourceType'),
             type: attribute.type
           };
@@ -168,6 +184,7 @@ class Information {
             isDetail: isDetail,
             isKey: isMaster,
             isEnum: false,
+            isOrdered: false,
             type: relationship.type,
             keyType: model.idType || 'guid'
           };
@@ -179,6 +196,7 @@ class Information {
             isDetail: false,
             isKey: true,
             isEnum: false,
+            isOrdered: false,
             type: 'string',
             keyType: model.idType || 'guid'
           };
