@@ -2,20 +2,19 @@
 
 ## [Unreleased]
 
-## [3.1.0-beta.0] - 2018-04-16
+## [3.1.0] - 2018-04-30
+### Added
+- Add changes from 2.1.0.
 
 ## [3.0.0] - 2018-12-13
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
 
-## [2.1.0-beta.1] - 2019-04-10
-### Added
-- `Utils`:
-    - Add `isOrdered` function in `Information` utils for check ordered attribute.
-
-## [2.1.0-beta.0] - 2019-03-05
+## [2.1.0] - 2019-04-30
 ### Added
 - Add package ember-moment to project.
+- `Utils`:
+    - Add `isOrdered` function in `Information` utils for check ordered attribute.
 - `Adapter.Odata`
     - The `callEmberOdataFunction` and `callEmberOdataAction` methods to make OData-function and OData-action calls, returns ember models.
 
