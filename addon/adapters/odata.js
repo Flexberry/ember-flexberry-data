@@ -344,6 +344,59 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
+   * A method to send batch update, create, delete models in sungle transaction.
+   *
+   * @method batchUpdate
+   * @param {Object} models Is array of models or single model for batch update.
+   * @return {Promise} Promise will fulfilled when operation was done.
+   * @public
+   */
+  batchUpdate(models) {
+    // TODO: проверить не массив ли это.
+    // TODO: сериализовать данные, подготовить json
+    let skipUnchangedAttrs = true;
+    SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
+
+    // NOTE: for newly created records id is not defined.
+    let url = this.buildURL(type.modelName, snapshot.id, snapshot, requestType);
+
+    switch (requestType) {
+      case 'createRecord':
+        httpMethod = 'POST';
+        break;
+
+      case 'updateRecord':
+        httpMethod = skipUnchangedAttrs ? 'PATCH' : 'PUT';
+        break;
+
+      case 'deleteRecord':
+        httpMethod = 'DELETE';
+        break;
+
+      default:
+        throw new Error(`Unknown requestType: ${requestType}`);
+    }
+
+    let data;
+
+    // Don't need to send any data for deleting.
+    if (requestType !== 'deleteRecord') {
+      let serializer = store.serializerFor(type.modelName);
+      data = {};
+      serializer.serializeIntoHash(data, type, snapshot);
+    }
+
+
+    // TODO: отправить запрос
+    let httpMethod = 'POST';
+
+    return this.ajax(url, httpMethod, { data: data }).then(function(response) {
+      return response;
+    });
+
+  },
+
+  /**
    * A method to make ajax requests.
    *
    * @param {Object} params
