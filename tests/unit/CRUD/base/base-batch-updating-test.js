@@ -1,12 +1,8 @@
 import Ember from 'ember';
-import { Adapter } from 'ember-flexberry-data';
-import startApp from '../../../helpers/start-app';
 
 export default function batchUpdating(store, assert) {
   assert.expect(1);
   let done = assert.async();
-  const app = startApp();
-  const adapter = Adapter.Odata.create(app.__container__.ownerInjection());
 
   Ember.run(() => {
     initTestData(store)
@@ -30,7 +26,7 @@ export default function batchUpdating(store, assert) {
           .then((recordsForBatch) => {
             let record1 = recordsForBatch[0];
             let record2 = recordsForBatch[1];
-            return adapter.batchUpdate(Ember.A([record1, record2]));
+            return store.adapterFor().batchUpdate(Ember.A([record1, record2]));
           })
           .then(() => {
             store.unloadAll();
