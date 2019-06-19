@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default function batchUpdating(store, assert) {
-  assert.expect(1);
+  assert.expect(2);
   let done = assert.async();
 
   Ember.run(() => {
@@ -26,7 +26,7 @@ export default function batchUpdating(store, assert) {
           .then((recordsForBatch) => {
             let record1 = recordsForBatch[0];
             let record2 = recordsForBatch[1];
-            return store.adapterFor().batchUpdate(Ember.A([record1, record2]));
+            return store.adapterFor().batchUpdate(store, Ember.A([record1, record2]));
           })
           .then(() => {
             store.unloadAll();

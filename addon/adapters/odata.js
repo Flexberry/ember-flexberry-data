@@ -18,9 +18,20 @@ const { getOwner } = Ember;
  * @public
  */
 export default DS.RESTAdapter.extend({
-  headers: {
-    Prefer: 'return=representation'
-  },
+  headers: Ember.computed(function () {
+    if (this.contentTypeCustomHeader) {
+      return {
+        'OData-Version': '4.0',
+        Prefer: 'return=representation',
+        'Content-Type': this.contentTypeCustomHeader
+      };
+    } else {
+      return {
+        'OData-Version': '4.0',
+        Prefer: 'return=representation'
+      };
+    }
+  }).volatile(),
 
   /**
     Timeout for AJAX-requests.
@@ -30,6 +41,15 @@ export default DS.RESTAdapter.extend({
     @default 0
   */
   timeout: 0,
+
+  /**
+    Custom Content-Type HTTP request header.
+
+    @property contentTypeCustomHeader
+    @type String
+    @default undefined
+  */
+  contentTypeCustomHeader: undefined,
 
   /**
     Overloaded method from `RESTAdapter` (Ember Data).
@@ -241,7 +261,7 @@ export default DS.RESTAdapter.extend({
       url = `${config.APP.backendUrls.api}`;
     }
 
-    const resultUrl =  `${url}/${actionName}`;
+    const resultUrl = `${url}/${actionName}`;
 
     return resultUrl;
   },
@@ -265,7 +285,7 @@ export default DS.RESTAdapter.extend({
     const resultUrl = this.generateFunctionUrl(functionName, params, url);
     return this._callAjax(
       { url: resultUrl, method: 'GET', xhrFields: Ember.isNone(fields) ? {} : fields },
-        store, modelName, successCallback, failCallback, alwaysCallback);
+      store, modelName, successCallback, failCallback, alwaysCallback);
   },
 
   /**
@@ -286,7 +306,7 @@ export default DS.RESTAdapter.extend({
     const resultUrl = this.generateFunctionUrl(functionName, params, url);
     return this._callAjax(
       { url: resultUrl, method: 'GET', xhrFields: Ember.isNone(fields) ? {} : fields },
-        null, null, successCallback, failCallback, alwaysCallback);
+      null, null, successCallback, failCallback, alwaysCallback);
 
   },
 
@@ -308,7 +328,8 @@ export default DS.RESTAdapter.extend({
   callEmberOdataAction(actionName, data, url, fields, store, modelName, successCallback, failCallback, alwaysCallback) {
     const resultUrl = this.generateActionUrl(actionName, data, url);
     return this._callAjax(
-      { data: JSON.stringify(data),
+      {
+        data: JSON.stringify(data),
         url: resultUrl,
         method: 'POST',
         contentType: 'application/json; charset=utf-8',
@@ -334,7 +355,8 @@ export default DS.RESTAdapter.extend({
   callAction(actionName, data, url, fields, successCallback, failCallback, alwaysCallback) {
     const resultUrl = this.generateActionUrl(actionName, data, url);
     return this._callAjax(
-      { data: JSON.stringify(data),
+      {
+        data: JSON.stringify(data),
         url: resultUrl,
         method: 'POST',
         contentType: 'application/json; charset=utf-8',
@@ -351,49 +373,99 @@ export default DS.RESTAdapter.extend({
    * @return {Promise} Promise will fulfilled when operation was done.
    * @public
    */
-  batchUpdate(models) {
-    // TODO: проверить не массив ли это.
-    // TODO: сериализовать данные, подготовить json
-    let skipUnchangedAttrs = true;
-    SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
-
-    // NOTE: for newly created records id is not defined.
-    let url = this.buildURL(type.modelName, snapshot.id, snapshot, requestType);
-
-    switch (requestType) {
-      case 'createRecord':
-        httpMethod = 'POST';
-        break;
-
-      case 'updateRecord':
-        httpMethod = skipUnchangedAttrs ? 'PATCH' : 'PUT';
-        break;
-
-      case 'deleteRecord':
-        httpMethod = 'DELETE';
-        break;
-
-      default:
-        throw new Error(`Unknown requestType: ${requestType}`);
+  batchUpdate(store, models) {
+    if (!models) {
+      // TODO: Обработать эту ситуацию: подумать надо - или бросить исключение, или зарезолвить пустой промис.
+      return;
     }
 
-    let data;
+    // TODO: проверить, что пришёл массив, если нет, то засунуть объект в массив.
 
-    // Don't need to send any data for deleting.
-    if (requestType !== 'deleteRecord') {
-      let serializer = store.serializerFor(type.modelName);
-      data = {};
-      serializer.serializeIntoHash(data, type, snapshot);
-    }
+    // TODO: generate unique boundary id.
+    let boundary = 'batch_36522ad7-fc75-4b56-8c71-56071383e77b';
 
+    let requestBody = '--' + boundary + '\r\n';
 
-    // TODO: отправить запрос
-    let httpMethod = 'POST';
+    // TODO: generate unique changeset id.
+    let changeSetBoundary = 'changeset_77162fcd-b8da-41ac-a9f8-9357efbbd';
+    requestBody += 'Content-Type: multipart/mixed;boundary=' + changeSetBoundary + '\r\n\r\n';
 
-    return this.ajax(url, httpMethod, { data: data }).then(function(response) {
-      return response;
+    let contentId = 0;
+
+    models.forEach((model) => {
+      requestBody += '--' + changeSetBoundary + '\r\n';
+      requestBody += 'Content-Type: application/http\r\n';
+      requestBody += 'Content-Transfer-Encoding: binary\r\n';
+
+      contentId++;
+      requestBody += 'Content-ID: ' + contentId + '\r\n\r\n';
+
+      let skipUnchangedAttrs = true;
+      let snapshot = model._createSnapshot();
+      SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
+
+      let modelHttpMethod = 'POST';
+      let modelDirtyType = model.get('dirtyType');
+      switch (modelDirtyType) {
+        case 'created':
+          modelHttpMethod = 'POST';
+          break;
+
+        case 'updated':
+          modelHttpMethod = skipUnchangedAttrs ? 'PATCH' : 'PUT';
+          break;
+
+        case 'deleted':
+          modelHttpMethod = 'DELETE';
+          break;
+
+        default:
+          throw new Error(`Unknown requestType: ${modelDirtyType}`);
+      }
+
+      let modelUrl =  this._buildURL(snapshot.type.modelName);
+
+      requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
+      requestBody += 'Content-Type: application/json;type=entry\r\n\r\n';
+
+      let data;
+
+      // Don't need to send any data for deleting.
+      if (modelDirtyType !== 'deleted') {
+        let serializer = store.serializerFor(snapshot.type.modelName);
+        data = {};
+        serializer.serializeIntoHash(data, snapshot.type, snapshot);
+      }
+
+      requestBody += JSON.stringify(data) + '\r\n';
     });
 
+    requestBody += '--' + changeSetBoundary + '--\r\n';
+
+    requestBody += '\r\n--' + boundary + '--';
+
+    var url = [];
+    var host = Ember.get(this, 'host');
+    var prefix = this.urlPrefix();
+
+    url.push('$batch');
+
+    if (prefix) {
+      url.unshift(prefix);
+    }
+
+    url = url.join('/');
+    if (!host && url && url.charAt(0) !== '/') {
+      url = '/' + url;
+    }
+
+    let httpMethod = 'POST';
+
+    this.contentTypeCustomHeader = 'multipart/mixed;boundary=' + boundary;
+
+    return this.ajax(url, httpMethod, { data: requestBody }).then(function (response) {
+      return response;
+    });
   },
 
   /**
@@ -412,7 +484,7 @@ export default DS.RESTAdapter.extend({
     Ember.assert('Params must be Object!', typeof params === 'object');
     Ember.assert('params.method or params.url is not defined.', !(Ember.isNone(params.method) || Ember.isNone(params.url)));
 
-    return new Ember.RSVP.Promise(function(resolve, reject) {
+    return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax(params).done((msg) => {
         if (!Ember.isNone(store) && !Ember.isNone(modelname)) {
           const normalizedRecords = { data: [] };
@@ -426,7 +498,7 @@ export default DS.RESTAdapter.extend({
           if (typeof successCallback.then === 'function') {
             if (!Ember.isNone(alwaysCallback)) {
               if (typeof alwaysCallback.then === 'function') {
-                successCallback(msg).then(() => {alwaysCallback(msg).then(resolve(msg));});
+                successCallback(msg).then(() => { alwaysCallback(msg).then(resolve(msg)); });
               } else {
                 successCallback(msg).then(alwaysCallback(msg)).then(resolve(msg));
               }
@@ -458,12 +530,12 @@ export default DS.RESTAdapter.extend({
             resolve(msg);
           }
         }
-      }).fail((msg)=> {
+      }).fail((msg) => {
         if (!Ember.isNone(failCallback)) {
           if (typeof failCallback.then === 'function') {
             if (!Ember.isNone(alwaysCallback)) {
               if (typeof alwaysCallback.then === 'function') {
-                failCallback(msg).then(() => {alwaysCallback(msg).then(reject(msg));});
+                failCallback(msg).then(() => { alwaysCallback(msg).then(reject(msg)); });
               } else {
                 failCallback(msg).then(alwaysCallback(msg)).then(reject(msg));
               }
@@ -574,7 +646,7 @@ export default DS.RESTAdapter.extend({
 
   deleteAllRecords(store, modelName, filter) {
     let url = this._buildURL(modelName);
-    let pathName  = this.pathForType(modelName);
+    let pathName = this.pathForType(modelName);
     let builder = new ODataQueryAdapter(url, store);
     let filterVelue = builder._buildODataFilters(filter);
     let filterQuery = !Ember.isNone(filterVelue) ? '$filter=' + filterVelue : '';
@@ -624,7 +696,7 @@ export default DS.RESTAdapter.extend({
       serializer.serializeIntoHash(data, type, snapshot);
     }
 
-    return this.ajax(url, httpMethod, { data: data }).then(function(response) {
+    return this.ajax(url, httpMethod, { data: data }).then(function (response) {
       return response;
     });
   }
