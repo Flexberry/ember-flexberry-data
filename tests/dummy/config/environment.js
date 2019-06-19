@@ -52,7 +52,7 @@ module.exports = function(environment) {
     ENV.APP.rootElement = '#ember-testing';
 
     // TODO: find proper way to pass arguments to tests
-    var testODataServiceURL = process.env.TEST_ODATA_SERVICE_URL;
+    var testODataServiceURL = 'http://localhost:6500/odata'; // TODO: support Docker backend usage in Travis-CI.
     ENV.APP.testODataService = !!testODataServiceURL;
     ENV.APP.testODataServiceURL = testODataServiceURL;
   }
