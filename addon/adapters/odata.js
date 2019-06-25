@@ -4,6 +4,7 @@ import DS from 'ember-data';
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
 import { capitalize, camelize } from '../utils/string-functions';
+import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
 
 const { getOwner } = Ember;
 
@@ -472,7 +473,22 @@ export default DS.RESTAdapter.extend({
       data: requestBody,
     };
 
-    return Ember.$.ajax(url, options).done(function (response) {
+    return Ember.$.ajax(url, options).done(function (response, statusText, xhr) {
+      let meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
+      if (meta.contentType !== 'multipart/mixed') {
+        throw new Error('Invalid response type.');
+      }
+
+      let responses = getBatchResponses(response, meta.boundary);
+      if (responses.length !== 1) {
+        throw new Error('Invalid number of responses.');
+      }
+
+      let batchResponse = parseBatchResponse(responses[0]);
+      if (batchResponse.contentType !== 'multipart/mixed') {
+        throw new Error('Invalid response type.');
+      }
+
       return response;
     });
   },
