@@ -461,9 +461,18 @@ export default DS.RESTAdapter.extend({
 
     let httpMethod = 'POST';
 
-    this.contentTypeCustomHeader = 'multipart/mixed;boundary=' + boundary;
+    let options = {
+      method: httpMethod,
+      headers: {
+        'OData-Version': '4.0',
+        'Prefer': 'return=representation',
+        'Content-Type': 'multipart/mixed;boundary=' + boundary,
+      },
+      dataType: 'text',
+      data: requestBody,
+    };
 
-    return this.ajax(url, httpMethod, { data: requestBody }).then(function (response) {
+    return Ember.$.ajax(url, options).done(function (response) {
       return response;
     });
   },
