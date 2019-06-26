@@ -14,6 +14,9 @@ export default function batchUpdating(store, assert) {
         return Ember.RSVP.Promise.all([
           store.findRecord('ember-flexberry-dummy-application-user', user1Id)
             .then((returned1Record) => {
+              returned1Record.set('name', 'Updated name for User 1');
+              return returned1Record.save();
+            }).then((returned1Record) => {
               returned1Record.set('name', 'User 1');
               return returned1Record;
             }),
@@ -22,11 +25,20 @@ export default function batchUpdating(store, assert) {
               returned2Record.set('name', 'User 2');
               return returned2Record;
             }),
+          store.createRecord('ember-flexberry-dummy-suggestion-type', {
+              name: 'Sample for create and unmodified'
+            }).save(),
+            store.createRecord('ember-flexberry-dummy-suggestion-type', {
+              name: 'Sample for create'
+            })
+            // TODO: add DELETE operation
         ])
           .then((recordsForBatch) => {
             let record1 = recordsForBatch[0];
             let record2 = recordsForBatch[1];
-            return store.adapterFor().batchUpdate(store, Ember.A([record1, record2]));
+            let record3 = recordsForBatch[2];
+            let record4 = recordsForBatch[3];
+            return store.adapterFor().batchUpdate(store, Ember.A([record4, record2, record3, record1]));
           })
           .then(() => {
             store.unloadAll();

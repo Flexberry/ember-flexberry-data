@@ -63,6 +63,10 @@ export default DS.RESTAdapter.extend({
     @return {Promise}
   */
   query(store, type, query) {
+    if (!this.store) {
+      this.store = store;
+    }
+
     let url = this._buildURL(query.modelName);
     let builder = new ODataQueryAdapter(url, store);
     let data = builder.getODataQuery(query);
@@ -394,6 +398,12 @@ export default DS.RESTAdapter.extend({
     let contentId = 0;
 
     models.forEach((model) => {
+      let modelDirtyType = model.get('dirtyType');
+
+      if (!modelDirtyType) {
+        return;
+      }
+
       requestBody += '--' + changeSetBoundary + '\r\n';
       requestBody += 'Content-Type: application/http\r\n';
       requestBody += 'Content-Transfer-Encoding: binary\r\n';
@@ -406,7 +416,6 @@ export default DS.RESTAdapter.extend({
       SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
 
       let modelHttpMethod = 'POST';
-      let modelDirtyType = model.get('dirtyType');
       switch (modelDirtyType) {
         case 'created':
           modelHttpMethod = 'POST';
@@ -422,6 +431,10 @@ export default DS.RESTAdapter.extend({
 
         default:
           throw new Error(`Unknown requestType: ${modelDirtyType}`);
+      }
+
+      if (!this.store) {
+        this.store = store;
       }
 
       let modelUrl =  this._buildURL(snapshot.type.modelName);
@@ -648,6 +661,11 @@ export default DS.RESTAdapter.extend({
    */
   _appendIdToURL(id, url, modelName) {
     let encId = encodeURIComponent(id);
+
+    if (!this.store) {
+      // TODO: надо выбросить ошибку
+    }
+
     let model = this.store.modelFor(modelName);
     if (model.idType === 'string') {
       encId = `'${encId}'`;
@@ -670,7 +688,11 @@ export default DS.RESTAdapter.extend({
   },
 
   deleteAllRecords(store, modelName, filter) {
-    let url = this._buildURL(modelName);
+    if (!this.store) {
+      this.store = store;
+    }
+
+    let url = this._buildURL(store, modelName);
     let pathName = this.pathForType(modelName);
     let builder = new ODataQueryAdapter(url, store);
     let filterVelue = builder._buildODataFilters(filter);
