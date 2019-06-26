@@ -440,7 +440,8 @@ export default DS.RESTAdapter.extend({
       let modelUrl =  this._buildURL(snapshot.type.modelName, model.get('id'));
 
       requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
-      requestBody += 'Content-Type: application/json;type=entry\r\n\r\n';
+      requestBody += 'Content-Type: application/json;type=entry\r\n';
+      requestBody += 'Prefer: return=representation\r\n\r\n';
 
       // Don't need to send any data for deleting.
       if (modelDirtyType !== 'deleted') {
