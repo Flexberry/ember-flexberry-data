@@ -442,16 +442,13 @@ export default DS.RESTAdapter.extend({
       requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
       requestBody += 'Content-Type: application/json;type=entry\r\n\r\n';
 
-      let data;
-
       // Don't need to send any data for deleting.
       if (modelDirtyType !== 'deleted') {
         let serializer = store.serializerFor(snapshot.type.modelName);
-        data = {};
+        let data = {};
         serializer.serializeIntoHash(data, snapshot.type, snapshot);
+        requestBody += JSON.stringify(data) + '\r\n';
       }
-
-      requestBody += JSON.stringify(data) + '\r\n';
     });
 
     requestBody += '--' + changeSetBoundary + '--\r\n';
