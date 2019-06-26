@@ -495,12 +495,45 @@ export default DS.RESTAdapter.extend({
         throw new Error('Invalid number of responses.');
       }
 
-      let batchResponse = parseBatchResponse(responses[0]);
-      if (batchResponse.contentType !== 'multipart/mixed') {
+      let { contentType, changesets } = parseBatchResponse(responses[0]);
+      if (contentType !== 'multipart/mixed') {
         throw new Error('Invalid response type.');
       }
 
-      return response;
+      if (changesets.length !== models.length) {
+        throw new Error('Invalid response.');
+      }
+
+      return changesets.map(({ contentID, meta, body }) => {
+        let model = modelsByContentId[contentID];
+        let modelClass = store.modelFor(model.constructor.modelName);
+        let serializer = store.serializerFor(modelClass.modelName);
+        switch (model.get('dirtyType')) {
+          case 'created':
+            if (meta.status !== 201) {
+              throw new Error(`Invalid response status: ${meta.status}.`);
+            }
+
+            let hash = serializer.normalize(modelClass, body);
+            model.set('id', hash.id);
+            return store.push(hash);
+
+          case 'updated':
+            if (meta.status !== 200) {
+              throw new Error(`Invalid response status: ${meta.status}.`);
+            }
+
+            return store.push(serializer.normalize(modelClass, body));
+
+          case 'deleted':
+            if (meta.status !== 204) {
+              throw new Error(`Invalid response status: ${meta.status}.`);
+            }
+
+            store.unloadRecord(model);
+            return null;
+        }
+      });
     });
   },
 
