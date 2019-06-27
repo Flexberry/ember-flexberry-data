@@ -429,6 +429,23 @@ export default DS.Store.extend({
   },
 
   /**
+    A method to send batch update, create or delete models in single transaction.
+
+    The array which fulfilled the promise may contain the following values:
+    - `new model object` - for created records.
+    - `same model object` - for updated or unaltered records.
+    - `null` - for deleted records.
+
+    @method batchUpdate
+    @param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
+    @param {Boolean} [useOnlineStore] Allow to explicitly specify online or offline store using independently of global online status.
+    @return {Promise} A promise that fulfilled with an array of models in the new state.
+  */
+  batchUpdate() {
+    return this._callSuperMethod('batchUpdate', 1, arguments);
+  },
+
+  /**
     Returns an instance of the adapter for a given type.
     @method adapterFor
     @param {String} modelName

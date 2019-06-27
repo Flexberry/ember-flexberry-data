@@ -353,12 +353,17 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-    A method to send batch update, create, delete models in sungle transaction.
+    A method to send batch update, create or delete models in single transaction.
+
+    The array which fulfilled the promise may contain the following values:
+    - `new model object` - for created records.
+    - `same model object` - for updated or unaltered records.
+    - `null` - for deleted records.
 
     @method batchUpdate
     @param {DS.Store} store The store.
-    @param {Array|Object} models Is array of models or single model for batch update.
-    @return {Promise} Promise will fulfilled when operation was done.
+    @param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
+    @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate(store, models) {
     if (Ember.isEmpty(models)) {
