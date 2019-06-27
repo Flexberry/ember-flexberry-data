@@ -10,7 +10,7 @@
   @return {Object} Object with `contentType` and `boundary` properties.
 */
 export function getResponseMeta(contentTypeHeader) {
-  let [ contentType, boundary ] = contentTypeHeader.split(';');
+  let [contentType, boundary] = contentTypeHeader.split(';');
   return { contentType, boundary: boundary.split('=')[1] };
 }
 
@@ -72,7 +72,7 @@ export function parseBatchResponse(response) {
   @return {Object} Object with `contentID`, `meta` and `body` properties.
 */
 function parseСhangeset(changeset) {
-  let [ rawHeaders, rawMeta, rawBody ] = changeset.split('\n\n');
+  let [rawHeaders, rawMeta, rawBody] = changeset.split('\n\n');
 
   let contentID = getResponseHeader('Content-ID', rawHeaders);
   let meta = parseСhangesetMeta(rawMeta);
@@ -80,11 +80,11 @@ function parseСhangeset(changeset) {
   let body;
   switch (meta.contentType) {
     case null:
-        body = null;
+      body = null;
       break;
 
     case 'application/json':
-        body = JSON.parse(rawBody);
+      body = JSON.parse(rawBody);
       break;
 
     default:
