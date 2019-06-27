@@ -685,7 +685,7 @@ export default DS.RESTAdapter.extend({
     let encId = encodeURIComponent(id);
 
     if (!this.store) {
-      // TODO: надо выбросить ошибку
+      throw new Error('No store.');
     }
 
     let model = this.store.modelFor(modelName);
