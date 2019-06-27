@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default function batchUpdating(store, assert) {
-  assert.expect(2);
+  assert.expect(10);
   let done = assert.async();
 
   Ember.run(() => {
@@ -44,7 +44,21 @@ export default function batchUpdating(store, assert) {
             let record3 = recordsForBatch[2];
             let record4 = recordsForBatch[3];
             let record5 = recordsForBatch[4];
-            return store.adapterFor().batchUpdate(store, Ember.A([record4, record2, record3, record1, record5]));
+            return store.adapterFor('application').batchUpdate(store, Ember.A([record4, record2, record3, record1, record5])).then((result) => {
+              assert.equal(result.length, 5);
+
+              assert.notOk(result[0].get('hasDirtyAttributes'));
+
+              assert.notOk(result[1].get('hasDirtyAttributes'));
+              assert.ok(result[1] === record2);
+
+              assert.ok(result[2] === null);
+
+              assert.notOk(result[3].get('hasDirtyAttributes'));
+              assert.ok(result[3] === record1);
+
+              assert.notOk(result[4].get('hasDirtyAttributes'));
+            });
           })
           .then(() => {
             store.unloadAll();
