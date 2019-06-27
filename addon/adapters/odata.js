@@ -4,6 +4,7 @@ import DS from 'ember-data';
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
 import { capitalize, camelize } from '../utils/string-functions';
+import generateUniqueId from '../utils/generate-unique-id';
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
 
 const { getOwner } = Ember;
@@ -19,20 +20,10 @@ const { getOwner } = Ember;
  * @public
  */
 export default DS.RESTAdapter.extend({
-  headers: Ember.computed(function () {
-    if (this.contentTypeCustomHeader) {
-      return {
-        'OData-Version': '4.0',
-        Prefer: 'return=representation',
-        'Content-Type': this.contentTypeCustomHeader
-      };
-    } else {
-      return {
-        'OData-Version': '4.0',
-        Prefer: 'return=representation'
-      };
-    }
-  }).volatile(),
+  headers: {
+    'OData-Version': '4.0',
+    Prefer: 'return=representation'
+  },
 
   /**
     Timeout for AJAX-requests.
@@ -42,15 +33,6 @@ export default DS.RESTAdapter.extend({
     @default 0
   */
   timeout: 0,
-
-  /**
-    Custom Content-Type HTTP request header.
-
-    @property contentTypeCustomHeader
-    @type String
-    @default undefined
-  */
-  contentTypeCustomHeader: undefined,
 
   /**
     Overloaded method from `RESTAdapter` (Ember Data).
@@ -371,32 +353,29 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-   * A method to send batch update, create, delete models in sungle transaction.
-   *
-   * @method batchUpdate
-   * @param {Object} models Is array of models or single model for batch update.
-   * @return {Promise} Promise will fulfilled when operation was done.
-   * @public
-   */
+    A method to send batch update, create, delete models in sungle transaction.
+
+    @method batchUpdate
+    @param {DS.Store} store The store.
+    @param {Array|Object} models Is array of models or single model for batch update.
+    @return {Promise} Promise will fulfilled when operation was done.
+  */
   batchUpdate(store, models) {
-    if (!models) {
-      // TODO: Обработать эту ситуацию: подумать надо - или бросить исключение, или зарезолвить пустой промис.
-      return;
+    if (Ember.isEmpty(models)) {
+      throw new Error('The models is empty.');
     }
 
-    // TODO: проверить, что пришёл массив, если нет, то засунуть объект в массив.
+    models = Ember.A(models);
 
-    // TODO: generate unique boundary id.
-    let boundary = 'batch_36522ad7-fc75-4b56-8c71-56071383e77b';
+    let boundary = `batch_${generateUniqueId()}`;
 
     let requestBody = '--' + boundary + '\r\n';
 
-    // TODO: generate unique changeset id.
-    let changeSetBoundary = 'changeset_77162fcd-b8da-41ac-a9f8-9357efbbd';
+    let changeSetBoundary = `changeset_${generateUniqueId()}`;
     requestBody += 'Content-Type: multipart/mixed;boundary=' + changeSetBoundary + '\r\n\r\n';
 
     let contentId = 0;
-
+    let modelsByContentId = {};
     models.forEach((model) => {
       let modelDirtyType = model.get('dirtyType');
 
@@ -410,6 +389,7 @@ export default DS.RESTAdapter.extend({
 
       contentId++;
       requestBody += 'Content-ID: ' + contentId + '\r\n\r\n';
+      modelsByContentId[contentId] = model;
 
       let skipUnchangedAttrs = true;
       let snapshot = model._createSnapshot();
@@ -471,70 +451,76 @@ export default DS.RESTAdapter.extend({
       url = '/' + url;
     }
 
+    let headers = this.get('headers');
+    headers['Content-Type'] = `multipart/mixed;boundary=${boundary}`;
     let httpMethod = 'POST';
 
     let options = {
       method: httpMethod,
-      headers: {
-        'OData-Version': '4.0',
-        'Prefer': 'return=representation',
-        'Content-Type': 'multipart/mixed;boundary=' + boundary,
-      },
+      headers,
       dataType: 'text',
       data: requestBody,
     };
 
-    return Ember.$.ajax(url, options).done(function (response, statusText, xhr) {
+    return new Ember.RSVP.Promise((resolve, reject) => Ember.$.ajax(url, options).done((response, statusText, xhr) => {
       let meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
       if (meta.contentType !== 'multipart/mixed') {
-        throw new Error('Invalid response type.');
+        return reject(new Error('Invalid response type.'));
       }
 
       let responses = getBatchResponses(response, meta.boundary);
       if (responses.length !== 1) {
-        throw new Error('Invalid number of responses.');
+        return reject(new Error('Invalid number of responses.'));
       }
 
       let { contentType, changesets } = parseBatchResponse(responses[0]);
       if (contentType !== 'multipart/mixed') {
-        throw new Error('Invalid response type.');
+        return reject(new Error('Invalid response type.'));
       }
 
-      if (changesets.length !== models.length) {
-        throw new Error('Invalid response.');
+      if (changesets.length === 1 && !this.isSuccess(changesets[0].meta.status)) {
+        return reject(new Error('Invalid response.'));
       }
 
-      return changesets.map(({ contentID, meta, body }) => {
-        let model = modelsByContentId[contentID];
+      let result = [];
+      for (let model of models) {
+        let changeset = changesets.find(c => modelsByContentId[c.contentID] === model);
         let modelClass = store.modelFor(model.constructor.modelName);
         let serializer = store.serializerFor(modelClass.modelName);
         switch (model.get('dirtyType')) {
           case 'created':
-            if (meta.status !== 201) {
-              throw new Error(`Invalid response status: ${meta.status}.`);
+            if (changeset.meta.status !== 201) {
+              return reject(new Error(`Invalid response status: ${changeset.meta.status}.`));
             }
 
-            let hash = serializer.normalize(modelClass, body);
-            model.set('id', hash.id);
-            return store.push(hash);
+            Ember.run(store, store.unloadRecord, model);
+            result.push(Ember.run(store, store.push, serializer.normalize(modelClass, changeset.body)));
+            break;
 
           case 'updated':
-            if (meta.status !== 200) {
-              throw new Error(`Invalid response status: ${meta.status}.`);
+            if (changeset.meta.status !== 200) {
+              return reject(new Error(`Invalid response status: ${changeset.meta.status}.`));
             }
 
-            return store.push(serializer.normalize(modelClass, body));
+            result.push(Ember.run(store, store.push, serializer.normalize(modelClass, changeset.body)));
+            break;
 
           case 'deleted':
-            if (meta.status !== 204) {
-              throw new Error(`Invalid response status: ${meta.status}.`);
+            if (changeset.meta.status !== 204) {
+              return reject(new Error(`Invalid response status: ${changeset.meta.status}.`));
             }
 
-            store.unloadRecord(model);
-            return null;
+            Ember.run(store, store.unloadRecord, model);
+            result.push(null);
+            break;
+
+          default:
+            result.push(model);
         }
-      });
-    });
+      }
+
+      resolve(result);
+    }).fail(reject));
   },
 
   /**
