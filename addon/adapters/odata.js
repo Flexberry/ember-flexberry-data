@@ -372,15 +372,15 @@ export default DS.RESTAdapter.extend({
 
     models = Ember.A(models);
 
-    let boundary = `batch_${generateUniqueId()}`;
+    const boundary = `batch_${generateUniqueId()}`;
 
     let requestBody = '--' + boundary + '\r\n';
 
-    let changeSetBoundary = `changeset_${generateUniqueId()}`;
+    const changeSetBoundary = `changeset_${generateUniqueId()}`;
     requestBody += 'Content-Type: multipart/mixed;boundary=' + changeSetBoundary + '\r\n\r\n';
 
     let contentId = 0;
-    let modelsByContentId = {};
+    const modelsByContentId = {};
     models.forEach((model) => {
       let modelDirtyType = model.get('dirtyType');
 
@@ -396,8 +396,8 @@ export default DS.RESTAdapter.extend({
       requestBody += 'Content-ID: ' + contentId + '\r\n\r\n';
       modelsByContentId[contentId] = model;
 
-      let skipUnchangedAttrs = true;
-      let snapshot = model._createSnapshot();
+      const skipUnchangedAttrs = true;
+      const snapshot = model._createSnapshot();
       SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
 
       let modelHttpMethod = 'POST';
@@ -422,7 +422,7 @@ export default DS.RESTAdapter.extend({
         this.store = store;
       }
 
-      let modelUrl =  this._buildURL(snapshot.type.modelName, model.get('id'));
+      const modelUrl =  this._buildURL(snapshot.type.modelName, model.get('id'));
 
       requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
       requestBody += 'Content-Type: application/json;type=entry\r\n';
@@ -430,8 +430,8 @@ export default DS.RESTAdapter.extend({
 
       // Don't need to send any data for deleting.
       if (modelDirtyType !== 'deleted') {
-        let serializer = store.serializerFor(snapshot.type.modelName);
-        let data = {};
+        const serializer = store.serializerFor(snapshot.type.modelName);
+        const data = {};
         serializer.serializeIntoHash(data, snapshot.type, snapshot);
         requestBody += JSON.stringify(data) + '\r\n';
       }
@@ -441,26 +441,13 @@ export default DS.RESTAdapter.extend({
 
     requestBody += '\r\n--' + boundary + '--';
 
-    var url = [];
-    var host = Ember.get(this, 'host');
-    var prefix = this.urlPrefix();
+    const url = `${this._buildURL()}/$batch`;
 
-    url.push('$batch');
-
-    if (prefix) {
-      url.unshift(prefix);
-    }
-
-    url = url.join('/');
-    if (!host && url && url.charAt(0) !== '/') {
-      url = '/' + url;
-    }
-
-    let headers = this.get('headers');
+    const headers = this.get('headers');
     headers['Content-Type'] = `multipart/mixed;boundary=${boundary}`;
-    let httpMethod = 'POST';
+    const httpMethod = 'POST';
 
-    let options = {
+    const options = {
       method: httpMethod,
       headers,
       dataType: 'text',
@@ -468,17 +455,17 @@ export default DS.RESTAdapter.extend({
     };
 
     return new Ember.RSVP.Promise((resolve, reject) => Ember.$.ajax(url, options).done((response, statusText, xhr) => {
-      let meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
+      const meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
       if (meta.contentType !== 'multipart/mixed') {
         return reject(new Error('Invalid response type.'));
       }
 
-      let responses = getBatchResponses(response, meta.boundary);
+      const responses = getBatchResponses(response, meta.boundary);
       if (responses.length !== 1) {
         return reject(new Error('Invalid number of responses.'));
       }
 
-      let { contentType, changesets } = parseBatchResponse(responses[0]);
+      const { contentType, changesets } = parseBatchResponse(responses[0]);
       if (contentType !== 'multipart/mixed') {
         return reject(new Error('Invalid response type.'));
       }
@@ -487,11 +474,11 @@ export default DS.RESTAdapter.extend({
         return reject(new Error('Invalid response.'));
       }
 
-      let result = [];
-      for (let model of models) {
-        let changeset = changesets.find(c => modelsByContentId[c.contentID] === model);
-        let modelClass = store.modelFor(model.constructor.modelName);
-        let serializer = store.serializerFor(modelClass.modelName);
+      const result = [];
+      for (const model of models) {
+        const changeset = changesets.find(c => modelsByContentId[c.contentID] === model);
+        const modelClass = store.modelFor(model.constructor.modelName);
+        const serializer = store.serializerFor(modelClass.modelName);
         switch (model.get('dirtyType')) {
           case 'created':
             if (changeset.meta.status !== 201) {
