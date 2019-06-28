@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [2.2.0-beta.0] - 2019-06-28
 ### Added
 - `Adapter.Odata`:
     - The `batchUpdate` method to send batch update, create or delete models in single transaction, also it's proxy in `Offline.Store`, `OData.OnlineStore` and `Offline.LocalStore`.
