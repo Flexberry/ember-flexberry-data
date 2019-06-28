@@ -15,12 +15,12 @@ export function getResponseMeta(contentTypeHeader) {
 }
 
 /**
-  Returns an array of batch requests from the body of the HTTP response.
+  Returns an array of batch responses from the body of the HTTP response.
 
   @method getBatchResponses
   @param {String} response The body of the HTTP response.
   @param {String} boundary The boundary.
-  @return {String[]} An array of batch requests.
+  @return {String[]} An array of batch responses.
 */
 export function getBatchResponses(response, boundary) {
   let startBoundary = `--${boundary}`;
