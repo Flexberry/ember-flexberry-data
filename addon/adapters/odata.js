@@ -701,7 +701,7 @@ export default DS.RESTAdapter.extend({
       this.store = store;
     }
 
-    let url = this._buildURL(store, modelName);
+    let url = this._buildURL(modelName);
     let pathName = this.pathForType(modelName);
     let builder = new ODataQueryAdapter(url, store);
     let filterVelue = builder._buildODataFilters(filter);
