@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>OData.OnlineStore - Flexberry Documentation</title>
+    <title>addon/utils/batch-queries.js - Flexberry Documentation</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -137,206 +137,145 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>OData.OnlineStore <small>Class</small></h1>
+    <h1>addon/utils/batch-queries.js <small>File</small></h1>
 </div>
 
-<div class="well well-small">
+<div class="file">
+    <pre class="prettyprint linenums">
+/**
+  @module ember-flexberry-data
+*/
 
-        <div class="extends">
-            Extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
-        </div>
+/**
+  Returns the type and boundary from the &#x60;Content-Type&#x60; header.
 
-        <div class="foundat">
-            Defined in: <a href="../files/addon_stores_online-store.js.html#l8"><code>addon&#x2F;stores&#x2F;online-store.js:8</code></a>
-        </div>
+  @method getBoundary
+  @param {String} contentTypeHeader The content of &#x60;Content-Type&#x60; header.
+  @return {Object} Object with &#x60;contentType&#x60; and &#x60;boundary&#x60; properties.
+*/
+export function getResponseMeta(contentTypeHeader) {
+  let [contentType, boundary] = contentTypeHeader.split(&#x27;;&#x27;);
+  return { contentType, boundary: boundary.split(&#x27;=&#x27;)[1] };
+}
 
-            Module: <a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a>
+/**
+  Returns an array of batch responses from the body of the HTTP response.
 
-</div>
+  @method getBatchResponses
+  @param {String} response The body of the HTTP response.
+  @param {String} boundary The boundary.
+  @return {String[]} An array of batch responses.
+*/
+export function getBatchResponses(response, boundary) {
+  let startBoundary = &#x60;--${boundary}&#x60;;
+  let endBoundary = &#x60;--${boundary}--&#x60;;
 
+  let lastResponse;
+  let responses = [];
+  response.split(&#x27;\n&#x27;).map(l =&gt; l.trim()).forEach((line) =&gt; {
+    if (line === startBoundary || line === endBoundary) {
+      if (lastResponse) {
+        responses.push(lastResponse.join(&#x27;\n&#x27;));
+      }
 
-<div class="well well-small">
-    <p>Store that used in online mode by default.</p>
+      lastResponse = [];
+    } else {
+      lastResponse.push(line);
+    }
+  });
 
-</div>
+  return responses;
+}
 
+/**
+  Parses a batch response depending on its type.
 
-<div>
-    <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#index">Index</a></li>
+  @method parseBatchResponse
+  @param {String} response The batch response.
+  @return {Object} The object with the response description.
+*/
+export function parseBatchResponse(response) {
+  let contentTypeHeader = getResponseHeader(&#x27;Content-Type&#x27;, response);
+  let { contentType, boundary } = getResponseMeta(contentTypeHeader);
+  switch (contentType) {
+    case &#x27;multipart/mixed&#x27;:
+      let bodyStart = response.indexOf(&#x60;--${boundary}&#x60;);
+      let changesets = getBatchResponses(response.substring(bodyStart), boundary).map(parseСhangeset);
 
-            <li><a data-toggle="tab" href="#methods">Methods</a></li>
-    </ul>
+      return { contentType, changesets };
 
-    <div class="tab-content">
-        <div id="index" class="tab-pane active">
-            <h2 class="off-left">Item Index</h2>
+    default:
+      throw new Error(&#x60;Unsupported type of response: ${contentType}.&#x60;);
+  }
+}
 
-                <div class="index-section methods">
-                    <h3>Methods</h3>
+/**
+  @private
+  @method parseСhangeset
+  @param {String} changeset String data of a changeset.
+  @return {Object} Object with &#x60;contentID&#x60;, &#x60;meta&#x60; and &#x60;body&#x60; properties.
+*/
+function parseСhangeset(changeset) {
+  let [rawHeaders, rawMeta, rawBody] = changeset.split(&#x27;\n\n&#x27;);
 
-                    <ul class="index-list methods extends">
-                            <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_batchUpdate" data-tablink="batchUpdate">batchUpdate</a>
+  let contentID = getResponseHeader(&#x27;Content-ID&#x27;, rawHeaders);
+  let meta = parseСhangesetMeta(rawMeta);
 
-                            </li>
-                            <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_deleteRecord" data-tablink="deleteRecord">deleteRecord</a>
+  let body;
+  switch (meta.contentType) {
+    case null:
+      body = null;
+      break;
 
-                            </li>
-                    </ul>
-                </div>
+    case &#x27;application/json&#x27;:
+      body = JSON.parse(rawBody);
+      break;
 
+    default:
+      throw new Error(&#x60;Unsupported content type: ${meta.contentType}.&#x60;);
+  }
 
+  return { contentID, meta, body };
+}
 
-        </div>
+/**
+  @private
+  @method parseСhangesetMeta
+  @param {String} rawMeta String metadata of a changeset.
+  @return {Object} Object with &#x60;status&#x60;, &#x60;statusText&#x60; and &#x60;contentType&#x60; properties.
+*/
+function parseСhangesetMeta(rawMeta) {
+  let statusStart = rawMeta.indexOf(&#x27; &#x27;) + 1;
+  let statusTextStart = rawMeta.indexOf(&#x27; &#x27;, statusStart) + 1;
+  let end = rawMeta.indexOf(&#x27;\n&#x27;, statusTextStart);
 
-            <div id="methods" class="tab-pane">
-                <h2 class="off-left">Methods</h2>
+  let status = parseInt(rawMeta.substring(statusStart, statusTextStart));
+  let statusText = rawMeta.substring(statusTextStart, end === -1 ? rawMeta.length : end);
 
-                    <div id="method_batchUpdate" class="method item">
-                        <h3 class="name"><code>batchUpdate</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>models</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>
-                            </span>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/addon_stores_online-store.js.html#l33"><code>addon&#x2F;stores&#x2F;online-store.js:33</code></a>
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>A method to send batch update, create or delete models in single transaction.</p>
-                    <p>The array which fulfilled the promise may contain the following values:</p>
-                    <ul>
-                    <li><code>new model object</code> - for created records.</li>
-                    <li><code>same model object</code> - for updated or unaltered records.</li>
-                    <li><code>null</code> - for deleted records.</li>
-                    </ul>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">models</code>
-                                            <span class="type"><a href="http://emberjs.com/api/data/classes/DS.Model.html" class="crosslink external" target="_blank">DS.Model[]</a> | <a href="http://emberjs.com/api/data/classes/DS.Model.html" class="crosslink external" target="_blank">DS.Model</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Is array of models or single model for batch update.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>:
-                                        <p>A promise that fulfilled with an array of models in the new state.</p>
-                    
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="method_deleteRecord" class="method item">
-                        <h3 class="name"><code>deleteRecord</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>modelName</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code>filter</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/addon_stores_online-store.js.html#l18"><code>addon&#x2F;stores&#x2F;online-store.js:18</code></a>
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Delete all record from the current store.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">modelName</code>
-                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>modelName</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name">filter</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>filter</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                    
-                    </div>
-            </div>
+  let contentType = null;
+  if (status !== 204) {
+    contentType = getResponseHeader(&#x27;Content-Type&#x27;, rawMeta).split(&#x27;;&#x27;)[0];
+  }
 
+  return { status, statusText, contentType };
+}
 
+/**
+  @private
+  @method getResponseHeader
+  @param {String} header The header name.
+  @param {String} response The response from which will be extracted header.
+  @return {String} The content of the header.
+*/
+function getResponseHeader(header, response) {
+  let fullHeader = &#x60;${header}: &#x60;;
+  let start = response.indexOf(fullHeader) + fullHeader.length;
+  let end = response.indexOf(&#x27;\n&#x27;, start);
 
-    </div>
+  return response.substring(start, end === -1 ? response.length : end);
+}
+
+    </pre>
 </div>
                     </div>
                 </div>

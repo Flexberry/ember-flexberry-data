@@ -427,6 +427,13 @@
             },
             "namespaces": {}
         },
+        "addon/utils/batch-queries.js": {
+            "name": "addon/utils/batch-queries.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "addon/utils/create.js": {
             "name": "addon/utils/create.js",
             "modules": {},
@@ -642,7 +649,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Adapter",
             "file": "addon/adapters/odata.js",
-            "line": 10,
+            "line": 12,
             "description": "The OData adapter class.\nUses Flexberry Query as a language for requesting server."
         },
         "Adapter.Offline": {
@@ -1615,7 +1622,7 @@
     "classitems": [
         {
             "file": "addon/adapters/odata.js",
-            "line": 25,
+            "line": 28,
             "description": "Timeout for AJAX-requests.",
             "itemtype": "property",
             "name": "timeout",
@@ -1627,7 +1634,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 34,
+            "line": 37,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch data from the server.",
             "itemtype": "method",
             "name": "query",
@@ -1658,7 +1665,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 60,
+            "line": 67,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCustomizes ajax options for the requests.",
             "itemtype": "method",
             "name": "ajaxOptions",
@@ -1689,7 +1696,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 80,
+            "line": 87,
             "description": "Takes an ajax response, and returns the json payload or an error.",
             "itemtype": "method",
             "name": "handleResponse",
@@ -1716,7 +1723,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 96,
+            "line": 103,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch single record from the server.",
             "itemtype": "method",
             "name": "queryRecord",
@@ -1747,7 +1754,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 115,
+            "line": 122,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch single record by ID from the server.",
             "itemtype": "method",
             "name": "findRecord",
@@ -1783,7 +1790,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 135,
+            "line": 142,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch all records from the server.",
             "itemtype": "method",
             "name": "findAll",
@@ -1819,7 +1826,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 155,
+            "line": 162,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), that determines the pathname for a given type.\nAdditionally capitalizes the type name (requirement of Flexberry OData Server).",
             "itemtype": "method",
             "name": "pathForType",
@@ -1840,7 +1847,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 169,
+            "line": 176,
             "description": "A method to make ajax requests.",
             "itemtype": "method",
             "name": "makeRequest",
@@ -1859,7 +1866,126 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 181,
+            "line": 188,
+            "description": "A method to generate url for ajax request to odata function.",
+            "params": [
+                {
+                    "name": "functionName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "params",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "url",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "String"
+            },
+            "class": "Adapter.OData",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/odata.js",
+            "line": 237,
+            "description": "A method to generate url for ajax request to odata action.",
+            "params": [
+                {
+                    "name": "actionName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "data",
+                    "description": "",
+                    "type": "Oject"
+                },
+                {
+                    "name": "url",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "String"
+            },
+            "class": "Adapter.OData",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/odata.js",
+            "line": 256,
+            "description": "A method to call functions that returns model records using ajax requests.",
+            "params": [
+                {
+                    "name": "functionName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "params",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "url",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "fields",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "store",
+                    "description": "",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "modelName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "successCallback",
+                    "description": "",
+                    "type": "Function"
+                },
+                {
+                    "name": "failCallback",
+                    "description": "",
+                    "type": "Function"
+                },
+                {
+                    "name": "alwaysCallback",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "access": "public",
+            "tagname": "",
+            "class": "Adapter.OData",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/odata.js",
+            "line": 278,
             "description": "A method to call functions using ajax requests.",
             "itemtype": "method",
             "name": "callFunction",
@@ -1912,7 +2038,68 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 242,
+            "line": 300,
+            "description": "A method to call actions that returns model records using ajax requests.",
+            "params": [
+                {
+                    "name": "actionName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "data",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "url",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "fields",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "store",
+                    "description": "",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "modelName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "successCallback",
+                    "description": "",
+                    "type": "Function"
+                },
+                {
+                    "name": "failCallback",
+                    "description": "",
+                    "type": "Function"
+                },
+                {
+                    "name": "alwaysCallback",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "access": "public",
+            "tagname": "",
+            "class": "Adapter.OData",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/odata.js",
+            "line": 328,
             "description": "A method to call actions using ajax requests.",
             "itemtype": "method",
             "name": "callFunction",
@@ -1965,15 +2152,49 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 277,
-            "description": "A method to make ajax requests.",
+            "line": 355,
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for created records.\n- `same model object` - for updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
-            "name": "_callAjax",
+            "name": "batchUpdate",
+            "params": [
+                {
+                    "name": "store",
+                    "description": "The store.",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "models",
+                    "description": "Is array of models or single model for batch update.",
+                    "type": "DS.Model[]|DS.Model"
+                }
+            ],
+            "return": {
+                "description": "A promise that fulfilled with an array of models in the new state.",
+                "type": "Promise"
+            },
+            "class": "Adapter.OData",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/odata.js",
+            "line": 518,
+            "description": "A method to make ajax requests.",
             "params": [
                 {
                     "name": "params",
                     "description": "",
                     "type": "Object"
+                },
+                {
+                    "name": "store",
+                    "description": "",
+                    "type": "Store"
+                },
+                {
+                    "name": "modelname",
+                    "description": "",
+                    "type": "String"
                 },
                 {
                     "name": "successCallback",
@@ -2003,7 +2224,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 373,
+            "line": 623,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2031,7 +2252,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 413,
+            "line": 663,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2055,7 +2276,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 455,
+            "line": 714,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -6657,6 +6878,33 @@
         {
             "file": "addon/stores/base-store.js",
             "line": 431,
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for created records.\n- `same model object` - for updated or unaltered records.\n- `null` - for deleted records.",
+            "itemtype": "method",
+            "name": "batchUpdate",
+            "params": [
+                {
+                    "name": "models",
+                    "description": "Is array of models or single model for batch update.",
+                    "type": "DS.Model[]|DS.Model"
+                },
+                {
+                    "name": "useOnlineStore",
+                    "description": "Allow to explicitly specify online or offline store using independently of global online status.",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "A promise that fulfilled with an array of models in the new state.",
+                "type": "Promise"
+            },
+            "class": "Offline.Store",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
+            "file": "addon/stores/base-store.js",
+            "line": 448,
             "description": "Returns an instance of the adapter for a given type.",
             "itemtype": "method",
             "name": "adapterFor",
@@ -6683,7 +6931,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 450,
+            "line": 467,
             "description": "Returns an instance of the serializer for a given type.",
             "itemtype": "method",
             "name": "serializerFor",
@@ -6710,7 +6958,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 508,
+            "line": 525,
             "description": "Detect model name by method name and arguments.",
             "itemtype": "method",
             "name": "_getModelName",
@@ -6738,7 +6986,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 555,
+            "line": 572,
             "description": "Update all databases in accordance with actual schemas.",
             "itemtype": "method",
             "name": "_dbInit",
@@ -6980,6 +7228,27 @@
             "namespace": "Offline"
         },
         {
+            "file": "addon/stores/local-store.js",
+            "line": 231,
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for created records.\n- `same model object` - for updated or unaltered records.\n- `null` - for deleted records.",
+            "itemtype": "method",
+            "name": "batchUpdate",
+            "params": [
+                {
+                    "name": "models",
+                    "description": "Is array of models or single model for batch update.",
+                    "type": "DS.Model[]|DS.Model"
+                }
+            ],
+            "return": {
+                "description": "A promise that fulfilled with an array of models in the new state.",
+                "type": "Promise"
+            },
+            "class": "Offline.LocalStore",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
             "file": "addon/stores/online-store.js",
             "line": 18,
             "description": "Delete all record from the current store.",
@@ -6997,6 +7266,27 @@
                     "type": "Object"
                 }
             ],
+            "class": "OData.OnlineStore",
+            "module": "ember-flexberry-data",
+            "namespace": "OData"
+        },
+        {
+            "file": "addon/stores/online-store.js",
+            "line": 33,
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for created records.\n- `same model object` - for updated or unaltered records.\n- `null` - for deleted records.",
+            "itemtype": "method",
+            "name": "batchUpdate",
+            "params": [
+                {
+                    "name": "models",
+                    "description": "Is array of models or single model for batch update.",
+                    "type": "DS.Model[]|DS.Model"
+                }
+            ],
+            "return": {
+                "description": "A promise that fulfilled with an array of models in the new state.",
+                "type": "Promise"
+            },
             "class": "OData.OnlineStore",
             "module": "ember-flexberry-data",
             "namespace": "OData"
@@ -7248,6 +7538,139 @@
             "return": {
                 "description": "Projection attribute.",
                 "type": "Object"
+            },
+            "class": "Projection",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/batch-queries.js",
+            "line": 5,
+            "description": "Returns the type and boundary from the `Content-Type` header.",
+            "itemtype": "method",
+            "name": "getBoundary",
+            "params": [
+                {
+                    "name": "contentTypeHeader",
+                    "description": "The content of `Content-Type` header.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Object with `contentType` and `boundary` properties.",
+                "type": "Object"
+            },
+            "class": "Projection",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/batch-queries.js",
+            "line": 17,
+            "description": "Returns an array of batch responses from the body of the HTTP response.",
+            "itemtype": "method",
+            "name": "getBatchResponses",
+            "params": [
+                {
+                    "name": "response",
+                    "description": "The body of the HTTP response.",
+                    "type": "String"
+                },
+                {
+                    "name": "boundary",
+                    "description": "The boundary.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "An array of batch responses.",
+                "type": "String[]"
+            },
+            "class": "Projection",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/batch-queries.js",
+            "line": 46,
+            "description": "Parses a batch response depending on its type.",
+            "itemtype": "method",
+            "name": "parseBatchResponse",
+            "params": [
+                {
+                    "name": "response",
+                    "description": "The batch response.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The object with the response description.",
+                "type": "Object"
+            },
+            "class": "Projection",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/batch-queries.js",
+            "line": 68,
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "parseСhangeset",
+            "params": [
+                {
+                    "name": "changeset",
+                    "description": "String data of a changeset.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Object with `contentID`, `meta` and `body` properties.",
+                "type": "Object"
+            },
+            "class": "Projection",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/batch-queries.js",
+            "line": 97,
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "parseСhangesetMeta",
+            "params": [
+                {
+                    "name": "rawMeta",
+                    "description": "String metadata of a changeset.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Object with `status`, `statusText` and `contentType` properties.",
+                "type": "Object"
+            },
+            "class": "Projection",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/batch-queries.js",
+            "line": 119,
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "getResponseHeader",
+            "params": [
+                {
+                    "name": "header",
+                    "description": "The header name.",
+                    "type": "String"
+                },
+                {
+                    "name": "response",
+                    "description": "The response from which will be extracted header.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The content of the header.",
+                "type": "String"
             },
             "class": "Projection",
             "module": "ember-flexberry-data"
@@ -7580,6 +8003,34 @@
         {
             "file": "addon/utils/information.js",
             "line": 114,
+            "description": "Checks if the specified attribute path is a ordered field.",
+            "itemtype": "method",
+            "name": "isOrdered",
+            "params": [
+                {
+                    "name": "modelName",
+                    "description": "The name of the model.",
+                    "type": "String"
+                },
+                {
+                    "name": "attributePath",
+                    "description": "The path to the attribute.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "True if the specified attribute path is a detail field.",
+                "type": "Boolean"
+            },
+            "access": "public",
+            "tagname": "",
+            "class": "Utils.Information",
+            "module": "ember-flexberry-data",
+            "namespace": "Utils"
+        },
+        {
+            "file": "addon/utils/information.js",
+            "line": 128,
             "description": "Returns the type of the specified attribute path.",
             "itemtype": "method",
             "name": "getType",
@@ -7607,7 +8058,7 @@
         },
         {
             "file": "addon/utils/information.js",
-            "line": 206,
+            "line": 224,
             "description": "Parses the specified attribute paths and returns list of separate attributes.",
             "itemtype": "method",
             "name": "parseAttributePath",
@@ -8004,7 +8455,31 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/utils/information.js:206"
+            "line": " addon/utils/information.js:128"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " addon/utils/information.js:224"
+        },
+        {
+            "message": "Missing item type\nA method to generate url for ajax request to odata function.",
+            "line": " addon/adapters/odata.js:188"
+        },
+        {
+            "message": "Missing item type\nA method to generate url for ajax request to odata action.",
+            "line": " addon/adapters/odata.js:237"
+        },
+        {
+            "message": "Missing item type\nA method to call functions that returns model records using ajax requests.",
+            "line": " addon/adapters/odata.js:256"
+        },
+        {
+            "message": "Missing item type\nA method to call actions that returns model records using ajax requests.",
+            "line": " addon/adapters/odata.js:300"
+        },
+        {
+            "message": "Missing item type\nA method to make ajax requests.",
+            "line": " addon/adapters/odata.js:518"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
