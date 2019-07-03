@@ -443,7 +443,7 @@ export default DS.RESTAdapter.extend({
 
     const url = `${this._buildURL()}/$batch`;
 
-    const headers = this.get('headers');
+    const headers = Ember.$.extend({}, this.get('headers'));
     headers['Content-Type'] = `multipart/mixed;boundary=${boundary}`;
     const httpMethod = 'POST';
 
