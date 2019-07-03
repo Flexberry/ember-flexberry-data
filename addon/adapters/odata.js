@@ -422,7 +422,7 @@ export default DS.RESTAdapter.extend({
         this.store = store;
       }
 
-      const modelUrl =  this._buildURL(snapshot.type.modelName, model.get('id'));
+      const modelUrl =  this._buildURL(snapshot.type.modelName, modelDirtyType === 'created' ? undefined : model.get('id'));
 
       requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
       requestBody += 'Content-Type: application/json;type=entry\r\n';
