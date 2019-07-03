@@ -355,6 +355,8 @@ export default DS.RESTAdapter.extend({
   /**
     A method to send batch update, create or delete models in single transaction.
 
+    It is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.
+
     The array which fulfilled the promise may contain the following values:
     - `new model object` - for records created without client id.
     - `same model object` - for created, updated or unaltered records.
