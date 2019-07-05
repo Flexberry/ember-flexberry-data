@@ -499,9 +499,11 @@ export default DS.RESTAdapter.extend({
   /**
     A method to send batch update, create or delete models in single transaction.
 
+    It is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.
+
     The array which fulfilled the promise may contain the following values:
-    - &#x60;new model object&#x60; - for created records.
-    - &#x60;same model object&#x60; - for updated or unaltered records.
+    - &#x60;new model object&#x60; - for records created without client id.
+    - &#x60;same model object&#x60; - for created, updated or unaltered records.
     - &#x60;null&#x60; - for deleted records.
 
     @method batchUpdate
@@ -566,7 +568,7 @@ export default DS.RESTAdapter.extend({
         this.store = store;
       }
 
-      const modelUrl =  this._buildURL(snapshot.type.modelName, model.get(&#x27;id&#x27;));
+      const modelUrl =  this._buildURL(snapshot.type.modelName, modelDirtyType === &#x27;created&#x27; ? undefined : model.get(&#x27;id&#x27;));
 
       requestBody += modelHttpMethod + &#x27; &#x27; + modelUrl + &#x27; HTTP/1.1\r\n&#x27;;
       requestBody += &#x27;Content-Type: application/json;type=entry\r\n&#x27;;
@@ -587,7 +589,7 @@ export default DS.RESTAdapter.extend({
 
     const url = &#x60;${this._buildURL()}/$batch&#x60;;
 
-    const headers = this.get(&#x27;headers&#x27;);
+    const headers = Ember.$.extend({}, this.get(&#x27;headers&#x27;));
     headers[&#x27;Content-Type&#x27;] = &#x60;multipart/mixed;boundary=${boundary}&#x60;;
     const httpMethod = &#x27;POST&#x27;;
 
@@ -629,7 +631,10 @@ export default DS.RESTAdapter.extend({
               return reject(new Error(&#x60;Invalid response status: ${changeset.meta.status}.&#x60;));
             }
 
-            Ember.run(store, store.unloadRecord, model);
+            if (!model.get(&#x27;id&#x27;)) {
+              Ember.run(store, store.unloadRecord, model);
+            }
+
             result.push(Ember.run(store, store.push, serializer.normalize(modelClass, changeset.body)));
             break;
 

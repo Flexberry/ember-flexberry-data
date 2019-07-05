@@ -2153,7 +2153,7 @@
         {
             "file": "addon/adapters/odata.js",
             "line": 355,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for created records.\n- `same model object` - for updated or unaltered records.\n- `null` - for deleted records.",
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nIt is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for records created without client id.\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -2178,7 +2178,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 518,
+            "line": 523,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2224,7 +2224,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 623,
+            "line": 628,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2252,7 +2252,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 663,
+            "line": 668,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2276,7 +2276,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 714,
+            "line": 719,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -6878,7 +6878,7 @@
         {
             "file": "addon/stores/base-store.js",
             "line": 431,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for created records.\n- `same model object` - for updated or unaltered records.\n- `null` - for deleted records.",
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nIt is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for records created without client id.\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -6904,7 +6904,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 448,
+            "line": 450,
             "description": "Returns an instance of the adapter for a given type.",
             "itemtype": "method",
             "name": "adapterFor",
@@ -6931,7 +6931,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 467,
+            "line": 469,
             "description": "Returns an instance of the serializer for a given type.",
             "itemtype": "method",
             "name": "serializerFor",
@@ -6958,7 +6958,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 525,
+            "line": 527,
             "description": "Detect model name by method name and arguments.",
             "itemtype": "method",
             "name": "_getModelName",
@@ -6986,7 +6986,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 572,
+            "line": 574,
             "description": "Update all databases in accordance with actual schemas.",
             "itemtype": "method",
             "name": "_dbInit",
@@ -7230,7 +7230,7 @@
         {
             "file": "addon/stores/local-store.js",
             "line": 231,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for created records.\n- `same model object` - for updated or unaltered records.\n- `null` - for deleted records.",
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nIt is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for records created without client id.\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -7273,7 +7273,7 @@
         {
             "file": "addon/stores/online-store.js",
             "line": 33,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for created records.\n- `same model object` - for updated or unaltered records.\n- `null` - for deleted records.",
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nIt is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for records created without client id.\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -8479,7 +8479,7 @@
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:518"
+            "line": " addon/adapters/odata.js:523"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",

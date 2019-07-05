@@ -330,7 +330,7 @@ service:store should point to instance of that class.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_stores_base-store.js.html#l572"><code>addon&#x2F;stores&#x2F;base-store.js:572</code></a>
+                            <a href="../files/addon_stores_base-store.js.html#l574"><code>addon&#x2F;stores&#x2F;base-store.js:574</code></a>
                             </p>
                     
                     
@@ -373,7 +373,7 @@ service:store should point to instance of that class.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_stores_base-store.js.html#l525"><code>addon&#x2F;stores&#x2F;base-store.js:525</code></a>
+                            <a href="../files/addon_stores_base-store.js.html#l527"><code>addon&#x2F;stores&#x2F;base-store.js:527</code></a>
                             </p>
                     
                     
@@ -448,7 +448,7 @@ service:store should point to instance of that class.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_stores_base-store.js.html#l448"><code>addon&#x2F;stores&#x2F;base-store.js:448</code></a>
+                            <a href="../files/addon_stores_base-store.js.html#l450"><code>addon&#x2F;stores&#x2F;base-store.js:450</code></a>
                             </p>
                     
                     
@@ -536,10 +536,11 @@ service:store should point to instance of that class.</p>
                     
                         <div class="description">
                             <p>A method to send batch update, create or delete models in single transaction.</p>
+                    <p>It is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.</p>
                     <p>The array which fulfilled the promise may contain the following values:</p>
                     <ul>
-                    <li><code>new model object</code> - for created records.</li>
-                    <li><code>same model object</code> - for updated or unaltered records.</li>
+                    <li><code>new model object</code> - for records created without client id.</li>
+                    <li><code>same model object</code> - for created, updated or unaltered records.</li>
                     <li><code>null</code> - for deleted records.</li>
                     </ul>
                     
@@ -1953,7 +1954,7 @@ service:store should point to instance of that class.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_stores_base-store.js.html#l467"><code>addon&#x2F;stores&#x2F;base-store.js:467</code></a>
+                            <a href="../files/addon_stores_base-store.js.html#l469"><code>addon&#x2F;stores&#x2F;base-store.js:469</code></a>
                             </p>
                     
                     
