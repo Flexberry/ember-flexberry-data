@@ -355,9 +355,11 @@ export default DS.RESTAdapter.extend({
   /**
     A method to send batch update, create or delete models in single transaction.
 
+    It is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.
+
     The array which fulfilled the promise may contain the following values:
-    - `new model object` - for created records.
-    - `same model object` - for updated or unaltered records.
+    - `new model object` - for records created without client id.
+    - `same model object` - for created, updated or unaltered records.
     - `null` - for deleted records.
 
     @method batchUpdate
@@ -422,7 +424,7 @@ export default DS.RESTAdapter.extend({
         this.store = store;
       }
 
-      const modelUrl =  this._buildURL(snapshot.type.modelName, model.get('id'));
+      const modelUrl =  this._buildURL(snapshot.type.modelName, modelDirtyType === 'created' ? undefined : model.get('id'));
 
       requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
       requestBody += 'Content-Type: application/json;type=entry\r\n';
@@ -443,7 +445,7 @@ export default DS.RESTAdapter.extend({
 
     const url = `${this._buildURL()}/$batch`;
 
-    const headers = this.get('headers');
+    const headers = Ember.$.extend({}, this.get('headers'));
     headers['Content-Type'] = `multipart/mixed;boundary=${boundary}`;
     const httpMethod = 'POST';
 
@@ -485,7 +487,10 @@ export default DS.RESTAdapter.extend({
               return reject(new Error(`Invalid response status: ${changeset.meta.status}.`));
             }
 
-            Ember.run(store, store.unloadRecord, model);
+            if (!model.get('id')) {
+              Ember.run(store, store.unloadRecord, model);
+            }
+
             result.push(Ember.run(store, store.push, serializer.normalize(modelClass, changeset.body)));
             break;
 
