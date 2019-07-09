@@ -9,7 +9,7 @@ import Ember from 'ember';
  */
 export default Ember.Mixin.create({
   /**
-    The prototype projection to be used when creating record by prototype.
+    The default projection to be used when creating record by prototype.
 
     @property prototypeProjection
     @type String
@@ -17,7 +17,8 @@ export default Ember.Mixin.create({
   prototypeProjection: undefined,
 
   /**
-    Creates the new record using base model instance in the specified projection as prototype.
+    Creates a new record using base model instance with the specified
+    or default projection as prototype.
 
     @method copy
     @param {String} prototypeProjection
@@ -59,13 +60,14 @@ export default Ember.Mixin.create({
       let key = meta.key;
 
       if (meta.kind === 'belongsTo') {
-        // Skip the aggregator value copying for the nested detail.
+        // Skip copying the aggregator value for the nested detail.
         let inverse = Ember.get(meta, 'options.inverse');
-        if (!aggregatorMeta ||
-            !(inverse && meta.type === aggregatorMeta.type && inverse === aggregatorMeta.key)) {
-          let value = this.get(key);
-          record.set(key, value);
+        if (aggregatorMeta && aggregatorMeta.type === meta.type && aggregatorMeta.key === inverse) {
+          return;
         }
+
+        let value = this.get(key);
+        record.set(key, value);
 
         return;
       }
