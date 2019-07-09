@@ -17,11 +17,12 @@ export default Ember.Mixin.create({
   prototypeProjection: undefined,
 
   /**
-   *
-   * @method copy
-   * @param {String} prototypeProjection
-   * @return {Promise} promise
-   */
+    Creates the new record using base model instance in the specified projection as prototype.
+
+    @method copy
+    @param {String} prototypeProjection
+    @return {Promise} promise
+  */
   copy(prototypeProjection) {
     if (prototypeProjection === undefined) {
       prototypeProjection = this.get('prototypeProjection');
