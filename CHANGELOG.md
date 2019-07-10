@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.2.0-beta.2] - 2019-07-10]
+### Added
+- Add copyable mixin for models.
+
 ## [2.2.0-beta.1] - 2019-07-05
 ### Fixed
 - The `batchUpdate` method in the `Adapter.Odata` class built invalid URL to create objects and mutated `headers` property.
