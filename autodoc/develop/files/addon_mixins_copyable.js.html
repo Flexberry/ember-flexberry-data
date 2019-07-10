@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Query.GeometryPredicate - Flexberry Documentation</title>
+    <title>addon/mixins/copyable.js - Flexberry Documentation</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -138,256 +138,103 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>Query.GeometryPredicate <small>Class</small></h1>
+    <h1>addon/mixins/copyable.js <small>File</small></h1>
 </div>
 
-<div class="well well-small">
+<div class="file">
+    <pre class="prettyprint linenums">
+import Ember from &#x27;ember&#x27;;
 
-        <div class="extends">
-            Extends BasePredicate
-        </div>
+/**
+  Mixin for base model to support creating record by prototype.
 
-        <div class="foundat">
-            Defined in: <a href="../files/addon_query_predicate.js.html#l353"><code>addon&#x2F;query&#x2F;predicate.js:353</code></a>
-        </div>
+  @module ember-flexberry-data
+  @class CopyableMixin
+  @extends Ember.Mixin
+*/
+export default Ember.Mixin.create({
+  /**
+    The default projection name to be used when creating record by prototype.
 
-            Module: <a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a>
+    @property prototypeProjection
+    @type String
+   */
+  prototypeProjection: undefined,
 
-</div>
+  /**
+    Creates a new record using base model instance with the specified
+    or default projection as prototype.
 
+    @method copy
+    @param {String} prototypeProjection Optional projection name to be used when creating record by prototype.
+    @return {Promise} promise
+  */
+  copy(prototypeProjection) {
+    if (Ember.isNone(prototypeProjection)) {
+      prototypeProjection = this.get(&#x27;prototypeProjection&#x27;);
+    }
 
-<div class="well well-small">
-    <p>The predicate class for geometry attributes.</p>
+    Ember.assert(&#x27;Prototype projection is undefined.&#x27;, prototypeProjection);
 
-</div>
+    let argumentType = Ember.typeOf(prototypeProjection);
+    Ember.assert(&#x60;Wrong type of \&#x60;prototypeProjection\&#x60; argument: actual type is ${argumentType}, but string is expected.&#x60;,
+    argumentType === &#x27;string&#x27;);
 
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Query.GeometryPredicate" class="method item">
-            <h3 class="name"><code>Query.GeometryPredicate</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>attributePath</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/addon_query_predicate.js.html#l353"><code>addon&#x2F;query&#x2F;predicate.js:353</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">attributePath</code>
-                                <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-        
-        
-                            <div class="param-description">
-                                <p>The path to the attribute for predicate.</p>
-        
-                            </div>
-        
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        </div>
-    </div>
+    Ember.assert(&#x60;Projection with \&#x60;${prototypeProjection}\&#x60; name is not found in the model.&#x60;,
+    !Ember.isNone(this.get(&#x27;constructor.projections&#x27;)[prototypeProjection]));
 
-<div>
-    <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#index">Index</a></li>
+    let store = this.get(&#x27;store&#x27;);
+    let modelName = this.get(&#x27;constructor.modelName&#x27;);
 
-            <li><a data-toggle="tab" href="#methods">Methods</a></li>
-            <li><a data-toggle="tab" href="#properties">Properties</a></li>
-    </ul>
+    let promise = store.findRecord(modelName, this.id, { reload: true, projection: prototypeProjection }).then((prototype) =&gt; {
+      return prototype._getCopy();
+    });
 
-    <div class="tab-content">
-        <div id="index" class="tab-pane active">
-            <h2 class="off-left">Item Index</h2>
+    return promise;
+  },
 
-                <div class="index-section methods">
-                    <h3>Methods</h3>
+  _getCopy(aggregatorMeta) {
+    let store = this.get(&#x27;store&#x27;);
+    let modelName = this.get(&#x27;constructor.modelName&#x27;);
 
-                    <ul class="index-list methods extends">
-                            <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_contains" data-tablink="contains">contains</a>
+    let record = store.createRecord(modelName);
 
-                            </li>
-                    </ul>
-                </div>
+    this.eachAttribute(name =&gt; {
+      let value = this.get(name);
+      record.set(name, value);
+    });
 
-                <div class="index-section properties">
-                    <h3>Properties</h3>
+    this.eachRelationship((name, meta) =&gt; {
+      let key = meta.key;
 
-                    <ul class="index-list properties extends">
-                            <li class="index-item property public">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_attributePath" data-tablink="attributePath">attributePath</a>
+      if (meta.kind === &#x27;belongsTo&#x27;) {
+        // Skip copying the aggregator value for the nested detail.
+        let inverse = Ember.get(meta, &#x27;options.inverse&#x27;);
+        if (aggregatorMeta &amp;&amp; aggregatorMeta.type === meta.type &amp;&amp; aggregatorMeta.key === inverse) {
+          return;
+        }
 
-                            </li>
-                            <li class="index-item property public">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_intersectsValue" data-tablink="intersectsValue">intersectsValue</a>
+        let value = this.get(key);
+        record.set(key, value);
 
-                            </li>
-                    </ul>
-                </div>
+        return;
+      }
 
+      let values = this.get(key);
+      if (Ember.isArray(values)) {
+        values.forEach(prototype =&gt; {
+          let m = { key: key, type: modelName };
+          let detail = prototype._getCopy(m);
+          record.get(key).pushObject(detail);
+        });
+      }
+    });
 
-        </div>
+    return record;
+  },
+});
 
-            <div id="methods" class="tab-pane">
-                <h2 class="off-left">Methods</h2>
-
-                    <div id="method_contains" class="method item">
-                        <h3 class="name"><code>contains</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>geometry</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type"><a href="../classes/Query.StringPredicate.html" class="crosslink">Query.StringPredicate</a></span>
-                            </span>
-                    
-                    
-                    
-                    
-                    
-                            <span class="flag chainable">chainable</span>
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/addon_query_predicate.js.html#l397"><code>addon&#x2F;query&#x2F;predicate.js:397</code></a>
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Sets the value that the attribute has to contain.</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">geometry</code>
-                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>The geometry value that has to intersect with the attribute.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type"><a href="../classes/Query.StringPredicate.html" class="crosslink">Query.StringPredicate</a></span>:
-                                        <p>Returns this instance.</p>
-                    
-                                </div>
-                            </div>
-                    
-                    </div>
-            </div>
-
-            <div id="properties" class="tab-pane">
-                <h2 class="off-left">Properties</h2>
-
-                    <div id="property_attributePath" class="property item public">
-                        <h3 class="name"><code>attributePath</code></h3>
-                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                            <span class="flag public">public</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/addon_query_predicate.js.html#l375"><code>addon&#x2F;query&#x2F;predicate.js:375</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The path to the attribute for predicate.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_intersectsValue" class="property item public">
-                        <h3 class="name"><code>intersectsValue</code></h3>
-                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                            <span class="flag public">public</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/addon_query_predicate.js.html#l386"><code>addon&#x2F;query&#x2F;predicate.js:386</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>The geometry value that has to intersect with the attribute.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-            </div>
-
-
-    </div>
+    </pre>
 </div>
                     </div>
                 </div>

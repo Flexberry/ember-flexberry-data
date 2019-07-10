@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Query.GeometryPredicate - Flexberry Documentation</title>
+    <title>CopyableMixin - Flexberry Documentation</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -138,17 +138,14 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>Query.GeometryPredicate <small>Class</small></h1>
+    <h1>CopyableMixin <small>Class</small></h1>
 </div>
 
 <div class="well well-small">
 
-        <div class="extends">
-            Extends BasePredicate
-        </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/addon_query_predicate.js.html#l353"><code>addon&#x2F;query&#x2F;predicate.js:353</code></a>
+            Defined in: <a href="../files/addon_mixins_copyable.js.html#l3"><code>addon&#x2F;mixins&#x2F;copyable.js:3</code></a>
         </div>
 
             Module: <a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a>
@@ -157,65 +154,10 @@
 
 
 <div class="well well-small">
-    <p>The predicate class for geometry attributes.</p>
+    <p>Mixin for base model to support creating record by prototype.</p>
 
 </div>
 
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Query.GeometryPredicate" class="method item">
-            <h3 class="name"><code>Query.GeometryPredicate</code></h3>
-        
-                <div class="args">
-                    <span class="paren">(</span><ul class="args-list inline commas">
-                        <li class="arg">
-                                <code>attributePath</code>
-                        </li>
-                    </ul><span class="paren">)</span>
-                </div>
-        
-        
-        
-        
-        
-        
-        
-        
-            <div class="meta">
-                        <p>
-                        Defined in
-                <a href="../files/addon_query_predicate.js.html#l353"><code>addon&#x2F;query&#x2F;predicate.js:353</code></a>
-                </p>
-        
-        
-        
-            </div>
-        
-            <div class="description">
-                
-            </div>
-        
-                <div class="params">
-                    <h4>Parameters:</h4>
-        
-                    <ul class="params-list">
-                        <li class="param">
-                                <code class="param-name">attributePath</code>
-                                <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-        
-        
-                            <div class="param-description">
-                                <p>The path to the attribute for predicate.</p>
-        
-                            </div>
-        
-                        </li>
-                    </ul>
-                </div>
-        
-        
-        </div>
-    </div>
 
 <div>
     <ul class="nav nav-tabs">
@@ -232,9 +174,13 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
 
-                    <ul class="index-list methods extends">
+                    <ul class="index-list methods">
                             <li class="index-item method">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_contains" data-tablink="contains">contains</a>
+                                <a href="#" data-tabid="#methods" data-anchor="#method_copy" data-tablink="copy">copy</a>
+
+                            </li>
+                            <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_save" data-tablink="save">save</a>
 
                             </li>
                     </ul>
@@ -243,13 +189,29 @@
                 <div class="index-section properties">
                     <h3>Properties</h3>
 
-                    <ul class="index-list properties extends">
-                            <li class="index-item property public">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_attributePath" data-tablink="attributePath">attributePath</a>
+                    <ul class="index-list properties">
+                            <li class="index-item property">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_createTime" data-tablink="createTime">createTime</a>
 
                             </li>
-                            <li class="index-item property public">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_intersectsValue" data-tablink="intersectsValue">intersectsValue</a>
+                            <li class="index-item property">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_creator" data-tablink="creator">creator</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_currentUserName" data-tablink="currentUserName">currentUserName</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_editor" data-tablink="editor">editor</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_editTime" data-tablink="editTime">editTime</a>
+
+                            </li>
+                            <li class="index-item property">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_prototypeProjection" data-tablink="prototypeProjection">prototypeProjection</a>
 
                             </li>
                     </ul>
@@ -261,32 +223,31 @@
             <div id="methods" class="tab-pane">
                 <h2 class="off-left">Methods</h2>
 
-                    <div id="method_contains" class="method item">
-                        <h3 class="name"><code>contains</code></h3>
+                    <div id="method_copy" class="method item">
+                        <h3 class="name"><code>copy</code></h3>
                     
                             <div class="args">
                                 <span class="paren">(</span><ul class="args-list inline commas">
                                     <li class="arg">
-                                            <code>geometry</code>
+                                            <code>prototypeProjection</code>
                                     </li>
                                 </ul><span class="paren">)</span>
                             </div>
                     
                             <span class="returns-inline">
-                                <span class="type"><a href="../classes/Query.StringPredicate.html" class="crosslink">Query.StringPredicate</a></span>
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>
                             </span>
                     
                     
                     
                     
                     
-                            <span class="flag chainable">chainable</span>
                     
                     
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_query_predicate.js.html#l397"><code>addon&#x2F;query&#x2F;predicate.js:397</code></a>
+                            <a href="../files/addon_mixins_copyable.js.html#l19"><code>addon&#x2F;mixins&#x2F;copyable.js:19</code></a>
                             </p>
                     
                     
@@ -294,7 +255,8 @@
                         </div>
                     
                         <div class="description">
-                            <p>Sets the value that the attribute has to contain.</p>
+                            <p>Creates a new record using base model instance with the specified
+                    or default projection as prototype.</p>
                     
                         </div>
                     
@@ -303,12 +265,12 @@
                     
                                 <ul class="params-list">
                                     <li class="param">
-                                            <code class="param-name">geometry</code>
+                                            <code class="param-name">prototypeProjection</code>
                                             <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
                     
                     
                                         <div class="param-description">
-                                            <p>The geometry value that has to intersect with the attribute.</p>
+                                            <p>Optional projection name to be used when creating record by prototype.</p>
                     
                                         </div>
                     
@@ -320,9 +282,73 @@
                                 <h4>Returns:</h4>
                     
                                 <div class="returns-description">
-                                            <span class="type"><a href="../classes/Query.StringPredicate.html" class="crosslink">Query.StringPredicate</a></span>:
-                                        <p>Returns this instance.</p>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>:
+                                        <p>promise</p>
                     
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_save" class="method item">
+                        <h3 class="name"><code>save</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code class="optional">[options]</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_mixins_audit-model.js.html#l52"><code>addon&#x2F;mixins&#x2F;audit-model.js:52</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Save the record and persist any changes to the record to an external source via the adapter.
+                    <a href="http://emberjs.com/api/data/classes/DS.Model.html#method_save">More info</a>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name optional">[options]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                             
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>:
                                 </div>
                             </div>
                     
@@ -332,52 +358,150 @@
             <div id="properties" class="tab-pane">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_attributePath" class="property item public">
-                        <h3 class="name"><code>attributePath</code></h3>
-                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    <div id="property_createTime" class="property item">
+                        <h3 class="name"><code>createTime</code></h3>
+                        <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" class="crosslink external" target="_blank">Date</a></span>
                     
                     
-                            <span class="flag public">public</span>
                     
                     
                     
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_query_predicate.js.html#l375"><code>addon&#x2F;query&#x2F;predicate.js:375</code></a>
+                            <a href="../files/addon_mixins_audit-model.js.html#l9"><code>addon&#x2F;mixins&#x2F;audit-model.js:9</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The path to the attribute for predicate.</p>
+                            <p>Creation date and time of model.</p>
                     
                         </div>
                     
                     
                     
                     </div>
-                    <div id="property_intersectsValue" class="property item public">
-                        <h3 class="name"><code>intersectsValue</code></h3>
+                    <div id="property_creator" class="property item">
+                        <h3 class="name"><code>creator</code></h3>
                         <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
                     
                     
-                            <span class="flag public">public</span>
                     
                     
                     
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_query_predicate.js.html#l386"><code>addon&#x2F;query&#x2F;predicate.js:386</code></a>
+                            <a href="../files/addon_mixins_audit-model.js.html#l17"><code>addon&#x2F;mixins&#x2F;audit-model.js:17</code></a>
                             </p>
                     
                     
                         </div>
                     
                         <div class="description">
-                            <p>The geometry value that has to intersect with the attribute.</p>
+                            <p>Name of user who created model.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_currentUserName" class="property item">
+                        <h3 class="name"><code>currentUserName</code></h3>
+                        <span class="type">Unknown</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_mixins_audit-model.js.html#l41"><code>addon&#x2F;mixins&#x2F;audit-model.js:41</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Name of current user.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_editor" class="property item">
+                        <h3 class="name"><code>editor</code></h3>
+                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_mixins_audit-model.js.html#l33"><code>addon&#x2F;mixins&#x2F;audit-model.js:33</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Name of user who changed model last time.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_editTime" class="property item">
+                        <h3 class="name"><code>editTime</code></h3>
+                        <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" class="crosslink external" target="_blank">Date</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_mixins_audit-model.js.html#l25"><code>addon&#x2F;mixins&#x2F;audit-model.js:25</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Date and time of last changes in model.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="property_prototypeProjection" class="property item">
+                        <h3 class="name"><code>prototypeProjection</code></h3>
+                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_mixins_copyable.js.html#l11"><code>addon&#x2F;mixins&#x2F;copyable.js:11</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The default projection name to be used when creating record by prototype.</p>
                     
                         </div>
                     

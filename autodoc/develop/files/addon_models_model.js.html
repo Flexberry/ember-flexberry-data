@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -53,6 +53,7 @@
 	                            <li><a href="../classes/Adapter.Offline.html">Adapter.Offline</a></li>
 	                            <li><a href="../classes/ApplicationInitializer.html">ApplicationInitializer</a></li>
 	                            <li><a href="../classes/Audit.html">Audit</a></li>
+	                            <li><a href="../classes/CopyableMixin.html">CopyableMixin</a></li>
 	                            <li><a href="../classes/DecimalTransform.html">DecimalTransform</a></li>
 	                            <li><a href="../classes/FileTransform.html">FileTransform</a></li>
 	                            <li><a href="../classes/FlexberryEnumTransform.html">FlexberryEnumTransform</a></li>
@@ -146,9 +147,10 @@ import Ember from &#x27;ember&#x27;;
 import DS from &#x27;ember-data&#x27;;
 import createProj from &#x27;../utils/create&#x27;;
 import EmberValidations from &#x27;ember-validations&#x27;;
+import Copyable from &#x27;../mixins/copyable&#x27;;
 
 /**
-  Base model that supports projections and validations.
+  Base model that supports projections, validations and copying.
 
   @module ember-flexberry-data
   @class Model
@@ -156,6 +158,7 @@ import EmberValidations from &#x27;ember-validations&#x27;;
   @extends DS.Model
   @uses EmberValidationsMixin
   @uses Ember.EventedMixin
+  @uses CopyableMixin
 
   @event preSave
   @param {Object} event Event object
@@ -163,7 +166,7 @@ import EmberValidations from &#x27;ember-validations&#x27;;
 
   @public
  */
-var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
+var Model = DS.Model.extend(EmberValidations, Ember.Evented, Copyable, {
   /**
     Stored canonical &#x60;belongsTo&#x60; relationships.
 

@@ -6,6 +6,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Adapter.Offline",
         "ApplicationInitializer",
         "Audit",
+        "CopyableMixin",
         "DecimalTransform",
         "FileTransform",
         "FlexberryEnumTransform",

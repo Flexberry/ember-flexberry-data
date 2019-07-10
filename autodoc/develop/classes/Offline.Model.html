@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -53,6 +53,7 @@
 	                            <li><a href="../classes/Adapter.Offline.html">Adapter.Offline</a></li>
 	                            <li><a href="../classes/ApplicationInitializer.html">ApplicationInitializer</a></li>
 	                            <li><a href="../classes/Audit.html">Audit</a></li>
+	                            <li><a href="../classes/CopyableMixin.html">CopyableMixin</a></li>
 	                            <li><a href="../classes/DecimalTransform.html">DecimalTransform</a></li>
 	                            <li><a href="../classes/FileTransform.html">FileTransform</a></li>
 	                            <li><a href="../classes/FlexberryEnumTransform.html">FlexberryEnumTransform</a></li>
@@ -184,7 +185,7 @@ All metadata properties will be added to all projections (also for relationships
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
-                            <li class="index-item method inherited inherited">
+                            <li class="index-item method inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_save" data-tablink="save">save</a>
 
                             </li>
@@ -195,26 +196,6 @@ All metadata properties will be added to all projections (also for relationships
                     <h3>Properties</h3>
 
                     <ul class="index-list properties extends">
-                            <li class="index-item property inherited">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_createTime" data-tablink="createTime">createTime</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_creator" data-tablink="creator">creator</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_currentUserName" data-tablink="currentUserName">currentUserName</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_editor" data-tablink="editor">editor</a>
-
-                            </li>
-                            <li class="index-item property inherited">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_editTime" data-tablink="editTime">editTime</a>
-
-                            </li>
                             <li class="index-item property inherited">
                                 <a href="#" data-tabid="#properties" data-anchor="#property_readOnly" data-tablink="readOnly">readOnly</a>
 
@@ -258,12 +239,9 @@ All metadata properties will be added to all projections (also for relationships
                     
                     
                         <div class="meta">
-                                <p>Inherited from
-                                <a href="../classes/Offline.ModelMixin.html#method_save">
-                                    Offline.ModelMixin
-                                </a>
-                                but overwritten in
-                            <a href="../files/addon_mixins_audit-model.js.html#l52"><code>addon&#x2F;mixins&#x2F;audit-model.js:52</code></a>
+                                    <p>Inherited from
+                                    <a href="../classes/Offline.ModelMixin.html#method_save">Offline.ModelMixin</a>:
+                            <a href="../files/addon_mixins_offline-model.js.html#l52"><code>addon&#x2F;mixins&#x2F;offline-model.js:52</code></a>
                             </p>
                     
                     
@@ -308,131 +286,6 @@ All metadata properties will be added to all projections (also for relationships
             <div id="properties" class="tab-pane">
                 <h2 class="off-left">Properties</h2>
 
-                    <div id="property_createTime" class="property item inherited">
-                        <h3 class="name"><code>createTime</code></h3>
-                        <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" class="crosslink external" target="_blank">Date</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Offline.ModelMixin.html#property_createTime">Offline.ModelMixin</a>:
-                            <a href="../files/addon_mixins_audit-model.js.html#l9"><code>addon&#x2F;mixins&#x2F;audit-model.js:9</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Creation date and time of model.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_creator" class="property item inherited">
-                        <h3 class="name"><code>creator</code></h3>
-                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Offline.ModelMixin.html#property_creator">Offline.ModelMixin</a>:
-                            <a href="../files/addon_mixins_audit-model.js.html#l17"><code>addon&#x2F;mixins&#x2F;audit-model.js:17</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Name of user who created model.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_currentUserName" class="property item inherited">
-                        <h3 class="name"><code>currentUserName</code></h3>
-                        <span class="type">Unknown</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Offline.ModelMixin.html#property_currentUserName">Offline.ModelMixin</a>:
-                            <a href="../files/addon_mixins_audit-model.js.html#l41"><code>addon&#x2F;mixins&#x2F;audit-model.js:41</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Name of current user.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_editor" class="property item inherited">
-                        <h3 class="name"><code>editor</code></h3>
-                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Offline.ModelMixin.html#property_editor">Offline.ModelMixin</a>:
-                            <a href="../files/addon_mixins_audit-model.js.html#l33"><code>addon&#x2F;mixins&#x2F;audit-model.js:33</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Name of user who changed model last time.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_editTime" class="property item inherited">
-                        <h3 class="name"><code>editTime</code></h3>
-                        <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" class="crosslink external" target="_blank">Date</a></span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="../classes/Offline.ModelMixin.html#property_editTime">Offline.ModelMixin</a>:
-                            <a href="../files/addon_mixins_audit-model.js.html#l25"><code>addon&#x2F;mixins&#x2F;audit-model.js:25</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Date and time of last changes in model.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="property_readOnly" class="property item inherited">
                         <h3 class="name"><code>readOnly</code></h3>
                         <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
