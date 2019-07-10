@@ -1,15 +1,15 @@
 import Ember from 'ember';
 
 /**
- * Mixin for base model to support creating record by prototype.
- *
- * @module ember-flexberry-data
- * @class CopyableMixin
- * @extends Ember.Mixin
- */
+  Mixin for base model to support creating record by prototype.
+
+  @module ember-flexberry-data
+  @class CopyableMixin
+  @extends Ember.Mixin
+*/
 export default Ember.Mixin.create({
   /**
-    The default projection to be used when creating record by prototype.
+    The default projection name to be used when creating record by prototype.
 
     @property prototypeProjection
     @type String
@@ -21,19 +21,22 @@ export default Ember.Mixin.create({
     or default projection as prototype.
 
     @method copy
-    @param {String} prototypeProjection
+    @param {String} prototypeProjection Optional projection name to be used when creating record by prototype.
     @return {Promise} promise
   */
   copy(prototypeProjection) {
-    if (prototypeProjection === undefined) {
+    if (Ember.isNone(prototypeProjection)) {
       prototypeProjection = this.get('prototypeProjection');
     }
+
+    Ember.assert('Prototype projection is undefined.', prototypeProjection);
 
     let argumentType = Ember.typeOf(prototypeProjection);
     Ember.assert(`Wrong type of \`prototypeProjection\` argument: actual type is ${argumentType}, but string is expected.`,
     argumentType === 'string');
 
-    Ember.assert('Prototype projection is undefined.', prototypeProjection);
+    Ember.assert(`Projection with \`${prototypeProjection}\` name is not found in the model.`,
+    !Ember.isNone(this.get('constructor.projections')[prototypeProjection]));
 
     let store = this.get('store');
     let modelName = this.get('constructor.modelName');
@@ -45,7 +48,7 @@ export default Ember.Mixin.create({
     return promise;
   },
 
-  _getCopy(aggregatorMeta = null) {
+  _getCopy(aggregatorMeta) {
     let store = this.get('store');
     let modelName = this.get('constructor.modelName');
 
@@ -73,7 +76,7 @@ export default Ember.Mixin.create({
       }
 
       let values = this.get(key);
-      if (values) {
+      if (Ember.isArray(values)) {
         values.forEach(prototype => {
           let m = { key: key, type: modelName };
           let detail = prototype._getCopy(m);
