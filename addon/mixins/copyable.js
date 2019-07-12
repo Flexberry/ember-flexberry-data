@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import generateUniqueId from '../utils/generate-unique-id';
 
 /**
   Mixin for base model to support creating record by prototype.
@@ -52,7 +53,7 @@ export default Ember.Mixin.create({
     let store = this.get('store');
     let modelName = this.get('constructor.modelName');
 
-    let record = store.createRecord(modelName);
+    let record = store.createRecord(modelName, { id: generateUniqueId() });
 
     this.eachAttribute(name => {
       let value = this.get(name);
