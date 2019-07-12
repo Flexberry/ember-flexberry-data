@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.2.0-beta.3] - 2019-07-12]
+### Added
+-  Add id generation for new records in copyable mixin.
+
 ## [2.2.0-beta.2] - 2019-07-10]
 ### Added
 - Add copyable mixin for models.
