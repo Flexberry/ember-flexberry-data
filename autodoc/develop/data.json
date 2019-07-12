@@ -714,7 +714,7 @@
             "module": "ember-flexberry-data",
             "namespace": "",
             "file": "addon/mixins/copyable.js",
-            "line": 3,
+            "line": 4,
             "description": "Mixin for base model to support creating record by prototype."
         },
         "Offline.ModelMixin": {
@@ -3035,7 +3035,7 @@
         },
         {
             "file": "addon/mixins/copyable.js",
-            "line": 11,
+            "line": 12,
             "description": "The default projection name to be used when creating record by prototype.",
             "itemtype": "property",
             "name": "prototypeProjection",
@@ -3045,7 +3045,7 @@
         },
         {
             "file": "addon/mixins/copyable.js",
-            "line": 19,
+            "line": 20,
             "description": "Creates a new record using base model instance with the specified\nor default projection as prototype.",
             "itemtype": "method",
             "name": "copy",

@@ -144,6 +144,7 @@
 <div class="file">
     <pre class="prettyprint linenums">
 import Ember from &#x27;ember&#x27;;
+import generateUniqueId from &#x27;../utils/generate-unique-id&#x27;;
 
 /**
   Mixin for base model to support creating record by prototype.
@@ -197,7 +198,7 @@ export default Ember.Mixin.create({
     let store = this.get(&#x27;store&#x27;);
     let modelName = this.get(&#x27;constructor.modelName&#x27;);
 
-    let record = store.createRecord(modelName);
+    let record = store.createRecord(modelName, { id: generateUniqueId() });
 
     this.eachAttribute(name =&gt; {
       let value = this.get(name);
