@@ -5,6 +5,7 @@ import { isArray } from '@ember/array';
 import { merge } from '@ember/polyfills';
 import DS from 'ember-data';
 import createProj from '../utils/create';
+import Copyable from '../mixins/copyable';
 
 /**
   Base model that supports projections.
@@ -13,6 +14,7 @@ import createProj from '../utils/create';
   @class Model
   @extends DS.Model
   @uses Ember.EventedMixin
+  @uses CopyableMixin
 
   @event preSave
   @param {Object} event Event object
@@ -20,7 +22,7 @@ import createProj from '../utils/create';
 
   @public
 */
-let Model = DS.Model.extend(Evented, {
+let Model = DS.Model.extend(Evented, Copyable, {
   /**
     Stored canonical `belongsTo` relationships.
 

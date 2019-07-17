@@ -40,6 +40,13 @@ notifications:
     on_start: never     # options: [always|never|change] default: always
 
 before_install:
+  - docker --version
+  - docker pull flexberry/ember-flexberry-stand-backend:latest
+  - docker pull flexberry/ember-flexberry-stand-postgres:latest
+  - curl -O https://raw.githubusercontent.com/Flexberry/FlexberryEmberTestStand.ODataBackend/master/Docker/ember-flexberry-stand-postgres.yml
+  - docker swarm init
+  - docker stack deploy -c ember-flexberry-stand-postgres.yml EmberFlexberryStand
+
   - sudo chown root /opt/google/chrome/chrome-sandbox
   - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
   - curl -o- -L https://yarnpkg.com/install.sh | bash
@@ -47,6 +54,8 @@ before_install:
   - yarn global add firebase-tools
   - yarn global add bower
   - google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
+
+  - yarn global add bower
 
 install:
   - yarn install --no-lockfile --non-interactive
@@ -62,10 +71,4 @@ after_success:
   - test $EMBER_TRY_SCENARIO == "ember-default"
     && test $TRAVIS_PULL_REQUEST == "false"
     && (test $TRAVIS_BRANCH == "develop" || test $TRAVIS_BRANCH == "master" || test $TRAVIS_BRANCH == "feature-ember-update")
-    && ember build && firebase deploy --project flexberry-ember-data-dev --token "$FIREBASE_TOKEN" -m "Travis Build №$TRAVIS_BUILD_NUMBER."
     && bash scripts/update-docs.sh
-
-after_script:
-  - test $EMBER_TRY_SCENARIO == "ember-default"
-    && test $TRAVIS_BRANCH == "dummy-test"
-    && ember build && firebase deploy --project flexberry-ember-data-test --token "$FIREBASE_TOKEN" -m "Travis Build №$TRAVIS_BUILD_NUMBER."

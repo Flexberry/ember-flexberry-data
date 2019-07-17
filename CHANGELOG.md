@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [3.2.0] - 2019-07-17
+### Added
+- Add id generation for new records in copyable mixin.
+- Add copyable mixin for models.
+- `Adapter.Odata`:
+    - The `batchUpdate` method to send batch update, create or delete models in single transaction, also it's proxy in `Offline.Store`, `OData.OnlineStore` and `Offline.LocalStore`.
+### Fixed
+- The `batchUpdate` method in the `Adapter.Odata` class built invalid URL to create objects and mutated `headers` property.
+
 ## [3.1.0] - 2018-04-30
 ### Added
 - Add changes from 2.1.0.
