@@ -2,14 +2,9 @@
 
 ## [Unreleased]
 
-## [3.2.0] - 2019-07-17
+## [3.2.0-beta.0] - 2019-07-18
 ### Added
-- Add id generation for new records in copyable mixin.
-- Add copyable mixin for models.
-- `Adapter.Odata`:
-    - The `batchUpdate` method to send batch update, create or delete models in single transaction, also it's proxy in `Offline.Store`, `OData.OnlineStore` and `Offline.LocalStore`.
-### Fixed
-- The `batchUpdate` method in the `Adapter.Odata` class built invalid URL to create objects and mutated `headers` property.
+- Add changes from 2.2.0-beta.0 to 2.2.0-beta.3.
 
 ## [3.1.0] - 2018-04-30
 ### Added
@@ -18,6 +13,23 @@
 ## [3.0.0] - 2018-12-13
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
+
+## [2.2.0-beta.3] - 2019-07-12]
+### Added
+-  Add id generation for new records in copyable mixin.
+
+## [2.2.0-beta.2] - 2019-07-10]
+### Added
+- Add copyable mixin for models.
+
+## [2.2.0-beta.1] - 2019-07-05
+### Fixed
+- The `batchUpdate` method in the `Adapter.Odata` class built invalid URL to create objects and mutated `headers` property.
+
+## [2.2.0-beta.0] - 2019-06-28
+### Added
+- `Adapter.Odata`:
+    - The `batchUpdate` method to send batch update, create or delete models in single transaction, also it's proxy in `Offline.Store`, `OData.OnlineStore` and `Offline.LocalStore`.
 
 ## [2.1.0] - 2019-04-30
 ### Added

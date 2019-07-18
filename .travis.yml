@@ -1,14 +1,10 @@
 ---
-language: node_js
-
-node_js:
-  - "6"
 
 sudo: required
-dist: trusty
 
-addons:
-  chrome: stable
+language: node_js
+node_js:
+  - "6"
 
 cache:
   yarn: true
@@ -17,14 +13,8 @@ cache:
     - $HOME/.cache
 
 env:
-  global:
-    # See https://git.io/vdao3 for details.
-    - JOBS=1
-  matrix:
-    # we recommend new addons test the current and previous LTS
-    # as well as latest stable release (bonus points to beta/canary)
-    - EMBER_TRY_SCENARIO=ember-default
-    - EMBER_TRY_SCENARIO=ember-release
+  - EMBER_TRY_SCENARIO=ember-default
+  - EMBER_TRY_SCENARIO=ember-release
 
 matrix:
   fast_finish: true
@@ -39,6 +29,11 @@ notifications:
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always
 
+dist: trusty
+
+addons:
+  chrome: stable
+
 before_install:
   - docker --version
   - docker pull flexberry/ember-flexberry-stand-backend:latest
@@ -49,23 +44,16 @@ before_install:
 
   - sudo chown root /opt/google/chrome/chrome-sandbox
   - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
-  - curl -o- -L https://yarnpkg.com/install.sh | bash
-  - export PATH=$HOME/.yarn/bin:$PATH
-  - yarn global add firebase-tools
-  - yarn global add bower
   - google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
 
   - yarn global add bower
 
 install:
-  - yarn install --no-lockfile --non-interactive
+  - yarn install
   - bower install
 
 script:
-  - yarn lint:js
-  # Usually, it's ok to finish the test scenario without reverting
-  #  to the addon's original dependency state, skipping "cleanup".
-  - node_modules/.bin/ember try:one $EMBER_TRY_SCENARIO --skip-cleanup
+  - ember try:one $EMBER_TRY_SCENARIO --skip-cleanup
 
 after_success:
   - test $EMBER_TRY_SCENARIO == "ember-default"
