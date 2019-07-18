@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [2.2.0-beta.4] - 2019-07-18]
+### Added
+- Query language:
+    - Add `stringToPredicate` method for converting strings to predicates.
+
 ## [2.2.0-beta.3] - 2019-07-12]
 ### Added
 -  Add id generation for new records in copyable mixin.
