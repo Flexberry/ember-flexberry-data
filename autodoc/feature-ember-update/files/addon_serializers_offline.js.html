@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>addon/serializers/offline.js - Flexberry Documentation</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+	    <img alt="Flexberry Documentation" src="../assets/css/logo.png" style="max-height: 65%;" title="Flexberry Documentation">
+            Flexberry Documentation
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>master</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Query.Condition", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <h3>APIs</h3>
+	        <div id="sidebar">
+	            <ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">
+	                <li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>
+	                <li><a href="#modules" data-toggle="tab">Modules</a></li>
+	            </ul>
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/AdapterMixin.html">AdapterMixin</a></li>
+	                            <li><a href="../classes/ApplicationInitializer.html">ApplicationInitializer</a></li>
+	                            <li><a href="../classes/Base.html">Base</a></li>
+	                            <li><a href="../classes/BaseAdapter.html">BaseAdapter</a></li>
+	                            <li><a href="../classes/BaseBuilder.html">BaseBuilder</a></li>
+	                            <li><a href="../classes/BasePredicate.html">BasePredicate</a></li>
+	                            <li><a href="../classes/Builder.html">Builder</a></li>
+	                            <li><a href="../classes/ComplexPredicate.html">ComplexPredicate</a></li>
+	                            <li><a href="../classes/Condition.html">Condition</a></li>
+	                            <li><a href="../classes/CopyableMixin.html">CopyableMixin</a></li>
+	                            <li><a href="../classes/DatePredicate.html">DatePredicate</a></li>
+	                            <li><a href="../classes/DecimalTransform.html">DecimalTransform</a></li>
+	                            <li><a href="../classes/DexieService.html">DexieService</a></li>
+	                            <li><a href="../classes/FileTransform.html">FileTransform</a></li>
+	                            <li><a href="../classes/FilterOperator.html">FilterOperator</a></li>
+	                            <li><a href="../classes/FlexberryEnumTransform.html">FlexberryEnumTransform</a></li>
+	                            <li><a href="../classes/GlobalsService.html">GlobalsService</a></li>
+	                            <li><a href="../classes/GuidTransform.html">GuidTransform</a></li>
+	                            <li><a href="../classes/IndexedDBAdapter.html">IndexedDBAdapter</a></li>
+	                            <li><a href="../classes/Information.html">Information</a></li>
+	                            <li><a href="../classes/JsAdapter.html">JsAdapter</a></li>
+	                            <li><a href="../classes/Model.html">Model</a></li>
+	                            <li><a href="../classes/ModelMixin.html">ModelMixin</a></li>
+	                            <li><a href="../classes/OData.html">OData</a></li>
+	                            <li><a href="../classes/ODataAdapter.html">ODataAdapter</a></li>
+	                            <li><a href="../classes/Offline.html">Offline</a></li>
+	                            <li><a href="../classes/OrderByClause.html">OrderByClause</a></li>
+	                            <li><a href="../classes/Projection.html">Projection</a></li>
+	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
+	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
+	                            <li><a href="../classes/Query.GeographyPredicate.html">Query.GeographyPredicate</a></li>
+	                            <li><a href="../classes/Query.GeometryPredicate.html">Query.GeometryPredicate</a></li>
+	                            <li><a href="../classes/Query.IsOfPredicate.html">Query.IsOfPredicate</a></li>
+	                            <li><a href="../classes/Query.NotPredicate.html">Query.NotPredicate</a></li>
+	                            <li><a href="../classes/Query.OrderByClause.html">Query.OrderByClause</a></li>
+	                            <li><a href="../classes/QueryObject.html">QueryObject</a></li>
+	                            <li><a href="../classes/SimplePredicate.html">SimplePredicate</a></li>
+	                            <li><a href="../classes/Store.html">Store</a></li>
+	                            <li><a href="../classes/StoreMixin.html">StoreMixin</a></li>
+	                            <li><a href="../classes/StringPredicate.html">StringPredicate</a></li>
+	                            <li><a href="../classes/Syncer.html">Syncer</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <div class="tab-pane" id="modules">
+	                    <ul id="api-modules" class="nav nav-list">
+	                            <li><a href="../modules/ember-flexberry.html">ember-flexberry</a></li>
+	                            <li><a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a></li>
+	                    </ul>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>addon/serializers/offline.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+/**
+  @module ember-flexberry-data
+*/
+
+import { isNone } from &#x27;@ember/utils&#x27;;
+import { isArray } from &#x27;@ember/array&#x27;;
+import { getOwner } from &#x27;@ember/application&#x27;;
+import DS from &#x27;ember-data&#x27;;
+import isObject from &#x27;../utils/is-object&#x27;;
+
+/**
+  Base serializer for {{#crossLink &quot;Offline.LocalStore&quot;}}{{/crossLink}}.
+
+  @class Offline
+  @extends &lt;a href=&quot;http://emberjs.com/api/data/classes/DS.JSONSerializer.html&quot;&gt;JSONSerializer&lt;/a&gt;
+*/
+export default DS.JSONSerializer.extend({
+  /*
+    Serializer initialization.
+  */
+  init: function() {
+    this._super(...arguments);
+    let owner = getOwner(this);
+    let localStore = owner.lookup(&#x27;store:local&#x27;);
+    this.set(&#x27;store&#x27;, localStore);
+  },
+
+  /**
+    Returns the resource&#x27;s attributes formatted as a JSON-API &quot;attributes object&quot;.
+    [More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_extractAttributes).
+
+    @method extractAttributes
+    @param {Object} model
+    @param {Object} hash
+    @return {Object}
+  */
+  extractAttributes(model, hash) {
+    let attributes = this._super(...arguments);
+    model.eachAttribute((key, { type }) =&gt; {
+      if (type === &#x27;boolean&#x27;) {
+        let attributeKey = this.keyForAttribute ? this.keyForAttribute(key, &#x27;deserialize&#x27;) : key;
+        if (typeof hash[attributeKey] === &#x27;string&#x27;) {
+          attributes[key] = hash[attributeKey] === &#x27;true&#x27; ? true : hash[attributeKey] === null ? null : false;
+        }
+      }
+    });
+
+    return attributes;
+  },
+
+  /**
+    Method &#x60;serializeAttribute&#x60; can be used to customize how DS.attr properties are serialized.
+    [More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_serializeAttribute).
+
+    @method serializeAttribute
+    @param {DS.Snapshot} snapshot
+    @param {Object} json
+    @param {String} key
+    @param {Object} attribute
+  */
+  serializeAttribute(snapshot, json, key, attribute) {
+    let attributeKey = this.keyForAttribute ? this.keyForAttribute(key, &#x27;serialize&#x27;) : key;
+
+    let value = snapshot.attr(key);
+    switch (attribute.type) {
+      case &#x27;boolean&#x27;:
+        if (typeof value === &#x27;boolean&#x27;) {
+          json[attributeKey] = &#x60;${value}&#x60;;
+        } else if (typeof value === &#x27;undefined&#x27;) {
+          json[attributeKey] = &#x27;false&#x27;;
+        } else {
+          this._super(...arguments);
+        }
+
+        break;
+
+      case &#x27;decimal&#x27;:
+
+        //Value should be a decimal number
+        if (typeof value === &#x27;string&#x27;) {
+          value = +(value.replace(&#x27;,&#x27;, &#x27;.&#x27;));
+        }
+
+        if (isFinite(value) || typeof value === &#x27;undefined&#x27;) {
+          this._super(...arguments);
+        } else {
+          throw new Error(&#x60;Trying to save &#x27;${value}&#x27; value of &#x27;${key}&#x27; field of &#x27;${snapshot.modelName}&#x27; that should be a decimal&#x60;);
+        }
+
+        break;
+
+      case &#x27;number&#x27;:
+
+        //Value should be a number
+        if (typeof value === &#x27;string&#x27;) {
+          value = +value;
+        }
+
+        if (isFinite(value) || typeof value === &#x27;undefined&#x27;) {
+          this._super(...arguments);
+        } else {
+          throw new Error(&#x60;Trying to save &#x27;${value}&#x27; value of &#x27;${key}&#x27; field of &#x27;${snapshot.modelName}&#x27; that should be a number&#x60;);
+        }
+
+        break;
+
+      default:
+        this._super(...arguments);
+    }
+
+  },
+
+  serializePolymorphicType: function(snapshot, json, relationship) {
+    let key = relationship.key;
+    let belongsTo = snapshot.belongsTo(key);
+    key = this.keyForAttribute ? this.keyForAttribute(key, &#x27;serialize&#x27;) : key;
+
+    if (isNone(belongsTo)) {
+      json[&#x27;_&#x27; + key + &#x27;_type&#x27;] = null;
+    } else {
+      json[&#x27;_&#x27; + key + &#x27;_type&#x27;] = belongsTo.modelName;
+    }
+  },
+
+  /**
+    Normalization method for arrays of objects.
+    [More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_normalizeArrayResponse).
+
+    @method normalizeArrayResponse
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Object} payload
+    @return {Object}
+  */
+  normalizeArrayResponse(store, type, payload) {
+    if (isArray(payload)) {
+      payload = { data: payload };
+    }
+
+    payload.included = [];
+    payload.data = payload.data.map((item) =&gt; {
+      let normalize = this.normalize(type, item);
+      if (normalize.included) {
+        normalize.included.forEach((i) =&gt; { payload.included.push(i); });
+      }
+
+      return normalize.data;
+    });
+    return payload;
+  },
+
+  /*
+    Returns a relationship formatted as a JSON-API &quot;relationship object&quot;.
+    See http://jsonapi.org/format/#document-resource-object-relationships
+  */
+  extractRelationship(relationshipModelName, relationshipHash) {
+    if (isObject(relationshipHash) &amp;&amp; isNone(relationshipHash.type)) {
+      relationshipHash.type = relationshipModelName;
+    } else if (!isObject(relationshipHash) &amp;&amp; !isNone(relationshipHash)) {
+      var hash = {
+        id: relationshipHash,
+        type: relationshipModelName
+      };
+
+      relationshipHash = hash;
+    }
+
+    return relationshipHash;
+  },
+
+  /*
+    Returns a polymorphic relationship formatted as a JSON-API &quot;relationship object&quot;.
+    See http://jsonapi.org/format/#document-resource-object-relationships
+  */
+  extractPolymorphicRelationship(relationshipModelName, relationshipHash, relationshipOptions) {
+    let key = relationshipOptions.key ? relationshipOptions.key : relationshipOptions.relationshipKey;
+    let typeField = &#x27;_&#x27; + key + &#x27;_type&#x27;;
+    if (relationshipOptions.resourceHash.hasOwnProperty(typeField)) {
+      relationshipHash.type = relationshipOptions.resourceHash[typeField];
+      delete relationshipOptions.resourceHash[typeField];
+    } else {
+      relationshipHash.type = relationshipModelName;
+    }
+
+    return relationshipHash;
+  },
+
+  /*
+    Check if the given hasMany relationship should be serialized.
+  */
+  _shouldSerializeHasMany(snapshot, key, relationship) {
+    const relationshipType = snapshot.type.determineRelationshipType(relationship, this.store);
+
+    if (this._mustSerialize(key)) {
+      return true;
+    }
+
+    return this._canSerialize(key) &amp;&amp;
+      (relationshipType === &#x27;manyToNone&#x27; ||
+        relationshipType === &#x27;manyToMany&#x27; ||
+        relationshipType === &#x27;manyToOne&#x27;);
+  }
+});
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>addon/mixins/store.js - Flexberry Documentation</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+	    <img alt="Flexberry Documentation" src="../assets/css/logo.png" style="max-height: 65%;" title="Flexberry Documentation">
+            Flexberry Documentation
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>master</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Query.Condition", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <h3>APIs</h3>
+	        <div id="sidebar">
+	            <ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">
+	                <li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>
+	                <li><a href="#modules" data-toggle="tab">Modules</a></li>
+	            </ul>
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/AdapterMixin.html">AdapterMixin</a></li>
+	                            <li><a href="../classes/ApplicationInitializer.html">ApplicationInitializer</a></li>
+	                            <li><a href="../classes/Base.html">Base</a></li>
+	                            <li><a href="../classes/BaseAdapter.html">BaseAdapter</a></li>
+	                            <li><a href="../classes/BaseBuilder.html">BaseBuilder</a></li>
+	                            <li><a href="../classes/BasePredicate.html">BasePredicate</a></li>
+	                            <li><a href="../classes/Builder.html">Builder</a></li>
+	                            <li><a href="../classes/ComplexPredicate.html">ComplexPredicate</a></li>
+	                            <li><a href="../classes/Condition.html">Condition</a></li>
+	                            <li><a href="../classes/CopyableMixin.html">CopyableMixin</a></li>
+	                            <li><a href="../classes/DatePredicate.html">DatePredicate</a></li>
+	                            <li><a href="../classes/DecimalTransform.html">DecimalTransform</a></li>
+	                            <li><a href="../classes/DexieService.html">DexieService</a></li>
+	                            <li><a href="../classes/FileTransform.html">FileTransform</a></li>
+	                            <li><a href="../classes/FilterOperator.html">FilterOperator</a></li>
+	                            <li><a href="../classes/FlexberryEnumTransform.html">FlexberryEnumTransform</a></li>
+	                            <li><a href="../classes/GlobalsService.html">GlobalsService</a></li>
+	                            <li><a href="../classes/GuidTransform.html">GuidTransform</a></li>
+	                            <li><a href="../classes/IndexedDBAdapter.html">IndexedDBAdapter</a></li>
+	                            <li><a href="../classes/Information.html">Information</a></li>
+	                            <li><a href="../classes/JsAdapter.html">JsAdapter</a></li>
+	                            <li><a href="../classes/Model.html">Model</a></li>
+	                            <li><a href="../classes/ModelMixin.html">ModelMixin</a></li>
+	                            <li><a href="../classes/OData.html">OData</a></li>
+	                            <li><a href="../classes/ODataAdapter.html">ODataAdapter</a></li>
+	                            <li><a href="../classes/Offline.html">Offline</a></li>
+	                            <li><a href="../classes/OrderByClause.html">OrderByClause</a></li>
+	                            <li><a href="../classes/Projection.html">Projection</a></li>
+	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
+	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
+	                            <li><a href="../classes/Query.GeographyPredicate.html">Query.GeographyPredicate</a></li>
+	                            <li><a href="../classes/Query.GeometryPredicate.html">Query.GeometryPredicate</a></li>
+	                            <li><a href="../classes/Query.IsOfPredicate.html">Query.IsOfPredicate</a></li>
+	                            <li><a href="../classes/Query.NotPredicate.html">Query.NotPredicate</a></li>
+	                            <li><a href="../classes/Query.OrderByClause.html">Query.OrderByClause</a></li>
+	                            <li><a href="../classes/QueryObject.html">QueryObject</a></li>
+	                            <li><a href="../classes/SimplePredicate.html">SimplePredicate</a></li>
+	                            <li><a href="../classes/Store.html">Store</a></li>
+	                            <li><a href="../classes/StoreMixin.html">StoreMixin</a></li>
+	                            <li><a href="../classes/StringPredicate.html">StringPredicate</a></li>
+	                            <li><a href="../classes/Syncer.html">Syncer</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <div class="tab-pane" id="modules">
+	                    <ul id="api-modules" class="nav nav-list">
+	                            <li><a href="../modules/ember-flexberry.html">ember-flexberry</a></li>
+	                            <li><a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a></li>
+	                    </ul>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>addon/mixins/store.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+import Mixin from &#x27;@ember/object/mixin&#x27;;
+import RSVP from &#x27;rsvp&#x27;;
+import { debug } from &#x27;@ember/debug&#x27;;
+import { isArray } from &#x27;@ember/array&#x27;;
+
+import QueryBuilder from &#x27;../query/builder&#x27;;
+
+/**
+ * Mixin for {{#crossLink &quot;DS.Store&quot;}}Store{{/crossLink}} to support
+ * fetching models using projection.
+ *
+ * @module ember-flexberry-data
+ * @class StoreMixin
+ * @extends Ember.Mixin
+ */
+export default Mixin.create({
+  /**
+   *
+   * @method query
+   * @param {String} modelName
+   * @param {any} query an opaque query to be used by the adapter
+   * @return {Promise} promise
+   */
+  query(modelName, query) {
+    debug(&#x60;Flexberry Store::query ${modelName}&#x60;, query);
+
+    let promise = this._super(...arguments);
+    return new RSVP.Promise((resolve, reject) =&gt; {
+      promise.then((results) =&gt; {
+        if (results &amp;&amp; isArray(results)) {
+          results.forEach((result) =&gt; {
+            result.didLoad();
+          });
+        }
+
+        resolve(results);
+      }, reject);
+    });
+  },
+
+  /**
+   *
+   * @method queryRecord
+   * @param {String} modelName
+   * @param {any} query an opaque query to be used by the adapter
+   * @return {Promise} promise
+   */
+  queryRecord(modelName, query) {
+    debug(&#x60;Flexberry Store::queryRecord ${modelName}&#x60;, query);
+
+    return this.query(modelName, query).then(result =&gt; new RSVP.Promise((resolve) =&gt; resolve(result.get(&#x27;firstObject&#x27;))));
+  },
+
+  /**
+   * Finds all records for the given model type.
+   *
+   * See {{#crossLink &quot;DS.Store/findAll:method&quot;}}{{/crossLink}} for details.
+   *
+   * @method findAll
+   * @public
+   *
+   * @param {String} modelName The name of the model type.
+   * @param {Object} [options] Options.
+   * @param {String} options.projection Projection name.
+   * @return {DS.AdapterPopulatedRecordArray} Records promise.
+   */
+  findAll(modelName, options) {
+    debug(&#x60;Flexberry Store::findAll ${modelName}&#x60;);
+
+    let builder = new QueryBuilder(this, modelName);
+
+    if (options &amp;&amp; options.projection) {
+      debug(&#x60;Flexberry Store::findAll using projection &#x27;${options.projection}&#x27;&#x60;);
+
+      builder.selectByProjection(options.projection);
+      return this.query(modelName, builder.build());
+    }
+
+    let queryObject = builder.build();
+
+    // Now if projection is not specified then only &#x27;id&#x27; field will be selected.
+    queryObject.select = [];
+    return this.query(modelName, queryObject);
+  },
+
+  /**
+   * Returns a record for a given type and id combination.
+   *
+   * See {{#crossLink &quot;DS.Store/findRecord:method&quot;}}{{/crossLink}} for details.
+   *
+   * @method findRecord
+   * @public
+   *
+   * @param {String} modelName The name of the model type.
+   * @param {String|Integer} id Record ID.
+   * @param {Object} [options] Options.
+   * @param {String} options.projection Projection name.
+   * @return {Promise} Record promise.
+   */
+  findRecord(modelName, id, options) {
+    debug(&#x60;Flexberry Store::findRecord ${modelName}(${id})&#x60;);
+
+    let builder = new QueryBuilder(this, modelName).byId(id);
+
+    if (options &amp;&amp; options.projection) {
+      debug(&#x60;Flexberry Store::findRecord using projection &#x27;${options.projection}&#x27;&#x60;);
+
+      builder.selectByProjection(options.projection);
+      return this.query(modelName, builder.build()).then(result =&gt; new RSVP.Promise((resolve) =&gt; resolve(result.get(&#x27;firstObject&#x27;))));
+    }
+
+    let queryObject = builder.build();
+
+    // Now if projection is not specified then only &#x27;id&#x27; field will be selected.
+    queryObject.select = [];
+    return this.query(modelName, queryObject).then(result =&gt; new RSVP.Promise((resolve) =&gt; resolve(result.get(&#x27;firstObject&#x27;))));
+  }
+});
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>

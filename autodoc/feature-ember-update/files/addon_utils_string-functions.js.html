@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>addon/utils/string-functions.js - Flexberry Documentation</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+	    <img alt="Flexberry Documentation" src="../assets/css/logo.png" style="max-height: 65%;" title="Flexberry Documentation">
+            Flexberry Documentation
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>master</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Query.Condition", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <h3>APIs</h3>
+	        <div id="sidebar">
+	            <ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">
+	                <li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>
+	                <li><a href="#modules" data-toggle="tab">Modules</a></li>
+	            </ul>
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/AdapterMixin.html">AdapterMixin</a></li>
+	                            <li><a href="../classes/ApplicationInitializer.html">ApplicationInitializer</a></li>
+	                            <li><a href="../classes/Base.html">Base</a></li>
+	                            <li><a href="../classes/BaseAdapter.html">BaseAdapter</a></li>
+	                            <li><a href="../classes/BaseBuilder.html">BaseBuilder</a></li>
+	                            <li><a href="../classes/BasePredicate.html">BasePredicate</a></li>
+	                            <li><a href="../classes/Builder.html">Builder</a></li>
+	                            <li><a href="../classes/ComplexPredicate.html">ComplexPredicate</a></li>
+	                            <li><a href="../classes/Condition.html">Condition</a></li>
+	                            <li><a href="../classes/CopyableMixin.html">CopyableMixin</a></li>
+	                            <li><a href="../classes/DatePredicate.html">DatePredicate</a></li>
+	                            <li><a href="../classes/DecimalTransform.html">DecimalTransform</a></li>
+	                            <li><a href="../classes/DexieService.html">DexieService</a></li>
+	                            <li><a href="../classes/FileTransform.html">FileTransform</a></li>
+	                            <li><a href="../classes/FilterOperator.html">FilterOperator</a></li>
+	                            <li><a href="../classes/FlexberryEnumTransform.html">FlexberryEnumTransform</a></li>
+	                            <li><a href="../classes/GlobalsService.html">GlobalsService</a></li>
+	                            <li><a href="../classes/GuidTransform.html">GuidTransform</a></li>
+	                            <li><a href="../classes/IndexedDBAdapter.html">IndexedDBAdapter</a></li>
+	                            <li><a href="../classes/Information.html">Information</a></li>
+	                            <li><a href="../classes/JsAdapter.html">JsAdapter</a></li>
+	                            <li><a href="../classes/Model.html">Model</a></li>
+	                            <li><a href="../classes/ModelMixin.html">ModelMixin</a></li>
+	                            <li><a href="../classes/OData.html">OData</a></li>
+	                            <li><a href="../classes/ODataAdapter.html">ODataAdapter</a></li>
+	                            <li><a href="../classes/Offline.html">Offline</a></li>
+	                            <li><a href="../classes/OrderByClause.html">OrderByClause</a></li>
+	                            <li><a href="../classes/Projection.html">Projection</a></li>
+	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
+	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
+	                            <li><a href="../classes/Query.GeographyPredicate.html">Query.GeographyPredicate</a></li>
+	                            <li><a href="../classes/Query.GeometryPredicate.html">Query.GeometryPredicate</a></li>
+	                            <li><a href="../classes/Query.IsOfPredicate.html">Query.IsOfPredicate</a></li>
+	                            <li><a href="../classes/Query.NotPredicate.html">Query.NotPredicate</a></li>
+	                            <li><a href="../classes/Query.OrderByClause.html">Query.OrderByClause</a></li>
+	                            <li><a href="../classes/QueryObject.html">QueryObject</a></li>
+	                            <li><a href="../classes/SimplePredicate.html">SimplePredicate</a></li>
+	                            <li><a href="../classes/Store.html">Store</a></li>
+	                            <li><a href="../classes/StoreMixin.html">StoreMixin</a></li>
+	                            <li><a href="../classes/StringPredicate.html">StringPredicate</a></li>
+	                            <li><a href="../classes/Syncer.html">Syncer</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <div class="tab-pane" id="modules">
+	                    <ul id="api-modules" class="nav nav-list">
+	                            <li><a href="../modules/ember-flexberry.html">ember-flexberry</a></li>
+	                            <li><a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a></li>
+	                    </ul>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>addon/utils/string-functions.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+/**
+  @module ember-flexberry-data
+*/
+
+/* eslint-disable no-useless-escape */
+const STRING_DASHERIZE_REGEXP = (/[ _]/g);
+
+const STRING_CAMELIZE_REGEXP_1 = (/(\-|\_|\.|\s)+(.)?/g);
+const STRING_CAMELIZE_REGEXP_2 = (/(^|\/)([A-ZА-ЯЁ])/g);
+
+const STRING_CLASSIFY_REGEXP_1 = (/^(\-|_)+(.)?/);
+const STRING_CLASSIFY_REGEXP_2 = (/(.)(\-|\_|\.|\s)+(.)?/g);
+const STRING_CLASSIFY_REGEXP_3 = (/(^|\/|\.)([a-zа-яё])/g);
+
+const STRING_UNDERSCORE_REGEXP_1 = (/([a-zа-яё\d])([A-ZА-ЯЁ]+)/g);
+const STRING_UNDERSCORE_REGEXP_2 = (/\-|\s+/g);
+
+const STRING_CAPITALIZE_REGEXP = (/(^|\/)([a-zа-яё])/g);
+
+const STRING_DECAMELIZE_REGEXP = (/([a-zа-яё\d])([A-ZА-ЯЁ])/g);
+/* eslint-enable no-useless-escape */
+
+/**
+  Converts a camelized string into all lower case separated by underscores.
+  &#x60;&#x60;&#x60;javascript
+  &#x27;innerHTML&#x27;.decamelize();           // &#x27;inner_html&#x27;
+  &#x27;action_name&#x27;.decamelize();        // &#x27;action_name&#x27;
+  &#x27;css-class-name&#x27;.decamelize();     // &#x27;css-class-name&#x27;
+  &#x27;my favorite items&#x27;.decamelize();  // &#x27;my favorite items&#x27;
+  &#x60;&#x60;&#x60;
+  @method decamelize
+  @param {String} str The string to decamelize.
+  @return {String} the decamelized string.
+*/
+function decamelize(str) {
+  return str.replace(STRING_DECAMELIZE_REGEXP, &#x27;$1_$2&#x27;).toLowerCase();
+}
+
+/**
+  Replaces underscores, spaces, or camelCase with dashes.
+  &#x60;&#x60;&#x60;javascript
+  &#x27;innerHTML&#x27;.dasherize();          // &#x27;inner-html&#x27;
+  &#x27;action_name&#x27;.dasherize();        // &#x27;action-name&#x27;
+  &#x27;css-class-name&#x27;.dasherize();     // &#x27;css-class-name&#x27;
+  &#x27;my favorite items&#x27;.dasherize();  // &#x27;my-favorite-items&#x27;
+  &#x27;privateDocs/ownerInvoice&#x27;.dasherize(); // &#x27;private-docs/owner-invoice&#x27;
+  &#x60;&#x60;&#x60;
+  @method dasherize
+  @param {String} str The string to dasherize.
+  @return {String} the dasherized string.
+*/
+function dasherize(str) {
+  return decamelize(str).replace(STRING_DASHERIZE_REGEXP, &#x27;-&#x27;);
+}
+
+/**
+  Returns the lowerCamelCase form of a string.
+  &#x60;&#x60;&#x60;javascript
+  &#x27;innerHTML&#x27;.camelize();          // &#x27;innerHTML&#x27;
+  &#x27;action_name&#x27;.camelize();        // &#x27;actionName&#x27;
+  &#x27;css-class-name&#x27;.camelize();     // &#x27;cssClassName&#x27;
+  &#x27;my favorite items&#x27;.camelize();  // &#x27;myFavoriteItems&#x27;
+  &#x27;My Favorite Items&#x27;.camelize();  // &#x27;myFavoriteItems&#x27;
+  &#x27;private-docs/owner-invoice&#x27;.camelize(); // &#x27;privateDocs/ownerInvoice&#x27;
+  &#x60;&#x60;&#x60;
+  @method camelize
+  @param {String} str The string to camelize.
+  @return {String} the camelized string.
+*/
+function camelize(str) {
+  /* eslint-disable no-unused-vars */
+  return str.replace(STRING_CAMELIZE_REGEXP_1, (match, separator, chr) =&gt; chr ? chr.toUpperCase() : &#x27;&#x27;)
+    .replace(STRING_CAMELIZE_REGEXP_2, (match, separator, chr) =&gt; match.toLowerCase());
+  /* eslint-enable no-unused-vars */
+}
+
+/**
+  Returns the UpperCamelCase form of a string.
+  &#x60;&#x60;&#x60;javascript
+  &#x27;innerHTML&#x27;.classify();          // &#x27;InnerHTML&#x27;
+  &#x27;action_name&#x27;.classify();        // &#x27;ActionName&#x27;
+  &#x27;css-class-name&#x27;.classify();     // &#x27;CssClassName&#x27;
+  &#x27;my favorite items&#x27;.classify();  // &#x27;MyFavoriteItems&#x27;
+  &#x27;private-docs/owner-invoice&#x27;.classify(); // &#x27;PrivateDocs/OwnerInvoice&#x27;
+  &#x60;&#x60;&#x60;
+  @method classify
+  @param {String} str the string to classify
+  @return {String} the classified string
+*/
+function classify(str) {
+  let replace1 = (match, separator, chr) =&gt; chr ? (&#x60;_${chr.toUpperCase()}&#x60;) : &#x27;&#x27;;
+  let replace2 = (match, initialChar, separator, chr) =&gt; initialChar + (chr ? chr.toUpperCase() : &#x27;&#x27;);
+  let parts = str.split(&#x27;/&#x27;);
+  for (let i = 0; i &lt; parts.length; i++) {
+    parts[i] = parts[i]
+      .replace(STRING_CLASSIFY_REGEXP_1, replace1)
+      .replace(STRING_CLASSIFY_REGEXP_2, replace2);
+  }
+
+  /* eslint-disable no-unused-vars */
+  return parts.join(&#x27;/&#x27;).replace(STRING_CLASSIFY_REGEXP_3, (match, separator, chr) =&gt; match.toUpperCase());
+  /* eslint-enable no-unused-vars */
+}
+
+/**
+  More general than decamelize. Returns the lower\_case\_and\_underscored
+  form of a string.
+  &#x60;&#x60;&#x60;javascript
+  &#x27;innerHTML&#x27;.underscore();          // &#x27;inner_html&#x27;
+  &#x27;action_name&#x27;.underscore();        // &#x27;action_name&#x27;
+  &#x27;css-class-name&#x27;.underscore();     // &#x27;css_class_name&#x27;
+  &#x27;my favorite items&#x27;.underscore();  // &#x27;my_favorite_items&#x27;
+  &#x27;privateDocs/ownerInvoice&#x27;.underscore(); // &#x27;private_docs/owner_invoice&#x27;
+  &#x60;&#x60;&#x60;
+  @method underscore
+  @param {String} str The string to underscore.
+  @return {String} the underscored string.
+*/
+function underscore(str) {
+  return str.replace(STRING_UNDERSCORE_REGEXP_1, &#x27;$1_$2&#x27;).replace(STRING_UNDERSCORE_REGEXP_2, &#x27;_&#x27;).toLowerCase();
+}
+
+/**
+  Returns the Capitalized form of a string
+  &#x60;&#x60;&#x60;javascript
+  &#x27;innerHTML&#x27;.capitalize()         // &#x27;InnerHTML&#x27;
+  &#x27;action_name&#x27;.capitalize()       // &#x27;Action_name&#x27;
+  &#x27;css-class-name&#x27;.capitalize()    // &#x27;Css-class-name&#x27;
+  &#x27;my favorite items&#x27;.capitalize() // &#x27;My favorite items&#x27;
+  &#x27;privateDocs/ownerInvoice&#x27;.capitalize(); // &#x27;PrivateDocs/ownerInvoice&#x27;
+  &#x60;&#x60;&#x60;
+  @method capitalize
+  @param {String} str The string to capitalize.
+  @return {String} The capitalized string.
+*/
+function capitalize(str) {
+  /* eslint-disable no-unused-vars */
+  return str.replace(STRING_CAPITALIZE_REGEXP, (match, separator, chr) =&gt; match.toUpperCase());
+  /* eslint-enable no-unused-vars */
+}
+
+export {
+  decamelize,
+  dasherize,
+  camelize,
+  classify,
+  underscore,
+  capitalize
+};
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>

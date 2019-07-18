@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Builder - Flexberry Documentation</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+	    <img alt="Flexberry Documentation" src="../assets/css/logo.png" style="max-height: 65%;" title="Flexberry Documentation">
+            Flexberry Documentation
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>master</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Query.Condition", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <h3>APIs</h3>
+	        <div id="sidebar">
+	            <ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">
+	                <li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>
+	                <li><a href="#modules" data-toggle="tab">Modules</a></li>
+	            </ul>
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/AdapterMixin.html">AdapterMixin</a></li>
+	                            <li><a href="../classes/ApplicationInitializer.html">ApplicationInitializer</a></li>
+	                            <li><a href="../classes/Base.html">Base</a></li>
+	                            <li><a href="../classes/BaseAdapter.html">BaseAdapter</a></li>
+	                            <li><a href="../classes/BaseBuilder.html">BaseBuilder</a></li>
+	                            <li><a href="../classes/BasePredicate.html">BasePredicate</a></li>
+	                            <li><a href="../classes/Builder.html">Builder</a></li>
+	                            <li><a href="../classes/ComplexPredicate.html">ComplexPredicate</a></li>
+	                            <li><a href="../classes/Condition.html">Condition</a></li>
+	                            <li><a href="../classes/CopyableMixin.html">CopyableMixin</a></li>
+	                            <li><a href="../classes/DatePredicate.html">DatePredicate</a></li>
+	                            <li><a href="../classes/DecimalTransform.html">DecimalTransform</a></li>
+	                            <li><a href="../classes/DexieService.html">DexieService</a></li>
+	                            <li><a href="../classes/FileTransform.html">FileTransform</a></li>
+	                            <li><a href="../classes/FilterOperator.html">FilterOperator</a></li>
+	                            <li><a href="../classes/FlexberryEnumTransform.html">FlexberryEnumTransform</a></li>
+	                            <li><a href="../classes/GlobalsService.html">GlobalsService</a></li>
+	                            <li><a href="../classes/GuidTransform.html">GuidTransform</a></li>
+	                            <li><a href="../classes/IndexedDBAdapter.html">IndexedDBAdapter</a></li>
+	                            <li><a href="../classes/Information.html">Information</a></li>
+	                            <li><a href="../classes/JsAdapter.html">JsAdapter</a></li>
+	                            <li><a href="../classes/Model.html">Model</a></li>
+	                            <li><a href="../classes/ModelMixin.html">ModelMixin</a></li>
+	                            <li><a href="../classes/OData.html">OData</a></li>
+	                            <li><a href="../classes/ODataAdapter.html">ODataAdapter</a></li>
+	                            <li><a href="../classes/Offline.html">Offline</a></li>
+	                            <li><a href="../classes/OrderByClause.html">OrderByClause</a></li>
+	                            <li><a href="../classes/Projection.html">Projection</a></li>
+	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
+	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
+	                            <li><a href="../classes/Query.GeographyPredicate.html">Query.GeographyPredicate</a></li>
+	                            <li><a href="../classes/Query.GeometryPredicate.html">Query.GeometryPredicate</a></li>
+	                            <li><a href="../classes/Query.IsOfPredicate.html">Query.IsOfPredicate</a></li>
+	                            <li><a href="../classes/Query.NotPredicate.html">Query.NotPredicate</a></li>
+	                            <li><a href="../classes/Query.OrderByClause.html">Query.OrderByClause</a></li>
+	                            <li><a href="../classes/QueryObject.html">QueryObject</a></li>
+	                            <li><a href="../classes/SimplePredicate.html">SimplePredicate</a></li>
+	                            <li><a href="../classes/Store.html">Store</a></li>
+	                            <li><a href="../classes/StoreMixin.html">StoreMixin</a></li>
+	                            <li><a href="../classes/StringPredicate.html">StringPredicate</a></li>
+	                            <li><a href="../classes/Syncer.html">Syncer</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <div class="tab-pane" id="modules">
+	                    <ul id="api-modules" class="nav nav-list">
+	                            <li><a href="../modules/ember-flexberry.html">ember-flexberry</a></li>
+	                            <li><a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a></li>
+	                    </ul>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>Builder <small>Class</small></h1>
+</div>
+
+<div class="well well-small">
+
+
+        <div class="foundat">
+            Defined in: <a href="../files/addon_query_builder.js.html#l21"><code>addon&#x2F;query&#x2F;builder.js:21</code></a>
+        </div>
+
+            Module: <a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a>
+
+</div>
+
+
+<div class="well well-small">
+    <p>Class of builder for query.
+Uses method chaining.</p>
+
+</div>
+
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Builder" class="method item">
+            <h3 class="name"><code>Builder</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code>store</code>
+                        </li>
+                        <li class="arg">
+                                <code>modelName</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/addon_query_builder.js.html#l21"><code>addon&#x2F;query&#x2F;builder.js:21</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name">store</code>
+                                <span class="type"><a href="../classes/Store.html" class="crosslink">Store</a></span>
+        
+        
+                            <div class="param-description">
+                                <p>Store for building query.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name">modelName</code>
+                                <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+        
+        
+                            <div class="param-description">
+                                <p>The name of the requested entity.</p>
+        
+                            </div>
+        
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        </div>
+    </div>
+
+<div>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#index">Index</a></li>
+
+            <li><a data-toggle="tab" href="#methods">Methods</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="index" class="tab-pane active">
+            <h2 class="off-left">Item Index</h2>
+
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods">
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_build" data-tablink="build">build</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_byId" data-tablink="byId">byId</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_count" data-tablink="count">count</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_from" data-tablink="from">from</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_isOf" data-tablink="isOf">isOf</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_ofDataType" data-tablink="ofDataType">ofDataType</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_orderBy" data-tablink="orderBy">orderBy</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_select" data-tablink="select">select</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_selectByProjection" data-tablink="selectByProjection">selectByProjection</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_skip" data-tablink="skip">skip</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_top" data-tablink="top">top</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_where" data-tablink="where">where</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_withCustomParams" data-tablink="withCustomParams">withCustomParams</a>
+
+                            </li>
+                    </ul>
+                </div>
+
+
+
+        </div>
+
+            <div id="methods" class="tab-pane">
+                <h2 class="off-left">Methods</h2>
+
+                    <div id="method_build" class="method item public">
+                        <h3 class="name"><code>build</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l225"><code>addon&#x2F;query&#x2F;builder.js:225</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Builds query instance using all provided data.</p>
+                    
+                        </div>
+                    
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
+                                        <p>Query instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_byId" class="method item public">
+                        <h3 class="name"><code>byId</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>id</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l50"><code>addon&#x2F;query&#x2F;builder.js:50</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Sets the id of the requested entity.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">id</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The id of the requested entity.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_count" class="method item public">
+                        <h3 class="name"><code>count</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l155"><code>addon&#x2F;query&#x2F;builder.js:155</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_from" class="method item public">
+                        <h3 class="name"><code>from</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>modelName</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l64"><code>addon&#x2F;query&#x2F;builder.js:64</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Sets the name of the requested entity.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">modelName</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The name of the requested entity.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_isOf" class="method item public">
+                        <h3 class="name"><code>isOf</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>typeName</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l78"><code>addon&#x2F;query&#x2F;builder.js:78</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Restricts the selectable objects to the specified type.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">typeName</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The model name of which the selectable objects should be assigned.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_ofDataType" class="method item public">
+                        <h3 class="name"><code>ofDataType</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>dataType</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l199"><code>addon&#x2F;query&#x2F;builder.js:199</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">dataType</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The name of the data type.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_orderBy" class="method item public">
+                        <h3 class="name"><code>orderBy</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>property</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l112"><code>addon&#x2F;query&#x2F;builder.js:112</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">property</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                             
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_select" class="method item public">
+                        <h3 class="name"><code>select</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>attributes</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l167"><code>addon&#x2F;query&#x2F;builder.js:167</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Adds attributes for selection.
+                    Automatically checks duplications.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">attributes</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                             
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_selectByProjection" class="method item public">
+                        <h3 class="name"><code>selectByProjection</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>projectionName</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>idFromProjection</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l182"><code>addon&#x2F;query&#x2F;builder.js:182</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Adds attributes for selection from specified projection.
+                    Merges attributes with added using <code>select</code>.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">projectionName</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The name of the projection.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">idFromProjection</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                             
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_skip" class="method item public">
+                        <h3 class="name"><code>skip</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>skip</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l142"><code>addon&#x2F;query&#x2F;builder.js:142</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">skip</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                             
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_top" class="method item public">
+                        <h3 class="name"><code>top</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>top</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l129"><code>addon&#x2F;query&#x2F;builder.js:129</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">top</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                             
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_where" class="method item public">
+                        <h3 class="name"><code>where</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>args</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l99"><code>addon&#x2F;query&#x2F;builder.js:99</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">args</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                                            <span class="flag multiple" title="This argument may occur one or more times.">multiple</span>
+                    
+                                        <div class="param-description">
+                                             
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_withCustomParams" class="method item public">
+                        <h3 class="name"><code>withCustomParams</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>customQueryParams</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type">Query.Builder</span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                            <span class="flag chainable">chainable</span>
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_builder.js.html#l212"><code>addon&#x2F;query&#x2F;builder.js:212</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">customQueryParams</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                             
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type">Query.Builder</span>:
+                                        <p>Returns this instance.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+            </div>
+
+
+
+    </div>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>
