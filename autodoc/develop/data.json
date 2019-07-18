@@ -5177,6 +5177,26 @@
             "namespace": "Query"
         },
         {
+            "file": "addon/query/predicate.js",
+            "line": 700,
+            "description": "Convert string to predicate.",
+            "itemtype": "method",
+            "name": "stringToPredicate",
+            "params": [
+                {
+                    "name": "stringPredicate",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "BasePredicate"
+            },
+            "class": "Query.BasePredicate",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
             "file": "addon/serializers/base.js",
             "line": 14,
             "description": "Flag: indicates whether to use new {@link http://jsonapi.org|JSON API} serialization.",

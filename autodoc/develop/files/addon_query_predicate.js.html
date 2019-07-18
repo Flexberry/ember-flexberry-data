@@ -842,6 +842,22 @@ export function createPredicate(...args) {
   throw new Error(&#x60;Could not create predicate from arguments&#x60;);
 }
 
+/**
+  Convert string to predicate.
+
+  @method stringToPredicate
+  @param stringPredicate
+  @return {BasePredicate}
+*/
+export function stringToPredicate(stringPredicate) {
+  let predicate;
+  try {
+    predicate = eval(&#x27;function fromString() { return &#x27; + stringPredicate + &#x27;; } fromString;&#x27;)();
+  } finally {
+    return predicate;
+  }
+}
+
     </pre>
 </div>
                     </div>
