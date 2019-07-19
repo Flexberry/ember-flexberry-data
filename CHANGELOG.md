@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.2.0-beta.5] - 2019-07-19]
+### Fixed
+- Fix `batchUpdate` when empty array passed.
+
 ## [2.2.0-beta.4] - 2019-07-18]
 ### Added
 - Query language:
