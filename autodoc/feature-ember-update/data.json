@@ -1972,7 +1972,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 535,
+            "line": 539,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2017,7 +2017,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 640,
+            "line": 644,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2044,7 +2044,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 680,
+            "line": 684,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2067,7 +2067,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 731,
+            "line": 735,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -4709,6 +4709,25 @@
                 {
                     "name": "args",
                     "description": "Arguments for the predicate."
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "BasePredicate"
+            },
+            "class": "BasePredicate",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/query/predicate.js",
+            "line": 691,
+            "description": "Convert string to predicate.",
+            "itemtype": "method",
+            "name": "stringToPredicate",
+            "params": [
+                {
+                    "name": "stringPredicate",
+                    "description": ""
                 }
             ],
             "return": {
@@ -7960,7 +7979,7 @@
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:535"
+            "line": " addon/adapters/odata.js:539"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
