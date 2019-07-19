@@ -2203,7 +2203,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 523,
+            "line": 527,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2249,7 +2249,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 628,
+            "line": 632,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2277,7 +2277,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 668,
+            "line": 672,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2301,7 +2301,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 719,
+            "line": 723,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -8554,7 +8554,7 @@
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:523"
+            "line": " addon/adapters/odata.js:527"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
