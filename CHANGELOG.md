@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.2.0-beta.1] - 2019-07-19
+### Added
+- Add changes from 2.2.0-beta.4 to 2.2.0-beta.5.
+
 ## [3.2.0-beta.0] - 2019-07-18
 ### Added
 - Add changes from 2.2.0-beta.0 to 2.2.0-beta.3.
@@ -14,11 +18,20 @@
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
 
-## [2.2.0-beta.3] - 2019-07-12]
+## [2.2.0-beta.5] - 2019-07-19]
+### Fixed
+- Fix `batchUpdate` when empty array passed.
+
+## [2.2.0-beta.4] - 2019-07-18
+### Added
+- Query language:
+    - Add `stringToPredicate` method for converting strings to predicates.
+
+## [2.2.0-beta.3] - 2019-07-12
 ### Added
 -  Add id generation for new records in copyable mixin.
 
-## [2.2.0-beta.2] - 2019-07-10]
+## [2.2.0-beta.2] - 2019-07-10
 ### Added
 - Add copyable mixin for models.
 

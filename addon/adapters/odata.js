@@ -2,11 +2,11 @@ import { assert, debug } from '@ember/debug';
 import { isNone, isEmpty } from '@ember/utils';
 import { get, computed } from '@ember/object';
 import { getOwner } from '@ember/application';
-import { Promise } from 'rsvp';
+import { Promise, resolve } from 'rsvp';
 import $ from 'jquery';
 import DS from 'ember-data';
 import { run } from '@ember/runloop';
-import { A } from '@ember/array';
+import { A, isArray } from '@ember/array';
 
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
@@ -381,6 +381,10 @@ export default DS.RESTAdapter.extend({
   */
   batchUpdate(store, models) {
     if (isEmpty(models)) {
+      if (isArray(models)) {
+        return resolve();
+      }
+
       throw new Error('The models is empty.');
     }
 
