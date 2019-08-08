@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [2.2.0-beta.6] - 2019-08-08]
+### Added
+- `Utils`:
+    - Add `isUUID` function in utils for check attribute.
+
 ## [2.2.0-beta.5] - 2019-07-19]
 ### Fixed
 - Fix `batchUpdate` when empty array passed.
