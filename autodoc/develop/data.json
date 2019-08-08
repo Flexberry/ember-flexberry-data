@@ -491,6 +491,13 @@
             "fors": {},
             "namespaces": {}
         },
+        "addon/utils/is-uuid.js": {
+            "name": "addon/utils/is-uuid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "addon/utils/model-functions.js": {
             "name": "addon/utils/model-functions.js",
             "modules": {
@@ -660,7 +667,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Adapter",
             "file": "addon/adapters/odata.js",
-            "line": 12,
+            "line": 13,
             "description": "The OData adapter class.\nUses Flexberry Query as a language for requesting server."
         },
         "Adapter.Offline": {
@@ -1647,7 +1654,7 @@
     "classitems": [
         {
             "file": "addon/adapters/odata.js",
-            "line": 28,
+            "line": 29,
             "description": "Timeout for AJAX-requests.",
             "itemtype": "property",
             "name": "timeout",
@@ -1659,7 +1666,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 37,
+            "line": 38,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch data from the server.",
             "itemtype": "method",
             "name": "query",
@@ -1690,7 +1697,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 67,
+            "line": 68,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCustomizes ajax options for the requests.",
             "itemtype": "method",
             "name": "ajaxOptions",
@@ -1721,7 +1728,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 87,
+            "line": 88,
             "description": "Takes an ajax response, and returns the json payload or an error.",
             "itemtype": "method",
             "name": "handleResponse",
@@ -1748,7 +1755,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 103,
+            "line": 104,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch single record from the server.",
             "itemtype": "method",
             "name": "queryRecord",
@@ -1779,7 +1786,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 122,
+            "line": 123,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch single record by ID from the server.",
             "itemtype": "method",
             "name": "findRecord",
@@ -1815,7 +1822,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 142,
+            "line": 143,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch all records from the server.",
             "itemtype": "method",
             "name": "findAll",
@@ -1851,7 +1858,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 162,
+            "line": 163,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), that determines the pathname for a given type.\nAdditionally capitalizes the type name (requirement of Flexberry OData Server).",
             "itemtype": "method",
             "name": "pathForType",
@@ -1872,7 +1879,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 176,
+            "line": 177,
             "description": "A method to make ajax requests.",
             "itemtype": "method",
             "name": "makeRequest",
@@ -1891,7 +1898,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 188,
+            "line": 189,
             "description": "A method to generate url for ajax request to odata function.",
             "params": [
                 {
@@ -1920,7 +1927,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 237,
+            "line": 238,
             "description": "A method to generate url for ajax request to odata action.",
             "params": [
                 {
@@ -1949,7 +1956,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 256,
+            "line": 257,
             "description": "A method to call functions that returns model records using ajax requests.",
             "params": [
                 {
@@ -2010,7 +2017,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 278,
+            "line": 279,
             "description": "A method to call functions using ajax requests.",
             "itemtype": "method",
             "name": "callFunction",
@@ -2063,7 +2070,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 300,
+            "line": 301,
             "description": "A method to call actions that returns model records using ajax requests.",
             "params": [
                 {
@@ -2124,7 +2131,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 328,
+            "line": 329,
             "description": "A method to call actions using ajax requests.",
             "itemtype": "method",
             "name": "callFunction",
@@ -2177,7 +2184,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 355,
+            "line": 356,
             "description": "A method to send batch update, create or delete models in single transaction.\n\nIt is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for records created without client id.\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
@@ -2203,7 +2210,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 527,
+            "line": 528,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2249,7 +2256,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 632,
+            "line": 633,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2277,7 +2284,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 672,
+            "line": 673,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2301,7 +2308,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 723,
+            "line": 724,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -8186,6 +8193,26 @@
             "namespace": "Utils"
         },
         {
+            "file": "addon/utils/is-uuid.js",
+            "line": 1,
+            "itemtype": "method",
+            "name": "isUUID",
+            "params": [
+                {
+                    "name": "uuid",
+                    "description": "",
+                    "type": "DS.Store"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "Offline",
+            "module": "ember-flexberry-data",
+            "namespace": "Utils"
+        },
+        {
             "file": "addon/utils/model-functions.js",
             "line": 7,
             "description": "Gets related object type by relation name from specified model.",
@@ -8538,23 +8565,23 @@
         },
         {
             "message": "Missing item type\nA method to generate url for ajax request to odata function.",
-            "line": " addon/adapters/odata.js:188"
+            "line": " addon/adapters/odata.js:189"
         },
         {
             "message": "Missing item type\nA method to generate url for ajax request to odata action.",
-            "line": " addon/adapters/odata.js:237"
+            "line": " addon/adapters/odata.js:238"
         },
         {
             "message": "Missing item type\nA method to call functions that returns model records using ajax requests.",
-            "line": " addon/adapters/odata.js:256"
+            "line": " addon/adapters/odata.js:257"
         },
         {
             "message": "Missing item type\nA method to call actions that returns model records using ajax requests.",
-            "line": " addon/adapters/odata.js:300"
+            "line": " addon/adapters/odata.js:301"
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:527"
+            "line": " addon/adapters/odata.js:528"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",

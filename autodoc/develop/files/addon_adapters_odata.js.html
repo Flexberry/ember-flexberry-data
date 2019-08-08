@@ -149,6 +149,7 @@ import DS from &#x27;ember-data&#x27;;
 import SnapshotTransform from &#x27;../utils/snapshot-transform&#x27;;
 import ODataQueryAdapter from &#x27;../query/odata-adapter&#x27;;
 import { capitalize, camelize } from &#x27;../utils/string-functions&#x27;;
+import isUUID from &#x27;../utils/is-uuid&#x27;;
 import generateUniqueId from &#x27;../utils/generate-unique-id&#x27;;
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from &#x27;../utils/batch-queries&#x27;;
 
@@ -358,7 +359,7 @@ export default DS.RESTAdapter.extend({
     let i = 0;
     for (key in resultParams) {
       //TODO: Check types and &#x27;&#x27;
-      if (typeof resultParams[key] === &#x27;number&#x27;) {
+      if (typeof resultParams[key] === &#x27;number&#x27; || isUUID(resultParams[key])) {
         resultUrl = resultUrl + &#x60;${key}=${resultParams[key]}&#x60;;
       } else {
         resultUrl = resultUrl + &#x60;${key}=&#x27;${resultParams[key]}&#x27;&#x60;;
