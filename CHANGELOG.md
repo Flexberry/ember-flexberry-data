@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.2.0-beta.2] - 2019-08-08
+### Added
+- Add changes from 2.2.0-beta.6.
+
 ## [3.2.0-beta.1] - 2019-07-19
 ### Added
 - Add changes from 2.2.0-beta.4 to 2.2.0-beta.5.
@@ -18,7 +22,12 @@
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
 
-## [2.2.0-beta.5] - 2019-07-19]
+## [2.2.0-beta.6] - 2019-08-08
+### Added
+- `Utils`:
+    - Add `isUUID` function in utils for check attribute.
+
+## [2.2.0-beta.5] - 2019-07-19
 ### Fixed
 - Fix `batchUpdate` when empty array passed.
 

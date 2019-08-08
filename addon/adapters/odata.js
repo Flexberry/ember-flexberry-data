@@ -12,6 +12,7 @@ import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
 import { capitalize, camelize } from '../utils/string-functions';
 import { pluralize } from 'ember-inflector';
+import isUUID from '../utils/is-uuid';
 import generateUniqueId from '../utils/generate-unique-id';
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
 
@@ -225,7 +226,7 @@ export default DS.RESTAdapter.extend({
     let i = 0;
     for (key in resultParams) {
       //TODO: Check types and ''
-      if (typeof resultParams[key] === 'number') {
+      if (typeof resultParams[key] === 'number' || isUUID(resultParams[key])) {
         resultUrl = resultUrl + `${key}=${resultParams[key]}`;
       } else {
         resultUrl = resultUrl + `${key}='${resultParams[key]}'`;
