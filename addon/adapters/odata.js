@@ -7,6 +7,7 @@ import { capitalize, camelize } from '../utils/string-functions';
 import isUUID from '../utils/is-uuid';
 import generateUniqueId from '../utils/generate-unique-id';
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
+import Builder from '../query/builder';
 
 const { getOwner } = Ember;
 
@@ -441,6 +442,28 @@ export default DS.RESTAdapter.extend({
         const data = {};
         serializer.serializeIntoHash(data, snapshot.type, snapshot);
         requestBody += JSON.stringify(data) + '\r\n';
+
+        // Add a GET request for created or updated models.
+        requestBody += '--' + changeSetBoundary + '\r\n';
+        requestBody += 'Content-Type: application/http\r\n';
+        requestBody += 'Content-Transfer-Encoding: binary\r\n';
+
+        contentId++;
+        requestBody += 'Content-ID: ' + contentId + '\r\n\r\n';
+
+        const relationships = [];
+        model.eachRelationship((name) => {
+          relationships.push(`${name}.id`);
+        });
+
+        const getUrl = this._buildURL(snapshot.type.modelName, model.get('id'));
+        const query = new Builder(store, snapshot.type.modelName).select(relationships.join(',')).build();
+        const queryAdapter = new ODataQueryAdapter(getUrl, store);
+        const oDataQuery = queryAdapter.getODataQuery(query);
+
+        requestBody += 'GET ' + getUrl + (oDataQuery.$expand ? '?$expand=' + oDataQuery.$expand : '') + ' HTTP/1.1\r\n';
+        requestBody += 'Content-Type: application/json;type=entry\r\n';
+        requestBody += 'Prefer: return=representation\r\n\r\n';
       }
     });
 
