@@ -402,7 +402,6 @@ export default DS.RESTAdapter.extend({
 
       contentId++;
       requestBody += 'Content-ID: ' + contentId + '\r\n\r\n';
-      modelsByContentId[contentId] = model;
 
       const skipUnchangedAttrs = true;
       const snapshot = model._createSnapshot();
@@ -465,6 +464,8 @@ export default DS.RESTAdapter.extend({
         requestBody += 'Content-Type: application/json;type=entry\r\n';
         requestBody += 'Prefer: return=representation\r\n\r\n';
       }
+
+      modelsByContentId[contentId] = model;
     });
 
     requestBody += '--' + changeSetBoundary + '--\r\n';
@@ -511,7 +512,7 @@ export default DS.RESTAdapter.extend({
         const serializer = store.serializerFor(modelClass.modelName);
         switch (model.get('dirtyType')) {
           case 'created':
-            if (changeset.meta.status !== 201) {
+            if (changeset.meta.status !== 200) {
               return reject(new Error(`Invalid response status: ${changeset.meta.status}.`));
             }
 
