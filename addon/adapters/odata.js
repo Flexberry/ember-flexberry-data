@@ -456,11 +456,15 @@ export default DS.RESTAdapter.extend({
         });
 
         const getUrl = this._buildURL(snapshot.type.modelName, model.get('id'));
-        const query = new Builder(store, snapshot.type.modelName).select(relationships.join(',')).build();
-        const queryAdapter = new ODataQueryAdapter(getUrl, store);
-        const oDataQuery = queryAdapter.getODataQuery(query);
 
-        requestBody += 'GET ' + getUrl + (oDataQuery.$expand ? '?$expand=' + oDataQuery.$expand : '') + ' HTTP/1.1\r\n';
+        let expand;
+        if (relationships.length) {
+          const query = new Builder(store, snapshot.type.modelName).select(relationships.join(',')).build();
+          const queryAdapter = new ODataQueryAdapter(getUrl, store);
+          expand = queryAdapter.getODataQuery(query).$expand;
+        }
+
+        requestBody += 'GET ' + getUrl + (expand ? '?$expand=' + expand : '') + ' HTTP/1.1\r\n';
         requestBody += 'Content-Type: application/json;type=entry\r\n';
         requestBody += 'Prefer: return=representation\r\n\r\n';
       }
