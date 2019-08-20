@@ -5,13 +5,13 @@
 /**
   Returns the type and boundary from the `Content-Type` header.
 
-  @method getBoundary
+  @method getResponseMeta
   @param {String} contentTypeHeader The content of `Content-Type` header.
   @return {Object} Object with `contentType` and `boundary` properties.
 */
 export function getResponseMeta(contentTypeHeader) {
-  let [contentType, boundary] = contentTypeHeader.split(';');
-  return { contentType, boundary: boundary.split('=')[1] };
+  const [contentType, boundary] = contentTypeHeader.split(';');
+  return { contentType, boundary: boundary ? boundary.split('=')[1] : null };
 }
 
 /**
@@ -60,6 +60,9 @@ export function parseBatchResponse(response) {
 
       return { contentType, changesets };
 
+    case 'application/http':
+      return { contentType, response: parseResponse(response) };
+
     default:
       throw new Error(`Unsupported type of response: ${contentType}.`);
   }
@@ -68,14 +71,27 @@ export function parseBatchResponse(response) {
 /**
   @private
   @method parseСhangeset
-  @param {String} changeset String data of a changeset.
+  @param {String} changeset The string with the changeset content.
   @return {Object} Object with `contentID`, `meta` and `body` properties.
 */
 function parseСhangeset(changeset) {
-  let [rawHeaders, rawMeta, rawBody] = changeset.split('\n\n');
+  const contentID = getResponseHeader('Content-ID', changeset);
+  const { meta, body } = parseResponse(changeset);
 
-  let contentID = getResponseHeader('Content-ID', rawHeaders);
-  let meta = parseСhangesetMeta(rawMeta);
+  return { contentID, meta, body };
+}
+
+/**
+  @private
+  @method parseResponse
+  @param {String} response The string with the response content.
+  @return {Object} Object with `meta` and `body` properties.
+*/
+function parseResponse(response) {
+  const startMeta = response.indexOf('\n\n') + 1;
+  const startBody = response.indexOf('\n\n', startMeta) + 1;
+
+  const meta = parseResponseMeta(response.substring(startMeta, startBody));
 
   let body;
   switch (meta.contentType) {
@@ -84,34 +100,31 @@ function parseСhangeset(changeset) {
       break;
 
     case 'application/json':
-      body = JSON.parse(rawBody);
+      body = JSON.parse(response.substring(startBody));
       break;
 
     default:
       throw new Error(`Unsupported content type: ${meta.contentType}.`);
   }
 
-  return { contentID, meta, body };
+  return { meta, body };
 }
 
 /**
   @private
-  @method parseСhangesetMeta
-  @param {String} rawMeta String metadata of a changeset.
+  @method parseResponseMeta
+  @param {String} rawMeta The string with the response metadata.
   @return {Object} Object with `status`, `statusText` and `contentType` properties.
 */
-function parseСhangesetMeta(rawMeta) {
-  let statusStart = rawMeta.indexOf(' ') + 1;
-  let statusTextStart = rawMeta.indexOf(' ', statusStart) + 1;
-  let end = rawMeta.indexOf('\n', statusTextStart);
+function parseResponseMeta(rawMeta) {
+  const statusStart = rawMeta.indexOf(' ') + 1;
+  const statusTextStart = rawMeta.indexOf(' ', statusStart) + 1;
+  const end = rawMeta.indexOf('\n', statusTextStart);
 
-  let status = parseInt(rawMeta.substring(statusStart, statusTextStart));
-  let statusText = rawMeta.substring(statusTextStart, end === -1 ? rawMeta.length : end);
+  const status = parseInt(rawMeta.substring(statusStart, statusTextStart));
+  const statusText = rawMeta.substring(statusTextStart, end === -1 ? rawMeta.length : end);
 
-  let contentType = null;
-  if (status !== 204) {
-    contentType = getResponseHeader('Content-Type', rawMeta).split(';')[0];
-  }
+  const contentType = status !== 204 ? getResponseHeader('Content-Type', rawMeta).split(';')[0] : null;
 
   return { status, statusText, contentType };
 }
