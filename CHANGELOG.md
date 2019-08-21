@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.2.0-beta.3] - 2019-08-21
+### Added
+- Add changes from 2.2.0-beta.7.
+
 ## [3.2.0-beta.2] - 2019-08-08
 ### Added
 - Add changes from 2.2.0-beta.6.
@@ -22,7 +26,11 @@
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
 
-## [2.2.0-beta.6] - 2019-08-08
+## [2.2.0-beta.7] - 2019-08-21]
+### Fixed
+- Fix `batchUpdate` for models with relationships.
+
+## [2.2.0-beta.6] - 2019-08-08]
 ### Added
 - `Utils`:
     - Add `isUUID` function in utils for check attribute.

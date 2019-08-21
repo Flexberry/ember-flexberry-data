@@ -1,9 +1,10 @@
 import { run } from '@ember/runloop';
 import { Promise } from 'rsvp';
 import { A } from '@ember/array';
+import generateUniqueId from 'ember-flexberry-data/utils/generate-unique-id';
 
 export default function batchUpdating(store, assert) {
-  assert.expect(10);
+  assert.expect(11);
   let done = assert.async();
 
   run(() => {
@@ -34,11 +35,12 @@ export default function batchUpdating(store, assert) {
               return returned3Record;
             }),
           store.createRecord('ember-flexberry-dummy-suggestion-type', {
-              name: 'Sample for create and unmodified'
-            }).save(),
-            store.createRecord('ember-flexberry-dummy-suggestion-type', {
-              name: 'Sample for create'
-            })
+            name: 'Sample for create and unmodified'
+          }).save(),
+          store.createRecord('ember-flexberry-dummy-suggestion-type', {
+            id: generateUniqueId(),
+            name: 'Sample for create'
+          })
         ])
           .then((recordsForBatch) => {
             let record1 = recordsForBatch[0];
@@ -60,6 +62,7 @@ export default function batchUpdating(store, assert) {
               assert.ok(result[3] === record1);
 
               assert.notOk(result[4].get('hasDirtyAttributes'));
+              assert.ok(result[4] === record5);
             });
           })
           .then(() => {

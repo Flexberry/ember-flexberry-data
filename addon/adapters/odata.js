@@ -15,6 +15,7 @@ import { pluralize } from 'ember-inflector';
 import isUUID from '../utils/is-uuid';
 import generateUniqueId from '../utils/generate-unique-id';
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
+import Builder from '../query/builder';
 
 
 /**
@@ -368,10 +369,9 @@ export default DS.RESTAdapter.extend({
   /**
     A method to send batch update, create or delete models in single transaction.
 
-    It is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.
+    All models saving using this method must have identifiers.
 
     The array which fulfilled the promise may contain the following values:
-    - `new model object` - for records created without client id.
     - `same model object` - for created, updated or unaltered records.
     - `null` - for deleted records.
 
@@ -382,14 +382,10 @@ export default DS.RESTAdapter.extend({
   */
   batchUpdate(store, models) {
     if (isEmpty(models)) {
-      if (isArray(models)) {
-        return resolve();
-      }
-
-      throw new Error('The models is empty.');
+      return resolve(models);
     }
 
-    models = A(models);
+    models = isArray(models) ? models : A([models]);
 
     const boundary = `batch_${generateUniqueId()}`;
 
@@ -399,8 +395,12 @@ export default DS.RESTAdapter.extend({
     requestBody += 'Content-Type: multipart/mixed;boundary=' + changeSetBoundary + '\r\n\r\n';
 
     let contentId = 0;
-    const modelsByContentId = {};
+    const getQueries = [];
     models.forEach((model) => {
+      if (!model.get('id')) {
+        throw new Error(`Models saved using the 'batchUpdate' method must be created with identifiers.`);
+      }
+
       let modelDirtyType = model.get('dirtyType');
 
       if (!modelDirtyType) {
@@ -413,7 +413,6 @@ export default DS.RESTAdapter.extend({
 
       contentId++;
       requestBody += 'Content-ID: ' + contentId + '\r\n\r\n';
-      modelsByContentId[contentId] = model;
 
       const skipUnchangedAttrs = true;
       const snapshot = model._createSnapshot();
@@ -453,11 +452,35 @@ export default DS.RESTAdapter.extend({
         const data = {};
         serializer.serializeIntoHash(data, snapshot.type, snapshot);
         requestBody += JSON.stringify(data) + '\r\n';
+
+        // Add a GET request for created or updated models.
+        let getQuery = '\r\n--' + boundary + '\r\n';
+        getQuery += 'Content-Type: application/http\r\n';
+        getQuery += 'Content-Transfer-Encoding: binary\r\n';
+
+        const relationships = [];
+        model.eachRelationship((name) => {
+          relationships.push(`${name}.id`);
+        });
+
+        const getUrl = this._buildURL(snapshot.type.modelName, model.get('id'));
+
+        let expand;
+        if (relationships.length) {
+          const query = new Builder(store, snapshot.type.modelName).select(relationships.join(',')).build();
+          const queryAdapter = new ODataQueryAdapter(getUrl, store);
+          expand = queryAdapter.getODataQuery(query).$expand;
+        }
+
+        getQuery += '\r\nGET ' + getUrl + (expand ? '?$expand=' + expand : '') + ' HTTP/1.1\r\n';
+        getQuery += 'Content-Type: application/json;type=entry\r\n';
+        getQuery += 'Prefer: return=representation\r\n';
+        getQueries.push(getQuery);
       }
     });
 
-    requestBody += '--' + changeSetBoundary + '--\r\n';
-
+    requestBody += '--' + changeSetBoundary + '--';
+    requestBody += getQueries.join('');
     requestBody += '\r\n--' + boundary + '--';
 
     const url = `${this._buildURL()}/$batch`;
@@ -479,61 +502,36 @@ export default DS.RESTAdapter.extend({
         return reject(new Error('Invalid response type.'));
       }
 
-      const responses = getBatchResponses(response, meta.boundary);
-      if (responses.length !== 1) {
-        return reject(new Error('Invalid number of responses.'));
+      const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+      const getResponses = batchResponses.filter(r => r.contentType === 'application/http');
+      const updateResponse = batchResponses.find(r => r.contentType === 'multipart/mixed');
+
+      const errorsChangesets = updateResponse.changesets.filter(c => !this.isSuccess(c.meta.status));
+      if (errorsChangesets.length) {
+        return reject(errorsChangesets.map(c => new Error(c.body)));
       }
 
-      const { contentType, changesets } = parseBatchResponse(responses[0]);
-      if (contentType !== 'multipart/mixed') {
-        return reject(new Error('Invalid response type.'));
-      }
-
-      if (changesets.length === 1 && !this.isSuccess(changesets[0].meta.status)) {
-        return reject(new Error('Invalid response.'));
-      }
-
+      const errors = [];
       const result = [];
-      for (const model of models) {
-        const changeset = changesets.find(c => modelsByContentId[c.contentID] === model);
-        const modelClass = store.modelFor(model.constructor.modelName);
-        const serializer = store.serializerFor(modelClass.modelName);
-        switch (model.get('dirtyType')) {
-          case 'created':
-            if (changeset.meta.status !== 201) {
-              return reject(new Error(`Invalid response status: ${changeset.meta.status}.`));
-            }
-
-            if (!model.get('id')) {
-              run(store, store.unloadRecord, model);
-            }
-
-            result.push(run(store, store.push, serializer.normalize(modelClass, changeset.body)));
-            break;
-
-          case 'updated':
-            if (changeset.meta.status !== 200) {
-              return reject(new Error(`Invalid response status: ${changeset.meta.status}.`));
-            }
-
-            result.push(run(store, store.push, serializer.normalize(modelClass, changeset.body)));
-            break;
-
-          case 'deleted':
-            if (changeset.meta.status !== 204) {
-              return reject(new Error(`Invalid response status: ${changeset.meta.status}.`));
-            }
-
+      // eslint-disable-next-line ember/jquery-ember-run
+      models.forEach((model) => {
+        const modelDirtyType = model.get('dirtyType');
+        if (modelDirtyType === 'created' || modelDirtyType === 'updated') {
+          const { response } = getResponses.shift();
+          if (this.isSuccess(response.meta.status)) {
+            const modelName = model.constructor.modelName;
+            const payload = { [modelName]: response.body };
             run(store, store.unloadRecord, model);
-            result.push(null);
-            break;
-
-          default:
-            result.push(model);
+            run(store, store.pushPayload, modelName, payload);
+          } else {
+            errors.push(new Error(response.body));
+          }
         }
-      }
 
-      resolve(result);
+        result.push(modelDirtyType === 'deleted' ? null : model);
+      });
+
+      return errors.length ? reject(errors) : resolve(result);
     }).fail(reject));
   },
 
