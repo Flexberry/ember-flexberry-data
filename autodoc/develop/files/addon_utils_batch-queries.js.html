@@ -150,13 +150,13 @@
 /**
   Returns the type and boundary from the &#x60;Content-Type&#x60; header.
 
-  @method getBoundary
+  @method getResponseMeta
   @param {String} contentTypeHeader The content of &#x60;Content-Type&#x60; header.
   @return {Object} Object with &#x60;contentType&#x60; and &#x60;boundary&#x60; properties.
 */
 export function getResponseMeta(contentTypeHeader) {
-  let [contentType, boundary] = contentTypeHeader.split(&#x27;;&#x27;);
-  return { contentType, boundary: boundary.split(&#x27;=&#x27;)[1] };
+  const [contentType, boundary] = contentTypeHeader.split(&#x27;;&#x27;);
+  return { contentType, boundary: boundary ? boundary.split(&#x27;=&#x27;)[1] : null };
 }
 
 /**
@@ -168,11 +168,11 @@ export function getResponseMeta(contentTypeHeader) {
   @return {String[]} An array of batch responses.
 */
 export function getBatchResponses(response, boundary) {
-  let startBoundary = &#x60;--${boundary}&#x60;;
-  let endBoundary = &#x60;--${boundary}--&#x60;;
+  const startBoundary = &#x60;--${boundary}&#x60;;
+  const endBoundary = &#x60;--${boundary}--&#x60;;
+  const responses = [];
 
   let lastResponse;
-  let responses = [];
   response.split(&#x27;\n&#x27;).map(l =&gt; l.trim()).forEach((line) =&gt; {
     if (line === startBoundary || line === endBoundary) {
       if (lastResponse) {
@@ -191,19 +191,27 @@ export function getBatchResponses(response, boundary) {
 /**
   Parses a batch response depending on its type.
 
+  The returned object always contains the &#x60;contentType&#x60; property.
+  Depending on the type of response it may contain the following additional properties:
+  - &#x60;response&#x60; - for responses with &#x60;application/http&#x60; content type.
+  - &#x60;changesets&#x60; - for responses with &#x60;multipart/mixed&#x60; content type.
+
   @method parseBatchResponse
   @param {String} response The batch response.
   @return {Object} The object with the response description.
 */
 export function parseBatchResponse(response) {
-  let contentTypeHeader = getResponseHeader(&#x27;Content-Type&#x27;, response);
-  let { contentType, boundary } = getResponseMeta(contentTypeHeader);
+  const contentTypeHeader = getResponseHeader(&#x27;Content-Type&#x27;, response);
+  const { contentType, boundary } = getResponseMeta(contentTypeHeader);
   switch (contentType) {
     case &#x27;multipart/mixed&#x27;:
-      let bodyStart = response.indexOf(&#x60;--${boundary}&#x60;);
-      let changesets = getBatchResponses(response.substring(bodyStart), boundary).map(parseСhangeset);
+      const bodyStart = response.indexOf(&#x60;--${boundary}&#x60;);
+      const changesets = getBatchResponses(response.substring(bodyStart), boundary).map(parseСhangeset);
 
       return { contentType, changesets };
+
+    case &#x27;application/http&#x27;:
+      return { contentType, response: parseResponse(response) };
 
     default:
       throw new Error(&#x60;Unsupported type of response: ${contentType}.&#x60;);
@@ -213,14 +221,27 @@ export function parseBatchResponse(response) {
 /**
   @private
   @method parseСhangeset
-  @param {String} changeset String data of a changeset.
+  @param {String} changeset The string with the changeset content.
   @return {Object} Object with &#x60;contentID&#x60;, &#x60;meta&#x60; and &#x60;body&#x60; properties.
 */
 function parseСhangeset(changeset) {
-  let [rawHeaders, rawMeta, rawBody] = changeset.split(&#x27;\n\n&#x27;);
+  const contentID = getResponseHeader(&#x27;Content-ID&#x27;, changeset);
+  const { meta, body } = parseResponse(changeset);
 
-  let contentID = getResponseHeader(&#x27;Content-ID&#x27;, rawHeaders);
-  let meta = parseСhangesetMeta(rawMeta);
+  return { contentID, meta, body };
+}
+
+/**
+  @private
+  @method parseResponse
+  @param {String} response The string with the response content.
+  @return {Object} Object with &#x60;meta&#x60; and &#x60;body&#x60; properties.
+*/
+function parseResponse(response) {
+  const startMeta = response.indexOf(&#x27;\n\n&#x27;) + 1;
+  const startBody = response.indexOf(&#x27;\n\n&#x27;, startMeta) + 1;
+
+  const meta = parseResponseMeta(response.substring(startMeta, startBody));
 
   let body;
   switch (meta.contentType) {
@@ -229,34 +250,31 @@ function parseСhangeset(changeset) {
       break;
 
     case &#x27;application/json&#x27;:
-      body = JSON.parse(rawBody);
+      body = JSON.parse(response.substring(startBody));
       break;
 
     default:
       throw new Error(&#x60;Unsupported content type: ${meta.contentType}.&#x60;);
   }
 
-  return { contentID, meta, body };
+  return { meta, body };
 }
 
 /**
   @private
-  @method parseСhangesetMeta
-  @param {String} rawMeta String metadata of a changeset.
+  @method parseResponseMeta
+  @param {String} rawMeta The string with the response metadata.
   @return {Object} Object with &#x60;status&#x60;, &#x60;statusText&#x60; and &#x60;contentType&#x60; properties.
 */
-function parseСhangesetMeta(rawMeta) {
-  let statusStart = rawMeta.indexOf(&#x27; &#x27;) + 1;
-  let statusTextStart = rawMeta.indexOf(&#x27; &#x27;, statusStart) + 1;
-  let end = rawMeta.indexOf(&#x27;\n&#x27;, statusTextStart);
+function parseResponseMeta(rawMeta) {
+  const statusStart = rawMeta.indexOf(&#x27; &#x27;) + 1;
+  const statusTextStart = rawMeta.indexOf(&#x27; &#x27;, statusStart) + 1;
+  const end = rawMeta.indexOf(&#x27;\n&#x27;, statusTextStart);
 
-  let status = parseInt(rawMeta.substring(statusStart, statusTextStart));
-  let statusText = rawMeta.substring(statusTextStart, end === -1 ? rawMeta.length : end);
+  const status = parseInt(rawMeta.substring(statusStart, statusTextStart));
+  const statusText = rawMeta.substring(statusTextStart, end === -1 ? rawMeta.length : end);
 
-  let contentType = null;
-  if (status !== 204) {
-    contentType = getResponseHeader(&#x27;Content-Type&#x27;, rawMeta).split(&#x27;;&#x27;)[0];
-  }
+  const contentType = status !== 204 ? getResponseHeader(&#x27;Content-Type&#x27;, rawMeta).split(&#x27;;&#x27;)[0] : null;
 
   return { status, statusText, contentType };
 }
@@ -269,9 +287,9 @@ function parseСhangesetMeta(rawMeta) {
   @return {String} The content of the header.
 */
 function getResponseHeader(header, response) {
-  let fullHeader = &#x60;${header}: &#x60;;
-  let start = response.indexOf(fullHeader) + fullHeader.length;
-  let end = response.indexOf(&#x27;\n&#x27;, start);
+  const fullHeader = &#x60;${header}: &#x60;;
+  const start = response.indexOf(fullHeader) + fullHeader.length;
+  const end = response.indexOf(&#x27;\n&#x27;, start);
 
   return response.substring(start, end === -1 ? response.length : end);
 }

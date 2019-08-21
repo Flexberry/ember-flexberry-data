@@ -667,7 +667,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Adapter",
             "file": "addon/adapters/odata.js",
-            "line": 13,
+            "line": 14,
             "description": "The OData adapter class.\nUses Flexberry Query as a language for requesting server."
         },
         "Adapter.Offline": {
@@ -1654,7 +1654,7 @@
     "classitems": [
         {
             "file": "addon/adapters/odata.js",
-            "line": 29,
+            "line": 30,
             "description": "Timeout for AJAX-requests.",
             "itemtype": "property",
             "name": "timeout",
@@ -1666,7 +1666,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 38,
+            "line": 39,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch data from the server.",
             "itemtype": "method",
             "name": "query",
@@ -1697,7 +1697,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 68,
+            "line": 69,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCustomizes ajax options for the requests.",
             "itemtype": "method",
             "name": "ajaxOptions",
@@ -1728,7 +1728,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 88,
+            "line": 89,
             "description": "Takes an ajax response, and returns the json payload or an error.",
             "itemtype": "method",
             "name": "handleResponse",
@@ -1755,7 +1755,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 104,
+            "line": 105,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch single record from the server.",
             "itemtype": "method",
             "name": "queryRecord",
@@ -1786,7 +1786,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 123,
+            "line": 124,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch single record by ID from the server.",
             "itemtype": "method",
             "name": "findRecord",
@@ -1822,7 +1822,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 143,
+            "line": 144,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch all records from the server.",
             "itemtype": "method",
             "name": "findAll",
@@ -1858,7 +1858,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 163,
+            "line": 164,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), that determines the pathname for a given type.\nAdditionally capitalizes the type name (requirement of Flexberry OData Server).",
             "itemtype": "method",
             "name": "pathForType",
@@ -1879,7 +1879,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 177,
+            "line": 178,
             "description": "A method to make ajax requests.",
             "itemtype": "method",
             "name": "makeRequest",
@@ -1898,7 +1898,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 189,
+            "line": 190,
             "description": "A method to generate url for ajax request to odata function.",
             "params": [
                 {
@@ -1927,7 +1927,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 238,
+            "line": 239,
             "description": "A method to generate url for ajax request to odata action.",
             "params": [
                 {
@@ -1956,7 +1956,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 257,
+            "line": 258,
             "description": "A method to call functions that returns model records using ajax requests.",
             "params": [
                 {
@@ -2017,7 +2017,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 279,
+            "line": 280,
             "description": "A method to call functions using ajax requests.",
             "itemtype": "method",
             "name": "callFunction",
@@ -2070,7 +2070,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 301,
+            "line": 302,
             "description": "A method to call actions that returns model records using ajax requests.",
             "params": [
                 {
@@ -2131,7 +2131,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 329,
+            "line": 330,
             "description": "A method to call actions using ajax requests.",
             "itemtype": "method",
             "name": "callFunction",
@@ -2184,8 +2184,8 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 356,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nIt is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for records created without client id.\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
+            "line": 357,
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -2210,7 +2210,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 528,
+            "line": 525,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2256,7 +2256,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 633,
+            "line": 630,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2284,7 +2284,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 673,
+            "line": 670,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2308,7 +2308,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 724,
+            "line": 721,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -6960,7 +6960,7 @@
         {
             "file": "addon/stores/base-store.js",
             "line": 431,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nIt is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for records created without client id.\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -6986,7 +6986,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 450,
+            "line": 449,
             "description": "Returns an instance of the adapter for a given type.",
             "itemtype": "method",
             "name": "adapterFor",
@@ -7013,7 +7013,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 469,
+            "line": 468,
             "description": "Returns an instance of the serializer for a given type.",
             "itemtype": "method",
             "name": "serializerFor",
@@ -7040,7 +7040,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 527,
+            "line": 526,
             "description": "Detect model name by method name and arguments.",
             "itemtype": "method",
             "name": "_getModelName",
@@ -7068,7 +7068,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 574,
+            "line": 573,
             "description": "Update all databases in accordance with actual schemas.",
             "itemtype": "method",
             "name": "_dbInit",
@@ -7312,7 +7312,7 @@
         {
             "file": "addon/stores/local-store.js",
             "line": 231,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nIt is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for records created without client id.\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -7355,7 +7355,7 @@
         {
             "file": "addon/stores/online-store.js",
             "line": 33,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nIt is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.\n\nThe array which fulfilled the promise may contain the following values:\n- `new model object` - for records created without client id.\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
+            "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -7629,7 +7629,7 @@
             "line": 5,
             "description": "Returns the type and boundary from the `Content-Type` header.",
             "itemtype": "method",
-            "name": "getBoundary",
+            "name": "getResponseMeta",
             "params": [
                 {
                     "name": "contentTypeHeader",
@@ -7672,7 +7672,7 @@
         {
             "file": "addon/utils/batch-queries.js",
             "line": 46,
-            "description": "Parses a batch response depending on its type.",
+            "description": "Parses a batch response depending on its type.\n\nThe returned object always contains the `contentType` property.\nDepending on the type of response it may contain the following additional properties:\n- `response` - for responses with `application/http` content type.\n- `changesets` - for responses with `multipart/mixed` content type.",
             "itemtype": "method",
             "name": "parseBatchResponse",
             "params": [
@@ -7691,7 +7691,7 @@
         },
         {
             "file": "addon/utils/batch-queries.js",
-            "line": 68,
+            "line": 76,
             "access": "private",
             "tagname": "",
             "itemtype": "method",
@@ -7699,7 +7699,7 @@
             "params": [
                 {
                     "name": "changeset",
-                    "description": "String data of a changeset.",
+                    "description": "The string with the changeset content.",
                     "type": "String"
                 }
             ],
@@ -7712,15 +7712,36 @@
         },
         {
             "file": "addon/utils/batch-queries.js",
-            "line": 97,
+            "line": 89,
             "access": "private",
             "tagname": "",
             "itemtype": "method",
-            "name": "parseСhangesetMeta",
+            "name": "parseResponse",
+            "params": [
+                {
+                    "name": "response",
+                    "description": "The string with the response content.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Object with `meta` and `body` properties.",
+                "type": "Object"
+            },
+            "class": "Projection",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/batch-queries.js",
+            "line": 118,
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "parseResponseMeta",
             "params": [
                 {
                     "name": "rawMeta",
-                    "description": "String metadata of a changeset.",
+                    "description": "The string with the response metadata.",
                     "type": "String"
                 }
             ],
@@ -7733,7 +7754,7 @@
         },
         {
             "file": "addon/utils/batch-queries.js",
-            "line": 119,
+            "line": 137,
             "access": "private",
             "tagname": "",
             "itemtype": "method",
@@ -8565,23 +8586,23 @@
         },
         {
             "message": "Missing item type\nA method to generate url for ajax request to odata function.",
-            "line": " addon/adapters/odata.js:189"
+            "line": " addon/adapters/odata.js:190"
         },
         {
             "message": "Missing item type\nA method to generate url for ajax request to odata action.",
-            "line": " addon/adapters/odata.js:238"
+            "line": " addon/adapters/odata.js:239"
         },
         {
             "message": "Missing item type\nA method to call functions that returns model records using ajax requests.",
-            "line": " addon/adapters/odata.js:257"
+            "line": " addon/adapters/odata.js:258"
         },
         {
             "message": "Missing item type\nA method to call actions that returns model records using ajax requests.",
-            "line": " addon/adapters/odata.js:301"
+            "line": " addon/adapters/odata.js:302"
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:528"
+            "line": " addon/adapters/odata.js:525"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
