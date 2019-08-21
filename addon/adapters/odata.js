@@ -357,10 +357,9 @@ export default DS.RESTAdapter.extend({
   /**
     A method to send batch update, create or delete models in single transaction.
 
-    It is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.
+    All models saving using this method must have identifiers.
 
     The array which fulfilled the promise may contain the following values:
-    - `new model object` - for records created without client id.
     - `same model object` - for created, updated or unaltered records.
     - `null` - for deleted records.
 
@@ -390,6 +389,10 @@ export default DS.RESTAdapter.extend({
     let contentId = 0;
     const getQueries = [];
     models.forEach((model) => {
+      if (!model.get('id')) {
+        throw new Error(`Models saved using the 'batchUpdate' method must be created with identifiers.`);
+      }
+
       let modelDirtyType = model.get('dirtyType');
 
       if (!modelDirtyType) {
