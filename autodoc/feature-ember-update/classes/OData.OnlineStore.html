@@ -221,10 +221,9 @@
                     
                         <div class="description">
                             <p>A method to send batch update, create or delete models in single transaction.</p>
-                    <p>It is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.</p>
+                    <p>All models saving using this method must have identifiers.</p>
                     <p>The array which fulfilled the promise may contain the following values:</p>
                     <ul>
-                    <li><code>new model object</code> - for records created without client id.</li>
                     <li><code>same model object</code> - for created, updated or unaltered records.</li>
                     <li><code>null</code> - for deleted records.</li>
                     </ul>

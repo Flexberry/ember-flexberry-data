@@ -153,6 +153,7 @@ import { pluralize } from &#x27;ember-inflector&#x27;;
 import isUUID from &#x27;../utils/is-uuid&#x27;;
 import generateUniqueId from &#x27;../utils/generate-unique-id&#x27;;
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from &#x27;../utils/batch-queries&#x27;;
+import Builder from &#x27;../query/builder&#x27;;
 
 
 /**
@@ -506,10 +507,9 @@ export default DS.RESTAdapter.extend({
   /**
     A method to send batch update, create or delete models in single transaction.
 
-    It is recommended to create new models with identifiers, otherwise, after saving, the model object in the store will be created anew.
+    All models saving using this method must have identifiers.
 
     The array which fulfilled the promise may contain the following values:
-    - &#x60;new model object&#x60; - for records created without client id.
     - &#x60;same model object&#x60; - for created, updated or unaltered records.
     - &#x60;null&#x60; - for deleted records.
 
@@ -520,14 +520,10 @@ export default DS.RESTAdapter.extend({
   */
   batchUpdate(store, models) {
     if (isEmpty(models)) {
-      if (isArray(models)) {
-        return resolve();
-      }
-
-      throw new Error(&#x27;The models is empty.&#x27;);
+      return resolve(models);
     }
 
-    models = A(models);
+    models = isArray(models) ? models : A([models]);
 
     const boundary = &#x60;batch_${generateUniqueId()}&#x60;;
 
@@ -537,8 +533,12 @@ export default DS.RESTAdapter.extend({
     requestBody += &#x27;Content-Type: multipart/mixed;boundary=&#x27; + changeSetBoundary + &#x27;\r\n\r\n&#x27;;
 
     let contentId = 0;
-    const modelsByContentId = {};
+    const getQueries = [];
     models.forEach((model) =&gt; {
+      if (!model.get(&#x27;id&#x27;)) {
+        throw new Error(&#x60;Models saved using the &#x27;batchUpdate&#x27; method must be created with identifiers.&#x60;);
+      }
+
       let modelDirtyType = model.get(&#x27;dirtyType&#x27;);
 
       if (!modelDirtyType) {
@@ -551,7 +551,6 @@ export default DS.RESTAdapter.extend({
 
       contentId++;
       requestBody += &#x27;Content-ID: &#x27; + contentId + &#x27;\r\n\r\n&#x27;;
-      modelsByContentId[contentId] = model;
 
       const skipUnchangedAttrs = true;
       const snapshot = model._createSnapshot();
@@ -591,11 +590,35 @@ export default DS.RESTAdapter.extend({
         const data = {};
         serializer.serializeIntoHash(data, snapshot.type, snapshot);
         requestBody += JSON.stringify(data) + &#x27;\r\n&#x27;;
+
+        // Add a GET request for created or updated models.
+        let getQuery = &#x27;\r\n--&#x27; + boundary + &#x27;\r\n&#x27;;
+        getQuery += &#x27;Content-Type: application/http\r\n&#x27;;
+        getQuery += &#x27;Content-Transfer-Encoding: binary\r\n&#x27;;
+
+        const relationships = [];
+        model.eachRelationship((name) =&gt; {
+          relationships.push(&#x60;${name}.id&#x60;);
+        });
+
+        const getUrl = this._buildURL(snapshot.type.modelName, model.get(&#x27;id&#x27;));
+
+        let expand;
+        if (relationships.length) {
+          const query = new Builder(store, snapshot.type.modelName).select(relationships.join(&#x27;,&#x27;)).build();
+          const queryAdapter = new ODataQueryAdapter(getUrl, store);
+          expand = queryAdapter.getODataQuery(query).$expand;
+        }
+
+        getQuery += &#x27;\r\nGET &#x27; + getUrl + (expand ? &#x27;?$expand=&#x27; + expand : &#x27;&#x27;) + &#x27; HTTP/1.1\r\n&#x27;;
+        getQuery += &#x27;Content-Type: application/json;type=entry\r\n&#x27;;
+        getQuery += &#x27;Prefer: return=representation\r\n&#x27;;
+        getQueries.push(getQuery);
       }
     });
 
-    requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;--\r\n&#x27;;
-
+    requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;--&#x27;;
+    requestBody += getQueries.join(&#x27;&#x27;);
     requestBody += &#x27;\r\n--&#x27; + boundary + &#x27;--&#x27;;
 
     const url = &#x60;${this._buildURL()}/$batch&#x60;;
@@ -617,61 +640,36 @@ export default DS.RESTAdapter.extend({
         return reject(new Error(&#x27;Invalid response type.&#x27;));
       }
 
-      const responses = getBatchResponses(response, meta.boundary);
-      if (responses.length !== 1) {
-        return reject(new Error(&#x27;Invalid number of responses.&#x27;));
+      const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+      const getResponses = batchResponses.filter(r =&gt; r.contentType === &#x27;application/http&#x27;);
+      const updateResponse = batchResponses.find(r =&gt; r.contentType === &#x27;multipart/mixed&#x27;);
+
+      const errorsChangesets = updateResponse.changesets.filter(c =&gt; !this.isSuccess(c.meta.status));
+      if (errorsChangesets.length) {
+        return reject(errorsChangesets.map(c =&gt; new Error(c.body)));
       }
 
-      const { contentType, changesets } = parseBatchResponse(responses[0]);
-      if (contentType !== &#x27;multipart/mixed&#x27;) {
-        return reject(new Error(&#x27;Invalid response type.&#x27;));
-      }
-
-      if (changesets.length === 1 &amp;&amp; !this.isSuccess(changesets[0].meta.status)) {
-        return reject(new Error(&#x27;Invalid response.&#x27;));
-      }
-
+      const errors = [];
       const result = [];
-      for (const model of models) {
-        const changeset = changesets.find(c =&gt; modelsByContentId[c.contentID] === model);
-        const modelClass = store.modelFor(model.constructor.modelName);
-        const serializer = store.serializerFor(modelClass.modelName);
-        switch (model.get(&#x27;dirtyType&#x27;)) {
-          case &#x27;created&#x27;:
-            if (changeset.meta.status !== 201) {
-              return reject(new Error(&#x60;Invalid response status: ${changeset.meta.status}.&#x60;));
-            }
-
-            if (!model.get(&#x27;id&#x27;)) {
-              run(store, store.unloadRecord, model);
-            }
-
-            result.push(run(store, store.push, serializer.normalize(modelClass, changeset.body)));
-            break;
-
-          case &#x27;updated&#x27;:
-            if (changeset.meta.status !== 200) {
-              return reject(new Error(&#x60;Invalid response status: ${changeset.meta.status}.&#x60;));
-            }
-
-            result.push(run(store, store.push, serializer.normalize(modelClass, changeset.body)));
-            break;
-
-          case &#x27;deleted&#x27;:
-            if (changeset.meta.status !== 204) {
-              return reject(new Error(&#x60;Invalid response status: ${changeset.meta.status}.&#x60;));
-            }
-
+      // eslint-disable-next-line ember/jquery-ember-run
+      models.forEach((model) =&gt; {
+        const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
+        if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27;) {
+          const { response } = getResponses.shift();
+          if (this.isSuccess(response.meta.status)) {
+            const modelName = model.constructor.modelName;
+            const payload = { [modelName]: response.body };
             run(store, store.unloadRecord, model);
-            result.push(null);
-            break;
-
-          default:
-            result.push(model);
+            run(store, store.pushPayload, modelName, payload);
+          } else {
+            errors.push(new Error(response.body));
+          }
         }
-      }
 
-      resolve(result);
+        result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
+      });
+
+      return errors.length ? reject(errors) : resolve(result);
     }).fail(reject));
   },
 
