@@ -370,14 +370,10 @@ export default DS.RESTAdapter.extend({
   */
   batchUpdate(store, models) {
     if (Ember.isEmpty(models)) {
-      if (Ember.isArray(models)) {
-        return Ember.RSVP.resolve();
-      }
-
-      throw new Error('The models is empty.');
+      return Ember.RSVP.resolve(models);
     }
 
-    models = Ember.A(models);
+    models = Ember.isArray(models) ? models : Ember.A([models]);
 
     const boundary = `batch_${generateUniqueId()}`;
 
