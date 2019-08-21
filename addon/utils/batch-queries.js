@@ -23,11 +23,11 @@ export function getResponseMeta(contentTypeHeader) {
   @return {String[]} An array of batch responses.
 */
 export function getBatchResponses(response, boundary) {
-  let startBoundary = `--${boundary}`;
-  let endBoundary = `--${boundary}--`;
+  const startBoundary = `--${boundary}`;
+  const endBoundary = `--${boundary}--`;
+  const responses = [];
 
   let lastResponse;
-  let responses = [];
   response.split('\n').map(l => l.trim()).forEach((line) => {
     if (line === startBoundary || line === endBoundary) {
       if (lastResponse) {
@@ -46,17 +46,22 @@ export function getBatchResponses(response, boundary) {
 /**
   Parses a batch response depending on its type.
 
+  The returned object always contains the `contentType` property.
+  Depending on the type of response it may contain the following additional properties:
+  - `response` - for responses with `application/http` content type.
+  - `changesets` - for responses with `multipart/mixed` content type.
+
   @method parseBatchResponse
   @param {String} response The batch response.
   @return {Object} The object with the response description.
 */
 export function parseBatchResponse(response) {
-  let contentTypeHeader = getResponseHeader('Content-Type', response);
-  let { contentType, boundary } = getResponseMeta(contentTypeHeader);
+  const contentTypeHeader = getResponseHeader('Content-Type', response);
+  const { contentType, boundary } = getResponseMeta(contentTypeHeader);
   switch (contentType) {
     case 'multipart/mixed':
-      let bodyStart = response.indexOf(`--${boundary}`);
-      let changesets = getBatchResponses(response.substring(bodyStart), boundary).map(parseСhangeset);
+      const bodyStart = response.indexOf(`--${boundary}`);
+      const changesets = getBatchResponses(response.substring(bodyStart), boundary).map(parseСhangeset);
 
       return { contentType, changesets };
 
@@ -137,9 +142,9 @@ function parseResponseMeta(rawMeta) {
   @return {String} The content of the header.
 */
 function getResponseHeader(header, response) {
-  let fullHeader = `${header}: `;
-  let start = response.indexOf(fullHeader) + fullHeader.length;
-  let end = response.indexOf('\n', start);
+  const fullHeader = `${header}: `;
+  const start = response.indexOf(fullHeader) + fullHeader.length;
+  const end = response.indexOf('\n', start);
 
   return response.substring(start, end === -1 ? response.length : end);
 }
