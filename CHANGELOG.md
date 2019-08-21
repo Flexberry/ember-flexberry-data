@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.2.0-beta.7] - 2019-08-21]
+### Fixed
+- Fix `batchUpdate` for models with relationships.
+
 ## [2.2.0-beta.6] - 2019-08-08]
 ### Added
 - `Utils`:
