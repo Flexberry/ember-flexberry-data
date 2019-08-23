@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.2.0-beta.4] - 2019-08-23
+### Added
+- Add changes from 2.2.0-beta.8.
+
 ## [3.2.0-beta.3] - 2019-08-21
 ### Added
 - Add changes from 2.2.0-beta.7.
@@ -25,6 +29,10 @@
 ## [3.0.0] - 2018-12-13
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
+
+## [2.2.0-beta.8] - 2019-08-23]
+### Fixed
+- Fix `batchUpdate` when only `belongsTo` relationship was changed.
 
 ## [2.2.0-beta.7] - 2019-08-21]
 ### Fixed
