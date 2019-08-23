@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.2.0-beta.8] - 2019-08-23]
+### Fixed
+- Fix `batchUpdate` when only `belongsTo` relationship was changed.
+
 ## [2.2.0-beta.7] - 2019-08-21]
 ### Fixed
 - Fix `batchUpdate` for models with relationships.
