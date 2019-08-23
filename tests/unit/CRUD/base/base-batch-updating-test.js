@@ -2,7 +2,7 @@ import Ember from 'ember';
 import generateUniqueId from 'ember-flexberry-data/utils/generate-unique-id';
 
 export default function batchUpdating(store, assert) {
-  assert.expect(11);
+  assert.expect(14);
   let done = assert.async();
 
   Ember.run(() => {
@@ -10,9 +10,10 @@ export default function batchUpdating(store, assert) {
 
       // Without relationships.
       .then((records) => {
-        let user1Id = records.people[0];
-        let user2Id = records.people[1];
-        let user3Id = records.people[2];
+        const user1Id = records.people[0];
+        const user2Id = records.people[1];
+        const user3Id = records.people[2];
+        const suggTypeId = records.suggestionTypes[0];
         return Ember.RSVP.Promise.all([
           store.findRecord('ember-flexberry-dummy-application-user', user1Id)
             .then((returned1Record) => {
@@ -38,16 +39,22 @@ export default function batchUpdating(store, assert) {
           store.createRecord('ember-flexberry-dummy-suggestion-type', {
             id: generateUniqueId(),
             name: 'Sample for create'
-          })
+          }),
+          store.findRecord('ember-flexberry-dummy-suggestion-type', suggTypeId)
+            .then((returnedRecord) => {
+              returnedRecord.set('parent', null);
+              return returnedRecord;
+            })
         ])
           .then((recordsForBatch) => {
-            let record1 = recordsForBatch[0];
-            let record2 = recordsForBatch[1];
-            let record3 = recordsForBatch[2];
-            let record4 = recordsForBatch[3];
-            let record5 = recordsForBatch[4];
-            return store.adapterFor('application').batchUpdate(store, Ember.A([record4, record2, record3, record1, record5])).then((result) => {
-              assert.equal(result.length, 5);
+            const record1 = recordsForBatch[0];
+            const record2 = recordsForBatch[1];
+            const record3 = recordsForBatch[2];
+            const record4 = recordsForBatch[3];
+            const record5 = recordsForBatch[4];
+            const record6 = recordsForBatch[5];
+            return store.adapterFor('application').batchUpdate(store, Ember.A([record4, record2, record3, record1, record5, record6])).then((result) => {
+              assert.equal(result.length, 6);
 
               assert.notOk(result[0].get('hasDirtyAttributes'));
 
@@ -61,6 +68,9 @@ export default function batchUpdating(store, assert) {
 
               assert.notOk(result[4].get('hasDirtyAttributes'));
               assert.ok(result[4] === record5);
+
+              assert.notOk(result[5].get('hasDirtyAttributes'));
+              assert.ok(result[5] === record6);
             });
           })
           .then(() => {
@@ -75,6 +85,13 @@ export default function batchUpdating(store, assert) {
             return store.findRecord('ember-flexberry-dummy-application-user', user2Id)
               .then((edited2Record) =>
                 assert.equal(edited2Record.get('name'), 'User 2', 'Without relationships')
+              );
+          })
+          .then(() => {
+            store.unloadAll();
+            return store.findRecord('ember-flexberry-dummy-suggestion-type', suggTypeId)
+              .then((suggTypeRecord) =>
+                assert.ok(Ember.isNone(suggTypeRecord.get('parent')), 'Relationship change')
               );
           })
           .then(() => records);
@@ -119,7 +136,8 @@ function initTestData(store) {
     ).then((createdRecords) =>
       new Ember.RSVP.Promise((resolve) =>
         resolve({
-          people: createdRecords.slice(0, 3).map(item => item.get('id'))
+          people: createdRecords.slice(0, 3).map(item => item.get('id')),
+          suggestionTypes: createdRecords.slice(3, 4).map(item => item.get('id'))
         })
       )
     );

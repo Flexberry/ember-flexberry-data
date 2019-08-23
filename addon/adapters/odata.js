@@ -392,7 +392,11 @@ export default DS.RESTAdapter.extend({
       let modelDirtyType = model.get('dirtyType');
 
       if (!modelDirtyType) {
-        return;
+        if (model.hasChangedBelongsTo()) {
+          modelDirtyType = 'updated';
+        } else {
+          return;
+        }
       }
 
       requestBody += '--' + changeSetBoundary + '\r\n';
