@@ -5945,6 +5945,20 @@
             "namespace": "Offline"
         },
         {
+            "file": "addon/services/offline-globals.js",
+            "line": 115,
+            "description": "Get offline schema.",
+            "itemtype": "method",
+            "name": "getOfflineSchema",
+            "return": {
+                "description": "Returns offline schema.",
+                "type": "Object"
+            },
+            "class": "Offline.GlobalsService",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
             "file": "addon/services/syncer.js",
             "line": 22,
             "description": "Store that use for making requests in offline mode.\nBy default it is set to global instane of {{#crossLink \"LocalStore\"}}{{/crossLink}} class.",
@@ -6378,7 +6392,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 47,
+            "line": 34,
             "description": "Store that use for making requests in online mode.\nIt can be specified in application that use offline mode support.\nIf it is not specified then instance of <a href=\"http://emberjs.com/api/data/classes/DS.Store.html\">DS.Store</a>\nis set as value of this property during initialization of {{#crossLink \"BaseStore\"}}{{/crossLink}} class.",
             "itemtype": "property",
             "name": "onlineStore",
@@ -6389,7 +6403,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 58,
+            "line": 45,
             "description": "Store that use for making requests in offline mode.\nBy default it is set to global instane of {{#crossLink \"LocalStore\"}}{{/crossLink}} class.",
             "itemtype": "property",
             "name": "offlineStore",
@@ -6400,7 +6414,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 68,
+            "line": 55,
             "description": "Set schema for your database.",
             "example": [
                 "\n  ```javascript\n  // app/services/store.js\n  ...\n    init() {\n      this.set('offlineSchema', {\n        <name of database>: {\n          <number of version>: {\n            <name of model>: <table definition>,\n          },\n        },\n        dbName: {\n          1: {\n            modelName: 'id,attribute1,attribute2,belongsToRelationship1,belongsToRelationship2,*hasManyRelationship1,*hasManyRelationship2',\n            changedModelName: 'id,attribute1,attribute2',\n            thisModelWillBeRemovedInNextVersion: 'id,attribute1',\n          },\n          2: {\n            newModelName: 'id,attribute1',\n            changedModelName: 'id,attribute1,attribute3,attribute4',\n            thisModelWillBeRemovedInNextVersion: null,\n          },\n        },\n      });\n      return this._super(...arguments);\n    },\n  ...\n  ```"
@@ -6414,7 +6428,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 124,
+            "line": 111,
             "description": "Add model names that be loaded from offline store.",
             "example": [
                 "\n  ```javascript\n  // app/services/store.js\n  ...\n    offlineModels: {\n      myModel: true,\n    },\n  ...\n  ```"
@@ -6429,7 +6443,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 143,
+            "line": 130,
             "description": "Global instance of {{#crossLink \"Syncer\"}}{{/crossLink}} class that contains methods to sync model.",
             "itemtype": "property",
             "name": "syncer",
@@ -6441,7 +6455,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 152,
+            "line": 139,
             "description": "Instance of dexie service.",
             "itemtype": "property",
             "name": "dexieService",
@@ -6452,7 +6466,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 181,
+            "line": 168,
             "description": "This method returns a fresh collection from the server, regardless of if there is already records\nin the store or not.",
             "itemtype": "method",
             "name": "findAll",
@@ -6486,7 +6500,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 202,
+            "line": 189,
             "description": "This method returns a record for a given type and id combination.\nNOTE: this will trigger syncUp twice, this is OK. And since this is\n a public method, we probably want to preserve this.",
             "itemtype": "method",
             "name": "findRecord",
@@ -6525,7 +6539,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 227,
+            "line": 214,
             "description": "Query for records that meet certain criteria. Resolves with [DS.RecordArray](http://emberjs.com/api/data/classes/DS.RecordArray.html).\n\tFor more information see [query method](http://emberjs.com/api/data/classes/DS.Store.html#method_query) of [DS.Store](http://emberjs.com/api/data/classes/DS.Store.html).",
             "itemtype": "method",
             "name": "query",
@@ -6559,7 +6573,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 257,
+            "line": 244,
             "description": "Query for record that meet certain criteria. Resolves with single record.",
             "itemtype": "method",
             "name": "query",
@@ -6593,7 +6607,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 286,
+            "line": 273,
             "description": "Create a new record in the current store. The properties passed to this method are set on the newly created record.",
             "itemtype": "method",
             "name": "createRecord",
@@ -6625,7 +6639,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 298,
+            "line": 285,
             "description": "For symmetry, a record can be deleted via the store.",
             "itemtype": "method",
             "name": "deleteRecord",
@@ -6648,7 +6662,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 308,
+            "line": 295,
             "description": "Delete all record from the current store.",
             "itemtype": "method",
             "name": "deleteRecord",
@@ -6671,7 +6685,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 318,
+            "line": 305,
             "description": "Get the reference for the specified record.",
             "itemtype": "method",
             "name": "getReference",
@@ -6703,7 +6717,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 330,
+            "line": 317,
             "description": "Returns true if a record for a given type and ID is already loaded.",
             "itemtype": "method",
             "name": "hasRecordForId",
@@ -6735,7 +6749,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 342,
+            "line": 329,
             "description": "Converts a json payload into the normalized form that {{#crossLink \"BaseStore/push:method\"}}{{/crossLink}} expects.",
             "itemtype": "method",
             "name": "normalize",
@@ -6767,7 +6781,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 354,
+            "line": 341,
             "description": "This method returns a filtered array that contains all of the known records for a given type in the store.",
             "itemtype": "method",
             "name": "peekAll",
@@ -6794,7 +6808,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 365,
+            "line": 352,
             "description": "Get a record by a given type and ID without triggering a fetch.",
             "itemtype": "method",
             "name": "peekRecord",
@@ -6826,7 +6840,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 377,
+            "line": 364,
             "description": "Push some data for a given type into the store.",
             "itemtype": "method",
             "name": "push",
@@ -6853,7 +6867,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 388,
+            "line": 375,
             "description": "Push some raw data into the store.",
             "itemtype": "method",
             "name": "pushPayload",
@@ -6881,7 +6895,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 399,
+            "line": 386,
             "description": "This method returns if a certain record is already loaded in the store.",
             "itemtype": "method",
             "name": "recordIsLoaded",
@@ -6913,7 +6927,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 411,
+            "line": 398,
             "description": "This method unloads all records in the store.",
             "itemtype": "method",
             "name": "unloadAll",
@@ -6936,7 +6950,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 421,
+            "line": 408,
             "description": "For symmetry, a record can be unloaded via the store. Only non-dirty records can be unloaded.",
             "itemtype": "method",
             "name": "unloadRecord",
@@ -6959,7 +6973,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 431,
+            "line": 418,
             "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
@@ -6986,7 +7000,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 449,
+            "line": 436,
             "description": "Returns an instance of the adapter for a given type.",
             "itemtype": "method",
             "name": "adapterFor",
@@ -7013,7 +7027,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 468,
+            "line": 455,
             "description": "Returns an instance of the serializer for a given type.",
             "itemtype": "method",
             "name": "serializerFor",
@@ -7040,7 +7054,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 526,
+            "line": 513,
             "description": "Detect model name by method name and arguments.",
             "itemtype": "method",
             "name": "_getModelName",
@@ -7068,7 +7082,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 573,
+            "line": 560,
             "description": "Update all databases in accordance with actual schemas.",
             "itemtype": "method",
             "name": "_dbInit",
