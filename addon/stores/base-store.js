@@ -23,11 +23,13 @@ export default DS.Store.extend({
     @private
     @default 'Schema of 1 version for internal models addon'
   */
-  _offlineSchema: {
-    'ember-flexberry-data': {
-      1: this.get('offlineGlobals').getOfflineSchema(),
-    },
-  },
+  _offlineSchema: Ember.computed(function() {
+    return {
+      'ember-flexberry-data': {
+        1: this.get('offlineGlobals').getOfflineSchema(),
+      }
+    };
+  }),
 
   /**
     Store that use for making requests in online mode.
