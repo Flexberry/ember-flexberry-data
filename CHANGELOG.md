@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [2.2.0-beta.9] - 2019-09-02]
+### Added
+- `offline-globals`:
+    - Add `getOfflineSchema` method for get offline schema.
+
 ## [2.2.0-beta.8] - 2019-08-23]
 ### Fixed
 - Fix `batchUpdate` when only `belongsTo` relationship was changed.
