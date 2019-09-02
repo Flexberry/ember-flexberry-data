@@ -112,6 +112,32 @@ export default Ember.Service.extend(Ember.Evented, {
     this.setOnlineAvailable(isOnlineAvailable);
   },
 
+  /**
+    Get offline schema.
+
+    @method getOfflineSchema
+
+    @return {Object} Returns offline schema.
+  */
+  getOfflineSchema() {
+    return {
+      'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity':
+        'id,objectPrimaryKey,operationTime,operationType,executionResult,source,serializedField,' +
+        'createTime,creator,editTime,editor,user,objectType,*auditFields',
+      'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field':
+        'id,field,caption,oldValue,newValue,mainChange,auditEntity',
+      'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type':
+        'id,name',
+      'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent':
+        'id,name,login,pwd,isUser,isGroup,isRole,connString,enabled,email,full,read,insert,update,' +
+        'delete,execute,createTime,creator,editTime,editor',
+      'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group':
+        'id,createTime,creator,editTime,editor,group,user',
+      'i-c-s-soft-s-t-o-r-m-n-e-t-security-session':
+        'id,userKey,startedAt,lastAccess,closed',
+    };
+  },
+
   /*
     Helper method for setting class properties with offline options.
   */
