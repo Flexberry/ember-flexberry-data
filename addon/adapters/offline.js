@@ -487,24 +487,24 @@ export default DS.Adapter.extend({
             }
           });
         });
-        
+
         let dexiePushPromis = new Ember.RSVP.Promise((resolve, reject) => {
-          dexieService.performOperation(db, hashOperation).then((modelName) => { 
+          dexieService.performOperation(db, hashOperation).then((modelName) => {
             let arrayOfHashes = this._calculateArrayOfHash(modelName, modelHash, allModelshash);
             allModelshash.set(modelName, arrayOfHashes);
 
             resolve();
-          })
+          });
         });
 
-        promisses.push(dexiePushPromis);      
+        promisses.push(dexiePushPromis);
       });
-    
+
       Ember.RSVP.all(promisses).then(function() {
         let numberOfRecordsToStore = 0;
-          if (allModelshash.size === 0) {
-            resolve();
-         } else {
+        if (allModelshash.size === 0) {
+          resolve();
+        } else {
           let tableNames = allModelshash._keys.toArray();
           db.transaction('rw', tableNames, () => {
             for (let i = 0; i < tableNames.length; i++) {
@@ -517,11 +517,11 @@ export default DS.Adapter.extend({
             dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
             resolve();
           }).catch((err) => {
-              Ember.warn('Some data loss while performing sync down records!',
-              false,
-              { id: 'ember-flexberry-data-debug.offline.sync-down-data-loss' });
-              dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
-              reject(err);
+            Ember.warn('Some data loss while performing sync down records!',
+            false,
+            { id: 'ember-flexberry-data-debug.offline.sync-down-data-loss' });
+            dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
+            reject(err);
           });
         }
       });
