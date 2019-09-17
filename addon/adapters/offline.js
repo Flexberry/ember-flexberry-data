@@ -437,79 +437,40 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   batchUpdate(store, models) {
-    let dexieService = this.get('dexieService');
-    let db = dexieService.dexie(this.get('dbName'), store);
+    const dexieService = this.get('dexieService');
+    const db = dexieService.dexie(this.get('dbName'), store);
 
     let batchUpdateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
       let promisses = Ember.A();
       let allModelshash = Ember.Map.create();
 
       models.forEach(model => {
-        let snapshot = model._createSnapshot();
-        let type = snapshot.type;
-        let fieldsToUpdate = (type.projections.get('ComputerE')) ? (type.projections.get('ComputerE')) : (type.projections.get('ComputerPartE'));
+        const snapshot = model._createSnapshot();
         let modelHash = Ember.Map.create();
 
         let hashOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
-          db.table(type.modelName).get(snapshot.id).then((record) => {
-            if (!Ember.isNone(fieldsToUpdate) && record) {
-              if (!Ember.$.isEmptyObject(fieldsToUpdate)) {
-                modelHash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-                for (let attrName in modelHash) {
-                  if (modelHash.hasOwnProperty(attrName) && !fieldsToUpdate.hasOwnProperty(attrName)) {
-                    delete modelHash[attrName];
-                  }
-                }
-
-                // Merge record with hash and store it to local store only if hash contains some changes for record.
-                let needChangeRecord = false;
-                for (let attrName in modelHash) {
-                  if (modelHash.hasOwnProperty(attrName) && (!record[attrName] || record[attrName] !== modelHash[attrName])) {
-                    needChangeRecord = true;
-                    break;
-                  }
-                }
-
-                if (needChangeRecord) {
-                  modelHash = Ember.merge(record, modelHash);
-                } else {
-                  dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-                }
-
-                resolve(snapshot.modelName);
-              } else {
-                dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
-                resolve();
-              }
-            } else {
-              modelHash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-              resolve(snapshot.modelName);
-            }
-          });
+          modelHash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
+          resolve(snapshot.modelName);
         });
 
-        let dexiePushPromis = new Ember.RSVP.Promise((resolve, reject) => {
-          dexieService.performOperation(db, hashOperation).then((modelName) => {
-            let arrayOfHashes = this._calculateArrayOfHash(modelName, modelHash, allModelshash);
-            allModelshash.set(modelName, arrayOfHashes);
-
-            resolve();
-          });
+        let dexiePushPromis = dexieService.performOperation(db, hashOperation).then((modelName) => {
+          let arrayOfHashes = this._calculateArrayOfHash(modelName, modelHash, allModelshash);
+          allModelshash.set(modelName, arrayOfHashes);
         });
 
         promisses.push(dexiePushPromis);
       });
 
-      Ember.RSVP.all(promisses).then(function() {
+      Ember.RSVP.all(promisses).then(() => {
         let numberOfRecordsToStore = 0;
         if (allModelshash.size === 0) {
           resolve();
         } else {
-          let tableNames = allModelshash._keys.toArray();
+          const tableNames = allModelshash._keys.toArray();
           db.transaction('rw', tableNames, () => {
             for (let i = 0; i < tableNames.length; i++) {
-              let tableName = tableNames[i];
-              let arrayOfHashes = allModelshash.get(tableName);
+              const tableName = tableNames[i];
+              const arrayOfHashes = allModelshash.get(tableName);
               numberOfRecordsToStore += arrayOfHashes ? arrayOfHashes.length : 0;
               db.table(tableName).bulkPut(arrayOfHashes ? arrayOfHashes : {});
             }
@@ -524,7 +485,7 @@ export default DS.Adapter.extend({
             reject(err);
           });
         }
-      });
+      }, reject);
     });
 
     return dexieService.performQueueOperation(db, batchUpdateOperation);
