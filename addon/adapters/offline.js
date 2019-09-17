@@ -446,7 +446,7 @@ export default DS.Adapter.extend({
 
       models.forEach(model => {
         const snapshot = model._createSnapshot();
-        const modelHash = Ember.Map.create();
+        let modelHash = Ember.Map.create();
 
         const hashOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
           modelHash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
