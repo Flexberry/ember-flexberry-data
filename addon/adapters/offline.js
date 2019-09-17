@@ -440,21 +440,21 @@ export default DS.Adapter.extend({
     const dexieService = this.get('dexieService');
     const db = dexieService.dexie(this.get('dbName'), store);
 
-    let batchUpdateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
-      let promisses = Ember.A();
-      let allModelshash = Ember.Map.create();
+    const batchUpdateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
+      const promisses = Ember.A();
+      const allModelshash = Ember.Map.create();
 
       models.forEach(model => {
         const snapshot = model._createSnapshot();
-        let modelHash = Ember.Map.create();
+        const modelHash = Ember.Map.create();
 
-        let hashOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
+        const hashOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
           modelHash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
           resolve(snapshot.modelName);
         });
 
-        let dexiePushPromis = dexieService.performOperation(db, hashOperation).then((modelName) => {
-          let arrayOfHashes = this._calculateArrayOfHash(modelName, modelHash, allModelshash);
+        const dexiePushPromis = dexieService.performOperation(db, hashOperation).then((modelName) => {
+          const arrayOfHashes = this._calculateArrayOfHash(modelName, modelHash, allModelshash);
           allModelshash.set(modelName, arrayOfHashes);
         });
 
