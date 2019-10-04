@@ -441,8 +441,8 @@ export default DS.Adapter.extend({
     const db = dexieService.dexie(this.get('dbName'), store);
 
     const batchUpdateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
-      const promisses = Ember.A();
-      const allModelshash = Ember.Map.create();
+      const promises = Ember.A();
+      const allModelsHash = Ember.Map.create();
 
       models.forEach(model => {
         const snapshot = model._createSnapshot();
@@ -453,24 +453,24 @@ export default DS.Adapter.extend({
           resolve(snapshot.modelName);
         });
 
-        const dexiePushPromis = dexieService.performOperation(db, hashOperation).then((modelName) => {
-          const arrayOfHashes = this._calculateArrayOfHash(modelName, modelHash, allModelshash);
-          allModelshash.set(modelName, arrayOfHashes);
+        const dexiePushPromise = dexieService.performOperation(db, hashOperation).then((modelName) => {
+          const arrayOfHashes = this._calculateArrayOfHash(modelName, modelHash, allModelsHash);
+          allModelsHash.set(modelName, arrayOfHashes);
         });
 
-        promisses.push(dexiePushPromis);
+        promises.push(dexiePushPromise);
       });
 
-      Ember.RSVP.all(promisses).then(() => {
+      Ember.RSVP.all(promises).then(() => {
         let numberOfRecordsToStore = 0;
-        if (allModelshash.size === 0) {
+        if (allModelsHash.size === 0) {
           resolve();
         } else {
-          const tableNames = allModelshash._keys.toArray();
+          const tableNames = allModelsHash._keys.toArray();
           db.transaction('rw', tableNames, () => {
             for (let i = 0; i < tableNames.length; i++) {
               const tableName = tableNames[i];
-              const arrayOfHashes = allModelshash.get(tableName);
+              const arrayOfHashes = allModelsHash.get(tableName);
               numberOfRecordsToStore += arrayOfHashes ? arrayOfHashes.length : 0;
               db.table(tableName).bulkPut(arrayOfHashes ? arrayOfHashes : {});
             }

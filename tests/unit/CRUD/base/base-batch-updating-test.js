@@ -53,7 +53,7 @@ export default function batchUpdating(store, assert) {
             const record4 = recordsForBatch[3];
             const record5 = recordsForBatch[4];
             const record6 = recordsForBatch[5];
-            return store.adapterFor('application').batchUpdate(store, Ember.A([record4, record2, record3, record1, record5, record6])).then((result) => {
+            return store.batchUpdate(Ember.A([record4, record2, record3, record1, record5, record6])).then((result) => {
               assert.equal(result.length, 6);
 
               assert.notOk(result[0].get('hasDirtyAttributes'));

@@ -242,6 +242,9 @@ export default DS.Store.extend({
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate(models) {
-    return this.adapterFor('application').batchUpdate(this, models);
+    return this.adapterFor('application').batchUpdate(this, models).then(() => {
+      const promises = models.map(model => this.findRecord(model.constructor.modelName, model.get('id')));
+      return Ember.RSVP.all(promises);
+    });
   },
 });
