@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.2.0-beta.5] - 2019-09-10
+### Added
+- Add changes from 2.2.0-beta.9.
+
 ## [3.2.0-beta.4] - 2019-08-23
 ### Added
 - Add changes from 2.2.0-beta.8.
@@ -29,6 +33,11 @@
 ## [3.0.0] - 2018-12-13
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
+
+## [2.2.0-beta.9] - 2019-09-02]
+### Added
+- `offline-globals`:
+    - Add `getOfflineSchema` method for get offline schema.
 
 ## [2.2.0-beta.8] - 2019-08-23]
 ### Fixed
