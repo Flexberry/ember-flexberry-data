@@ -169,23 +169,8 @@ export default DS.Store.extend({
   _offlineSchema: computed(function() {
     return {
       &#x27;ember-flexberry-data&#x27;: {
-        1: {
-          &#x27;i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity&#x27;:
-            &#x27;id,objectPrimaryKey,operationTime,operationType,executionResult,source,serializedField,&#x27; +
-            &#x27;createTime,creator,editTime,editor,user,objectType,*auditFields&#x27;,
-          &#x27;i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field&#x27;:
-            &#x27;id,field,caption,oldValue,newValue,mainChange,auditEntity&#x27;,
-          &#x27;i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type&#x27;:
-            &#x27;id,name&#x27;,
-          &#x27;i-c-s-soft-s-t-o-r-m-n-e-t-security-agent&#x27;:
-            &#x27;id,name,login,pwd,isUser,isGroup,isRole,connString,enabled,email,full,read,insert,update,&#x27; +
-            &#x27;delete,execute,createTime,creator,editTime,editor&#x27;,
-          &#x27;i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group&#x27;:
-            &#x27;id,createTime,creator,editTime,editor,group,user&#x27;,
-          &#x27;i-c-s-soft-s-t-o-r-m-n-e-t-security-session&#x27;:
-            &#x27;id,userKey,startedAt,lastAccess,closed&#x27;,
-        },
-      },
+        1: this.get(&#x27;offlineGlobals&#x27;).getOfflineSchema(),
+      }
     };
   }),
 
