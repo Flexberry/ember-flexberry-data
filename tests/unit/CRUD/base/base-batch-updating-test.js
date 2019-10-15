@@ -14,6 +14,7 @@ export default function batchUpdating(store, assert) {
         const user2Id = records.people[1];
         const user3Id = records.people[2];
         const suggTypeId = records.suggestionTypes[0];
+        const sugId = records.sug;
         return Ember.RSVP.Promise.all([
           store.findRecord('ember-flexberry-dummy-application-user', user1Id)
             .then((returned1Record) => {
@@ -41,10 +42,16 @@ export default function batchUpdating(store, assert) {
             name: 'Sample for create'
           }),
           store.findRecord('ember-flexberry-dummy-suggestion-type', suggTypeId)
-            .then((returnedRecord) => {
-              returnedRecord.set('parent', null);
-              return returnedRecord;
-            })
+            .then((returned4Record) => {
+              returned4Record.set('parent', null);
+              return returned4Record;
+            }),
+          store.findRecord('ember-flexberry-dummy-suggestion', sugId)
+          .then((returned5Record) => {
+            returned5Record.set('text', 'New text');
+            returned5Record.set('author', records.newAuthor);
+            return returned5Record;
+          })
         ])
           .then((recordsForBatch) => {
             const record1 = recordsForBatch[0];
@@ -53,8 +60,9 @@ export default function batchUpdating(store, assert) {
             const record4 = recordsForBatch[3];
             const record5 = recordsForBatch[4];
             const record6 = recordsForBatch[5];
-            return store.adapterFor('application').batchUpdate(store, Ember.A([record4, record2, record3, record1, record5, record6])).then((result) => {
-              assert.equal(result.length, 6);
+            const record7 = recordsForBatch[6];
+            return store.adapterFor('application').batchUpdate(store, Ember.A([record4, record2, record3, record1, record5, record6, record7])).then((result) => {
+              assert.equal(result.length, 7);
 
               assert.notOk(result[0].get('hasDirtyAttributes'));
 
@@ -133,12 +141,24 @@ function initTestData(store) {
           parent: parentType
         }).save()
       ])
-    ).then((createdRecords) =>
+    )
+
+    // Сreating suggestion.
+    .then((sugAttrs) =>
+    store.createRecord('ember-flexberry-dummy-suggestion', {
+      type: sugAttrs[3],
+      author: sugAttrs[2],
+      editor1: sugAttrs[1]
+    }).save()
+
+    .then((createdRecords) =>
       new Ember.RSVP.Promise((resolve) =>
         resolve({
-          people: createdRecords.slice(0, 3).map(item => item.get('id')),
-          suggestionTypes: createdRecords.slice(3, 4).map(item => item.get('id'))
+          people: sugAttrs.slice(0, 3).map(item => item.get('id')),
+          suggestionTypes: sugAttrs.slice(3, 4).map(item => item.get('id')),
+          sug: createdRecords.get('id'),
+          newAuthor: sugAttrs[0]
         })
       )
-    );
+    ));
 }
