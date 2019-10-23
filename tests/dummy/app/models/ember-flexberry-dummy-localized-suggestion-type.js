@@ -1,5 +1,6 @@
 import DS from 'ember-data';
 import { Projection } from 'ember-flexberry-data';
+import Ember from 'ember';
 
 var Model = Projection.Model.extend({
   // Inversed relationship for ember-flexberry-dummy-suggestion-type.localizedTypes.
@@ -42,7 +43,6 @@ var Model = Projection.Model.extend({
   detailComputedFieldChanged: Ember.on('init', Ember.observer('name', function() {
       Ember.run.once(this, '_detailComputedFieldCompute');
   })),
-
 
   // This property is for flexberry-lookup component. No inverse relationship here.
   localization: DS.belongsTo('ember-flexberry-dummy-localization', {

@@ -6,7 +6,7 @@ export default function batchUpdatingWithCompDetailMasterTest(store, assert) {
   let done = assert.async();
 
   Ember.run(() => {
-    let records = initTestData(store)
+    let records = initTestData(store);
     store.adapterFor('application').batchUpdate(store, Ember.A(records)).then((result) => {
       assert.equal(result.length, 3);
       assert.ok(result[0] === records[0]);
@@ -25,17 +25,17 @@ function initTestData(store) {
   // Parent type
   let result = [];
 
-  createdSuggestionType = store.createRecord('ember-flexberry-dummy-suggestion-type', {
+  let createdSuggestionType = store.createRecord('ember-flexberry-dummy-suggestion-type', {
     id: generateUniqueId(),
     name: 'Parent type',
   });
 
-  createdLocalization = store.createRecord('ember-flexberry-dummy-localization', {
+  let createdLocalization = store.createRecord('ember-flexberry-dummy-localization', {
     id: generateUniqueId(),
     name: 'en',
   });
 
-  createdLocalizationSuggestionType = store.createRecord('ember-flexberry-dummy-localized-suggestion-type', {
+  let createdLocalizationSuggestionType = store.createRecord('ember-flexberry-dummy-localized-suggestion-type', {
     id: generateUniqueId(),
     name: 'LocName',
     localization: createdLocalization,
