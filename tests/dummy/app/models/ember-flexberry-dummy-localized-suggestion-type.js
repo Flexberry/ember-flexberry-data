@@ -19,7 +19,7 @@ var Model = Projection.Model.extend({
   detailComputedField: DS.attr('string'),
 
   /**
-     Method to set non-stored property.
+    Method to set non-stored property.
     Please, use code below in model class (outside of this mixin) otherwise it will be replaced during regeneration of models.
     Please, implement 'detailComputedFieldCompute' method in model class (outside of this mixin) if you want to compute value of 'detailComputedField' property.
 
@@ -41,7 +41,7 @@ var Model = Projection.Model.extend({
   },
 
   detailComputedFieldChanged: Ember.on('init', Ember.observer('name', function() {
-      Ember.run.once(this, '_detailComputedFieldCompute');
+    Ember.run.once(this, '_detailComputedFieldCompute');
   })),
 
   // This property is for flexberry-lookup component. No inverse relationship here.
@@ -71,7 +71,6 @@ Model.defineProjection('LocalizedSuggestionTypeE', 'ember-flexberry-dummy-locali
     displayMemberPath: 'name'
   })
 });
-
 
 Model.defineProjection('LocalizedSuggestionTypeEWithComputedField', 'ember-flexberry-dummy-localized-suggestion-type', {
   name: Projection.attr('Name'),
