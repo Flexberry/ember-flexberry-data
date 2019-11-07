@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.2.0-beta.10] - 2019-11-07]
+### Fixed
+- Fix `batchUpdate` to prevent binded models becoming unavailable after pushPayload().
+
 ## [2.2.0-beta.9] - 2019-09-02]
 ### Added
 - `offline-globals`:
