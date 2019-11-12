@@ -657,8 +657,10 @@ export default DS.RESTAdapter.extend({
           if (this.isSuccess(response.meta.status)) {
             const modelName = model.constructor.modelName;
             const payload = { [modelName]: response.body };
-            Ember.run(store, store.unloadRecord, model);
-            Ember.run(store, store.pushPayload, modelName, payload);
+            Ember.run(() =&gt; {
+              store.pushPayload(modelName, payload);
+              model.rollbackAttributes(); // forced adjustment of model state
+            });
           } else {
             errors.push(new Error(response.body));
           }
