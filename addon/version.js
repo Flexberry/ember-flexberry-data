@@ -1,2 +1,2 @@
-let version = '3.2.0-beta.5';
+let version = '3.2.0-beta.6';
 export default version;
