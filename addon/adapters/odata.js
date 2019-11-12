@@ -525,8 +525,10 @@ export default DS.RESTAdapter.extend({
           if (this.isSuccess(response.meta.status)) {
             const modelName = model.constructor.modelName;
             const payload = { [modelName]: response.body };
-            run(store, store.unloadRecord, model);
-            run(store, store.pushPayload, modelName, payload);
+            run(() => {
+              store.pushPayload(modelName, payload);
+              model.rollbackAttributes(); // forced adjustment of model state
+            });
           } else {
             errors.push(new Error(response.body));
           }

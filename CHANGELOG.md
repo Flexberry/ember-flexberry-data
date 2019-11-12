@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.2.0-beta.6] - 2019-11-12
+### Added
+- Add changes from 2.2.0-beta.10.
+
 ## [3.2.0-beta.5] - 2019-09-10
 ### Added
 - Add changes from 2.2.0-beta.9.
@@ -33,6 +37,10 @@
 ## [3.0.0] - 2018-12-13
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
+
+## [2.2.0-beta.10] - 2019-11-07]
+### Fixed
+- Fix `batchUpdate` to prevent binded models becoming unavailable after pushPayload().
 
 ## [2.2.0-beta.9] - 2019-09-02]
 ### Added
