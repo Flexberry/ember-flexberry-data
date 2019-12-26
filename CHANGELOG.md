@@ -2,33 +2,9 @@
 
 ## [Unreleased]
 
-## [3.2.0-beta.6] - 2019-11-12
+## [3.2.0] - 2019-12-26
 ### Added
-- Add changes from 2.2.0-beta.10.
-
-## [3.2.0-beta.5] - 2019-09-10
-### Added
-- Add changes from 2.2.0-beta.9.
-
-## [3.2.0-beta.4] - 2019-08-23
-### Added
-- Add changes from 2.2.0-beta.8.
-
-## [3.2.0-beta.3] - 2019-08-21
-### Added
-- Add changes from 2.2.0-beta.7.
-
-## [3.2.0-beta.2] - 2019-08-08
-### Added
-- Add changes from 2.2.0-beta.6.
-
-## [3.2.0-beta.1] - 2019-07-19
-### Added
-- Add changes from 2.2.0-beta.4 to 2.2.0-beta.5.
-
-## [3.2.0-beta.0] - 2019-07-18
-### Added
-- Add changes from 2.2.0-beta.0 to 2.2.0-beta.3.
+- Add changes from 2.2.0.
 
 ## [3.1.0] - 2018-04-30
 ### Added
@@ -38,53 +14,23 @@
 ### Breaking changes
 - From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
 
-## [2.2.0-beta.10] - 2019-11-07]
-### Fixed
-- Fix `batchUpdate` to prevent binded models becoming unavailable after pushPayload().
-
-## [2.2.0-beta.9] - 2019-09-02]
-### Added
-- `offline-globals`:
-    - Add `getOfflineSchema` method for get offline schema.
-
-## [2.2.0-beta.8] - 2019-08-23]
-### Fixed
-- Fix `batchUpdate` when only `belongsTo` relationship was changed.
-
-## [2.2.0-beta.7] - 2019-08-21]
-### Fixed
-- Fix `batchUpdate` for models with relationships.
-
-## [2.2.0-beta.6] - 2019-08-08]
-### Added
-- `Utils`:
-    - Add `isUUID` function in utils for check attribute.
-
-## [2.2.0-beta.5] - 2019-07-19
-### Fixed
-- Fix `batchUpdate` when empty array passed.
-
-## [2.2.0-beta.4] - 2019-07-18
-### Added
-- Query language:
-    - Add `stringToPredicate` method for converting strings to predicates.
-
-## [2.2.0-beta.3] - 2019-07-12
-### Added
--  Add id generation for new records in copyable mixin.
-
-## [2.2.0-beta.2] - 2019-07-10
-### Added
-- Add copyable mixin for models.
-
-## [2.2.0-beta.1] - 2019-07-05
-### Fixed
-- The `batchUpdate` method in the `Adapter.Odata` class built invalid URL to create objects and mutated `headers` property.
-
-## [2.2.0-beta.0] - 2019-06-28
+## [2.2.0] - 2019-12-26
 ### Added
 - `Adapter.Odata`:
     - The `batchUpdate` method to send batch update, create or delete models in single transaction, also it's proxy in `Offline.Store`, `OData.OnlineStore` and `Offline.LocalStore`.
+- `offline-globals`:
+    - Add `getOfflineSchema` method for get offline schema.
+- `Utils`:
+    - Add `isUUID` function in utils for check attribute.
+- Query language:
+    - Add `stringToPredicate` method for converting strings to predicates.
+- Add copyable mixin for models.
+
+### Fixed
+- Fix `batchUpdate` to prevent binded models becoming unavailable after pushPayload().
+- Fix `batchUpdate` for models with relationships.
+- Fix `batchUpdate` when empty array passed.
+- The `batchUpdate` method in the `Adapter.Odata` class built invalid URL to create objects and mutated `headers` property.
 
 ## [2.1.0] - 2019-04-30
 ### Added
