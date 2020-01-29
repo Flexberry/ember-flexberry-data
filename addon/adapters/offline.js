@@ -437,58 +437,90 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   batchUpdate(store, models) {
+    if (Ember.isEmpty(models)) {
+      return Ember.RSVP.resolve(models);
+    }
+
+    models = Ember.isArray(models) ? models : Ember.A([models]);
+
     const dexieService = this.get('dexieService');
     const db = dexieService.dexie(this.get('dbName'), store);
 
-    const batchUpdateOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
-      const promises = Ember.A();
-      const allModelsHash = Ember.Map.create();
+    const modelsMap = {};
 
-      models.forEach(model => {
-        const snapshot = model._createSnapshot();
-        let modelHash = Ember.Map.create();
+    models.forEach((model) => {
+      const snapshot = model._createSnapshot();
+      const modelName = snapshot.modelName;
+      const serializer = store.serializerFor(modelName);
 
-        const hashOperation = (db) => new Ember.RSVP.Promise((resolve, reject) => {
-          modelHash = store.serializerFor(snapshot.modelName).serialize(snapshot, { includeId: true });
-          resolve(snapshot.modelName);
-        });
+      modelsMap[modelName] = modelsMap[modelName] || { add: [], update: [], delete: [] };
 
-        const dexiePushPromise = dexieService.performOperation(db, hashOperation).then((modelName) => {
-          const arrayOfHashes = this._calculateArrayOfHash(modelName, modelHash, allModelsHash);
-          allModelsHash.set(modelName, arrayOfHashes);
-        });
+      const dirtyType = model.get('dirtyType') || model.hasChangedBelongsTo() ? 'updated' : undefined;
 
-        promises.push(dexiePushPromise);
-      });
+      switch (dirtyType) {
+        case 'created':
+          modelsMap[modelName].add.push(serializer.serialize(snapshot, { includeId: true }));
+          break;
 
-      Ember.RSVP.all(promises).then(() => {
-        let numberOfRecordsToStore = 0;
-        if (allModelsHash.size === 0) {
-          resolve();
-        } else {
-          const tableNames = allModelsHash._keys.toArray();
-          db.transaction('rw', tableNames, () => {
-            for (let i = 0; i < tableNames.length; i++) {
-              const tableName = tableNames[i];
-              const arrayOfHashes = allModelsHash.get(tableName);
-              numberOfRecordsToStore += arrayOfHashes ? arrayOfHashes.length : 0;
-              db.table(tableName).bulkPut(arrayOfHashes ? arrayOfHashes : {});
-            }
-          }).then(() => {
-            dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
-            resolve();
-          }).catch((err) => {
-            Ember.warn('Some data loss while performing sync down records!',
-            false,
-            { id: 'ember-flexberry-data-debug.offline.sync-down-data-loss' });
-            dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
-            reject(err);
-          });
-        }
-      }, reject);
+        case 'updated':
+          modelsMap[modelName].update.push(serializer.serialize(snapshot, { includeId: true }));
+          break;
+
+        case 'deleted':
+          modelsMap[modelName].delete.push(model.get('id'));
+          break;
+      }
     });
 
-    return dexieService.performQueueOperation(db, batchUpdateOperation);
+    const tableNames = Object.keys(modelsMap);
+    const batchUpdateOperation = (db) => db.transaction('rw', tableNames, () => new Dexie.Promise((resolve, reject) => {
+      const promises = [];
+      tableNames.forEach((tableName) => {
+        const table = db.table(tableName);
+        const mapItem = modelsMap[tableName];
+
+        if (mapItem.add.length) {
+          promises.push(table.bulkAdd(mapItem.add));
+        }
+
+        if (mapItem.update.length) {
+          promises.push(table.bulkPut(mapItem.update));
+        }
+
+        if (mapItem.delete.length) {
+          promises.push(table.bulkDelete(mapItem.delete));
+        }
+      });
+
+      Dexie.Promise.all(promises).then(() => {
+        Dexie.Promise.all(models.map((model) => {
+          const modelName = model.constructor.modelName;
+          const { id, dirtyType } = model.getProperties('id', 'dirtyType');
+
+          return dirtyType === 'deleted' ? Dexie.Promise.resolve(null) : db.table(modelName).get(id);
+        })).then((rawModels) => {
+          resolve(models.map((model, index) => {
+            Ember.run(store, store.unloadRecord, model);
+
+            const rawModel = rawModels[index];
+            if (rawModel) {
+              const modelName = model.constructor.modelName;
+              const modelClass = store.modelFor(modelName);
+              const serializer = store.serializerFor(modelName);
+
+              Ember.run(store, store.push, serializer.normalize(modelClass, rawModel));
+              Ember.run(model, model.rollbackAttributes);
+
+              return model;
+            }
+
+            return null;
+          }));
+        }).catch(reject);
+      }).catch(reject);
+    }));
+
+    return dexieService.performOperation(db, batchUpdateOperation);
   },
 
   /**
@@ -500,30 +532,13 @@ export default DS.Adapter.extend({
     @private
   */
   _storeHashForBulkOperation(modelName, hash) {
-    let hashes = this._hashesToStore;
-    let arrayOfHashes = this._calculateArrayOfHash(modelName, hash, hashes);
-    this._hashesToStore.set(modelName, arrayOfHashes);
-  },
-
-  /**
-    Calculate array of hashes from map.
-
-    @method _calculateArrayOfHash
-    @param {String} modelName
-    @param {Object} hash
-    @param {Ember.Map} hashes
-    @return {Array}
-    @private
-  */
-  _calculateArrayOfHash(modelName, hash, hashes) {
-    let arrayOfHashes = hashes.get(modelName);
+    let arrayOfHashes = this._hashesToStore.get(modelName);
     if (!arrayOfHashes) {
       arrayOfHashes = [];
     }
 
     arrayOfHashes.push(hash);
-
-    return arrayOfHashes;
+    this._hashesToStore.set(modelName, arrayOfHashes);
   },
 
   /**
