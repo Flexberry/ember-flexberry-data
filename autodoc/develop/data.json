@@ -2774,6 +2774,32 @@
         {
             "file": "addon/adapters/offline.js",
             "line": 431,
+            "description": "Performing batch update operaion.",
+            "itemtype": "method",
+            "name": "batchUpdate",
+            "params": [
+                {
+                    "name": "store",
+                    "description": "",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "models",
+                    "description": "Is array of models or single model for batch update.",
+                    "type": "DS.Model[]|DS.Model"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "Adapter.Offline",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/offline.js",
+            "line": 526,
             "description": "Stores hash for performing bulk operaion into map.",
             "itemtype": "method",
             "name": "_storeHashForBulkOperation",
@@ -2797,7 +2823,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 449,
+            "line": 544,
             "description": "Makes {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} out of queries that look like this:\n {\n   <property to query>: <value to match>,\n   ...\n }.",
             "itemtype": "method",
             "name": "_makeQueryObject",
@@ -2835,7 +2861,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 500,
+            "line": 595,
             "description": "Retrieves projection from query and returns it.\nRetrieved projection removes from the query.",
             "itemtype": "method",
             "name": "_extractProjectionFromQuery",
