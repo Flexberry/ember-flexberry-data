@@ -5,6 +5,9 @@
 - `Adapter.Offline`:
     - Add `batchUpdate` method for store data in offline database.
 
+### Fixed
+- Building `OData` queries when using quotes (') in the `SimplePredicate` and `StringPredicate` predicates.
+
 ## [2.2.0] - 2019-12-26
 ### Added
 - `Adapter.Odata`:
