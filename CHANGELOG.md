@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+
+## [2.3.0-beta.0] - 2020-02-12
 ### Added
 - `Adapter.Offline`:
     - Add `batchUpdate` method for store data in offline database.
