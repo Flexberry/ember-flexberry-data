@@ -28,7 +28,7 @@ export default function associationBatchUpdating(store, assert) {
               return returned2Record;
             }),
 
-          store.findRecord('ember-flexberry-dummy-suggestion-type',suggTypeParentId)
+          store.findRecord('ember-flexberry-dummy-suggestion-type', suggTypeParentId)
             .then((returnedParentRecord) => {
               returnedParentRecord.set('name', 'Updated name for Parent');
               return returnedParentRecord;
@@ -38,9 +38,8 @@ export default function associationBatchUpdating(store, assert) {
             const record1 = recordsForBatch[0];
             const record2 = recordsForBatch[1];
             const record3 = recordsForBatch[2];
-            
-            
-            return store.adapterFor('application').batchUpdate( store, Ember.A([record1, record2, record3])).then((result) => {
+
+            return store.adapterFor('application').batchUpdate(store, Ember.A([record1, record2, record3])).then((result) => {
               assert.equal(result.length, 3);
 
               assert.ok(result[0] === record1);
@@ -76,7 +75,6 @@ function initTestData(store) {
           parent: null
         }).save(),
 
-
         store.createRecord('ember-flexberry-dummy-suggestion-type', {
           name: 'Type 2',
           parent: parentType
@@ -85,7 +83,7 @@ function initTestData(store) {
     ).then((createdRecords) =>
       new Ember.RSVP.Promise((resolve) =>
         resolve({
-          suggestionTypes: createdRecords.slice(0, 3).map(item => item.get('id')) 
+          suggestionTypes: createdRecords.slice(0, 3).map(item => item.get('id'))
         })
       )
     );
