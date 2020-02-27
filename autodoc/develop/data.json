@@ -2799,7 +2799,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 526,
+            "line": 524,
             "description": "Stores hash for performing bulk operaion into map.",
             "itemtype": "method",
             "name": "_storeHashForBulkOperation",
@@ -2823,7 +2823,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 544,
+            "line": 542,
             "description": "Makes {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} out of queries that look like this:\n {\n   <property to query>: <value to match>,\n   ...\n }.",
             "itemtype": "method",
             "name": "_makeQueryObject",
@@ -2861,7 +2861,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 595,
+            "line": 593,
             "description": "Retrieves projection from query and returns it.\nRetrieved projection removes from the query.",
             "itemtype": "method",
             "name": "_extractProjectionFromQuery",
