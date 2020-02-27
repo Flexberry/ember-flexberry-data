@@ -39,7 +39,7 @@ export default function associationBatchUpdating(store, assert) {
             const record2 = recordsForBatch[1];
             const record3 = recordsForBatch[2];
 
-            return store.adapterFor('application').batchUpdate(store, Ember.A([record1, record2, record3])).then((result) => {
+            return store.batchUpdate(Ember.A([record1, record2, record3])).then((result) => {
               assert.equal(result.length, 3);
 
               assert.ok(result[0] === record1);
