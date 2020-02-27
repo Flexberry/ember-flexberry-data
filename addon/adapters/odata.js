@@ -386,7 +386,7 @@ export default DS.RESTAdapter.extend({
     const getQueries = [];
     models.forEach((model) => {
       if (!model.get('id')) {
-        throw new DS.AdapterError(`Models saved using the 'batchUpdate' method must be created with identifiers.`);
+        throw new Error(`Models saved using the 'batchUpdate' method must be created with identifiers.`);
       }
 
       let modelDirtyType = model.get('dirtyType');
@@ -425,7 +425,7 @@ export default DS.RESTAdapter.extend({
           break;
 
         default:
-          throw new DS.AdapterError(`Unknown requestType: ${modelDirtyType}`);
+          throw new Error(`Unknown requestType: ${modelDirtyType}`);
       }
 
       if (!this.store) {
@@ -685,7 +685,7 @@ export default DS.RESTAdapter.extend({
     let encId = encodeURIComponent(id);
 
     if (!this.store) {
-      throw new DS.AdapterError('No store.');
+      throw new Error('No store.');
     }
 
     let model = this.store.modelFor(modelName);
@@ -753,7 +753,7 @@ export default DS.RESTAdapter.extend({
         break;
 
       default:
-        throw new DS.AdapterError(`Unknown requestType: ${requestType}`);
+        throw new Error(`Unknown requestType: ${requestType}`);
     }
 
     let data;
