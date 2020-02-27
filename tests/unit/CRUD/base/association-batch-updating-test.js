@@ -49,7 +49,7 @@ export default function associationBatchUpdating(store, assert) {
               assert.ok(result[0].get('parent') === record3);
               assert.ok(result[1].get('parent') === record3);
             });
-          }).then(() => records);
+          });
       })
       .catch((e) => {
         console.log(e, e.message);
