@@ -452,7 +452,9 @@ export default DS.RESTAdapter.extend({
 
         const relationships = [];
         model.eachRelationship((name) => {
-          relationships.push(`${name}.id`);
+          if (serializer && serializer.attrs && serializer.attrs[name] && serializer.attrs[name].serializable !== false) {
+            relationships.push(`${name}.id`);
+          }
         });
 
         const getUrl = this._buildURL(snapshot.type.modelName, model.get('id'));
