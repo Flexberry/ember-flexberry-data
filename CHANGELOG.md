@@ -2,18 +2,14 @@
 
 ## [Unreleased]
 
-## [2.3.0-beta.1] - 2020-02-27
-### Fixed
-- Now the `DS.AdapterError` class is used for errors in the `batchUpdate` method of the `OData` adapter.
-- Saving changes to models using the `batchUpdate` method of `Offline` adapter caused the model to lose its relationships.
-
-## [2.3.0-beta.0] - 2020-02-12
+## [2.3.0] - 2020-03-10
 ### Added
 - `Adapter.Offline`:
     - Add `batchUpdate` method for store data in offline database.
 
 ### Fixed
 - Building `OData` queries when using quotes (') in the `SimplePredicate` and `StringPredicate` predicates.
+- Now the `DS.AdapterError` class is used for errors in the `batchUpdate` method of the `OData` adapter.
 
 ## [2.2.0] - 2019-12-26
 ### Added
