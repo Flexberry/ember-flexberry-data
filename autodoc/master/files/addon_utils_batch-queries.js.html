@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>addon/utils/batch-queries.js - Flexberry Documentation</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+	    <img alt="Flexberry Documentation" src="../assets/css/logo.png" style="max-height: 65%;" title="Flexberry Documentation">
+            Flexberry Documentation
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>master</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <h3>APIs</h3>
+	        <div id="sidebar">
+	            <ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">
+	                <li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>
+	                <li><a href="#modules" data-toggle="tab">Modules</a></li>
+	            </ul>
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/Adapter.html">Adapter</a></li>
+	                            <li><a href="../classes/Adapter.OData.html">Adapter.OData</a></li>
+	                            <li><a href="../classes/Adapter.Offline.html">Adapter.Offline</a></li>
+	                            <li><a href="../classes/ApplicationInitializer.html">ApplicationInitializer</a></li>
+	                            <li><a href="../classes/Audit.html">Audit</a></li>
+	                            <li><a href="../classes/CopyableMixin.html">CopyableMixin</a></li>
+	                            <li><a href="../classes/DecimalTransform.html">DecimalTransform</a></li>
+	                            <li><a href="../classes/FileTransform.html">FileTransform</a></li>
+	                            <li><a href="../classes/FlexberryEnumTransform.html">FlexberryEnumTransform</a></li>
+	                            <li><a href="../classes/GuidTransform.html">GuidTransform</a></li>
+	                            <li><a href="../classes/Offline.html">Offline</a></li>
+	                            <li><a href="../classes/Offline.DexieService.html">Offline.DexieService</a></li>
+	                            <li><a href="../classes/Offline.GlobalsService.html">Offline.GlobalsService</a></li>
+	                            <li><a href="../classes/Offline.Model.html">Offline.Model</a></li>
+	                            <li><a href="../classes/Offline.ModelMixin.html">Offline.ModelMixin</a></li>
+	                            <li><a href="../classes/Offline.Store.html">Offline.Store</a></li>
+	                            <li><a href="../classes/Offline.Syncer.html">Offline.Syncer</a></li>
+	                            <li><a href="../classes/Projection.html">Projection</a></li>
+	                            <li><a href="../classes/Projection.AdapterMixin.html">Projection.AdapterMixin</a></li>
+	                            <li><a href="../classes/Projection.Model.html">Projection.Model</a></li>
+	                            <li><a href="../classes/Projection.StoreMixin.html">Projection.StoreMixin</a></li>
+	                            <li><a href="../classes/Query.html">Query</a></li>
+	                            <li><a href="../classes/Query.BaseAdapter.html">Query.BaseAdapter</a></li>
+	                            <li><a href="../classes/Query.BaseBuilder.html">Query.BaseBuilder</a></li>
+	                            <li><a href="../classes/Query.BasePredicate.html">Query.BasePredicate</a></li>
+	                            <li><a href="../classes/Query.Builder.html">Query.Builder</a></li>
+	                            <li><a href="../classes/Query.ComplexPredicate.html">Query.ComplexPredicate</a></li>
+	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.DatePredicate.html">Query.DatePredicate</a></li>
+	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
+	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
+	                            <li><a href="../classes/Query.GeographyPredicate.html">Query.GeographyPredicate</a></li>
+	                            <li><a href="../classes/Query.GeometryPredicate.html">Query.GeometryPredicate</a></li>
+	                            <li><a href="../classes/Query.IndexedDBAdapter.html">Query.IndexedDBAdapter</a></li>
+	                            <li><a href="../classes/Query.IsOfPredicate.html">Query.IsOfPredicate</a></li>
+	                            <li><a href="../classes/Query.JsAdapter.html">Query.JsAdapter</a></li>
+	                            <li><a href="../classes/Query.NotPredicate.html">Query.NotPredicate</a></li>
+	                            <li><a href="../classes/Query.ODataAdapter.html">Query.ODataAdapter</a></li>
+	                            <li><a href="../classes/Query.OrderByClause.html">Query.OrderByClause</a></li>
+	                            <li><a href="../classes/Query.QueryObject.html">Query.QueryObject</a></li>
+	                            <li><a href="../classes/Query.SimplePredicate.html">Query.SimplePredicate</a></li>
+	                            <li><a href="../classes/Query.StringPredicate.html">Query.StringPredicate</a></li>
+	                            <li><a href="../classes/Security.html">Security</a></li>
+	                            <li><a href="../classes/Serializer.html">Serializer</a></li>
+	                            <li><a href="../classes/Serializer.Base.html">Serializer.Base</a></li>
+	                            <li><a href="../classes/Serializer.OData.html">Serializer.OData</a></li>
+	                            <li><a href="../classes/Serializer.Offline.html">Serializer.Offline</a></li>
+	                            <li><a href="../classes/Utils.html">Utils</a></li>
+	                            <li><a href="../classes/Utils.Information.html">Utils.Information</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <div class="tab-pane" id="modules">
+	                    <ul id="api-modules" class="nav nav-list">
+	                            <li><a href="../modules/ember-flexberry.html">ember-flexberry</a></li>
+	                            <li><a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a></li>
+	                    </ul>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>addon/utils/batch-queries.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+/**
+  @module ember-flexberry-data
+*/
+
+/**
+  Returns the type and boundary from the &#x60;Content-Type&#x60; header.
+
+  @method getResponseMeta
+  @param {String} contentTypeHeader The content of &#x60;Content-Type&#x60; header.
+  @return {Object} Object with &#x60;contentType&#x60; and &#x60;boundary&#x60; properties.
+*/
+export function getResponseMeta(contentTypeHeader) {
+  const [contentType, boundary] = contentTypeHeader.split(&#x27;;&#x27;);
+  return { contentType, boundary: boundary ? boundary.split(&#x27;=&#x27;)[1] : null };
+}
+
+/**
+  Returns an array of batch responses from the body of the HTTP response.
+
+  @method getBatchResponses
+  @param {String} response The body of the HTTP response.
+  @param {String} boundary The boundary.
+  @return {String[]} An array of batch responses.
+*/
+export function getBatchResponses(response, boundary) {
+  const startBoundary = &#x60;--${boundary}&#x60;;
+  const endBoundary = &#x60;--${boundary}--&#x60;;
+  const responses = [];
+
+  let lastResponse;
+  response.split(&#x27;\n&#x27;).map(l =&gt; l.trim()).forEach((line) =&gt; {
+    if (line === startBoundary || line === endBoundary) {
+      if (lastResponse) {
+        responses.push(lastResponse.join(&#x27;\n&#x27;));
+      }
+
+      lastResponse = [];
+    } else {
+      lastResponse.push(line);
+    }
+  });
+
+  return responses;
+}
+
+/**
+  Parses a batch response depending on its type.
+
+  The returned object always contains the &#x60;contentType&#x60; property.
+  Depending on the type of response it may contain the following additional properties:
+  - &#x60;response&#x60; - for responses with &#x60;application/http&#x60; content type.
+  - &#x60;changesets&#x60; - for responses with &#x60;multipart/mixed&#x60; content type.
+
+  @method parseBatchResponse
+  @param {String} response The batch response.
+  @return {Object} The object with the response description.
+*/
+export function parseBatchResponse(response) {
+  const contentTypeHeader = getResponseHeader(&#x27;Content-Type&#x27;, response);
+  const { contentType, boundary } = getResponseMeta(contentTypeHeader);
+  switch (contentType) {
+    case &#x27;multipart/mixed&#x27;:
+      const bodyStart = response.indexOf(&#x60;--${boundary}&#x60;);
+      const changesets = getBatchResponses(response.substring(bodyStart), boundary).map(parseСhangeset);
+
+      return { contentType, changesets };
+
+    case &#x27;application/http&#x27;:
+      return { contentType, response: parseResponse(response) };
+
+    default:
+      throw new Error(&#x60;Unsupported type of response: ${contentType}.&#x60;);
+  }
+}
+
+/**
+  @private
+  @method parseСhangeset
+  @param {String} changeset The string with the changeset content.
+  @return {Object} Object with &#x60;contentID&#x60;, &#x60;meta&#x60; and &#x60;body&#x60; properties.
+*/
+function parseСhangeset(changeset) {
+  const contentID = getResponseHeader(&#x27;Content-ID&#x27;, changeset);
+  const { meta, body } = parseResponse(changeset);
+
+  return { contentID, meta, body };
+}
+
+/**
+  @private
+  @method parseResponse
+  @param {String} response The string with the response content.
+  @return {Object} Object with &#x60;meta&#x60; and &#x60;body&#x60; properties.
+*/
+function parseResponse(response) {
+  const startMeta = response.indexOf(&#x27;\n\n&#x27;) + 1;
+  const startBody = response.indexOf(&#x27;\n\n&#x27;, startMeta) + 1;
+
+  const meta = parseResponseMeta(response.substring(startMeta, startBody));
+
+  let body;
+  switch (meta.contentType) {
+    case null:
+      body = null;
+      break;
+
+    case &#x27;application/json&#x27;:
+      body = JSON.parse(response.substring(startBody));
+      break;
+
+    default:
+      throw new Error(&#x60;Unsupported content type: ${meta.contentType}.&#x60;);
+  }
+
+  return { meta, body };
+}
+
+/**
+  @private
+  @method parseResponseMeta
+  @param {String} rawMeta The string with the response metadata.
+  @return {Object} Object with &#x60;status&#x60;, &#x60;statusText&#x60; and &#x60;contentType&#x60; properties.
+*/
+function parseResponseMeta(rawMeta) {
+  const statusStart = rawMeta.indexOf(&#x27; &#x27;) + 1;
+  const statusTextStart = rawMeta.indexOf(&#x27; &#x27;, statusStart) + 1;
+  const end = rawMeta.indexOf(&#x27;\n&#x27;, statusTextStart);
+
+  const status = parseInt(rawMeta.substring(statusStart, statusTextStart));
+  const statusText = rawMeta.substring(statusTextStart, end === -1 ? rawMeta.length : end);
+
+  const contentType = status !== 204 ? getResponseHeader(&#x27;Content-Type&#x27;, rawMeta).split(&#x27;;&#x27;)[0] : null;
+
+  return { status, statusText, contentType };
+}
+
+/**
+  @private
+  @method getResponseHeader
+  @param {String} header The header name.
+  @param {String} response The response from which will be extracted header.
+  @return {String} The content of the header.
+*/
+function getResponseHeader(header, response) {
+  const fullHeader = &#x60;${header}: &#x60;;
+  const start = response.indexOf(fullHeader) + fullHeader.length;
+  const end = response.indexOf(&#x27;\n&#x27;, start);
+
+  return response.substring(start, end === -1 ? response.length : end);
+}
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>

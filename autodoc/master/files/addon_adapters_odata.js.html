@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>addon/adapters/odata.js - Flexberry Documentation</title>
+    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="stylesheet" href="../assets/css/custom.css">
+    <link rel="stylesheet" href="../assets/vendor/bootstrap/css/bootstrap.css">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+</head>
+<body class="yui3-skin-sam">
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <h1 class="brand" style="padding: 10px 16px 10px; height: 20px; line-height: 20px; margin-left: 0;">
+	    <img alt="Flexberry Documentation" src="../assets/css/logo.png" style="max-height: 65%;" title="Flexberry Documentation">
+            Flexberry Documentation
+        </h1>
+	<div class="nav">
+            <li class="divider-vertical"></li>
+            <li>
+                <p class="navbar-text">
+                    API Docs for Version: <b>master</b>
+                </p>
+            </li>
+        </div>
+        <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="span3">
+	    <div>
+	        <h3>APIs</h3>
+	        <div id="sidebar">
+	            <ul id="main-nav" class="nav nav-tabs" style="margin-bottom:0;">
+	                <li class="active"><a href="#classes" data-toggle="tab">Classes</a></li>
+	                <li><a href="#modules" data-toggle="tab">Modules</a></li>
+	            </ul>
+	    
+	            <div id="api-tabview-filter">
+	                <input type="search" placeholder="Type to filter APIs">
+	            </div>
+	    
+	            <div class="tab-content" style="border: 1px solid #DDD; border-top:0;">
+	                <div class="tab-pane active" id="classes">
+	                    <ul id="api-classes" class="nav nav-list">
+	                            <li><a href="../classes/Adapter.html">Adapter</a></li>
+	                            <li><a href="../classes/Adapter.OData.html">Adapter.OData</a></li>
+	                            <li><a href="../classes/Adapter.Offline.html">Adapter.Offline</a></li>
+	                            <li><a href="../classes/ApplicationInitializer.html">ApplicationInitializer</a></li>
+	                            <li><a href="../classes/Audit.html">Audit</a></li>
+	                            <li><a href="../classes/CopyableMixin.html">CopyableMixin</a></li>
+	                            <li><a href="../classes/DecimalTransform.html">DecimalTransform</a></li>
+	                            <li><a href="../classes/FileTransform.html">FileTransform</a></li>
+	                            <li><a href="../classes/FlexberryEnumTransform.html">FlexberryEnumTransform</a></li>
+	                            <li><a href="../classes/GuidTransform.html">GuidTransform</a></li>
+	                            <li><a href="../classes/Offline.html">Offline</a></li>
+	                            <li><a href="../classes/Offline.DexieService.html">Offline.DexieService</a></li>
+	                            <li><a href="../classes/Offline.GlobalsService.html">Offline.GlobalsService</a></li>
+	                            <li><a href="../classes/Offline.Model.html">Offline.Model</a></li>
+	                            <li><a href="../classes/Offline.ModelMixin.html">Offline.ModelMixin</a></li>
+	                            <li><a href="../classes/Offline.Store.html">Offline.Store</a></li>
+	                            <li><a href="../classes/Offline.Syncer.html">Offline.Syncer</a></li>
+	                            <li><a href="../classes/Projection.html">Projection</a></li>
+	                            <li><a href="../classes/Projection.AdapterMixin.html">Projection.AdapterMixin</a></li>
+	                            <li><a href="../classes/Projection.Model.html">Projection.Model</a></li>
+	                            <li><a href="../classes/Projection.StoreMixin.html">Projection.StoreMixin</a></li>
+	                            <li><a href="../classes/Query.html">Query</a></li>
+	                            <li><a href="../classes/Query.BaseAdapter.html">Query.BaseAdapter</a></li>
+	                            <li><a href="../classes/Query.BaseBuilder.html">Query.BaseBuilder</a></li>
+	                            <li><a href="../classes/Query.BasePredicate.html">Query.BasePredicate</a></li>
+	                            <li><a href="../classes/Query.Builder.html">Query.Builder</a></li>
+	                            <li><a href="../classes/Query.ComplexPredicate.html">Query.ComplexPredicate</a></li>
+	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.DatePredicate.html">Query.DatePredicate</a></li>
+	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
+	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
+	                            <li><a href="../classes/Query.GeographyPredicate.html">Query.GeographyPredicate</a></li>
+	                            <li><a href="../classes/Query.GeometryPredicate.html">Query.GeometryPredicate</a></li>
+	                            <li><a href="../classes/Query.IndexedDBAdapter.html">Query.IndexedDBAdapter</a></li>
+	                            <li><a href="../classes/Query.IsOfPredicate.html">Query.IsOfPredicate</a></li>
+	                            <li><a href="../classes/Query.JsAdapter.html">Query.JsAdapter</a></li>
+	                            <li><a href="../classes/Query.NotPredicate.html">Query.NotPredicate</a></li>
+	                            <li><a href="../classes/Query.ODataAdapter.html">Query.ODataAdapter</a></li>
+	                            <li><a href="../classes/Query.OrderByClause.html">Query.OrderByClause</a></li>
+	                            <li><a href="../classes/Query.QueryObject.html">Query.QueryObject</a></li>
+	                            <li><a href="../classes/Query.SimplePredicate.html">Query.SimplePredicate</a></li>
+	                            <li><a href="../classes/Query.StringPredicate.html">Query.StringPredicate</a></li>
+	                            <li><a href="../classes/Security.html">Security</a></li>
+	                            <li><a href="../classes/Serializer.html">Serializer</a></li>
+	                            <li><a href="../classes/Serializer.Base.html">Serializer.Base</a></li>
+	                            <li><a href="../classes/Serializer.OData.html">Serializer.OData</a></li>
+	                            <li><a href="../classes/Serializer.Offline.html">Serializer.Offline</a></li>
+	                            <li><a href="../classes/Utils.html">Utils</a></li>
+	                            <li><a href="../classes/Utils.Information.html">Utils.Information</a></li>
+	                    </ul>
+	                </div>
+	    
+	                <div class="tab-pane" id="modules">
+	                    <ul id="api-modules" class="nav nav-list">
+	                            <li><a href="../modules/ember-flexberry.html">ember-flexberry</a></li>
+	                            <li><a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a></li>
+	                    </ul>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+        </div>
+        <div class="span9">
+                <form id="options-form" class="form-inline pull-right">
+                    Show:
+                    <label for="api-show-inherited" class="checkbox">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected" class="checkbox">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private" class="checkbox">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated" class="checkbox">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </form>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<div class="page-header">
+    <h1>addon/adapters/odata.js <small>File</small></h1>
+</div>
+
+<div class="file">
+    <pre class="prettyprint linenums">
+import Ember from &#x27;ember&#x27;;
+import DS from &#x27;ember-data&#x27;;
+
+import SnapshotTransform from &#x27;../utils/snapshot-transform&#x27;;
+import ODataQueryAdapter from &#x27;../query/odata-adapter&#x27;;
+import { capitalize, camelize } from &#x27;../utils/string-functions&#x27;;
+import isUUID from &#x27;../utils/is-uuid&#x27;;
+import generateUniqueId from &#x27;../utils/generate-unique-id&#x27;;
+import { getResponseMeta, getBatchResponses, parseBatchResponse } from &#x27;../utils/batch-queries&#x27;;
+import Builder from &#x27;../query/builder&#x27;;
+
+const { getOwner } = Ember;
+
+/**
+ * The OData adapter class.
+ * Uses Flexberry Query as a language for requesting server.
+ *
+ * @module ember-flexberry-data
+ * @namespace Adapter
+ * @class OData
+ * @extends DS.RESTAdapter
+ * @public
+ */
+export default DS.RESTAdapter.extend({
+  headers: {
+    &#x27;OData-Version&#x27;: &#x27;4.0&#x27;,
+    Prefer: &#x27;return=representation&#x27;
+  },
+
+  /**
+    Timeout for AJAX-requests.
+
+    @property timeout
+    @type Number
+    @default 0
+  */
+  timeout: 0,
+
+  /**
+    Overloaded method from &#x60;RESTAdapter&#x60; (Ember Data).
+    Called by the sore in order to fetch data from the server.
+
+    @method query
+    @param {DS.Store} store
+    @param {DS.Model} type
+    @param {Query} query Flexberry Query object.
+    @return {Promise}
+  */
+  query(store, type, query) {
+    if (!this.store) {
+      this.store = store;
+    }
+
+    let url = this._buildURL(query.modelName);
+    let builder = new ODataQueryAdapter(url, store);
+    let data = builder.getODataQuery(query);
+    let timeout = this.get(&#x27;timeout&#x27;);
+
+    if (this.sortQueryParams) {
+      data = this.sortQueryParams(data);
+    }
+
+    Ember.debug(&#x60;Flexberry ODataAdapter::query &#x27;${type}&#x27;&#x60;, data);
+
+    //f TODO: think about moving request execution into query adapter
+    return this.ajax(url, &#x27;GET&#x27;, { data: data, timeout: timeout, dataType: query.dataType || &#x27;json&#x27; });
+  },
+
+  /**
+    Overloaded method from &#x60;RESTAdapter&#x60; (Ember Data).
+    Customizes ajax options for the requests.
+
+    @method ajaxOptions
+    @param {String} url
+    @param {DS.Model} type
+    @param {Object} options
+    @return {Object}
+  */
+  ajaxOptions: function ajaxOptions(url, type, options) {
+    let dataType = options.dataType;
+    let hash = this._super(...arguments);
+    if (dataType === &#x27;blob&#x27;) {
+      hash.dataType = dataType;
+    }
+
+    return hash;
+  },
+
+  /**
+    Takes an ajax response, and returns the json payload or an error.
+
+    @method handleResponse
+    @param {Number} status
+    @param {Object} headers
+    @param {Object} payload
+  */
+  handleResponse(status, headers, payload) {
+    if (!this.isSuccess(status, headers, payload) &amp;&amp; typeof payload === &#x27;object&#x27; &amp;&amp; payload.error) {
+      return new DS.AdapterError(payload.error.details, payload.error.message);
+    }
+
+    return this._super(...arguments);
+  },
+
+  /**
+   * Overloaded method from &#x60;RESTAdapter&#x60; (Ember Data).
+   * Called by the sore in order to fetch single record from the server.
+   *
+   * @method queryRecord
+   * @param {DS.Store} store
+   * @param {DS.Model} type
+   * @param {Query} query
+   * @return {Promise} promise
+   */
+  /* jshint unused:vars */
+  queryRecord(store, type, query) {
+    Ember.debug(&#x60;Flexberry ODataAdapter::queryRecord &#x27;${type}&#x27;&#x60;, query);
+
+    // TODO: query support for direct calls
+    return this._super.apply(this, arguments);
+  },
+  /* jshint unused:true */
+
+  /**
+   * Overloaded method from &#x60;RESTAdapter&#x60; (Ember Data).
+   * Called by the sore in order to fetch single record by ID from the server.
+   *
+   * @method findRecord
+   * @param {DS.Store} store
+   * @param {DS.Model} type
+   * @param {String} id
+   * @param {DS.Snapshot} snapshot
+   * @return {Promise} promise
+  */
+  /* jshint unused:vars */
+  findRecord(store, type, id, snapshot) {
+    Ember.debug(&#x60;Flexberry ODataAdapter::findRecord &#x27;${type}(${id})&#x27;&#x60;);
+
+    // TODO: query support for direct calls
+    return this._super.apply(this, arguments);
+  },
+  /* jshint unused:true */
+
+  /**
+   * Overloaded method from &#x60;RESTAdapter&#x60; (Ember Data).
+   * Called by the sore in order to fetch all records from the server.
+   *
+   * @method findAll
+   * @param {DS.Store} store
+   * @param {DS.Model} type
+   * @param {String} sinceToken
+   * @param {DS.SnapshotRecordArray} snapshotRecordArray
+   * @return {Promise} promise
+   */
+  /* jshint unused:vars */
+  findAll(store, type, sinceToken, snapshotRecordArray) {
+    Ember.debug(&#x60;Flexberry ODataAdapter::findAll &#x27;${type}&#x27;&#x60;);
+
+    // TODO: query support for direct calls
+    return this._super.apply(this, arguments);
+  },
+  /* jshint unused:true */
+
+  /**
+   * Overloaded method from &#x60;build-url-mixin&#x60; (Ember Data), that determines the pathname for a given type.
+   * Additionally capitalizes the type name (requirement of Flexberry OData Server).
+   *
+   * @method pathForType
+   * @param {String} modelName
+   * @return {String} The path for a given type.
+   */
+  pathForType(modelName) {
+    var camelized = camelize(modelName);
+    var capitalized = capitalize(camelized);
+    return Ember.String.pluralize(capitalized);
+  },
+
+  /**
+   * A method to make ajax requests.
+   *
+   * @method makeRequest
+   * @param {Object} params
+   * @public
+   */
+  makeRequest(params) {
+    Ember.assert(&#x27;You should specify both method and url&#x27;, params.method || params.url);
+    return Ember.$.ajax(params);
+  },
+
+  /**
+   * A method to generate url for ajax request to odata function.
+   *
+   * @param {String} functionName
+   * @param {Object} params
+   * @param {String} url
+   * @return {String}
+   */
+  generateFunctionUrl(functionName, params, url) {
+    const config = getOwner(this)._lookupFactory(&#x27;config:environment&#x27;);
+    if (Ember.isNone(url)) {
+      url = &#x60;${config.APP.backendUrls.api}&#x60;;
+    }
+
+    let resultUrl = &#x60;${url}/${functionName}(&#x60;;
+    let counter = 0;
+    for (var key in params) {
+      counter++;
+    }
+
+    let resultParams = {};
+    if (!Ember.isNone(params)) {
+      resultParams = params;
+    }
+
+    let i = 0;
+    for (key in resultParams) {
+      //TODO: Check types and &#x27;&#x27;
+      if (typeof resultParams[key] === &#x27;number&#x27; || isUUID(resultParams[key])) {
+        resultUrl = resultUrl + &#x60;${key}=${resultParams[key]}&#x60;;
+      } else {
+        resultUrl = resultUrl + &#x60;${key}=&#x27;${resultParams[key]}&#x27;&#x60;;
+      }
+
+      i++;
+      if (i &lt; counter) {
+        resultUrl += &#x27;,&#x27;;
+      } else {
+        resultUrl += &#x27;)&#x27;;
+      }
+    }
+
+    if (resultUrl[resultUrl.length - 1] !== &#x27;)&#x27;) {
+      resultUrl += &#x27;)&#x27;;
+    }
+
+    return resultUrl;
+  },
+
+  /**
+   * A method to generate url for ajax request to odata action.
+   *
+   * @param {String} actionName
+   * @param {Oject} data
+   * @param {String} url
+   * @return {String}
+   */
+  generateActionUrl(actionName, data, url) {
+    const config = getOwner(this)._lookupFactory(&#x27;config:environment&#x27;);
+    if (Ember.isNone(url)) {
+      url = &#x60;${config.APP.backendUrls.api}&#x60;;
+    }
+
+    const resultUrl = &#x60;${url}/${actionName}&#x60;;
+
+    return resultUrl;
+  },
+
+  /**
+   * A method to call functions that returns model records using ajax requests.
+   *
+   * @param {String} functionName
+   * @param {Object} params
+   * @param {String} url
+   * @param {Object} fields
+   * @param {DS.Store} store
+   * @param {String} modelName
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
+   */
+  callEmberOdataFunction(functionName, params, url, fields, store, modelName, successCallback, failCallback, alwaysCallback) {
+    const resultUrl = this.generateFunctionUrl(functionName, params, url);
+    return this._callAjax(
+      { url: resultUrl, method: &#x27;GET&#x27;, xhrFields: Ember.isNone(fields) ? {} : fields },
+      store, modelName, successCallback, failCallback, alwaysCallback);
+  },
+
+  /**
+   * A method to call functions using ajax requests.
+   *
+   * @method callFunction
+   * @param {Object} functionName
+   * @param {Object} params
+   * @param {String} url
+   * @param {Object} fields
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
+   */
+  callFunction(functionName, params, url, fields, successCallback, failCallback, alwaysCallback) {
+    const resultUrl = this.generateFunctionUrl(functionName, params, url);
+    return this._callAjax(
+      { url: resultUrl, method: &#x27;GET&#x27;, xhrFields: Ember.isNone(fields) ? {} : fields },
+      null, null, successCallback, failCallback, alwaysCallback);
+
+  },
+
+  /**
+   * A method to call actions that returns model records using ajax requests.
+   *
+   * @param {String} actionName
+   * @param {Object} data
+   * @param {String} url
+   * @param {Object} fields
+   * @param {DS.Store} store
+   * @param {String} modelName
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
+   */
+  callEmberOdataAction(actionName, data, url, fields, store, modelName, successCallback, failCallback, alwaysCallback) {
+    const resultUrl = this.generateActionUrl(actionName, data, url);
+    return this._callAjax(
+      {
+        data: JSON.stringify(data),
+        url: resultUrl,
+        method: &#x27;POST&#x27;,
+        contentType: &#x27;application/json; charset=utf-8&#x27;,
+        dataType: &#x27;json&#x27;,
+        xhrFields: Ember.isNone(fields) ? {} : fields
+      }, store, modelName, successCallback, failCallback, alwaysCallback);
+  },
+
+  /**
+   * A method to call actions using ajax requests.
+   *
+   * @method callFunction
+   * @param {String} actionName
+   * @param {Object} data
+   * @param {String} url
+   * @param {Object} fields
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @public
+   */
+  callAction(actionName, data, url, fields, successCallback, failCallback, alwaysCallback) {
+    const resultUrl = this.generateActionUrl(actionName, data, url);
+    return this._callAjax(
+      {
+        data: JSON.stringify(data),
+        url: resultUrl,
+        method: &#x27;POST&#x27;,
+        contentType: &#x27;application/json; charset=utf-8&#x27;,
+        dataType: &#x27;json&#x27;,
+        xhrFields: Ember.isNone(fields) ? {} : fields
+      }, null, null, successCallback, failCallback, alwaysCallback);
+  },
+
+  /**
+    A method to send batch update, create or delete models in single transaction.
+
+    All models saving using this method must have identifiers.
+
+    The array which fulfilled the promise may contain the following values:
+    - &#x60;same model object&#x60; - for created, updated or unaltered records.
+    - &#x60;null&#x60; - for deleted records.
+
+    @method batchUpdate
+    @param {DS.Store} store The store.
+    @param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
+    @return {Promise} A promise that fulfilled with an array of models in the new state.
+  */
+  batchUpdate(store, models) {
+    if (Ember.isEmpty(models)) {
+      return Ember.RSVP.resolve(models);
+    }
+
+    models = Ember.isArray(models) ? models : Ember.A([models]);
+
+    const boundary = &#x60;batch_${generateUniqueId()}&#x60;;
+
+    let requestBody = &#x27;--&#x27; + boundary + &#x27;\r\n&#x27;;
+
+    const changeSetBoundary = &#x60;changeset_${generateUniqueId()}&#x60;;
+    requestBody += &#x27;Content-Type: multipart/mixed;boundary=&#x27; + changeSetBoundary + &#x27;\r\n\r\n&#x27;;
+
+    let contentId = 0;
+    const getQueries = [];
+    models.forEach((model) =&gt; {
+      if (!model.get(&#x27;id&#x27;)) {
+        throw new Error(&#x60;Models saved using the &#x27;batchUpdate&#x27; method must be created with identifiers.&#x60;);
+      }
+
+      let modelDirtyType = model.get(&#x27;dirtyType&#x27;);
+
+      if (!modelDirtyType) {
+        if (model.hasChangedBelongsTo()) {
+          modelDirtyType = &#x27;updated&#x27;;
+        } else {
+          return;
+        }
+      }
+
+      requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;\r\n&#x27;;
+      requestBody += &#x27;Content-Type: application/http\r\n&#x27;;
+      requestBody += &#x27;Content-Transfer-Encoding: binary\r\n&#x27;;
+
+      contentId++;
+      requestBody += &#x27;Content-ID: &#x27; + contentId + &#x27;\r\n\r\n&#x27;;
+
+      const skipUnchangedAttrs = true;
+      const snapshot = model._createSnapshot();
+      SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
+
+      let modelHttpMethod = &#x27;POST&#x27;;
+      switch (modelDirtyType) {
+        case &#x27;created&#x27;:
+          modelHttpMethod = &#x27;POST&#x27;;
+          break;
+
+        case &#x27;updated&#x27;:
+          modelHttpMethod = skipUnchangedAttrs ? &#x27;PATCH&#x27; : &#x27;PUT&#x27;;
+          break;
+
+        case &#x27;deleted&#x27;:
+          modelHttpMethod = &#x27;DELETE&#x27;;
+          break;
+
+        default:
+          throw new Error(&#x60;Unknown requestType: ${modelDirtyType}&#x60;);
+      }
+
+      if (!this.store) {
+        this.store = store;
+      }
+
+      const modelUrl =  this._buildURL(snapshot.type.modelName, modelDirtyType === &#x27;created&#x27; ? undefined : model.get(&#x27;id&#x27;));
+
+      requestBody += modelHttpMethod + &#x27; &#x27; + modelUrl + &#x27; HTTP/1.1\r\n&#x27;;
+      requestBody += &#x27;Content-Type: application/json;type=entry\r\n&#x27;;
+      requestBody += &#x27;Prefer: return=representation\r\n\r\n&#x27;;
+
+      // Don&#x27;t need to send any data for deleting.
+      if (modelDirtyType !== &#x27;deleted&#x27;) {
+        const serializer = store.serializerFor(snapshot.type.modelName);
+        const data = {};
+        serializer.serializeIntoHash(data, snapshot.type, snapshot);
+        requestBody += JSON.stringify(data) + &#x27;\r\n&#x27;;
+
+        // Add a GET request for created or updated models.
+        let getQuery = &#x27;\r\n--&#x27; + boundary + &#x27;\r\n&#x27;;
+        getQuery += &#x27;Content-Type: application/http\r\n&#x27;;
+        getQuery += &#x27;Content-Transfer-Encoding: binary\r\n&#x27;;
+
+        const relationships = [];
+        model.eachRelationship((name) =&gt; {
+          relationships.push(&#x60;${name}.id&#x60;);
+        });
+
+        const getUrl = this._buildURL(snapshot.type.modelName, model.get(&#x27;id&#x27;));
+
+        let expand;
+        if (relationships.length) {
+          const query = new Builder(store, snapshot.type.modelName).select(relationships.join(&#x27;,&#x27;)).build();
+          const queryAdapter = new ODataQueryAdapter(getUrl, store);
+          expand = queryAdapter.getODataQuery(query).$expand;
+        }
+
+        getQuery += &#x27;\r\nGET &#x27; + getUrl + (expand ? &#x27;?$expand=&#x27; + expand : &#x27;&#x27;) + &#x27; HTTP/1.1\r\n&#x27;;
+        getQuery += &#x27;Content-Type: application/json;type=entry\r\n&#x27;;
+        getQuery += &#x27;Prefer: return=representation\r\n&#x27;;
+        getQueries.push(getQuery);
+      }
+    });
+
+    requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;--&#x27;;
+    requestBody += getQueries.join(&#x27;&#x27;);
+    requestBody += &#x27;\r\n--&#x27; + boundary + &#x27;--&#x27;;
+
+    const url = &#x60;${this._buildURL()}/$batch&#x60;;
+
+    const headers = Ember.$.extend({}, this.get(&#x27;headers&#x27;));
+    headers[&#x27;Content-Type&#x27;] = &#x60;multipart/mixed;boundary=${boundary}&#x60;;
+    const httpMethod = &#x27;POST&#x27;;
+
+    const options = {
+      method: httpMethod,
+      headers,
+      dataType: &#x27;text&#x27;,
+      data: requestBody,
+    };
+
+    return new Ember.RSVP.Promise((resolve, reject) =&gt; Ember.$.ajax(url, options).done((response, statusText, xhr) =&gt; {
+      const meta = getResponseMeta(xhr.getResponseHeader(&#x27;Content-Type&#x27;));
+      if (meta.contentType !== &#x27;multipart/mixed&#x27;) {
+        return reject(new DS.AdapterError(&#x27;Invalid response type.&#x27;));
+      }
+
+      const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+      const getResponses = batchResponses.filter(r =&gt; r.contentType === &#x27;application/http&#x27;);
+      const updateResponse = batchResponses.find(r =&gt; r.contentType === &#x27;multipart/mixed&#x27;);
+
+      const errorsChangesets = updateResponse.changesets.filter(c =&gt; !this.isSuccess(c.meta.status));
+      if (errorsChangesets.length) {
+        return reject(errorsChangesets.map(c =&gt; new DS.AdapterError(c.body)));
+      }
+
+      const errors = [];
+      const result = [];
+      models.forEach((model) =&gt; {
+        const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
+        if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27;) {
+          const { response } = getResponses.shift();
+          if (this.isSuccess(response.meta.status)) {
+            const modelName = model.constructor.modelName;
+            const payload = { [modelName]: response.body };
+            Ember.run(() =&gt; {
+              store.pushPayload(modelName, payload);
+              model.rollbackAttributes(); // forced adjustment of model state
+            });
+          } else {
+            errors.push(new DS.AdapterError(response.body));
+          }
+        }
+
+        result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
+      });
+
+      return errors.length ? reject(errors) : resolve(result);
+    }).fail(reject));
+  },
+
+  /**
+   * A method to make ajax requests.
+   *
+   * @param {Object} params
+   * @param {Store} store
+   * @param {String} modelname
+   * @param {Function} successCallback
+   * @param {Function} failCallback
+   * @param {Function} alwaysCallback
+   * @return {Promise}
+   * @private
+   */
+  _callAjax(params, store, modelname, successCallback, failCallback, alwaysCallback) {
+    Ember.assert(&#x27;Params must be Object!&#x27;, typeof params === &#x27;object&#x27;);
+    Ember.assert(&#x27;params.method or params.url is not defined.&#x27;, !(Ember.isNone(params.method) || Ember.isNone(params.url)));
+
+    return new Ember.RSVP.Promise(function (resolve, reject) {
+      Ember.$.ajax(params).done((msg) =&gt; {
+        if (!Ember.isNone(store) &amp;&amp; !Ember.isNone(modelname)) {
+          const normalizedRecords = { data: [] };
+          Object.values(msg.value).forEach(record =&gt; {
+            normalizedRecords.data.push(store.normalize(modelname, record).data);
+          });
+          msg = store.push(normalizedRecords);
+        }
+
+        if (!Ember.isNone(successCallback)) {
+          if (typeof successCallback.then === &#x27;function&#x27;) {
+            if (!Ember.isNone(alwaysCallback)) {
+              if (typeof alwaysCallback.then === &#x27;function&#x27;) {
+                successCallback(msg).then(() =&gt; { alwaysCallback(msg).then(resolve(msg)); });
+              } else {
+                successCallback(msg).then(alwaysCallback(msg)).then(resolve(msg));
+              }
+            } else {
+              successCallback(msg).then(resolve(msg));
+            }
+          } else {
+            successCallback(msg);
+            if (!Ember.isNone(alwaysCallback)) {
+              if (typeof alwaysCallback.then === &#x27;function&#x27;) {
+                alwaysCallback(msg).then(resolve(msg));
+              } else {
+                alwaysCallback(msg);
+                resolve(msg);
+              }
+            } else {
+              resolve(msg);
+            }
+          }
+        } else {
+          if (!Ember.isNone(alwaysCallback)) {
+            if (typeof alwaysCallback.then === &#x27;function&#x27;) {
+              alwaysCallback(msg).then(resolve(msg));
+            } else {
+              alwaysCallback(msg);
+              resolve(msg);
+            }
+          } else {
+            resolve(msg);
+          }
+        }
+      }).fail((msg) =&gt; {
+        if (!Ember.isNone(failCallback)) {
+          if (typeof failCallback.then === &#x27;function&#x27;) {
+            if (!Ember.isNone(alwaysCallback)) {
+              if (typeof alwaysCallback.then === &#x27;function&#x27;) {
+                failCallback(msg).then(() =&gt; { alwaysCallback(msg).then(reject(msg)); });
+              } else {
+                failCallback(msg).then(alwaysCallback(msg)).then(reject(msg));
+              }
+
+            } else {
+              failCallback(msg).then(reject(msg));
+            }
+
+          } else {
+            failCallback(msg);
+            if (!Ember.isNone(alwaysCallback)) {
+              if (typeof alwaysCallback === &#x27;function&#x27;) {
+                alwaysCallback(msg).then(reject(msg));
+              } else {
+                alwaysCallback(msg);
+                reject(msg);
+              }
+            } else {
+              reject(msg);
+            }
+          }
+        } else {
+          if (!Ember.isNone(alwaysCallback)) {
+            if (typeof alwaysCallback.then === &#x27;function&#x27;) {
+              alwaysCallback(msg).then(reject(msg));
+            } else {
+              alwaysCallback(msg);
+              reject(msg);
+            }
+          } else {
+            reject(msg);
+          }
+        }
+      });
+    });
+  },
+
+  /**
+   * Overloaded method from &#x60;build-url-mixin&#x60; (Ember Data), taht builds URL to OData feed.
+   * Appends id as &#x60;(id)&#x60; (OData specification) instead of &#x60;/id&#x60;.
+   *
+   * @method _buildURL
+   * @param {String} modelName
+   * @param {String} id
+   * @return {String}
+   * @private
+   */
+  _buildURL(modelName, id) {
+    var url = [];
+    var host = Ember.get(this, &#x27;host&#x27;);
+    var prefix = this.urlPrefix();
+    var path;
+
+    if (modelName) {
+      path = this.pathForType(modelName);
+      if (path) {
+        url.push(path);
+      }
+    }
+
+    if (prefix) {
+      url.unshift(prefix);
+    }
+
+    url = url.join(&#x27;/&#x27;);
+    if (!host &amp;&amp; url &amp;&amp; url.charAt(0) !== &#x27;/&#x27;) {
+      url = &#x27;/&#x27; + url;
+    }
+
+    if (id != null) {
+      // Append id as &#x60;(id)&#x60; (OData specification) instead of &#x60;/id&#x60;.
+      url = this._appendIdToURL(id, url, modelName);
+    }
+
+    return url;
+  },
+
+  /**
+   * Appends id to URL according to the OData specification.
+   *
+   * @method _appendIdToURL
+   * @param {String} id
+   * @param {String} url
+   * @private
+   */
+  _appendIdToURL(id, url, modelName) {
+    let encId = encodeURIComponent(id);
+
+    if (!this.store) {
+      throw new Error(&#x27;No store.&#x27;);
+    }
+
+    let model = this.store.modelFor(modelName);
+    if (model.idType === &#x27;string&#x27;) {
+      encId = &#x60;&#x27;${encId}&#x27;&#x60;;
+    }
+
+    url += &#x27;(&#x27; + encId + &#x27;)&#x27;;
+    return url;
+  },
+
+  createRecord(store, type, snapshot) {
+    return this._sendRecord(store, type, snapshot, &#x27;createRecord&#x27;);
+  },
+
+  updateRecord(store, type, snapshot) {
+    return this._sendRecord(store, type, snapshot, &#x27;updateRecord&#x27;);
+  },
+
+  deleteRecord(store, type, snapshot) {
+    return this._sendRecord(store, type, snapshot, &#x27;deleteRecord&#x27;);
+  },
+
+  deleteAllRecords(store, modelName, filter) {
+    if (!this.store) {
+      this.store = store;
+    }
+
+    let url = this._buildURL(modelName);
+    let pathName = this.pathForType(modelName);
+    let builder = new ODataQueryAdapter(url, store);
+    let filterVelue = builder._buildODataFilters(filter);
+    let filterQuery = !Ember.isNone(filterVelue) ? &#x27;$filter=&#x27; + filterVelue : &#x27;&#x27;;
+    let data = { pathName: pathName, filterQuery: filterQuery };
+
+    return this.callAction(&#x27;DeleteAllSelect&#x27;, data, null, { withCredentials: true });
+  },
+
+  /**
+   * Makes HTTP request for creating, updating or deleting the record.
+   *
+   * @method _sendRecord
+   * @private
+   */
+  _sendRecord(store, type, snapshot, requestType) {
+    // TODO: maybe move it into serializer (serialize or serializeIntoHash)?
+    let skipUnchangedAttrs = true;
+    SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
+
+    // NOTE: for newly created records id is not defined.
+    let url = this.buildURL(type.modelName, snapshot.id, snapshot, requestType);
+
+    let httpMethod;
+    switch (requestType) {
+      case &#x27;createRecord&#x27;:
+        httpMethod = &#x27;POST&#x27;;
+        break;
+
+      case &#x27;updateRecord&#x27;:
+        httpMethod = skipUnchangedAttrs ? &#x27;PATCH&#x27; : &#x27;PUT&#x27;;
+        break;
+
+      case &#x27;deleteRecord&#x27;:
+        httpMethod = &#x27;DELETE&#x27;;
+        break;
+
+      default:
+        throw new Error(&#x60;Unknown requestType: ${requestType}&#x60;);
+    }
+
+    let data;
+
+    // Don&#x27;t need to send any data for deleting.
+    if (requestType !== &#x27;deleteRecord&#x27;) {
+      let serializer = store.serializerFor(type.modelName);
+      data = {};
+      serializer.serializeIntoHash(data, type, snapshot);
+    }
+
+    return this.ajax(url, httpMethod, { data: data }).then(function (response) {
+      return response;
+    });
+  }
+});
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/jquery/jquery-1.8.2.min.js"></script>
+<script src="../assets/vendor/bootstrap/js/bootstrap.js"></script>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script src="../assets/js/yuidoc-bootstrap.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>
