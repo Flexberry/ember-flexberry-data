@@ -227,4 +227,21 @@ export default DS.Store.extend({
 
     return adapter.deleteAllRecords(adapter.store, modelName, filter);
   },
+
+  /**
+    A method to send batch update, create or delete models in single transaction.
+
+    All models saving using this method must have identifiers.
+
+    The array which fulfilled the promise may contain the following values:
+    - `same model object` - for created, updated or unaltered records.
+    - `null` - for deleted records.
+
+    @method batchUpdate
+    @param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
+    @return {Promise} A promise that fulfilled with an array of models in the new state.
+  */
+  batchUpdate(models) {
+    return this.adapterFor('application').batchUpdate(this, models);
+  },
 });

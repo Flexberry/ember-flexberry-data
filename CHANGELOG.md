@@ -2,6 +2,45 @@
 
 ## [Unreleased]
 
+## [2.3.0-beta.1] - 2020-02-27
+### Fixed
+- Now the `DS.AdapterError` class is used for errors in the `batchUpdate` method of the `OData` adapter.
+- Saving changes to models using the `batchUpdate` method of `Offline` adapter caused the model to lose its relationships.
+
+## [2.3.0-beta.0] - 2020-02-12
+### Added
+- `Adapter.Offline`:
+    - Add `batchUpdate` method for store data in offline database.
+
+### Fixed
+- Building `OData` queries when using quotes (') in the `SimplePredicate` and `StringPredicate` predicates.
+
+## [2.2.0] - 2019-12-26
+### Added
+- `Adapter.Odata`:
+    - The `batchUpdate` method to send batch update, create or delete models in single transaction, also it's proxy in `Offline.Store`, `OData.OnlineStore` and `Offline.LocalStore`.
+- `offline-globals`:
+    - Add `getOfflineSchema` method for get offline schema.
+- `Utils`:
+    - Add `isUUID` function in utils for check attribute.
+- Query language:
+    - Add `stringToPredicate` method for converting strings to predicates.
+- Add copyable mixin for models.
+
+### Fixed
+- Fix `batchUpdate` to prevent binded models becoming unavailable after pushPayload().
+- Fix `batchUpdate` for models with relationships.
+- Fix `batchUpdate` when empty array passed.
+- The `batchUpdate` method in the `Adapter.Odata` class built invalid URL to create objects and mutated `headers` property.
+
+## [2.1.0] - 2019-04-30
+### Added
+- Add package ember-moment to project.
+- `Utils`:
+    - Add `isOrdered` function in `Information` utils for check ordered attribute.
+- `Adapter.Odata`
+    - The `callEmberOdataFunction` and `callEmberOdataAction` methods to make OData-function and OData-action calls, returns ember models.
+
 ## [2.0.0] - 2018-12-07
 ### Added
 - `Serializer.Base`:

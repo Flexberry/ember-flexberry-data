@@ -2,9 +2,10 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import createProj from '../utils/create';
 import EmberValidations from 'ember-validations';
+import Copyable from '../mixins/copyable';
 
 /**
-  Base model that supports projections and validations.
+  Base model that supports projections, validations and copying.
 
   @module ember-flexberry-data
   @class Model
@@ -12,6 +13,7 @@ import EmberValidations from 'ember-validations';
   @extends DS.Model
   @uses EmberValidationsMixin
   @uses Ember.EventedMixin
+  @uses CopyableMixin
 
   @event preSave
   @param {Object} event Event object
@@ -19,7 +21,7 @@ import EmberValidations from 'ember-validations';
 
   @public
  */
-var Model = DS.Model.extend(EmberValidations, Ember.Evented, {
+var Model = DS.Model.extend(EmberValidations, Ember.Evented, Copyable, {
   /**
     Stored canonical `belongsTo` relationships.
 

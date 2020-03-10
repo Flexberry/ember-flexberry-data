@@ -23,26 +23,13 @@ export default DS.Store.extend({
     @private
     @default 'Schema of 1 version for internal models addon'
   */
-  _offlineSchema: {
-    'ember-flexberry-data': {
-      1: {
-        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity':
-          'id,objectPrimaryKey,operationTime,operationType,executionResult,source,serializedField,' +
-          'createTime,creator,editTime,editor,user,objectType,*auditFields',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field':
-          'id,field,caption,oldValue,newValue,mainChange,auditEntity',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type':
-          'id,name',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-security-agent':
-          'id,name,login,pwd,isUser,isGroup,isRole,connString,enabled,email,full,read,insert,update,' +
-          'delete,execute,createTime,creator,editTime,editor',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group':
-          'id,createTime,creator,editTime,editor,group,user',
-        'i-c-s-soft-s-t-o-r-m-n-e-t-security-session':
-          'id,userKey,startedAt,lastAccess,closed',
-      },
-    },
-  },
+  _offlineSchema: Ember.computed(function() {
+    return {
+      'ember-flexberry-data': {
+        1: this.get('offlineGlobals').getOfflineSchema(),
+      }
+    };
+  }),
 
   /**
     Store that use for making requests in online mode.
@@ -426,6 +413,24 @@ export default DS.Store.extend({
   */
   unloadRecord() {
     return this._callSuperMethod('unloadRecord', 1, arguments);
+  },
+
+  /**
+    A method to send batch update, create or delete models in single transaction.
+
+    All models saving using this method must have identifiers.
+
+    The array which fulfilled the promise may contain the following values:
+    - `same model object` - for created, updated or unaltered records.
+    - `null` - for deleted records.
+
+    @method batchUpdate
+    @param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
+    @param {Boolean} [useOnlineStore] Allow to explicitly specify online or offline store using independently of global online status.
+    @return {Promise} A promise that fulfilled with an array of models in the new state.
+  */
+  batchUpdate() {
+    return this._callSuperMethod('batchUpdate', 1, arguments);
   },
 
   /**
