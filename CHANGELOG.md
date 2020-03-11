@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+## [2.3.0] - 2020-03-10
+### Added
+- `Adapter.Offline`:
+    - Add `batchUpdate` method for store data in offline database.
+
+### Fixed
+- Building `OData` queries when using quotes (') in the `SimplePredicate` and `StringPredicate` predicates.
+- Now the `DS.AdapterError` class is used for errors in the `batchUpdate` method of the `OData` adapter.
+
 ## [3.2.0] - 2019-12-26
 ### Added
 - Add changes from 2.2.0.
