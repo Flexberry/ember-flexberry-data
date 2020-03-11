@@ -41,10 +41,10 @@ test('adapter | odata | simple predicate | eq', function (assert) {
 
 test('adapter | odata | simple predicate | string with quotes', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Eq, 'Va\'\'sy\'a');
+  let builder = new QueryBuilder(store, 'customer').where('firstName', FilterOperator.Eq, `Va''sy'a`);
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=FirstName eq 'Va\'\'\'\'sy\'\'a'&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=FirstName eq 'Va''''sy''a'&$select=CustomerID`);
 });
 
 test('adapter | odata | simple predicate | eq | guid', function (assert) {
@@ -290,10 +290,10 @@ test('adapter | odata | string predicate', function (assert) {
 
 test('adapter | odata | string predicate | string with quotes', function (assert) {
   // Arrange.
-  let builder = new QueryBuilder(store, 'customer').where(new StringPredicate('firstName').contains('\'\'a\''));
+  let builder = new QueryBuilder(store, 'customer').where(new StringPredicate('firstName').contains(`''a'`));
 
   // Act && Assert.
-  runTest(assert, builder, 'Customers', `$filter=contains(FirstName,'\'\'\'\'a\'\'')&$select=CustomerID`);
+  runTest(assert, builder, 'Customers', `$filter=contains(FirstName,'''''a''')&$select=CustomerID`);
 });
 
 test('adapter | odata | string predicate | inside complex', function (assert) {

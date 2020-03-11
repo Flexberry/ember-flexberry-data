@@ -223,7 +223,7 @@ export default class ODataAdapter extends BaseAdapter {
         attribute = `${prefix}/${attribute}`;
       }
 
-      return `contains(${attribute},'${String(predicate.containsValue).replace(/\'/g, '\'\'')}')`;
+      return `contains(${attribute},'${String(predicate.containsValue).replace(/'/g, `''`)}')`;
     }
 
     if (predicate instanceof NotPredicate) {
@@ -383,7 +383,7 @@ export default class ODataAdapter extends BaseAdapter {
 
         value = `${type}'${predicate.value}'`;
       } else if (meta.type === 'string') {
-        value = `'${String(predicate.value).replace(/\'/g, '\'\'')}'`;
+        value = `'${String(predicate.value).replace(/'/g, `''`)}'`;
       } else if (meta.type === 'date') {
         value = getSerializedDateValue.call(this._store, predicate.value, predicate.timeless);
       } else {
