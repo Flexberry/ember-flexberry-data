@@ -641,7 +641,7 @@ export default DS.RESTAdapter.extend({
     return new Promise((resolve, reject) =&gt; $.ajax(url, options).done((response, statusText, xhr) =&gt; {
       const meta = getResponseMeta(xhr.getResponseHeader(&#x27;Content-Type&#x27;));
       if (meta.contentType !== &#x27;multipart/mixed&#x27;) {
-        return reject(new Error(&#x27;Invalid response type.&#x27;));
+        return reject(new DS.AdapterError(&#x27;Invalid response type.&#x27;));
       }
 
       const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
@@ -650,7 +650,7 @@ export default DS.RESTAdapter.extend({
 
       const errorsChangesets = updateResponse.changesets.filter(c =&gt; !this.isSuccess(c.meta.status));
       if (errorsChangesets.length) {
-        return reject(errorsChangesets.map(c =&gt; new Error(c.body)));
+        return reject(errorsChangesets.map(c =&gt; new DS.AdapterError(c.body)));
       }
 
       const errors = [];
@@ -668,7 +668,7 @@ export default DS.RESTAdapter.extend({
               model.rollbackAttributes(); // forced adjustment of model state
             });
           } else {
-            errors.push(new Error(response.body));
+            errors.push(new DS.AdapterError(response.body));
           }
         }
 

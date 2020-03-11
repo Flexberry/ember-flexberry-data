@@ -361,7 +361,7 @@ export default class ODataAdapter extends BaseAdapter {
         attribute = &#x60;${prefix}/${attribute}&#x60;;
       }
 
-      return &#x60;contains(${attribute},&#x27;${predicate.containsValue}&#x27;)&#x60;;
+      return &#x60;contains(${attribute},&#x27;${String(predicate.containsValue).replace(/&#x27;/g, &#x60;&#x27;&#x27;&#x60;)}&#x27;)&#x60;;
     }
 
     if (predicate instanceof NotPredicate) {
@@ -521,7 +521,7 @@ export default class ODataAdapter extends BaseAdapter {
 
         value = &#x60;${type}&#x27;${predicate.value}&#x27;&#x60;;
       } else if (meta.type === &#x27;string&#x27;) {
-        value = &#x60;&#x27;${predicate.value}&#x27;&#x60;;
+        value = &#x60;&#x27;${String(predicate.value).replace(/&#x27;/g, &#x60;&#x27;&#x27;&#x60;)}&#x27;&#x60;;
       } else if (meta.type === &#x27;date&#x27;) {
         value = getSerializedDateValue.call(this._store, predicate.value, predicate.timeless);
       } else {

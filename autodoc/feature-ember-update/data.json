@@ -2085,7 +2085,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 36,
+            "line": 37,
             "description": "If you would like your adapter to use a custom serializer you can set the defaultSerializer property to be the name of the custom serializer.\n[More info](http://emberjs.com/api/data/classes/DS.Adapter.html#property_defaultSerializer).",
             "itemtype": "property",
             "name": "defaultSerializer",
@@ -2096,7 +2096,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 46,
+            "line": 47,
             "description": "Database name for IndexedDB.",
             "itemtype": "property",
             "name": "dbName",
@@ -2107,7 +2107,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 55,
+            "line": 56,
             "description": "Instance of dexie service.",
             "itemtype": "property",
             "name": "dexieService",
@@ -2117,7 +2117,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 63,
+            "line": 64,
             "description": "Generate globally unique IDs for records.",
             "itemtype": "method",
             "name": "generateIdForRecord",
@@ -2147,7 +2147,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 74,
+            "line": 75,
             "description": "Clear tables in IndexedDB database, if `table` not specified, clear all tables.",
             "itemtype": "method",
             "name": "clear",
@@ -2168,7 +2168,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 92,
+            "line": 93,
             "description": "Delete IndexedDB database.",
             "itemtype": "method",
             "name": "delete",
@@ -2181,7 +2181,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 102,
+            "line": 103,
             "description": "The `findRecord()` method is invoked when the store is asked for a record that has not previously been loaded.\n[More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_findRecord).",
             "itemtype": "method",
             "name": "findRecord",
@@ -2211,7 +2211,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 118,
+            "line": 119,
             "description": "The `findAll()` method is used to retrieve all records for a given type.\n[More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_findAll).",
             "itemtype": "method",
             "name": "findAll",
@@ -2236,7 +2236,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 133,
+            "line": 134,
             "description": "Find multiple records at once if coalesceFindRequests is true.\n[More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_findMany).",
             "itemtype": "method",
             "name": "findMany",
@@ -2266,7 +2266,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 157,
+            "line": 158,
             "description": "The `queryRecord()` method is invoked when the store is asked for a single record through a query object.\n[More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_queryRecord).",
             "itemtype": "method",
             "name": "queryRecord",
@@ -2296,7 +2296,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 171,
+            "line": 172,
             "description": "This method is called when you call `query` on the store.\n[More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_query).\n\nSupports {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} instance or objects that look like this:\n  ```javascript\n  {\n    ...\n    <property to query>: <value to match>,\n    //and\n    <property to query>: <value to match>,\n    ...\n  }\n  ```",
             "itemtype": "method",
             "name": "query",
@@ -2326,7 +2326,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 209,
+            "line": 210,
             "description": "Implement this method in a subclass to handle the creation of new records.\n[More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_createRecord).",
             "itemtype": "method",
             "name": "createRecord",
@@ -2356,7 +2356,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 234,
+            "line": 235,
             "description": "Implement this method in a subclass to handle the updating of a record.\n[More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_updateRecord).",
             "itemtype": "method",
             "name": "updateRecord",
@@ -2386,7 +2386,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 259,
+            "line": 260,
             "description": "Implement this method in a subclass to handle the deletion of a record.\n[More info](http://emberjs.com/api/data/classes/DS.Adapter.html#method_deleteRecord).",
             "itemtype": "method",
             "name": "deleteRecord",
@@ -2416,7 +2416,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 285,
+            "line": 286,
             "description": "Create record if it does not exist, or update changed fields of record.",
             "itemtype": "method",
             "name": "updateOrCreate",
@@ -2451,7 +2451,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 323,
+            "line": 324,
             "description": "Stores record's hash for performing bulk operaion with {{#crossLink \"Adapter.Offline/bulkUpdateOrCreate:method\"}} method.",
             "itemtype": "method",
             "name": "addHashForBulkUpdateOrCreate",
@@ -2491,7 +2491,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 387,
+            "line": 388,
             "description": "Performing bulk operaion with previously stored hashes.",
             "itemtype": "method",
             "name": "bulkUpdateOrCreate",
@@ -2521,7 +2521,32 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 438,
+            "line": 439,
+            "description": "Performing batch update operaion.",
+            "itemtype": "method",
+            "name": "batchUpdate",
+            "params": [
+                {
+                    "name": "store",
+                    "description": "",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "models",
+                    "description": "Is array of models or single model for batch update.",
+                    "type": "DS.Model[]|DS.Model"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "Offline",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/adapters/offline.js",
+            "line": 532,
             "description": "Stores hash for performing bulk operaion into map.",
             "itemtype": "method",
             "name": "_storeHashForBulkOperation",
@@ -2544,7 +2569,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 456,
+            "line": 550,
             "description": "Makes {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} out of queries that look like this:\n {\n   <property to query>: <value to match>,\n   ...\n }.",
             "itemtype": "method",
             "name": "_makeQueryObject",
@@ -2581,7 +2606,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 507,
+            "line": 601,
             "description": "Retrieves projection from query and returns it.\nRetrieved projection removes from the query.",
             "itemtype": "method",
             "name": "_extractProjectionFromQuery",
