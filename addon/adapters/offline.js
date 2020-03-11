@@ -6,8 +6,9 @@ import EmberMap from '@ember/map';
 import RSVP from 'rsvp';
 import $ from 'jquery';
 import { getOwner } from '@ember/application';
+import { run } from '@ember/runloop';
 import { inject as service } from '@ember/service';
-import { A } from '@ember/array';
+import { A, isArray } from '@ember/array';
 import { isNone, isEmpty } from '@ember/utils';
 import { merge } from '@ember/polyfills';
 import { assert, warn } from '@ember/debug';
@@ -444,11 +445,11 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   batchUpdate(store, models) {
-    if (Ember.isEmpty(models)) {
-      return Ember.RSVP.resolve(models);
+    if (isEmpty(models)) {
+      return RSVP.resolve(models);
     }
 
-    models = Ember.isArray(models) ? models : Ember.A([models]);
+    models = isArray(models) ? models : A([models]);
 
     const dexieService = this.get('dexieService');
     const db = dexieService.dexie(this.get('dbName'), store);
@@ -513,8 +514,8 @@ export default DS.Adapter.extend({
               const modelClass = store.modelFor(modelName);
               const serializer = store.serializerFor(modelName);
 
-              Ember.run(store, store.push, serializer.normalize(modelClass, rawModel));
-              Ember.run(model, model.rollbackAttributes);
+              run(store, store.push, serializer.normalize(modelClass, rawModel));
+              run(model, model.rollbackAttributes);
 
               return model;
             }

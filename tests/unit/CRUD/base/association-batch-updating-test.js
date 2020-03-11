@@ -1,10 +1,12 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import { A } from '@ember/array';
+import { Promise } from 'rsvp';
 
 export default function associationBatchUpdating(store, assert) {
   assert.expect(6);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
       // Without relationships.
@@ -12,7 +14,7 @@ export default function associationBatchUpdating(store, assert) {
         const suggTypeParentId = records.suggestionTypes[0];
         const suggType1Id = records.suggestionTypes[1];
         const suggType2Id = records.suggestionTypes[2];
-        return Ember.RSVP.Promise.all([
+        return Promise.all([
           store.findRecord('ember-flexberry-dummy-suggestion-type', suggTypeParentId)
             .then((returnedParentRecord) =>
               store.findRecord('ember-flexberry-dummy-suggestion-type', suggType1Id)
@@ -39,7 +41,7 @@ export default function associationBatchUpdating(store, assert) {
             const record2 = recordsForBatch[1];
             const record3 = recordsForBatch[2];
 
-            return store.batchUpdate(Ember.A([record1, record2, record3])).then((result) => {
+            return store.batchUpdate(A([record1, record2, record3])).then((result) => {
               assert.equal(result.length, 3);
 
               assert.ok(result[0] === record1);
@@ -67,7 +69,7 @@ function initTestData(store) {
 
     // Attrs for creating suggestion.
     .then((parentType) =>
-      Ember.RSVP.Promise.all([
+      Promise.all([
         parentType,
 
         store.createRecord('ember-flexberry-dummy-suggestion-type', {
@@ -81,7 +83,7 @@ function initTestData(store) {
         }).save()
       ])
     ).then((createdRecords) =>
-      new Ember.RSVP.Promise((resolve) =>
+      new Promise((resolve) =>
         resolve({
           suggestionTypes: createdRecords.slice(0, 3).map(item => item.get('id'))
         })

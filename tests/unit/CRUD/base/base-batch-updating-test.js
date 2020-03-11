@@ -1,11 +1,15 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import { A } from '@ember/array';
+import { isNone } from '@ember/utils';
+import { Promise } from 'rsvp';
+
 import generateUniqueId from 'ember-flexberry-data/utils/generate-unique-id';
 
 export default function batchUpdating(store, assert) {
   assert.expect(14);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
       // Without relationships.
@@ -14,7 +18,7 @@ export default function batchUpdating(store, assert) {
         const user2Id = records.people[1];
         const user3Id = records.people[2];
         const suggTypeId = records.suggestionTypes[0];
-        return Ember.RSVP.Promise.all([
+        return Promise.all([
           store.findRecord('ember-flexberry-dummy-application-user', user1Id)
             .then((returned1Record) => {
               returned1Record.set('name', 'Updated name for User 1');
@@ -53,7 +57,7 @@ export default function batchUpdating(store, assert) {
             const record4 = recordsForBatch[3];
             const record5 = recordsForBatch[4];
             const record6 = recordsForBatch[5];
-            return store.batchUpdate(Ember.A([record4, record2, record3, record1, record5, record6])).then((result) => {
+            return store.batchUpdate(A([record4, record2, record3, record1, record5, record6])).then((result) => {
               assert.equal(result.length, 6);
 
               assert.notOk(result[0].get('hasDirtyAttributes'));
@@ -91,7 +95,7 @@ export default function batchUpdating(store, assert) {
             store.unloadAll();
             return store.findRecord('ember-flexberry-dummy-suggestion-type', suggTypeId)
               .then((suggTypeRecord) =>
-                assert.ok(Ember.isNone(suggTypeRecord.get('parent')), 'Relationship change')
+                assert.ok(isNone(suggTypeRecord.get('parent')), 'Relationship change')
               );
           })
           .then(() => records);
@@ -112,7 +116,7 @@ function initTestData(store) {
 
     // Attrs for creating suggestion.
     .then((parentType) =>
-      Ember.RSVP.Promise.all([
+      Promise.all([
         store.createRecord('ember-flexberry-dummy-application-user', {
           name: 'Vasya',
           eMail: '1@mail.ru',
@@ -134,7 +138,7 @@ function initTestData(store) {
         }).save()
       ])
     ).then((createdRecords) =>
-      new Ember.RSVP.Promise((resolve) =>
+      new Promise((resolve) =>
         resolve({
           people: createdRecords.slice(0, 3).map(item => item.get('id')),
           suggestionTypes: createdRecords.slice(3, 4).map(item => item.get('id'))
