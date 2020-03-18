@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.4.0-beta.0] - 2020-03-18
+### Fixed
+- Building a query in `ODataAdapter` with using `IsOfPredicate` when the model name includes a namespace.
+
 ## [2.3.0] - 2020-03-10
 ### Added
 - `Adapter.Offline`:
