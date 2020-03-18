@@ -4612,7 +4612,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 290,
+            "line": 291,
             "description": "Converts filter operator to OData representation.",
             "params": [
                 {
@@ -8518,7 +8518,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/odata-adapter.js:290"
+            "line": " addon/query/odata-adapter.js:291"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -8718,7 +8718,7 @@
         },
         {
             "message": "Missing item type\nConverts filter operator to OData representation.",
-            "line": " addon/query/odata-adapter.js:290"
+            "line": " addon/query/odata-adapter.js:291"
         },
         {
             "message": "Missing item type\nThe path to the detail for predicate.",
