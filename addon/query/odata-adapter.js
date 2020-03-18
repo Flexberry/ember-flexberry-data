@@ -235,8 +235,9 @@ export default class ODataAdapter extends BaseAdapter {
       let typeName = Ember.get(type, 'modelName');
       let namespace = Ember.get(type, 'namespace');
       let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : '$it';
+      let className = classify(typeName).replace(namespace.split('.').join(''), '');
 
-      return `isof(${expression},'${namespace}.${classify(typeName)}')`;
+      return `isof(${expression},'${namespace}.${className}')`;
     }
 
     if (predicate instanceof GeographyPredicate) {
