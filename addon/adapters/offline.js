@@ -509,7 +509,7 @@ export default DS.Adapter.extend({
         })).then((rawModels) => {
           resolve(models.map((model, index) => {
             if (model.get('dirtyType') === 'deleted') {
-              Ember.run(store, store.unloadRecord, model);
+              run(store, store.unloadRecord, model);
             }
 
             const rawModel = rawModels[index];
