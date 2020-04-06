@@ -597,7 +597,13 @@ export default DS.RESTAdapter.extend({
 
         const relationships = [];
         model.eachRelationship((name) =&gt; {
-          relationships.push(&#x60;${name}.id&#x60;);
+          // If attr serializable value hadn&#x27;t been set up, it&#x27;ll be { serialize: &#x27;id&#x27; } by default from DS.EmbeddedRecordsMixin.
+          let attrSerializableVal =
+            serializer &amp;&amp; serializer.attrs &amp;&amp; serializer.attrs[name] &amp;&amp; serializer.attrs[name].serializable;
+
+          if (!attrSerializableVal || attrSerializableVal !== false) {
+            relationships.push(&#x60;${name}.id&#x60;);
+          }
         });
 
         const getUrl = this._buildURL(snapshot.type.modelName, model.get(&#x27;id&#x27;));
@@ -664,6 +670,8 @@ export default DS.RESTAdapter.extend({
           } else {
             errors.push(new DS.AdapterError(response.body));
           }
+        } else if (modelDirtyType === &#x27;deleted&#x27;) {
+          Ember.run(store, store.unloadRecord, model);
         }
 
         result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
