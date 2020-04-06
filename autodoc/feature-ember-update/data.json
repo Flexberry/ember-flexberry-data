@@ -1979,7 +1979,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 544,
+            "line": 552,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2024,7 +2024,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 649,
+            "line": 657,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2051,7 +2051,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 689,
+            "line": 697,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2074,7 +2074,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 740,
+            "line": 748,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -2546,7 +2546,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 532,
+            "line": 536,
             "description": "Stores hash for performing bulk operaion into map.",
             "itemtype": "method",
             "name": "_storeHashForBulkOperation",
@@ -2569,7 +2569,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 550,
+            "line": 554,
             "description": "Makes {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} out of queries that look like this:\n {\n   <property to query>: <value to match>,\n   ...\n }.",
             "itemtype": "method",
             "name": "_makeQueryObject",
@@ -2606,7 +2606,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 601,
+            "line": 605,
             "description": "Retrieves projection from query and returns it.\nRetrieved projection removes from the query.",
             "itemtype": "method",
             "name": "_extractProjectionFromQuery",
@@ -4175,7 +4175,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 290,
+            "line": 291,
             "description": "Converts filter operator to OData representation.",
             "params": [
                 {
@@ -7940,7 +7940,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/odata-adapter.js:290"
+            "line": " addon/query/odata-adapter.js:291"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -8064,7 +8064,7 @@
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:544"
+            "line": " addon/adapters/odata.js:552"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
@@ -8132,7 +8132,7 @@
         },
         {
             "message": "Missing item type\nConverts filter operator to OData representation.",
-            "line": " addon/query/odata-adapter.js:290"
+            "line": " addon/query/odata-adapter.js:291"
         },
         {
             "message": "Missing item type\nThe path to the detail for predicate.",

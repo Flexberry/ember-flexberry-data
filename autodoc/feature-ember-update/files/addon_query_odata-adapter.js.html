@@ -373,8 +373,9 @@ export default class ODataAdapter extends BaseAdapter {
       let typeName = get(type, &#x27;modelName&#x27;);
       let namespace = get(type, &#x27;namespace&#x27;);
       let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : &#x27;$it&#x27;;
+      let className = classify(typeName).replace(namespace.split(&#x27;.&#x27;).join(&#x27;&#x27;), &#x27;&#x27;);
 
-      return &#x60;isof(${expression},&#x27;${namespace}.${classify(typeName)}&#x27;)&#x60;;
+      return &#x60;isof(${expression},&#x27;${namespace}.${className}&#x27;)&#x60;;
     }
 
     if (predicate instanceof GeographyPredicate) {

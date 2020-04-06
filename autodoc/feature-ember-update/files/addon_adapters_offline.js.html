@@ -646,6 +646,10 @@ export default DS.Adapter.extend({
           return dirtyType === &#x27;deleted&#x27; ? Dexie.Promise.resolve(null) : db.table(modelName).get(id);
         })).then((rawModels) =&gt; {
           resolve(models.map((model, index) =&gt; {
+            if (model.get(&#x27;dirtyType&#x27;) === &#x27;deleted&#x27;) {
+              run(store, store.unloadRecord, model);
+            }
+
             const rawModel = rawModels[index];
             if (rawModel) {
               const modelName = model.constructor.modelName;
