@@ -508,6 +508,10 @@ export default DS.Adapter.extend({
           return dirtyType === 'deleted' ? Dexie.Promise.resolve(null) : db.table(modelName).get(id);
         })).then((rawModels) => {
           resolve(models.map((model, index) => {
+            if (model.get('dirtyType') === 'deleted') {
+              Ember.run(store, store.unloadRecord, model);
+            }
+
             const rawModel = rawModels[index];
             if (rawModel) {
               const modelName = model.constructor.modelName;
