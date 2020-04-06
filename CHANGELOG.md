@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [2.4.0-beta.1] - 2020-04-06
+### Fixed
+- Records deleted using the `batchUpdate` method of the `ODataAdapter` or `Adapter.Offline` adapter remained in the store.
+- When building query for getting the record in the `batchUpdate` method of the `ODataAdapter` adapter, the serializer relationships settings were not used.
+
 ## [2.4.0-beta.0] - 2020-03-18
 ### Fixed
 - Building a query in `ODataAdapter` with using `IsOfPredicate` when the model name includes a namespace.
