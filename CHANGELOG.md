@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.4.0-beta.0] - 2020-04-06
+### Added
+- Changes from [`2.4.0-beta.0`](#240-beta0---2020-03-18) and [`2.4.0-beta.1`](#240-beta1---2020-04-06) versions.
+
 ## [2.4.0-beta.1] - 2020-04-06
 ### Fixed
 - Records deleted using the `batchUpdate` method of the `ODataAdapter` or `Adapter.Offline` adapter remained in the store.
