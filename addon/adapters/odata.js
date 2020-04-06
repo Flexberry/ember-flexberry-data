@@ -525,6 +525,8 @@ export default DS.RESTAdapter.extend({
           } else {
             errors.push(new DS.AdapterError(response.body));
           }
+        } else if (modelDirtyType === 'deleted') {
+          Ember.run(store, store.unloadRecord, model);
         }
 
         result.push(modelDirtyType === 'deleted' ? null : model);
