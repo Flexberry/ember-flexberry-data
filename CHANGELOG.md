@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.4.0-beta.2] - 2020-04-09
+### Fixed
+- When building query for getting the record in the `batchUpdate` method of the `ODataAdapter` adapter, the serializer relationships settings were not used.
+
 ## [2.4.0-beta.1] - 2020-04-06
 ### Fixed
 - Records deleted using the `batchUpdate` method of the `ODataAdapter` or `Adapter.Offline` adapter remained in the store.
