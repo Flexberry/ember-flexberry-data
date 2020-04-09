@@ -453,17 +453,10 @@ export default DS.RESTAdapter.extend({
         const relationships = [];
         model.eachRelationship((name) => {
           // If attr serializable value hadn't been set up, it'll be { serialize: 'id' } by default from DS.EmbeddedRecordsMixin.
-<<<<<<< HEAD
           let attrSerializeVal =
             serializer && serializer.attrs && serializer.attrs[name] && serializer.attrs[name].serialize;
 
           if (!attrSerializeVal || attrSerializeVal !== false) {
-=======
-          let attrSerializableVal =
-            serializer && serializer.attrs && serializer.attrs[name] && serializer.attrs[name].serializable;
-
-          if (!attrSerializableVal || attrSerializableVal !== false) {
->>>>>>> Fix fields to expand according to review.
             relationships.push(`${name}.id`);
           }
         });
