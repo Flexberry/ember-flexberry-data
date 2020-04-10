@@ -601,7 +601,7 @@ export default DS.RESTAdapter.extend({
           let attrSerializeVal =
             serializer &amp;&amp; serializer.attrs &amp;&amp; serializer.attrs[name] &amp;&amp; serializer.attrs[name].serialize;
 
-          if (!attrSerializeVal || attrSerializeVal !== false) {
+          if (attrSerializeVal !== false) {
             relationships.push(&#x60;${name}.id&#x60;);
           }
         });
