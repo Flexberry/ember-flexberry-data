@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [2.4.0-beta.2] - 2020-04-09
+## [2.4.0-beta.3] - 2020-04-13
 ### Fixed
 - When building query for getting the record in the `batchUpdate` method of the `ODataAdapter` adapter, the serializer relationships settings were not used.
 
