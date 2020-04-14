@@ -282,16 +282,16 @@ export default DS.RESTAdapter.extend({
   callEmberOdataFunction(args) {
     if (arguments.length > 1) {
       args = {
-        functionName : arguments[0],
-        params : arguments[1],
-        url : arguments[2],
-        fields : arguments[3],
-        store : arguments[4],
-        modelName : arguments[5],
-        successCallback : arguments[6],
-        failCallback : arguments[7],
-        alwaysCallback : arguments[8],
-      }
+        functionName: arguments[0],
+        params: arguments[1],
+        url: arguments[2],
+        fields: arguments[3],
+        store: arguments[4],
+        modelName: arguments[5],
+        successCallback: arguments[6],
+        failCallback: arguments[7],
+        alwaysCallback: arguments[8],
+      };
     }
 
     // For test
