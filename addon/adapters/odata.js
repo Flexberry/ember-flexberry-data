@@ -237,6 +237,25 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
+   * A method to generate url part from qeryParams.
+   *
+   * @param {Object} queryParams
+   * @param {DS.Store} store
+   * @param {String} url
+   */
+  generateQueryParamsString(queryParams, store, url) {
+    var builder = new ODataQueryAdapter(url, store);
+    let queryUrlString = '';
+
+    if (!Ember.isNone(queryParams.expand)) {
+      var queryOdataParams = builder.getODataQueryExpandParamQuery(queryParams);
+      queryUrlString = `?expand=${queryOdataParams}`;
+    }
+
+    return queryUrlString;
+  },
+
+  /**
    * A method to generate url for ajax request to odata action.
    *
    * @param {String} actionName
@@ -258,23 +277,37 @@ export default DS.RESTAdapter.extend({
   /**
    * A method to call functions that returns model records using ajax requests.
    *
-   * @param {String} functionName
-   * @param {Object} params
-   * @param {String} url
-   * @param {Object} fields
-   * @param {DS.Store} store
-   * @param {String} modelName
-   * @param {Function} successCallback
-   * @param {Function} failCallback
-   * @param {Function} alwaysCallback
-   * @return {Promise}
    * @public
    */
-  callEmberOdataFunction(functionName, params, url, fields, store, modelName, successCallback, failCallback, alwaysCallback) {
-    const resultUrl = this.generateFunctionUrl(functionName, params, url);
+  callEmberOdataFunction(args) {
+    if (arguments.length > 1) {
+      args = {
+        functionName : arguments[0],
+        params : arguments[1],
+        url : arguments[2],
+        fields : arguments[3],
+        store : arguments[4],
+        modelName : arguments[5],
+        successCallback : arguments[6],
+        failCallback : arguments[7],
+        alwaysCallback : arguments[8],
+      }
+    }
+
+    // For test
+    const builder = new Builder(args.store, 'ember-flexberry-dummy-suggestion').selectByProjection('SuggestionE');
+    args.queryParams = builder.build();
+
+    let resultUrl = this.generateFunctionUrl(args.functionName, args.params, args.url);
+
+    if (!Ember.isNone(args.queryParams)) {
+      const queryParamsForUrl = this.generateQueryParamsString(args.queryParams, args.store, resultUrl);
+      resultUrl += queryParamsForUrl;
+    }
+
     return this._callAjax(
-      { url: resultUrl, method: 'GET', xhrFields: Ember.isNone(fields) ? {} : fields },
-      store, modelName, successCallback, failCallback, alwaysCallback);
+      { url: resultUrl, method: 'GET', xhrFields: Ember.isNone(args.fields) ? {} : args.fields },
+      args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
   /**
