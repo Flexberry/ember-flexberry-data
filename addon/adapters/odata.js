@@ -295,21 +295,7 @@ export default DS.RESTAdapter.extend({
       args = this._getODataArgs(arguments, true);
     }
 
-    if (args.modelProjection && args.modelName && args.store) {
-      const builder = new Builder(args.store, args.modelName).selectByProjection(args.modelProjection);
-      args.queryParams = builder.build();
-    }
-
-    let resultUrl = this.generateFunctionUrl(args.functionName, args.params, args.url);
-
-    if (args.queryParams) {
-      const queryParamsForUrl = this.generateExpandQueryString(args.queryParams, args.store, resultUrl);
-      resultUrl += queryParamsForUrl;
-    }
-
-    return this._callAjax(
-      { url: resultUrl, method: 'GET', xhrFields: Ember.isNone(args.fields) ? {} : args.fields },
-      args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
+    return this.callFunction(args);
   },
 
   /**
@@ -321,6 +307,10 @@ export default DS.RESTAdapter.extend({
     @param {Object} args.params OData function parameters.
     @param {String} args.url Backend url.
     @param {Object} args.fields Request's xhrFields.
+    @param {Object} args.store Ember's store, needed when results are ember models.
+    @param {String} args.modelName Model name, needed when results are ember models.
+    @param {String} args.modelProjection Model projection, needed when results are ember models.
+    @param {Object} args.queryParams $expand parameter, unnecessary when modelProjection isn't null.
     @param {Function} args.successCallback Success callback.
     @param {Function} args.failCallback Fail callback.
     @param {Function} args.alwaysCallback Always callback.
@@ -331,11 +321,21 @@ export default DS.RESTAdapter.extend({
       args = this._getODataArgs(arguments);
     }
 
-    const resultUrl = this.generateFunctionUrl(args.functionName, args.params, args.url);
+    if (args.modelProjection && args.modelName && args.store) {
+      const builder = new Builder(args.store, args.modelName).selectByProjection(args.modelProjection);
+      args.queryParams = builder.build();
+    }
+
+    let resultUrl = this.generateFunctionUrl(args.functionName, args.params, args.url);
+
+    if (args.queryParams && args.store) {
+      const queryParamsForUrl = this.generateExpandQueryString(args.queryParams, args.store, resultUrl);
+      resultUrl += queryParamsForUrl;
+    }
+
     return this._callAjax(
       { url: resultUrl, method: 'GET', xhrFields: Ember.isNone(args.fields) ? {} : args.fields },
-      null, null, args.successCallback, args.failCallback, args.alwaysCallback);
-
+      args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
   /**
@@ -349,8 +349,6 @@ export default DS.RESTAdapter.extend({
     @param {Object} args.fields Request's xhrFields.
     @param {Object} args.store Ember's store.
     @param {String} args.modelName Model name.
-    @param {String} args.modelProjection Model projection.
-    @param {Object} args.queryParams $expand parameter, unnecessary when modelProjection isn't null.
     @param {Function} args.successCallback Success callback.
     @param {Function} args.failCallback Fail callback.
     @param {Function} args.alwaysCallback Always callback.
@@ -361,16 +359,7 @@ export default DS.RESTAdapter.extend({
       args = this._getODataArgs(arguments, true, true);
     }
 
-    const resultUrl = this.generateActionUrl(args.actionName, args.url);
-    return this._callAjax(
-      {
-        data: JSON.stringify(args.data),
-        url: resultUrl,
-        method: 'POST',
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        xhrFields: Ember.isNone(args.fields) ? {} : args.fields
-      }, args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
+    return this.callAction(args);
   },
 
   /**
@@ -382,6 +371,8 @@ export default DS.RESTAdapter.extend({
     @param {Object} args.params OData function parameters.
     @param {String} args.url Backend url.
     @param {Object} args.fields Request's xhrFields.
+    @param {Object} args.store Ember's store, needed when results are ember models.
+    @param {String} args.modelName Model name, needed when results are ember models.
     @param {Function} args.successCallback Success callback.
     @param {Function} args.failCallback Fail callback.
     @param {Function} args.alwaysCallback Always callback.
@@ -395,13 +386,13 @@ export default DS.RESTAdapter.extend({
     const resultUrl = this.generateActionUrl(args.actionName, args.url);
     return this._callAjax(
       {
-        data: JSON.stringify(args.data),
+        data: JSON.stringify(args.data || {}),
         url: resultUrl,
         method: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         xhrFields: Ember.isNone(args.fields) ? {} : args.fields
-      }, null, null, args.successCallback, args.failCallback, args.alwaysCallback);
+      }, args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
   /**
