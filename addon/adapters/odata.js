@@ -241,15 +241,14 @@ export default DS.RESTAdapter.extend({
    *
    * @param {Object} queryParams
    * @param {DS.Store} store
-   * @param {String} url
    */
-  generateQueryParamsString(queryParams, store, url) {
-    var builder = new ODataQueryAdapter(url, store);
+  generateExpandQueryString(queryParams, store) {
+    const adapter = new ODataQueryAdapter('1', store);
     let queryUrlString = '';
 
     if (!Ember.isNone(queryParams.expand)) {
-      var queryOdataParams = builder.getODataQueryExpandParamQuery(queryParams);
-      queryUrlString = `?expand=${queryOdataParams}`;
+      const queryOdataParams = adapter.getODataExpandQuery(queryParams);
+      queryUrlString = `?$expand=${queryOdataParams}`;
     }
 
     return queryUrlString;
@@ -259,11 +258,10 @@ export default DS.RESTAdapter.extend({
    * A method to generate url for ajax request to odata action.
    *
    * @param {String} actionName
-   * @param {Oject} data
    * @param {String} url
    * @return {String}
    */
-  generateActionUrl(actionName, data, url) {
+  generateActionUrl(actionName, url) {
     const config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
@@ -275,33 +273,37 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-   * A method to call functions that returns model records using ajax requests.
-   *
-   * @public
-   */
+    A method to call OData functions that returns model records using ajax request.
+
+    @method callEmberOdataFunction
+    @param {Object} args Method arguments.
+    @param {Object} args.functionName OData functioin name.
+    @param {Object} args.params OData function parameters.
+    @param {String} args.url Backend url.
+    @param {Object} args.fields Request's xhrFields.
+    @param {Object} args.store Ember's store.
+    @param {String} args.modelName Model name.
+    @param {String} args.modelProjection Model projection.
+    @param {Object} args.queryParams $expand parameter, unnecessary when modelProjection isn't null.
+    @param {Function} args.successCallback Success callback.
+    @param {Function} args.failCallback Fail callback.
+    @param {Function} args.alwaysCallback Always callback.
+    @return {Promise}
+  */
   callEmberOdataFunction(args) {
     if (arguments.length > 1) {
-      args = {
-        functionName: arguments[0],
-        params: arguments[1],
-        url: arguments[2],
-        fields: arguments[3],
-        store: arguments[4],
-        modelName: arguments[5],
-        successCallback: arguments[6],
-        failCallback: arguments[7],
-        alwaysCallback: arguments[8],
-      };
+      args = this._getODataArgs(arguments, true);
     }
 
-    // For test
-    const builder = new Builder(args.store, 'ember-flexberry-dummy-suggestion').selectByProjection('SuggestionE');
-    args.queryParams = builder.build();
+    if (args.modelProjection && args.modelName && args.store) {
+      const builder = new Builder(args.store, args.modelName).selectByProjection(args.modelProjection);
+      args.queryParams = builder.build();
+    }
 
     let resultUrl = this.generateFunctionUrl(args.functionName, args.params, args.url);
 
-    if (!Ember.isNone(args.queryParams)) {
-      const queryParamsForUrl = this.generateQueryParamsString(args.queryParams, args.store, resultUrl);
+    if (args.queryParams) {
+      const queryParamsForUrl = this.generateExpandQueryString(args.queryParams, args.store, resultUrl);
       resultUrl += queryParamsForUrl;
     }
 
@@ -311,80 +313,95 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-   * A method to call functions using ajax requests.
-   *
-   * @method callFunction
-   * @param {Object} functionName
-   * @param {Object} params
-   * @param {String} url
-   * @param {Object} fields
-   * @param {Function} successCallback
-   * @param {Function} failCallback
-   * @param {Function} alwaysCallback
-   * @return {Promise}
-   * @public
-   */
-  callFunction(functionName, params, url, fields, successCallback, failCallback, alwaysCallback) {
-    const resultUrl = this.generateFunctionUrl(functionName, params, url);
+    A method to call OData functions using ajax request.
+
+    @method callFunction
+    @param {Object} args Method arguments.
+    @param {Object} args.functionName OData functioin name.
+    @param {Object} args.params OData function parameters.
+    @param {String} args.url Backend url.
+    @param {Object} args.fields Request's xhrFields.
+    @param {Function} args.successCallback Success callback.
+    @param {Function} args.failCallback Fail callback.
+    @param {Function} args.alwaysCallback Always callback.
+    @return {Promise}
+  */
+  callFunction(args) {
+    if (arguments.length > 1) {
+      args = this._getODataArgs(arguments);
+    }
+
+    const resultUrl = this.generateFunctionUrl(args.functionName, args.params, args.url);
     return this._callAjax(
-      { url: resultUrl, method: 'GET', xhrFields: Ember.isNone(fields) ? {} : fields },
-      null, null, successCallback, failCallback, alwaysCallback);
+      { url: resultUrl, method: 'GET', xhrFields: Ember.isNone(args.fields) ? {} : args.fields },
+      null, null, args.successCallback, args.failCallback, args.alwaysCallback);
 
   },
 
   /**
-   * A method to call actions that returns model records using ajax requests.
-   *
-   * @param {String} actionName
-   * @param {Object} data
-   * @param {String} url
-   * @param {Object} fields
-   * @param {DS.Store} store
-   * @param {String} modelName
-   * @param {Function} successCallback
-   * @param {Function} failCallback
-   * @param {Function} alwaysCallback
-   * @return {Promise}
-   * @public
-   */
-  callEmberOdataAction(actionName, data, url, fields, store, modelName, successCallback, failCallback, alwaysCallback) {
-    const resultUrl = this.generateActionUrl(actionName, data, url);
+    A method to call OData actions that returns model records using ajax request.
+
+    @method callEmberOdataAction
+    @param {Object} args Method arguments.
+    @param {Object} args.actionName OData action name.
+    @param {Object} args.data OData action data.
+    @param {String} args.url Backend url.
+    @param {Object} args.fields Request's xhrFields.
+    @param {Object} args.store Ember's store.
+    @param {String} args.modelName Model name.
+    @param {String} args.modelProjection Model projection.
+    @param {Object} args.queryParams $expand parameter, unnecessary when modelProjection isn't null.
+    @param {Function} args.successCallback Success callback.
+    @param {Function} args.failCallback Fail callback.
+    @param {Function} args.alwaysCallback Always callback.
+    @return {Promise}
+  */
+  callEmberOdataAction(args) {
+    if (arguments.length > 1) {
+      args = this._getODataArgs(arguments, true, true);
+    }
+
+    const resultUrl = this.generateActionUrl(args.actionName, args.url);
     return this._callAjax(
       {
-        data: JSON.stringify(data),
+        data: JSON.stringify(args.data),
         url: resultUrl,
         method: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        xhrFields: Ember.isNone(fields) ? {} : fields
-      }, store, modelName, successCallback, failCallback, alwaysCallback);
+        xhrFields: Ember.isNone(args.fields) ? {} : args.fields
+      }, args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
   /**
-   * A method to call actions using ajax requests.
-   *
-   * @method callFunction
-   * @param {String} actionName
-   * @param {Object} data
-   * @param {String} url
-   * @param {Object} fields
-   * @param {Function} successCallback
-   * @param {Function} failCallback
-   * @param {Function} alwaysCallback
-   * @return {Promise}
-   * @public
-   */
-  callAction(actionName, data, url, fields, successCallback, failCallback, alwaysCallback) {
-    const resultUrl = this.generateActionUrl(actionName, data, url);
+    A method to call OData actions using ajax request.
+
+    @method callAction
+    @param {Object} args Method arguments.
+    @param {Object} args.functionName OData functioin name.
+    @param {Object} args.params OData function parameters.
+    @param {String} args.url Backend url.
+    @param {Object} args.fields Request's xhrFields.
+    @param {Function} args.successCallback Success callback.
+    @param {Function} args.failCallback Fail callback.
+    @param {Function} args.alwaysCallback Always callback.
+    @return {Promise}
+  */
+  callAction(args) {
+    if (arguments.length > 1) {
+      args = this._getODataArgs(arguments, false, true);
+    }
+
+    const resultUrl = this.generateActionUrl(args.actionName, args.url);
     return this._callAjax(
       {
-        data: JSON.stringify(data),
+        data: JSON.stringify(args.data),
         url: resultUrl,
         method: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        xhrFields: Ember.isNone(fields) ? {} : fields
-      }, null, null, successCallback, failCallback, alwaysCallback);
+        xhrFields: Ember.isNone(args.fields) ? {} : args.fields
+      }, null, null, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
   /**
@@ -570,6 +587,34 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
+   * A method to make args object function/action call method's.
+   *
+   * @param {Object} params
+   * @param {Boolean} isEmber
+   * @param {Boolean} isAction
+   * @return {Object}
+   * @private
+   */
+  _getODataArgs(params, isEmber, isAction) {
+    const paramsLastIndex = isEmber ? 8 : 6;
+    let args = {};
+    args[isAction ? 'actionName' : 'functionName'] = params[0];
+    args[isAction ? 'data' : 'params'] = params[1];
+    args.url = params[2];
+    args.fields = params[3];
+    if (isEmber) {
+      args.store = params[4];
+      args.modelName = params[5];
+    }
+
+    args.successCallback = params[paramsLastIndex - 2];
+    args.failCallback = params[paramsLastIndex - 1];
+    args.alwaysCallback = params[paramsLastIndex];
+
+    return args;
+  },
+
+  /**
    * A method to make ajax requests.
    *
    * @param {Object} params
@@ -588,9 +633,13 @@ export default DS.RESTAdapter.extend({
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax(params).done((msg) => {
         if (!Ember.isNone(store) && !Ember.isNone(modelname)) {
-          const normalizedRecords = { data: [] };
+          const normalizedRecords = { data: Ember.A(), included: Ember.A() };
           Object.values(msg.value).forEach(record => {
-            normalizedRecords.data.push(store.normalize(modelname, record).data);
+            const normalized = store.normalize(modelname, record);
+            normalizedRecords.data.addObject(normalized.data);
+            if (normalized.included) {
+              normalizedRecords.included.addObjects(normalized.included);
+            }
           });
           msg = store.push(normalizedRecords);
         }

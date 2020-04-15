@@ -92,12 +92,12 @@ export default class ODataAdapter extends BaseAdapter {
   /**
    * Returns query data for expand param.
    *
-   * @method getODataQueryExpandParamQuery
-   * @param {Object} query The query for building OData URL.
+   * @method getODataExpandQuery
+   * @param {Object} queryParams The query parameters for building OData URL.
    * @return {Object}
    * @public
    */
-  getODataQueryExpandParamQuery(queryParams) {
+  getODataExpandQuery(queryParams) {
     const expandParam = this._buildODataExpand(queryParams);
     return expandParam;
   }
