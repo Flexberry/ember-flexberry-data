@@ -90,16 +90,29 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   /**
-   * Returns query data for expand param.
-   *
-   * @method getODataExpandQuery
-   * @param {Object} queryParams The query parameters for building OData URL.
-   * @return {Object}
-   * @public
-   */
-  getODataExpandQuery(queryParams) {
-    const expandParam = this._buildODataExpand(queryParams);
-    return expandParam;
+    Returns select and expand query data for OData function.
+
+    @method getODataFunctionQuery
+    @param {Object} queryParams The query parameters for building OData URL.
+    @return {String}
+  */
+  getODataFunctionQuery(queryParams) {
+    queryParams = queryParams || {};
+    let queryParamsArray = Ember.A();
+    let resultQuery = '';
+    if (queryParams.select) {
+      queryParamsArray.addObject('$select=' + this._buildODataSelect(queryParams));
+    }
+
+    if (queryParams.expand) {
+      queryParamsArray.addObject('$expand=' + this._buildODataExpand(queryParams));
+    }
+
+    if (queryParamsArray.length > 0) {
+      resultQuery = '?' + queryParamsArray.join('&');
+    }
+
+    return resultQuery;
   }
 
   /**

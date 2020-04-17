@@ -237,31 +237,15 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-   * A method to generate url part from qeryParams.
-   *
-   * @param {Object} queryParams
-   * @param {DS.Store} store
-   */
-  generateExpandQueryString(queryParams, store) {
-    const adapter = new ODataQueryAdapter('1', store);
-    let queryUrlString = '';
+    A method to generate url for ajax request to odata action.
 
-    if (!Ember.isNone(queryParams.expand)) {
-      const queryOdataParams = adapter.getODataExpandQuery(queryParams);
-      queryUrlString = `?$expand=${queryOdataParams}`;
-    }
-
-    return queryUrlString;
-  },
-
-  /**
-   * A method to generate url for ajax request to odata action.
-   *
-   * @param {String} actionName
-   * @param {String} url
-   * @return {String}
-   */
-  generateActionUrl(actionName, url) {
+    @method generateActionUrl
+    @param {String} actionName
+    @param {Object} data
+    @param {String} url
+    @return {String}
+  */
+  generateActionUrl(actionName, data, url) {
     const config = getOwner(this)._lookupFactory('config:environment');
     if (Ember.isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
@@ -277,21 +261,25 @@ export default DS.RESTAdapter.extend({
 
     @method callEmberOdataFunction
     @param {Object} args Method arguments.
-    @param {Object} args.functionName OData functioin name.
+    @param {Object} args.functionName OData functioin name (required).
     @param {Object} args.params OData function parameters.
     @param {String} args.url Backend url.
     @param {Object} args.fields Request's xhrFields.
     @param {Object} args.store Ember's store.
     @param {String} args.modelName Model name.
     @param {String} args.modelProjection Model projection.
-    @param {Object} args.queryParams $expand parameter, unnecessary when modelProjection isn't null.
     @param {Function} args.successCallback Success callback.
     @param {Function} args.failCallback Fail callback.
     @param {Function} args.alwaysCallback Always callback.
     @return {Promise}
   */
   callEmberOdataFunction(args) {
-    if (arguments.length > 1) {
+    Ember.deprecate('callEmberOdataFunction is deprecated. Use callFunction with single args argument instead.', false, {
+      id: 'adapter.odata',
+      until: '3.5.0',
+    });
+
+    if (arguments.length > 1 || typeof args !== 'object') {
       args = this._getODataArgs(arguments, true);
     }
 
@@ -303,21 +291,20 @@ export default DS.RESTAdapter.extend({
 
     @method callFunction
     @param {Object} args Method arguments.
-    @param {Object} args.functionName OData functioin name.
+    @param {Object} args.functionName OData functioin name (required).
     @param {Object} args.params OData function parameters.
     @param {String} args.url Backend url.
     @param {Object} args.fields Request's xhrFields.
     @param {Object} args.store Ember's store, needed when results are ember models.
     @param {String} args.modelName Model name, needed when results are ember models.
     @param {String} args.modelProjection Model projection, needed when results are ember models.
-    @param {Object} args.queryParams $expand parameter, unnecessary when modelProjection isn't null.
     @param {Function} args.successCallback Success callback.
     @param {Function} args.failCallback Fail callback.
     @param {Function} args.alwaysCallback Always callback.
     @return {Promise}
   */
   callFunction(args) {
-    if (arguments.length > 1) {
+    if (arguments.length > 1 || typeof args !== 'object') {
       args = this._getODataArgs(arguments);
     }
 
@@ -329,7 +316,7 @@ export default DS.RESTAdapter.extend({
     let resultUrl = this.generateFunctionUrl(args.functionName, args.params, args.url);
 
     if (args.queryParams && args.store) {
-      const queryParamsForUrl = this.generateExpandQueryString(args.queryParams, args.store, resultUrl);
+      const queryParamsForUrl = this._generateFunctionQueryString(args.queryParams, args.store);
       resultUrl += queryParamsForUrl;
     }
 
@@ -343,7 +330,7 @@ export default DS.RESTAdapter.extend({
 
     @method callEmberOdataAction
     @param {Object} args Method arguments.
-    @param {Object} args.actionName OData action name.
+    @param {Object} args.actionName OData action name (required).
     @param {Object} args.data OData action data.
     @param {String} args.url Backend url.
     @param {Object} args.fields Request's xhrFields.
@@ -355,7 +342,12 @@ export default DS.RESTAdapter.extend({
     @return {Promise}
   */
   callEmberOdataAction(args) {
-    if (arguments.length > 1) {
+    Ember.deprecate('callEmberOdataAction is deprecated. Use callAction with single args argument instead.', false, {
+      id: 'adapter.odata',
+      until: '3.5.0',
+    });
+
+    if (arguments.length > 1 || typeof args !== 'object') {
       args = this._getODataArgs(arguments, true, true);
     }
 
@@ -367,8 +359,8 @@ export default DS.RESTAdapter.extend({
 
     @method callAction
     @param {Object} args Method arguments.
-    @param {Object} args.functionName OData functioin name.
-    @param {Object} args.params OData function parameters.
+    @param {Object} args.actionName OData action name (required).
+    @param {Object} args.data OData action data.
     @param {String} args.url Backend url.
     @param {Object} args.fields Request's xhrFields.
     @param {Object} args.store Ember's store, needed when results are ember models.
@@ -379,11 +371,11 @@ export default DS.RESTAdapter.extend({
     @return {Promise}
   */
   callAction(args) {
-    if (arguments.length > 1) {
+    if (arguments.length > 1 || typeof args !== 'object') {
       args = this._getODataArgs(arguments, false, true);
     }
 
-    const resultUrl = this.generateActionUrl(args.actionName, args.url);
+    const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);
     return this._callAjax(
       {
         data: JSON.stringify(args.data || {}),
@@ -575,6 +567,26 @@ export default DS.RESTAdapter.extend({
 
       return errors.length ? reject(errors) : resolve(result);
     }).fail(reject));
+  },
+
+  /**
+    A method to generate url part from queryParams.
+
+    @method _generateFunctionQueryString
+    @param {Object} queryParams
+    @param {DS.Store} store
+    @return {String}
+    @private
+  */
+  _generateFunctionQueryString(queryParams, store) {
+    const adapter = new ODataQueryAdapter('1', store);
+    let queryUrlString = '';
+
+    if (queryParams.expand || queryParams.select) {
+      queryUrlString = adapter.getODataFunctionQuery(queryParams);
+    }
+
+    return queryUrlString;
   },
 
   /**
