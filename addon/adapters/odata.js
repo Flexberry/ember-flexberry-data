@@ -590,14 +590,15 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-   * A method to make args object function/action call method's.
-   *
-   * @param {Object} params
-   * @param {Boolean} isEmber
-   * @param {Boolean} isAction
-   * @return {Object}
-   * @private
-   */
+    A method to make args object function/action call method's.
+
+    @method _getODataArgs
+    @param {Object} params
+    @param {Boolean} isEmber
+    @param {Boolean} isAction
+    @return {Object}
+    @private
+  */
   _getODataArgs(params, isEmber, isAction) {
     const paramsLastIndex = isEmber ? 8 : 6;
     let args = {};
