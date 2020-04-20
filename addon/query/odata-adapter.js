@@ -98,14 +98,14 @@ export default class ODataAdapter extends BaseAdapter {
   */
   getODataFunctionQuery(queryParams) {
     queryParams = queryParams || {};
-    let queryParamsArray = Ember.A();
+    let queryParamsArray = [];
     let resultQuery = '';
     if (queryParams.select) {
-      queryParamsArray.addObject('$select=' + this._buildODataSelect(queryParams));
+      queryParamsArray.push('$select=' + this._buildODataSelect(queryParams));
     }
 
     if (queryParams.expand) {
-      queryParamsArray.addObject('$expand=' + this._buildODataExpand(queryParams));
+      queryParamsArray.push('$expand=' + this._buildODataExpand(queryParams));
     }
 
     if (queryParamsArray.length > 0) {

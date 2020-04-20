@@ -275,7 +275,7 @@ export default DS.RESTAdapter.extend({
   */
   callEmberOdataFunction(args) {
     Ember.deprecate('callEmberOdataFunction is deprecated. Use callFunction with single args argument instead.', false, {
-      id: 'adapter.odata',
+      id: 'adapter.odata.callEmberOdataFunction',
       until: '3.5.0',
     });
 
@@ -321,7 +321,7 @@ export default DS.RESTAdapter.extend({
     }
 
     return this._callAjax(
-      { url: resultUrl, method: 'GET', xhrFields: Ember.isNone(args.fields) ? {} : args.fields },
+      { url: resultUrl, method: 'GET', xhrFields: args.fields ? {} : args.fields },
       args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
@@ -343,7 +343,7 @@ export default DS.RESTAdapter.extend({
   */
   callEmberOdataAction(args) {
     Ember.deprecate('callEmberOdataAction is deprecated. Use callAction with single args argument instead.', false, {
-      id: 'adapter.odata',
+      id: 'adapter.odata.callEmberOdataAction',
       until: '3.5.0',
     });
 
@@ -383,7 +383,7 @@ export default DS.RESTAdapter.extend({
         method: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        xhrFields: Ember.isNone(args.fields) ? {} : args.fields
+        xhrFields: args.fields ? {} : args.fields
       }, args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
