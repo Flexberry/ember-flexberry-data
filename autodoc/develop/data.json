@@ -1929,6 +1929,8 @@
             "file": "addon/adapters/odata.js",
             "line": 239,
             "description": "A method to generate url for ajax request to odata action.",
+            "itemtype": "method",
+            "name": "generateActionUrl",
             "params": [
                 {
                     "name": "actionName",
@@ -1938,7 +1940,7 @@
                 {
                     "name": "data",
                     "description": "",
-                    "type": "Oject"
+                    "type": "Object"
                 },
                 {
                     "name": "url",
@@ -1956,228 +1958,214 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 258,
-            "description": "A method to call functions that returns model records using ajax requests.",
+            "line": 259,
+            "description": "A method to call OData functions that returns model records using ajax request.",
+            "itemtype": "method",
+            "name": "callEmberOdataFunction",
             "params": [
                 {
-                    "name": "functionName",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "params",
-                    "description": "",
-                    "type": "Object"
-                },
-                {
-                    "name": "url",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "fields",
-                    "description": "",
-                    "type": "Object"
-                },
-                {
-                    "name": "store",
-                    "description": "",
-                    "type": "DS.Store"
-                },
-                {
-                    "name": "modelName",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "successCallback",
-                    "description": "",
-                    "type": "Function"
-                },
-                {
-                    "name": "failCallback",
-                    "description": "",
-                    "type": "Function"
-                },
-                {
-                    "name": "alwaysCallback",
-                    "description": "",
-                    "type": "Function"
+                    "name": "args",
+                    "description": "Method arguments.",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "functionName",
+                            "description": "OData functioin name (required).",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "params",
+                            "description": "OData function parameters.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "url",
+                            "description": "Backend url.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "fields",
+                            "description": "Request's xhrFields.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "store",
+                            "description": "Ember's store.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "modelName",
+                            "description": "Model name.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "modelProjection",
+                            "description": "Model projection.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "successCallback",
+                            "description": "Success callback.",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "failCallback",
+                            "description": "Fail callback.",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "alwaysCallback",
+                            "description": "Always callback.",
+                            "type": "Function"
+                        }
+                    ]
                 }
             ],
             "return": {
                 "description": "",
                 "type": "Promise"
             },
-            "access": "public",
-            "tagname": "",
             "class": "Adapter.OData",
             "module": "ember-flexberry-data",
             "namespace": "Adapter"
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 280,
-            "description": "A method to call functions using ajax requests.",
+            "line": 289,
+            "description": "A method to call OData functions using ajax request.",
             "itemtype": "method",
             "name": "callFunction",
             "params": [
                 {
-                    "name": "functionName",
-                    "description": "",
-                    "type": "Object"
-                },
-                {
-                    "name": "params",
-                    "description": "",
-                    "type": "Object"
-                },
-                {
-                    "name": "url",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "fields",
-                    "description": "",
-                    "type": "Object"
-                },
-                {
-                    "name": "successCallback",
-                    "description": "",
-                    "type": "Function"
-                },
-                {
-                    "name": "failCallback",
-                    "description": "",
-                    "type": "Function"
-                },
-                {
-                    "name": "alwaysCallback",
-                    "description": "",
-                    "type": "Function"
+                    "name": "args",
+                    "description": "Method arguments.",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "functionName",
+                            "description": "OData functioin name (required).",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "params",
+                            "description": "OData function parameters.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "url",
+                            "description": "Backend url.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "fields",
+                            "description": "Request's xhrFields.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "store",
+                            "description": "Ember's store, needed when results are ember models.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "modelName",
+                            "description": "Model name, needed when results are ember models.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "modelProjection",
+                            "description": "Model projection, needed when results are ember models.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "successCallback",
+                            "description": "Success callback.",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "failCallback",
+                            "description": "Fail callback.",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "alwaysCallback",
+                            "description": "Always callback.",
+                            "type": "Function"
+                        }
+                    ]
                 }
             ],
             "return": {
                 "description": "",
                 "type": "Promise"
             },
-            "access": "public",
-            "tagname": "",
             "class": "Adapter.OData",
             "module": "ember-flexberry-data",
             "namespace": "Adapter"
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 302,
-            "description": "A method to call actions that returns model records using ajax requests.",
-            "params": [
-                {
-                    "name": "actionName",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "data",
-                    "description": "",
-                    "type": "Object"
-                },
-                {
-                    "name": "url",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "fields",
-                    "description": "",
-                    "type": "Object"
-                },
-                {
-                    "name": "store",
-                    "description": "",
-                    "type": "DS.Store"
-                },
-                {
-                    "name": "modelName",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "successCallback",
-                    "description": "",
-                    "type": "Function"
-                },
-                {
-                    "name": "failCallback",
-                    "description": "",
-                    "type": "Function"
-                },
-                {
-                    "name": "alwaysCallback",
-                    "description": "",
-                    "type": "Function"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Promise"
-            },
-            "access": "public",
-            "tagname": "",
-            "class": "Adapter.OData",
-            "module": "ember-flexberry-data",
-            "namespace": "Adapter"
-        },
-        {
-            "file": "addon/adapters/odata.js",
-            "line": 330,
-            "description": "A method to call actions using ajax requests.",
+            "line": 328,
+            "description": "A method to call OData actions that returns model records using ajax request.",
             "itemtype": "method",
-            "name": "callFunction",
+            "name": "callEmberOdataAction",
             "params": [
                 {
-                    "name": "actionName",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "data",
-                    "description": "",
-                    "type": "Object"
-                },
-                {
-                    "name": "url",
-                    "description": "",
-                    "type": "String"
-                },
-                {
-                    "name": "fields",
-                    "description": "",
-                    "type": "Object"
-                },
-                {
-                    "name": "successCallback",
-                    "description": "",
-                    "type": "Function"
-                },
-                {
-                    "name": "failCallback",
-                    "description": "",
-                    "type": "Function"
-                },
-                {
-                    "name": "alwaysCallback",
-                    "description": "",
-                    "type": "Function"
+                    "name": "args",
+                    "description": "Method arguments.",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "actionName",
+                            "description": "OData action name (required).",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "data",
+                            "description": "OData action data.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "url",
+                            "description": "Backend url.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "fields",
+                            "description": "Request's xhrFields.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "store",
+                            "description": "Ember's store.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "modelName",
+                            "description": "Model name.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "successCallback",
+                            "description": "Success callback.",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "failCallback",
+                            "description": "Fail callback.",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "alwaysCallback",
+                            "description": "Always callback.",
+                            "type": "Function"
+                        }
+                    ]
                 }
             ],
             "return": {
                 "description": "",
                 "type": "Promise"
             },
-            "access": "public",
-            "tagname": "",
             "class": "Adapter.OData",
             "module": "ember-flexberry-data",
             "namespace": "Adapter"
@@ -2185,6 +2173,74 @@
         {
             "file": "addon/adapters/odata.js",
             "line": 357,
+            "description": "A method to call OData actions using ajax request.",
+            "itemtype": "method",
+            "name": "callAction",
+            "params": [
+                {
+                    "name": "args",
+                    "description": "Method arguments.",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "actionName",
+                            "description": "OData action name (required).",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "data",
+                            "description": "OData action data.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "url",
+                            "description": "Backend url.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "fields",
+                            "description": "Request's xhrFields.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "store",
+                            "description": "Ember's store, needed when results are ember models.",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "modelName",
+                            "description": "Model name, needed when results are ember models.",
+                            "type": "String"
+                        },
+                        {
+                            "name": "successCallback",
+                            "description": "Success callback.",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "failCallback",
+                            "description": "Fail callback.",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "alwaysCallback",
+                            "description": "Always callback.",
+                            "type": "Function"
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "Adapter.OData",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/odata.js",
+            "line": 390,
             "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
@@ -2210,7 +2266,68 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 539,
+            "line": 572,
+            "description": "A method to generate url part from queryParams.",
+            "itemtype": "method",
+            "name": "_generateFunctionQueryString",
+            "params": [
+                {
+                    "name": "queryParams",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "store",
+                    "description": "",
+                    "type": "DS.Store"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "String"
+            },
+            "access": "private",
+            "tagname": "",
+            "class": "Adapter.OData",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/odata.js",
+            "line": 592,
+            "description": "A method to make args object function/action call method's.",
+            "itemtype": "method",
+            "name": "_getODataArgs",
+            "params": [
+                {
+                    "name": "params",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "isEmber",
+                    "description": "",
+                    "type": "Boolean"
+                },
+                {
+                    "name": "isAction",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Object"
+            },
+            "access": "private",
+            "tagname": "",
+            "class": "Adapter.OData",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/odata.js",
+            "line": 621,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2256,7 +2373,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 644,
+            "line": 730,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2284,7 +2401,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 684,
+            "line": 770,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2308,7 +2425,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 735,
+            "line": 821,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -4563,6 +4680,27 @@
         {
             "file": "addon/query/odata-adapter.js",
             "line": 92,
+            "description": "Returns select and expand query data for OData function.",
+            "itemtype": "method",
+            "name": "getODataFunctionQuery",
+            "params": [
+                {
+                    "name": "queryParams",
+                    "description": "The query parameters for building OData URL.",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "String"
+            },
+            "class": "Query.ODataAdapter",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
+            "file": "addon/query/odata-adapter.js",
+            "line": 118,
             "description": "Returns full URL for querying OData feed (base part and query part).",
             "itemtype": "method",
             "name": "getODataFullUrl",
@@ -4583,7 +4721,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 207,
+            "line": 233,
             "description": "Converts specified predicate into OData filter part.",
             "params": [
                 {
@@ -4612,7 +4750,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 291,
+            "line": 317,
             "description": "Converts filter operator to OData representation.",
             "params": [
                 {
@@ -8518,7 +8656,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/odata-adapter.js:291"
+            "line": " addon/query/odata-adapter.js:317"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -8629,20 +8767,8 @@
             "line": " addon/adapters/odata.js:190"
         },
         {
-            "message": "Missing item type\nA method to generate url for ajax request to odata action.",
-            "line": " addon/adapters/odata.js:239"
-        },
-        {
-            "message": "Missing item type\nA method to call functions that returns model records using ajax requests.",
-            "line": " addon/adapters/odata.js:258"
-        },
-        {
-            "message": "Missing item type\nA method to call actions that returns model records using ajax requests.",
-            "line": " addon/adapters/odata.js:302"
-        },
-        {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:539"
+            "line": " addon/adapters/odata.js:621"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
@@ -8714,11 +8840,11 @@
         },
         {
             "message": "Missing item type\nConverts specified predicate into OData filter part.",
-            "line": " addon/query/odata-adapter.js:207"
+            "line": " addon/query/odata-adapter.js:233"
         },
         {
             "message": "Missing item type\nConverts filter operator to OData representation.",
-            "line": " addon/query/odata-adapter.js:291"
+            "line": " addon/query/odata-adapter.js:317"
         },
         {
             "message": "Missing item type\nThe path to the detail for predicate.",
