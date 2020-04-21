@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- `callFunction` and `callEmberOdataFunction` doesn's return model relationships.
 
 ## [2.4.0-beta.3] - 2020-04-13
 ### Fixed
