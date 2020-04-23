@@ -21,7 +21,7 @@ export class EqZeroCustomPredicate extends CustomPredicate {
     };
 
     args.converters.indexeddb = function(jsAdapter, predicate, table) {
-      return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
+      return table.filter(predicate.jsConverter(jsAdapter, predicate, { booleanAsString: true }));
     };
 
     args.converters.js = function(adapter, predicate/*, options*/) {
@@ -64,7 +64,7 @@ export class NotCustomPredicate extends CustomPredicate {
     };
 
     args.converters.indexeddb = function(jsAdapter, predicate, table) {
-      return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
+      return table.filter(predicate.jsConverter(jsAdapter, predicate, { booleanAsString: true }));
     };
 
     args.converters.js = function(adapter, predicate, options) {
