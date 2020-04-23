@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- `CustomPredicate` for implementing custom predicates.
+
 ### Fixed
 - `callFunction` and `callEmberOdataFunction` doesn's return model relationships.
 

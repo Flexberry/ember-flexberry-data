@@ -6,6 +6,7 @@ import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate,
   GeographyPredicate, GeometryPredicate } from 'ember-flexberry-data/query/predicate';
+import { EqZeroCustomPredicate, NotCustomPredicate } from '../utils/test-custom-predicate';
 
 import startApp from '../../helpers/start-app';
 
@@ -556,4 +557,49 @@ test('adapter | js | geometry predicate | intersects', (assert) => {
   assert.equal(result[0].id, 1);
   assert.equal(result[1].id, 2);
   assert.equal(result[2].id, 3);
+});
+
+test('adapter | js | custom predicate | eq 0', (assert) => {
+  // Arrange.
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 0 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'B', Surname: 'Z', Age: 0 }
+  ];
+
+  const p = new EqZeroCustomPredicate('Age');
+
+  // Act.
+  const builder = new QueryBuilder(store, 'employee').select('Surname').where(p);
+  const filter = adapter.buildFunc(builder.build());
+  const result = filter(data);
+
+  // Assert.
+  assert.ok(result);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'X');
+  assert.equal(result[1].Surname, 'Z');
+});
+
+test('adapter | js | custom predicate | custom not', (assert) => {
+  // Arrange.
+  const data = [
+    { Name: 'A', Surname: 'X', Age: 10 },
+    { Name: 'B', Surname: 'Y', Age: 11 },
+    { Name: 'C', Surname: 'Z', Age: 12 }
+  ];
+
+  const innerPredicate = new SimplePredicate('Name', FilterOperator.Eq, 'B');
+  const np = new NotCustomPredicate(innerPredicate);
+
+  // Act.
+  const builder = new QueryBuilder(store, 'employee').select('Surname').where(np);
+  const filter = adapter.buildFunc(builder.build());
+  const result = filter(data);
+
+  // Assert.
+  assert.ok(result);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].Surname, 'X');
+  assert.equal(result[1].Surname, 'Z');
 });

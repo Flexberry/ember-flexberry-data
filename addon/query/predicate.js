@@ -635,6 +635,82 @@ export class IsOfPredicate extends BasePredicate {
 }
 
 /**
+ * The class of custom predicate.
+ *
+ * @namespace Query
+ * @class CustomPredicate
+ * @extends BasePredicate
+ *
+ * @param {Object} options Predicate options.
+ * @constructor
+ */
+export class CustomPredicate extends BasePredicate {
+  constructor(options) {
+    super();
+
+    options = options || {};
+    if (typeof options !== 'object') {
+      throw new Error('CustomPredicate options isn\'t object or undefined.');
+    }
+
+    this._options = options;
+    this._converters = {};
+
+    if (options.converters) {
+      if (options.converters.odata instanceof Function) {
+        this._converters.odata = options.converters.odata;
+      }
+
+      if (options.converters.js instanceof Function) {
+        this._converters.js = options.converters.js;
+      }
+
+      if (options.converters.indexeddb instanceof Function) {
+        this._converters.indexeddb = options.converters.indexeddb;
+      }
+    }
+  }
+
+  /**
+   * Options getter.
+   *
+   * @property options
+   * @type Object
+   * @public
+   */
+  get options() {
+    return this._options;
+  }
+
+  get odataConverter() {
+    return this._converters.odata;
+  }
+
+  get jsConverter() {
+    return this._converters.js;
+  }
+
+  get indexeddbConverter() {
+    return this._converters.indexeddb;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the predicate.
+   * @public
+   */
+  toString() {
+    if (this._options.toString instanceof Function) {
+      return this._options.toString(this._options);
+    }
+
+    return '';
+  }
+}
+
+/**
  * Combines specified predicates using `and` logic condition.
  *
  * @for BasePredicate
