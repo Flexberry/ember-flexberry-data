@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+## [2.4.0-beta.5] - 2020-04-27
 ### Fixed
 - The `save` method of the `audit-model` mixin loses arguments when the super method is called.
 - For models using the `audit-model` mixin, when saved using batch update methods, the audit fields do not fill.
