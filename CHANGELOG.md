@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Fixed
+- The `save` method of the `audit-model` mixin loses arguments when the super method is called.
+- For models using the `audit-model` mixin, when saved using batch update methods, the audit fields do not fill.
+- For models using `Offline.ModelMixin`, no change history is generated when saved using batch update methods.
+
+### Breaking changes
+- Now, when saving using batch update methods, the `save` method with the `softSave` option is called for all models.
+
 ## [2.4.0-beta.4] - 2020-04-22
 ### Fixed
 - `callFunction` and `callEmberOdataFunction` doesn's return model relationships.
