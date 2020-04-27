@@ -562,6 +562,7 @@ export default DS.RESTAdapter.extend({
 
     let contentId = 0;
     const getQueries = [];
+    const savePromises = [];
     models.forEach((model) =&gt; {
       if (!model.get(&#x27;id&#x27;)) {
         throw new Error(&#x60;Models saved using the &#x27;batchUpdate&#x27; method must be created with identifiers.&#x60;);
@@ -653,6 +654,8 @@ export default DS.RESTAdapter.extend({
         getQuery += &#x27;Prefer: return=representation\r\n&#x27;;
         getQueries.push(getQuery);
       }
+
+      savePromises.push(model.save({ softSave: true }));
     });
 
     requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;--&#x27;;
@@ -672,7 +675,7 @@ export default DS.RESTAdapter.extend({
       data: requestBody,
     };
 
-    return new Ember.RSVP.Promise((resolve, reject) =&gt; Ember.$.ajax(url, options).done((response, statusText, xhr) =&gt; {
+    return Ember.RSVP.all(savePromises).then(() =&gt; new Ember.RSVP.Promise((resolve, reject) =&gt; Ember.$.ajax(url, options).done((response, statusText, xhr) =&gt; {
       const meta = getResponseMeta(xhr.getResponseHeader(&#x27;Content-Type&#x27;));
       if (meta.contentType !== &#x27;multipart/mixed&#x27;) {
         return reject(new DS.AdapterError(&#x27;Invalid response type.&#x27;));
@@ -711,7 +714,7 @@ export default DS.RESTAdapter.extend({
       });
 
       return errors.length ? reject(errors) : resolve(result);
-    }).fail(reject));
+    }).fail(reject)));
   },
 
   /**
