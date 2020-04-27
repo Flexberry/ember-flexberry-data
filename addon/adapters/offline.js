@@ -446,6 +446,7 @@ export default DS.Adapter.extend({
     const dexieService = this.get('dexieService');
     const db = dexieService.dexie(this.get('dbName'), store);
 
+    const savePromises = [];
     const modelsMap = {};
 
     models.forEach((model) => {
@@ -453,6 +454,7 @@ export default DS.Adapter.extend({
       const modelName = snapshot.modelName;
       const serializer = store.serializerFor(modelName);
 
+      savePromises.push(model.save({ softSave: true }));
       modelsMap[modelName] = modelsMap[modelName] || { add: [], update: [], delete: [] };
 
       const dirtyType = model.get('dirtyType') || model.hasChangedBelongsTo() ? 'updated' : undefined;
@@ -522,7 +524,7 @@ export default DS.Adapter.extend({
       }).catch(reject);
     }));
 
-    return dexieService.performOperation(db, batchUpdateOperation);
+    return Ember.RSVP.all(savePromises).then(() => dexieService.performOperation(db, batchUpdateOperation));
   },
 
   /**
