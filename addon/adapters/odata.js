@@ -408,168 +408,167 @@ export default DS.RESTAdapter.extend({
 
     models = Ember.isArray(models) ? models : Ember.A([models]);
 
-    const boundary = `batch_${generateUniqueId()}`;
+    return Ember.RSVP.all(models.map((m) => m.save({ softSave: true }))).then(() => {
+      const boundary = `batch_${generateUniqueId()}`;
 
-    let requestBody = '--' + boundary + '\r\n';
+      let requestBody = '--' + boundary + '\r\n';
 
-    const changeSetBoundary = `changeset_${generateUniqueId()}`;
-    requestBody += 'Content-Type: multipart/mixed;boundary=' + changeSetBoundary + '\r\n\r\n';
+      const changeSetBoundary = `changeset_${generateUniqueId()}`;
+      requestBody += 'Content-Type: multipart/mixed;boundary=' + changeSetBoundary + '\r\n\r\n';
 
-    let contentId = 0;
-    const getQueries = [];
-    const savePromises = [];
-    models.forEach((model) => {
-      if (!model.get('id')) {
-        throw new Error(`Models saved using the 'batchUpdate' method must be created with identifiers.`);
-      }
-
-      let modelDirtyType = model.get('dirtyType');
-
-      if (!modelDirtyType) {
-        if (model.hasChangedBelongsTo()) {
-          modelDirtyType = 'updated';
-        } else {
-          return;
-        }
-      }
-
-      requestBody += '--' + changeSetBoundary + '\r\n';
-      requestBody += 'Content-Type: application/http\r\n';
-      requestBody += 'Content-Transfer-Encoding: binary\r\n';
-
-      contentId++;
-      requestBody += 'Content-ID: ' + contentId + '\r\n\r\n';
-
-      const skipUnchangedAttrs = true;
-      const snapshot = model._createSnapshot();
-      SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
-
-      let modelHttpMethod = 'POST';
-      switch (modelDirtyType) {
-        case 'created':
-          modelHttpMethod = 'POST';
-          break;
-
-        case 'updated':
-          modelHttpMethod = skipUnchangedAttrs ? 'PATCH' : 'PUT';
-          break;
-
-        case 'deleted':
-          modelHttpMethod = 'DELETE';
-          break;
-
-        default:
-          throw new Error(`Unknown requestType: ${modelDirtyType}`);
-      }
-
-      if (!this.store) {
-        this.store = store;
-      }
-
-      const modelUrl =  this._buildURL(snapshot.type.modelName, modelDirtyType === 'created' ? undefined : model.get('id'));
-
-      requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
-      requestBody += 'Content-Type: application/json;type=entry\r\n';
-      requestBody += 'Prefer: return=representation\r\n\r\n';
-
-      // Don't need to send any data for deleting.
-      if (modelDirtyType !== 'deleted') {
-        const serializer = store.serializerFor(snapshot.type.modelName);
-        const data = {};
-        serializer.serializeIntoHash(data, snapshot.type, snapshot);
-        requestBody += JSON.stringify(data) + '\r\n';
-
-        // Add a GET request for created or updated models.
-        let getQuery = '\r\n--' + boundary + '\r\n';
-        getQuery += 'Content-Type: application/http\r\n';
-        getQuery += 'Content-Transfer-Encoding: binary\r\n';
-
-        const relationships = [];
-        model.eachRelationship((name) => {
-          // If attr serializable value hadn't been set up, it'll be { serialize: 'id' } by default from DS.EmbeddedRecordsMixin.
-          let attrSerializeVal =
-            serializer && serializer.attrs && serializer.attrs[name] && serializer.attrs[name].serialize;
-
-          if (attrSerializeVal !== false) {
-            relationships.push(`${name}.id`);
-          }
-        });
-
-        const getUrl = this._buildURL(snapshot.type.modelName, model.get('id'));
-
-        let expand;
-        if (relationships.length) {
-          const query = new Builder(store, snapshot.type.modelName).select(relationships.join(',')).build();
-          const queryAdapter = new ODataQueryAdapter(getUrl, store);
-          expand = queryAdapter.getODataQuery(query).$expand;
-        }
-
-        getQuery += '\r\nGET ' + getUrl + (expand ? '?$expand=' + expand : '') + ' HTTP/1.1\r\n';
-        getQuery += 'Content-Type: application/json;type=entry\r\n';
-        getQuery += 'Prefer: return=representation\r\n';
-        getQueries.push(getQuery);
-      }
-
-      savePromises.push(model.save({ softSave: true }));
-    });
-
-    requestBody += '--' + changeSetBoundary + '--';
-    requestBody += getQueries.join('');
-    requestBody += '\r\n--' + boundary + '--';
-
-    const url = `${this._buildURL()}/$batch`;
-
-    const headers = Ember.$.extend({}, this.get('headers'));
-    headers['Content-Type'] = `multipart/mixed;boundary=${boundary}`;
-    const httpMethod = 'POST';
-
-    const options = {
-      method: httpMethod,
-      headers,
-      dataType: 'text',
-      data: requestBody,
-    };
-
-    return Ember.RSVP.all(savePromises).then(() => new Ember.RSVP.Promise((resolve, reject) => Ember.$.ajax(url, options).done((response, statusText, xhr) => {
-      const meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
-      if (meta.contentType !== 'multipart/mixed') {
-        return reject(new DS.AdapterError('Invalid response type.'));
-      }
-
-      const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
-      const getResponses = batchResponses.filter(r => r.contentType === 'application/http');
-      const updateResponse = batchResponses.find(r => r.contentType === 'multipart/mixed');
-
-      const errorsChangesets = updateResponse.changesets.filter(c => !this.isSuccess(c.meta.status));
-      if (errorsChangesets.length) {
-        return reject(errorsChangesets.map(c => new DS.AdapterError(c.body)));
-      }
-
-      const errors = [];
-      const result = [];
+      let contentId = 0;
+      const getQueries = [];
       models.forEach((model) => {
-        const modelDirtyType = model.get('dirtyType');
-        if (modelDirtyType === 'created' || modelDirtyType === 'updated') {
-          const { response } = getResponses.shift();
-          if (this.isSuccess(response.meta.status)) {
-            const modelName = model.constructor.modelName;
-            const payload = { [modelName]: response.body };
-            Ember.run(() => {
-              store.pushPayload(modelName, payload);
-              model.rollbackAttributes(); // forced adjustment of model state
-            });
-          } else {
-            errors.push(new DS.AdapterError(response.body));
-          }
-        } else if (modelDirtyType === 'deleted') {
-          Ember.run(store, store.unloadRecord, model);
+        if (!model.get('id')) {
+          throw new Error(`Models saved using the 'batchUpdate' method must be created with identifiers.`);
         }
 
-        result.push(modelDirtyType === 'deleted' ? null : model);
+        let modelDirtyType = model.get('dirtyType');
+
+        if (!modelDirtyType) {
+          if (model.hasChangedBelongsTo()) {
+            modelDirtyType = 'updated';
+          } else {
+            return;
+          }
+        }
+
+        requestBody += '--' + changeSetBoundary + '\r\n';
+        requestBody += 'Content-Type: application/http\r\n';
+        requestBody += 'Content-Transfer-Encoding: binary\r\n';
+
+        contentId++;
+        requestBody += 'Content-ID: ' + contentId + '\r\n\r\n';
+
+        const skipUnchangedAttrs = true;
+        const snapshot = model._createSnapshot();
+        SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
+
+        let modelHttpMethod = 'POST';
+        switch (modelDirtyType) {
+          case 'created':
+            modelHttpMethod = 'POST';
+            break;
+
+          case 'updated':
+            modelHttpMethod = skipUnchangedAttrs ? 'PATCH' : 'PUT';
+            break;
+
+          case 'deleted':
+            modelHttpMethod = 'DELETE';
+            break;
+
+          default:
+            throw new Error(`Unknown requestType: ${modelDirtyType}`);
+        }
+
+        if (!this.store) {
+          this.store = store;
+        }
+
+        const modelUrl =  this._buildURL(snapshot.type.modelName, modelDirtyType === 'created' ? undefined : model.get('id'));
+
+        requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
+        requestBody += 'Content-Type: application/json;type=entry\r\n';
+        requestBody += 'Prefer: return=representation\r\n\r\n';
+
+        // Don't need to send any data for deleting.
+        if (modelDirtyType !== 'deleted') {
+          const serializer = store.serializerFor(snapshot.type.modelName);
+          const data = {};
+          serializer.serializeIntoHash(data, snapshot.type, snapshot);
+          requestBody += JSON.stringify(data) + '\r\n';
+
+          // Add a GET request for created or updated models.
+          let getQuery = '\r\n--' + boundary + '\r\n';
+          getQuery += 'Content-Type: application/http\r\n';
+          getQuery += 'Content-Transfer-Encoding: binary\r\n';
+
+          const relationships = [];
+          model.eachRelationship((name) => {
+            // If attr serializable value hadn't been set up, it'll be { serialize: 'id' } by default from DS.EmbeddedRecordsMixin.
+            let attrSerializeVal =
+              serializer && serializer.attrs && serializer.attrs[name] && serializer.attrs[name].serialize;
+
+            if (attrSerializeVal !== false) {
+              relationships.push(`${name}.id`);
+            }
+          });
+
+          const getUrl = this._buildURL(snapshot.type.modelName, model.get('id'));
+
+          let expand;
+          if (relationships.length) {
+            const query = new Builder(store, snapshot.type.modelName).select(relationships.join(',')).build();
+            const queryAdapter = new ODataQueryAdapter(getUrl, store);
+            expand = queryAdapter.getODataQuery(query).$expand;
+          }
+
+          getQuery += '\r\nGET ' + getUrl + (expand ? '?$expand=' + expand : '') + ' HTTP/1.1\r\n';
+          getQuery += 'Content-Type: application/json;type=entry\r\n';
+          getQuery += 'Prefer: return=representation\r\n';
+          getQueries.push(getQuery);
+        }
       });
 
-      return errors.length ? reject(errors) : resolve(result);
-    }).fail(reject)));
+      requestBody += '--' + changeSetBoundary + '--';
+      requestBody += getQueries.join('');
+      requestBody += '\r\n--' + boundary + '--';
+
+      const url = `${this._buildURL()}/$batch`;
+
+      const headers = Ember.$.extend({}, this.get('headers'));
+      headers['Content-Type'] = `multipart/mixed;boundary=${boundary}`;
+      const httpMethod = 'POST';
+
+      const options = {
+        method: httpMethod,
+        headers,
+        dataType: 'text',
+        data: requestBody,
+      };
+
+      return new Ember.RSVP.Promise((resolve, reject) => Ember.$.ajax(url, options).done((response, statusText, xhr) => {
+        const meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
+        if (meta.contentType !== 'multipart/mixed') {
+          return reject(new DS.AdapterError('Invalid response type.'));
+        }
+
+        const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+        const getResponses = batchResponses.filter(r => r.contentType === 'application/http');
+        const updateResponse = batchResponses.find(r => r.contentType === 'multipart/mixed');
+
+        const errorsChangesets = updateResponse.changesets.filter(c => !this.isSuccess(c.meta.status));
+        if (errorsChangesets.length) {
+          return reject(errorsChangesets.map(c => new DS.AdapterError(c.body)));
+        }
+
+        const errors = [];
+        const result = [];
+        models.forEach((model) => {
+          const modelDirtyType = model.get('dirtyType');
+          if (modelDirtyType === 'created' || modelDirtyType === 'updated') {
+            const { response } = getResponses.shift();
+            if (this.isSuccess(response.meta.status)) {
+              const modelName = model.constructor.modelName;
+              const payload = { [modelName]: response.body };
+              Ember.run(() => {
+                store.pushPayload(modelName, payload);
+                model.rollbackAttributes(); // forced adjustment of model state
+              });
+            } else {
+              errors.push(new DS.AdapterError(response.body));
+            }
+          } else if (modelDirtyType === 'deleted') {
+            Ember.run(store, store.unloadRecord, model);
+          }
+
+          result.push(modelDirtyType === 'deleted' ? null : model);
+        });
+
+        return errors.length ? reject(errors) : resolve(result);
+      }).fail(reject));
+    });
   },
 
   /**
