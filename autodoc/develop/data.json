@@ -2266,7 +2266,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 575,
+            "line": 574,
             "description": "A method to generate url part from queryParams.",
             "itemtype": "method",
             "name": "_generateFunctionQueryString",
@@ -2294,7 +2294,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 595,
+            "line": 594,
             "description": "A method to make args object function/action call method's.",
             "itemtype": "method",
             "name": "_getODataArgs",
@@ -2327,7 +2327,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 624,
+            "line": 623,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2373,7 +2373,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 733,
+            "line": 732,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2401,7 +2401,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 773,
+            "line": 772,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2425,7 +2425,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 824,
+            "line": 823,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -2916,7 +2916,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 530,
+            "line": 531,
             "description": "Stores hash for performing bulk operaion into map.",
             "itemtype": "method",
             "name": "_storeHashForBulkOperation",
@@ -2940,7 +2940,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 548,
+            "line": 549,
             "description": "Makes {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} out of queries that look like this:\n {\n   <property to query>: <value to match>,\n   ...\n }.",
             "itemtype": "method",
             "name": "_makeQueryObject",
@@ -2978,7 +2978,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 599,
+            "line": 600,
             "description": "Retrieves projection from query and returns it.\nRetrieved projection removes from the query.",
             "itemtype": "method",
             "name": "_extractProjectionFromQuery",
@@ -8768,7 +8768,7 @@
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:624"
+            "line": " addon/adapters/odata.js:623"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
