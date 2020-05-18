@@ -2,31 +2,22 @@
 
 ## [Unreleased]
 
-## [2.4.0-beta.6] - 2020-04-29
+## [2.4.0] - 2020-05-18
 ### Fixed
 - The `save` method of the `audit-model` mixin loses arguments when the super method is called.
 - For models using the `audit-model` mixin, when saved using batch update methods, the audit fields do not fill.
 - For models using `Offline.ModelMixin`, no change history is generated when saved using batch update methods.
+- The `ODataAdapter` adapter:
+    - The `callEmberOdataFunction` method returns a model without relationships, you must specify the projection name to get a model with relationships.
+    - When building query for getting the record in the `batchUpdate` method, the serializer relationships settings were not used.
+    - Building a query with using `IsOfPredicate` when the model name includes a namespace.
+- Records deleted using the `batchUpdate` method of the `ODataAdapter` or `Adapter.Offline` adapter remained in the store.
+
+### Deprecated
+- The `callEmberOdataAction` and` callEmberOdataFunction` methods in the `ODataAdapter` adapter.
 
 ### Breaking changes
 - Now, when saving using batch update methods, the `save` method with the `softSave` option is called for all models.
-
-## [2.4.0-beta.4] - 2020-04-22
-### Fixed
-- `callFunction` and `callEmberOdataFunction` doesn's return model relationships.
-
-## [2.4.0-beta.3] - 2020-04-13
-### Fixed
-- When building query for getting the record in the `batchUpdate` method of the `ODataAdapter` adapter, the serializer relationships settings were not used.
-
-## [2.4.0-beta.1] - 2020-04-06
-### Fixed
-- Records deleted using the `batchUpdate` method of the `ODataAdapter` or `Adapter.Offline` adapter remained in the store.
-- When building query for getting the record in the `batchUpdate` method of the `ODataAdapter` adapter, the serializer relationships settings were not used.
-
-## [2.4.0-beta.0] - 2020-03-18
-### Fixed
-- Building a query in `ODataAdapter` with using `IsOfPredicate` when the model name includes a namespace.
 
 ## [2.3.0] - 2020-03-10
 ### Added
