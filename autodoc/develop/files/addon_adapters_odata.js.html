@@ -466,7 +466,7 @@ export default DS.RESTAdapter.extend({
     }
 
     return this._callAjax(
-      { url: resultUrl, method: &#x27;GET&#x27;, xhrFields: args.fields ? {} : args.fields },
+      { url: resultUrl, method: &#x27;GET&#x27;, xhrFields: args.fields ? args.fields : {} },
       args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
@@ -528,7 +528,7 @@ export default DS.RESTAdapter.extend({
         method: &#x27;POST&#x27;,
         contentType: &#x27;application/json; charset=utf-8&#x27;,
         dataType: &#x27;json&#x27;,
-        xhrFields: args.fields ? {} : args.fields
+        xhrFields: args.fields ? args.fields : {}
       }, args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
