@@ -61,40 +61,35 @@ export default Mixin.create({
     @return {Promise}
   */
   save() {
-    let currentDate = new Date();
-    let superFunc = this._super;
-    let _this = this;
+    const _super = this._super;
 
-    let currentUserPromise = new RSVP.Promise((resolve, reject) => {
-      let userName = this.get('currentUserName');
-      if (userName instanceof RSVP.Promise) {
-        userName.then(name => {
-          resolve(name);
-        }).catch((reason) => {
-          reject(reason);
-        });
+    const currentDate = new Date();
+    const currentUserPromise = new Ember.RSVP.Promise((resolve, reject) => {
+      const userName = this.get('currentUserName');
+      if (userName instanceof Ember.RSVP.Promise) {
+        userName.then(resolve, reject);
+      } else {
+        resolve(userName);
       }
-
-      resolve(userName);
     });
 
-    return currentUserPromise.then(currentUser => {
-      if (_this.get('isNew')) {
-        _this.set('createTime', currentDate);
-        _this.set('creator', currentUser);
+    return currentUserPromise.then((currentUser) => {
+      if (this.get('isNew')) {
+        this.set('createTime', currentDate);
+        this.set('creator', currentUser);
       }
 
-      if (_this.get('hasDirtyAttributes') && !_this.get('isDeleted')) {
-        _this.set('editTime', currentDate);
-        _this.set('editor', currentUser);
+      if (this.get('hasDirtyAttributes') && !this.get('isDeleted')) {
+        this.set('editTime', currentDate);
+        this.set('editor', currentUser);
       }
 
-      let result = superFunc.apply(_this, ...arguments);
-      if (!(result instanceof RSVP.Promise)) {
-        result = RSVP.resolve();
+      const result = _super.apply(this, arguments);
+      if (result instanceof Ember.RSVP.Promise) {
+        return result;
       }
 
-      return result;
+      return Ember.RSVP.resolve(result);
     });
   },
 });

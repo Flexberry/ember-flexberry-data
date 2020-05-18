@@ -90,6 +90,32 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   /**
+    Returns select and expand query data for OData function.
+
+    @method getODataFunctionQuery
+    @param {Object} queryParams The query parameters for building OData URL.
+    @return {String}
+  */
+  getODataFunctionQuery(queryParams) {
+    queryParams = queryParams || {};
+    let queryParamsArray = [];
+    let resultQuery = '';
+    if (queryParams.select) {
+      queryParamsArray.push('$select=' + this._buildODataSelect(queryParams));
+    }
+
+    if (queryParams.expand) {
+      queryParamsArray.push('$expand=' + this._buildODataExpand(queryParams));
+    }
+
+    if (queryParamsArray.length > 0) {
+      resultQuery = '?' + queryParamsArray.join('&');
+    }
+
+    return resultQuery;
+  }
+
+  /**
     Returns full URL for querying OData feed (base part and query part).
 
     @method getODataFullUrl
