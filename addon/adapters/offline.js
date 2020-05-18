@@ -454,7 +454,7 @@ export default DS.Adapter.extend({
     const dexieService = this.get('dexieService');
     const db = dexieService.dexie(this.get('dbName'), store);
 
-    return Ember.RSVP.all(models.map((m) => m.save({ softSave: true }))).then(() => {
+    return RSVP.all(models.map((m) => m.save({ softSave: true }))).then(() => {
 
       const modelsMap = {};
 

@@ -1,8 +1,9 @@
 import { assert, debug } from '@ember/debug';
+import { deprecate } from '@ember/application/deprecations';
 import { isNone, isEmpty } from '@ember/utils';
 import { get, computed } from '@ember/object';
 import { getOwner } from '@ember/application';
-import { Promise, resolve } from 'rsvp';
+import { Promise, all, resolve } from 'rsvp';
 import $ from 'jquery';
 import DS from 'ember-data';
 import { run } from '@ember/runloop';
@@ -286,7 +287,7 @@ export default DS.RESTAdapter.extend({
     @return {Promise}
   */
   callEmberOdataFunction(args) {
-    Ember.deprecate('callEmberOdataFunction is deprecated. Use callFunction with single args argument instead.', false, {
+    deprecate('callEmberOdataFunction is deprecated. Use callFunction with single args argument instead.', false, {
       id: 'adapter.odata.callEmberOdataFunction',
       until: '3.5.0',
     });
@@ -354,7 +355,7 @@ export default DS.RESTAdapter.extend({
     @return {Promise}
   */
   callEmberOdataAction(args) {
-    Ember.deprecate('callEmberOdataAction is deprecated. Use callAction with single args argument instead.', false, {
+    deprecate('callEmberOdataAction is deprecated. Use callAction with single args argument instead.', false, {
       id: 'adapter.odata.callEmberOdataAction',
       until: '3.5.0',
     });
@@ -420,7 +421,7 @@ export default DS.RESTAdapter.extend({
 
     models = isArray(models) ? models : A([models]);
 
-    return Ember.RSVP.all(models.map((m) => m.save({ softSave: true }))).then(() => {
+    return all(models.map((m) => m.save({ softSave: true }))).then(() => {
       const boundary = `batch_${generateUniqueId()}`;
 
       let requestBody = '--' + boundary + '\r\n';
@@ -529,7 +530,7 @@ export default DS.RESTAdapter.extend({
 
       const url = `${this._buildURL()}/$batch`;
 
-      const headers = Ember.$.extend({}, this.get('headers'));
+      const headers = $.extend({}, this.get('headers'));
       headers['Content-Type'] = `multipart/mixed;boundary=${boundary}`;
       const httpMethod = 'POST';
 
@@ -540,7 +541,7 @@ export default DS.RESTAdapter.extend({
         data: requestBody,
       };
 
-      return new Ember.RSVP.Promise((resolve, reject) => Ember.$.ajax(url, options).done((response, statusText, xhr) => {
+      return new Promise((resolve, reject) => $.ajax(url, options).done((response, statusText, xhr) => {
         const meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
         if (meta.contentType !== 'multipart/mixed') {
           return reject(new DS.AdapterError('Invalid response type.'));
@@ -557,6 +558,7 @@ export default DS.RESTAdapter.extend({
 
         const errors = [];
         const result = [];
+        // eslint-disable-next-line ember/jquery-ember-run
         models.forEach((model) => {
           const modelDirtyType = model.get('dirtyType');
           if (modelDirtyType === 'created' || modelDirtyType === 'updated') {
@@ -564,7 +566,7 @@ export default DS.RESTAdapter.extend({
             if (this.isSuccess(response.meta.status)) {
               const modelName = model.constructor.modelName;
               const payload = { [modelName]: response.body };
-              Ember.run(() => {
+              run(() => {
                 store.pushPayload(modelName, payload);
                 model.rollbackAttributes(); // forced adjustment of model state
               });
@@ -572,7 +574,7 @@ export default DS.RESTAdapter.extend({
               errors.push(new DS.AdapterError(response.body));
             }
           } else if (modelDirtyType === 'deleted') {
-            Ember.run(store, store.unloadRecord, model);
+            run(store, store.unloadRecord, model);
           }
 
           result.push(modelDirtyType === 'deleted' ? null : model);
@@ -648,10 +650,10 @@ export default DS.RESTAdapter.extend({
     assert('Params must be Object!', typeof params === 'object');
     assert('params.method or params.url is not defined.', !(isNone(params.method) || isNone(params.url)));
 
-    return new Ember.RSVP.Promise(function (resolve, reject) {
-      Ember.$.ajax(params).done((msg) => {
-        if (!Ember.isNone(store) && !Ember.isNone(modelname)) {
-          const normalizedRecords = { data: Ember.A(), included: Ember.A() };
+    return new Promise(function (resolve, reject) {
+      $.ajax(params).done((msg) => {
+        if (!isNone(store) && !isNone(modelname)) {
+          const normalizedRecords = { data: A(), included: A() };
           Object.values(msg.value).forEach(record => {
             const normalized = store.normalize(modelname, record);
             normalizedRecords.data.addObject(normalized.data);

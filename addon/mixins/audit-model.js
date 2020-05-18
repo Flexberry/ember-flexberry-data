@@ -64,9 +64,9 @@ export default Mixin.create({
     const _super = this._super;
 
     const currentDate = new Date();
-    const currentUserPromise = new Ember.RSVP.Promise((resolve, reject) => {
+    const currentUserPromise = new RSVP.Promise((resolve, reject) => {
       const userName = this.get('currentUserName');
-      if (userName instanceof Ember.RSVP.Promise) {
+      if (userName instanceof RSVP.Promise) {
         userName.then(resolve, reject);
       } else {
         resolve(userName);
@@ -85,11 +85,11 @@ export default Mixin.create({
       }
 
       const result = _super.apply(this, arguments);
-      if (result instanceof Ember.RSVP.Promise) {
+      if (result instanceof RSVP.Promise) {
         return result;
       }
 
-      return Ember.RSVP.resolve(result);
+      return RSVP.resolve(result);
     });
   },
 });
