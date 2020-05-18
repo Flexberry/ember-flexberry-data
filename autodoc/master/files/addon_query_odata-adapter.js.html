@@ -235,6 +235,32 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   /**
+    Returns select and expand query data for OData function.
+
+    @method getODataFunctionQuery
+    @param {Object} queryParams The query parameters for building OData URL.
+    @return {String}
+  */
+  getODataFunctionQuery(queryParams) {
+    queryParams = queryParams || {};
+    let queryParamsArray = [];
+    let resultQuery = &#x27;&#x27;;
+    if (queryParams.select) {
+      queryParamsArray.push(&#x27;$select=&#x27; + this._buildODataSelect(queryParams));
+    }
+
+    if (queryParams.expand) {
+      queryParamsArray.push(&#x27;$expand=&#x27; + this._buildODataExpand(queryParams));
+    }
+
+    if (queryParamsArray.length &gt; 0) {
+      resultQuery = &#x27;?&#x27; + queryParamsArray.join(&#x27;&amp;&#x27;);
+    }
+
+    return resultQuery;
+  }
+
+  /**
     Returns full URL for querying OData feed (base part and query part).
 
     @method getODataFullUrl
@@ -368,7 +394,7 @@ export default class ODataAdapter extends BaseAdapter {
         attribute = &#x60;${prefix}/${attribute}&#x60;;
       }
 
-      return &#x60;contains(${attribute},&#x27;${String(predicate.containsValue).replace(/\&#x27;/g, &#x27;\&#x27;\&#x27;&#x27;)}&#x27;)&#x60;;
+      return &#x60;contains(${attribute},&#x27;${String(predicate.containsValue).replace(/&#x27;/g, &#x60;&#x27;&#x27;&#x60;)}&#x27;)&#x60;;
     }
 
     if (predicate instanceof NotPredicate) {
@@ -380,8 +406,9 @@ export default class ODataAdapter extends BaseAdapter {
       let typeName = Ember.get(type, &#x27;modelName&#x27;);
       let namespace = Ember.get(type, &#x27;namespace&#x27;);
       let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : &#x27;$it&#x27;;
+      let className = classify(typeName).replace(namespace.split(&#x27;.&#x27;).join(&#x27;&#x27;), &#x27;&#x27;);
 
-      return &#x60;isof(${expression},&#x27;${namespace}.${classify(typeName)}&#x27;)&#x60;;
+      return &#x60;isof(${expression},&#x27;${namespace}.${className}&#x27;)&#x60;;
     }
 
     if (predicate instanceof GeographyPredicate) {
@@ -528,7 +555,7 @@ export default class ODataAdapter extends BaseAdapter {
 
         value = &#x60;${type}&#x27;${predicate.value}&#x27;&#x60;;
       } else if (meta.type === &#x27;string&#x27;) {
-        value = &#x60;&#x27;${String(predicate.value).replace(/\&#x27;/g, &#x27;\&#x27;\&#x27;&#x27;)}&#x27;&#x60;;
+        value = &#x60;&#x27;${String(predicate.value).replace(/&#x27;/g, &#x60;&#x27;&#x27;&#x60;)}&#x27;&#x60;;
       } else if (meta.type === &#x27;date&#x27;) {
         value = getSerializedDateValue.call(this._store, predicate.value, predicate.timeless);
       } else {
