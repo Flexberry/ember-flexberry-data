@@ -199,40 +199,35 @@ export default Mixin.create({
     @return {Promise}
   */
   save() {
-    let currentDate = new Date();
-    let superFunc = this._super;
-    let _this = this;
+    const _super = this._super;
 
-    let currentUserPromise = new RSVP.Promise((resolve, reject) =&gt; {
-      let userName = this.get(&#x27;currentUserName&#x27;);
+    const currentDate = new Date();
+    const currentUserPromise = new RSVP.Promise((resolve, reject) =&gt; {
+      const userName = this.get(&#x27;currentUserName&#x27;);
       if (userName instanceof RSVP.Promise) {
-        userName.then(name =&gt; {
-          resolve(name);
-        }).catch((reason) =&gt; {
-          reject(reason);
-        });
+        userName.then(resolve, reject);
+      } else {
+        resolve(userName);
       }
-
-      resolve(userName);
     });
 
-    return currentUserPromise.then(currentUser =&gt; {
-      if (_this.get(&#x27;isNew&#x27;)) {
-        _this.set(&#x27;createTime&#x27;, currentDate);
-        _this.set(&#x27;creator&#x27;, currentUser);
+    return currentUserPromise.then((currentUser) =&gt; {
+      if (this.get(&#x27;isNew&#x27;)) {
+        this.set(&#x27;createTime&#x27;, currentDate);
+        this.set(&#x27;creator&#x27;, currentUser);
       }
 
-      if (_this.get(&#x27;hasDirtyAttributes&#x27;) &amp;&amp; !_this.get(&#x27;isDeleted&#x27;)) {
-        _this.set(&#x27;editTime&#x27;, currentDate);
-        _this.set(&#x27;editor&#x27;, currentUser);
+      if (this.get(&#x27;hasDirtyAttributes&#x27;) &amp;&amp; !this.get(&#x27;isDeleted&#x27;)) {
+        this.set(&#x27;editTime&#x27;, currentDate);
+        this.set(&#x27;editor&#x27;, currentUser);
       }
 
-      let result = superFunc.apply(_this, ...arguments);
-      if (!(result instanceof RSVP.Promise)) {
-        result = RSVP.resolve();
+      const result = _super.apply(this, arguments);
+      if (result instanceof RSVP.Promise) {
+        return result;
       }
 
-      return result;
+      return RSVP.resolve(result);
     });
   },
 });

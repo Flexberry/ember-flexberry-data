@@ -137,10 +137,11 @@
 <div class="file">
     <pre class="prettyprint linenums">
 import { assert, debug } from &#x27;@ember/debug&#x27;;
+import { deprecate } from &#x27;@ember/application/deprecations&#x27;;
 import { isNone, isEmpty } from &#x27;@ember/utils&#x27;;
 import { get, computed } from &#x27;@ember/object&#x27;;
 import { getOwner } from &#x27;@ember/application&#x27;;
-import { Promise, resolve } from &#x27;rsvp&#x27;;
+import { Promise, all, resolve } from &#x27;rsvp&#x27;;
 import $ from &#x27;jquery&#x27;;
 import DS from &#x27;ember-data&#x27;;
 import { run } from &#x27;@ember/runloop&#x27;;
@@ -387,13 +388,14 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-   * A method to generate url for ajax request to odata action.
-   *
-   * @param {String} actionName
-   * @param {Oject} data
-   * @param {String} url
-   * @return {String}
-   */
+    A method to generate url for ajax request to odata action.
+
+    @method generateActionUrl
+    @param {String} actionName
+    @param {Object} data
+    @param {String} url
+    @return {String}
+  */
   generateActionUrl(actionName, data, url) {
     const config = getOwner(this).factoryFor(&#x27;config:environment&#x27;).class;
     if (isNone(url)) {
@@ -406,102 +408,134 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-   * A method to call functions that returns model records using ajax requests.
-   *
-   * @param {String} functionName
-   * @param {Object} params
-   * @param {String} url
-   * @param {Object} fields
-   * @param {DS.Store} store
-   * @param {String} modelName
-   * @param {Function} successCallback
-   * @param {Function} failCallback
-   * @param {Function} alwaysCallback
-   * @return {Promise}
-   * @public
-   */
-  callEmberOdataFunction(functionName, params, url, fields, store, modelName, successCallback, failCallback, alwaysCallback) {
-    const resultUrl = this.generateFunctionUrl(functionName, params, url);
-    return this._callAjax(
-      { url: resultUrl, method: &#x27;GET&#x27;, xhrFields: isNone(fields) ? {} : fields },
-        store, modelName, successCallback, failCallback, alwaysCallback);
+    A method to call OData functions that returns model records using ajax request.
+
+    @method callEmberOdataFunction
+    @param {Object} args Method arguments.
+    @param {Object} args.functionName OData functioin name (required).
+    @param {Object} args.params OData function parameters.
+    @param {String} args.url Backend url.
+    @param {Object} args.fields Request&#x27;s xhrFields.
+    @param {Object} args.store Ember&#x27;s store.
+    @param {String} args.modelName Model name.
+    @param {String} args.modelProjection Model projection.
+    @param {Function} args.successCallback Success callback.
+    @param {Function} args.failCallback Fail callback.
+    @param {Function} args.alwaysCallback Always callback.
+    @return {Promise}
+  */
+  callEmberOdataFunction(args) {
+    deprecate(&#x27;callEmberOdataFunction is deprecated. Use callFunction with single args argument instead.&#x27;, false, {
+      id: &#x27;adapter.odata.callEmberOdataFunction&#x27;,
+      until: &#x27;3.5.0&#x27;,
+    });
+
+    if (arguments.length &gt; 1 || typeof args !== &#x27;object&#x27;) {
+      args = this._getODataArgs(arguments, true);
+    }
+
+    return this.callFunction(args);
   },
 
   /**
-   * A method to call functions using ajax requests.
-   *
-   * @method callFunction
-   * @param {Object} functionName
-   * @param {Object} params
-   * @param {String} url
-   * @param {Object} fields
-   * @param {Function} successCallback
-   * @param {Function} failCallback
-   * @param {Function} alwaysCallback
-   * @return {Promise}
-   * @public
-   */
-  callFunction(functionName, params, url, fields, successCallback, failCallback, alwaysCallback) {
-    const resultUrl = this.generateFunctionUrl(functionName, params, url);
-    return this._callAjax(
-      { url: resultUrl, method: &#x27;GET&#x27;, xhrFields: isNone(fields) ? {} : fields },
-        null, null, successCallback, failCallback, alwaysCallback);
+    A method to call OData functions using ajax request.
 
+    @method callFunction
+    @param {Object} args Method arguments.
+    @param {Object} args.functionName OData functioin name (required).
+    @param {Object} args.params OData function parameters.
+    @param {String} args.url Backend url.
+    @param {Object} args.fields Request&#x27;s xhrFields.
+    @param {Object} args.store Ember&#x27;s store, needed when results are ember models.
+    @param {String} args.modelName Model name, needed when results are ember models.
+    @param {String} args.modelProjection Model projection, needed when results are ember models.
+    @param {Function} args.successCallback Success callback.
+    @param {Function} args.failCallback Fail callback.
+    @param {Function} args.alwaysCallback Always callback.
+    @return {Promise}
+  */
+  callFunction(args) {
+    if (arguments.length &gt; 1 || typeof args !== &#x27;object&#x27;) {
+      args = this._getODataArgs(arguments);
+    }
+
+    if (args.modelProjection &amp;&amp; args.modelName &amp;&amp; args.store) {
+      const builder = new Builder(args.store, args.modelName).selectByProjection(args.modelProjection);
+      args.queryParams = builder.build();
+    }
+
+    let resultUrl = this.generateFunctionUrl(args.functionName, args.params, args.url);
+
+    if (args.queryParams &amp;&amp; args.store) {
+      const queryParamsForUrl = this._generateFunctionQueryString(args.queryParams, args.store);
+      resultUrl += queryParamsForUrl;
+    }
+
+    return this._callAjax(
+      { url: resultUrl, method: &#x27;GET&#x27;, xhrFields: args.fields ? args.fields : {} },
+      args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
   /**
-   * A method to call actions that returns model records using ajax requests.
-   *
-   * @param {String} actionName
-   * @param {Object} data
-   * @param {String} url
-   * @param {Object} fields
-   * @param {DS.Store} store
-   * @param {String} modelName
-   * @param {Function} successCallback
-   * @param {Function} failCallback
-   * @param {Function} alwaysCallback
-   * @return {Promise}
-   * @public
-   */
-  callEmberOdataAction(actionName, data, url, fields, store, modelName, successCallback, failCallback, alwaysCallback) {
-    const resultUrl = this.generateActionUrl(actionName, data, url);
+    A method to call OData actions that returns model records using ajax request.
+
+    @method callEmberOdataAction
+    @param {Object} args Method arguments.
+    @param {Object} args.actionName OData action name (required).
+    @param {Object} args.data OData action data.
+    @param {String} args.url Backend url.
+    @param {Object} args.fields Request&#x27;s xhrFields.
+    @param {Object} args.store Ember&#x27;s store.
+    @param {String} args.modelName Model name.
+    @param {Function} args.successCallback Success callback.
+    @param {Function} args.failCallback Fail callback.
+    @param {Function} args.alwaysCallback Always callback.
+    @return {Promise}
+  */
+  callEmberOdataAction(args) {
+    deprecate(&#x27;callEmberOdataAction is deprecated. Use callAction with single args argument instead.&#x27;, false, {
+      id: &#x27;adapter.odata.callEmberOdataAction&#x27;,
+      until: &#x27;3.5.0&#x27;,
+    });
+
+    if (arguments.length &gt; 1 || typeof args !== &#x27;object&#x27;) {
+      args = this._getODataArgs(arguments, true, true);
+    }
+
+    return this.callAction(args);
+  },
+
+  /**
+    A method to call OData actions using ajax request.
+
+    @method callAction
+    @param {Object} args Method arguments.
+    @param {Object} args.actionName OData action name (required).
+    @param {Object} args.data OData action data.
+    @param {String} args.url Backend url.
+    @param {Object} args.fields Request&#x27;s xhrFields.
+    @param {Object} args.store Ember&#x27;s store, needed when results are ember models.
+    @param {String} args.modelName Model name, needed when results are ember models.
+    @param {Function} args.successCallback Success callback.
+    @param {Function} args.failCallback Fail callback.
+    @param {Function} args.alwaysCallback Always callback.
+    @return {Promise}
+  */
+  callAction(args) {
+    if (arguments.length &gt; 1 || typeof args !== &#x27;object&#x27;) {
+      args = this._getODataArgs(arguments, false, true);
+    }
+
+    const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);
     return this._callAjax(
       {
-        data: JSON.stringify(data),
+        data: JSON.stringify(args.data || {}),
         url: resultUrl,
         method: &#x27;POST&#x27;,
         contentType: &#x27;application/json; charset=utf-8&#x27;,
         dataType: &#x27;json&#x27;,
-        xhrFields: isNone(fields) ? {} : fields
-      }, store, modelName, successCallback, failCallback, alwaysCallback);
-  },
-
-  /**
-   * A method to call actions using ajax requests.
-   *
-   * @method callFunction
-   * @param {String} actionName
-   * @param {Object} data
-   * @param {String} url
-   * @param {Object} fields
-   * @param {Function} successCallback
-   * @param {Function} failCallback
-   * @param {Function} alwaysCallback
-   * @return {Promise}
-   * @public
-   */
-  callAction(actionName, data, url, fields, successCallback, failCallback, alwaysCallback) {
-    const resultUrl = this.generateActionUrl(actionName, data, url);
-    return this._callAjax(
-      {
-        data: JSON.stringify(data),
-        url: resultUrl,
-        method: &#x27;POST&#x27;,
-        contentType: &#x27;application/json; charset=utf-8&#x27;,
-        dataType: &#x27;json&#x27;,
-        xhrFields: isNone(fields) ? {} : fields
-      }, null, null, successCallback, failCallback, alwaysCallback);
+        xhrFields: args.fields ? args.fields : {}
+      }, args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
   /**
@@ -525,166 +559,217 @@ export default DS.RESTAdapter.extend({
 
     models = isArray(models) ? models : A([models]);
 
-    const boundary = &#x60;batch_${generateUniqueId()}&#x60;;
+    return all(models.map((m) =&gt; m.save({ softSave: true }))).then(() =&gt; {
+      const boundary = &#x60;batch_${generateUniqueId()}&#x60;;
 
-    let requestBody = &#x27;--&#x27; + boundary + &#x27;\r\n&#x27;;
+      let requestBody = &#x27;--&#x27; + boundary + &#x27;\r\n&#x27;;
 
-    const changeSetBoundary = &#x60;changeset_${generateUniqueId()}&#x60;;
-    requestBody += &#x27;Content-Type: multipart/mixed;boundary=&#x27; + changeSetBoundary + &#x27;\r\n\r\n&#x27;;
+      const changeSetBoundary = &#x60;changeset_${generateUniqueId()}&#x60;;
+      requestBody += &#x27;Content-Type: multipart/mixed;boundary=&#x27; + changeSetBoundary + &#x27;\r\n\r\n&#x27;;
 
-    let contentId = 0;
-    const getQueries = [];
-    models.forEach((model) =&gt; {
-      if (!model.get(&#x27;id&#x27;)) {
-        throw new Error(&#x60;Models saved using the &#x27;batchUpdate&#x27; method must be created with identifiers.&#x60;);
-      }
-
-      let modelDirtyType = model.get(&#x27;dirtyType&#x27;);
-
-      if (!modelDirtyType) {
-        if (model.hasChangedBelongsTo()) {
-          modelDirtyType = &#x27;updated&#x27;;
-        } else {
-          return;
-        }
-      }
-
-      requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;\r\n&#x27;;
-      requestBody += &#x27;Content-Type: application/http\r\n&#x27;;
-      requestBody += &#x27;Content-Transfer-Encoding: binary\r\n&#x27;;
-
-      contentId++;
-      requestBody += &#x27;Content-ID: &#x27; + contentId + &#x27;\r\n\r\n&#x27;;
-
-      const skipUnchangedAttrs = true;
-      const snapshot = model._createSnapshot();
-      SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
-
-      let modelHttpMethod = &#x27;POST&#x27;;
-      switch (modelDirtyType) {
-        case &#x27;created&#x27;:
-          modelHttpMethod = &#x27;POST&#x27;;
-          break;
-
-        case &#x27;updated&#x27;:
-          modelHttpMethod = skipUnchangedAttrs ? &#x27;PATCH&#x27; : &#x27;PUT&#x27;;
-          break;
-
-        case &#x27;deleted&#x27;:
-          modelHttpMethod = &#x27;DELETE&#x27;;
-          break;
-
-        default:
-          throw new Error(&#x60;Unknown requestType: ${modelDirtyType}&#x60;);
-      }
-
-      if (!this.store) {
-        this.store = store;
-      }
-
-      const modelUrl =  this._buildURL(snapshot.type.modelName, modelDirtyType === &#x27;created&#x27; ? undefined : model.get(&#x27;id&#x27;));
-
-      requestBody += modelHttpMethod + &#x27; &#x27; + modelUrl + &#x27; HTTP/1.1\r\n&#x27;;
-      requestBody += &#x27;Content-Type: application/json;type=entry\r\n&#x27;;
-      requestBody += &#x27;Prefer: return=representation\r\n\r\n&#x27;;
-
-      // Don&#x27;t need to send any data for deleting.
-      if (modelDirtyType !== &#x27;deleted&#x27;) {
-        const serializer = store.serializerFor(snapshot.type.modelName);
-        const data = {};
-        serializer.serializeIntoHash(data, snapshot.type, snapshot);
-        requestBody += JSON.stringify(data) + &#x27;\r\n&#x27;;
-
-        // Add a GET request for created or updated models.
-        let getQuery = &#x27;\r\n--&#x27; + boundary + &#x27;\r\n&#x27;;
-        getQuery += &#x27;Content-Type: application/http\r\n&#x27;;
-        getQuery += &#x27;Content-Transfer-Encoding: binary\r\n&#x27;;
-
-        const relationships = [];
-        model.eachRelationship((name) =&gt; {
-          // If attr serializable value hadn&#x27;t been set up, it&#x27;ll be { serialize: &#x27;id&#x27; } by default from DS.EmbeddedRecordsMixin.
-          let attrSerializableVal =
-            serializer &amp;&amp; serializer.attrs &amp;&amp; serializer.attrs[name] &amp;&amp; serializer.attrs[name].serializable;
-
-          if (!attrSerializableVal || attrSerializableVal !== false) {
-            relationships.push(&#x60;${name}.id&#x60;);
-          }
-        });
-
-        const getUrl = this._buildURL(snapshot.type.modelName, model.get(&#x27;id&#x27;));
-
-        let expand;
-        if (relationships.length) {
-          const query = new Builder(store, snapshot.type.modelName).select(relationships.join(&#x27;,&#x27;)).build();
-          const queryAdapter = new ODataQueryAdapter(getUrl, store);
-          expand = queryAdapter.getODataQuery(query).$expand;
-        }
-
-        getQuery += &#x27;\r\nGET &#x27; + getUrl + (expand ? &#x27;?$expand=&#x27; + expand : &#x27;&#x27;) + &#x27; HTTP/1.1\r\n&#x27;;
-        getQuery += &#x27;Content-Type: application/json;type=entry\r\n&#x27;;
-        getQuery += &#x27;Prefer: return=representation\r\n&#x27;;
-        getQueries.push(getQuery);
-      }
-    });
-
-    requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;--&#x27;;
-    requestBody += getQueries.join(&#x27;&#x27;);
-    requestBody += &#x27;\r\n--&#x27; + boundary + &#x27;--&#x27;;
-
-    const url = &#x60;${this._buildURL()}/$batch&#x60;;
-
-    const headers = $.extend({}, this.get(&#x27;headers&#x27;));
-    headers[&#x27;Content-Type&#x27;] = &#x60;multipart/mixed;boundary=${boundary}&#x60;;
-    const httpMethod = &#x27;POST&#x27;;
-
-    const options = {
-      method: httpMethod,
-      headers,
-      dataType: &#x27;text&#x27;,
-      data: requestBody,
-    };
-
-    return new Promise((resolve, reject) =&gt; $.ajax(url, options).done((response, statusText, xhr) =&gt; {
-      const meta = getResponseMeta(xhr.getResponseHeader(&#x27;Content-Type&#x27;));
-      if (meta.contentType !== &#x27;multipart/mixed&#x27;) {
-        return reject(new DS.AdapterError(&#x27;Invalid response type.&#x27;));
-      }
-
-      const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
-      const getResponses = batchResponses.filter(r =&gt; r.contentType === &#x27;application/http&#x27;);
-      const updateResponse = batchResponses.find(r =&gt; r.contentType === &#x27;multipart/mixed&#x27;);
-
-      const errorsChangesets = updateResponse.changesets.filter(c =&gt; !this.isSuccess(c.meta.status));
-      if (errorsChangesets.length) {
-        return reject(errorsChangesets.map(c =&gt; new DS.AdapterError(c.body)));
-      }
-
-      const errors = [];
-      const result = [];
-      // eslint-disable-next-line ember/jquery-ember-run
+      let contentId = 0;
+      const getQueries = [];
       models.forEach((model) =&gt; {
-        const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
-        if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27;) {
-          const { response } = getResponses.shift();
-          if (this.isSuccess(response.meta.status)) {
-            const modelName = model.constructor.modelName;
-            const payload = { [modelName]: response.body };
-            run(() =&gt; {
-              store.pushPayload(modelName, payload);
-              model.rollbackAttributes(); // forced adjustment of model state
-            });
-          } else {
-            errors.push(new DS.AdapterError(response.body));
-          }
-        } else if (modelDirtyType === &#x27;deleted&#x27;) {
-          run(store, store.unloadRecord, model);
+        if (!model.get(&#x27;id&#x27;)) {
+          throw new Error(&#x60;Models saved using the &#x27;batchUpdate&#x27; method must be created with identifiers.&#x60;);
         }
 
-        result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
+        let modelDirtyType = model.get(&#x27;dirtyType&#x27;);
+
+        if (!modelDirtyType) {
+          if (model.hasChangedBelongsTo()) {
+            modelDirtyType = &#x27;updated&#x27;;
+          } else {
+            return;
+          }
+        }
+
+        requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;\r\n&#x27;;
+        requestBody += &#x27;Content-Type: application/http\r\n&#x27;;
+        requestBody += &#x27;Content-Transfer-Encoding: binary\r\n&#x27;;
+
+        contentId++;
+        requestBody += &#x27;Content-ID: &#x27; + contentId + &#x27;\r\n\r\n&#x27;;
+
+        const skipUnchangedAttrs = true;
+        const snapshot = model._createSnapshot();
+        SnapshotTransform.transformForSerialize(snapshot, skipUnchangedAttrs);
+
+        let modelHttpMethod = &#x27;POST&#x27;;
+        switch (modelDirtyType) {
+          case &#x27;created&#x27;:
+            modelHttpMethod = &#x27;POST&#x27;;
+            break;
+
+          case &#x27;updated&#x27;:
+            modelHttpMethod = skipUnchangedAttrs ? &#x27;PATCH&#x27; : &#x27;PUT&#x27;;
+            break;
+
+          case &#x27;deleted&#x27;:
+            modelHttpMethod = &#x27;DELETE&#x27;;
+            break;
+
+          default:
+            throw new Error(&#x60;Unknown requestType: ${modelDirtyType}&#x60;);
+        }
+
+        if (!this.store) {
+          this.store = store;
+        }
+
+        const modelUrl =  this._buildURL(snapshot.type.modelName, modelDirtyType === &#x27;created&#x27; ? undefined : model.get(&#x27;id&#x27;));
+
+        requestBody += modelHttpMethod + &#x27; &#x27; + modelUrl + &#x27; HTTP/1.1\r\n&#x27;;
+        requestBody += &#x27;Content-Type: application/json;type=entry\r\n&#x27;;
+        requestBody += &#x27;Prefer: return=representation\r\n\r\n&#x27;;
+
+        // Don&#x27;t need to send any data for deleting.
+        if (modelDirtyType !== &#x27;deleted&#x27;) {
+          const serializer = store.serializerFor(snapshot.type.modelName);
+          const data = {};
+          serializer.serializeIntoHash(data, snapshot.type, snapshot);
+          requestBody += JSON.stringify(data) + &#x27;\r\n&#x27;;
+
+          // Add a GET request for created or updated models.
+          let getQuery = &#x27;\r\n--&#x27; + boundary + &#x27;\r\n&#x27;;
+          getQuery += &#x27;Content-Type: application/http\r\n&#x27;;
+          getQuery += &#x27;Content-Transfer-Encoding: binary\r\n&#x27;;
+
+          const relationships = [];
+          model.eachRelationship((name) =&gt; {
+            // If attr serializable value hadn&#x27;t been set up, it&#x27;ll be { serialize: &#x27;id&#x27; } by default from DS.EmbeddedRecordsMixin.
+            let attrSerializeVal =
+              serializer &amp;&amp; serializer.attrs &amp;&amp; serializer.attrs[name] &amp;&amp; serializer.attrs[name].serialize;
+
+            if (attrSerializeVal !== false) {
+              relationships.push(&#x60;${name}.id&#x60;);
+            }
+          });
+
+          const getUrl = this._buildURL(snapshot.type.modelName, model.get(&#x27;id&#x27;));
+
+          let expand;
+          if (relationships.length) {
+            const query = new Builder(store, snapshot.type.modelName).select(relationships.join(&#x27;,&#x27;)).build();
+            const queryAdapter = new ODataQueryAdapter(getUrl, store);
+            expand = queryAdapter.getODataQuery(query).$expand;
+          }
+
+          getQuery += &#x27;\r\nGET &#x27; + getUrl + (expand ? &#x27;?$expand=&#x27; + expand : &#x27;&#x27;) + &#x27; HTTP/1.1\r\n&#x27;;
+          getQuery += &#x27;Content-Type: application/json;type=entry\r\n&#x27;;
+          getQuery += &#x27;Prefer: return=representation\r\n&#x27;;
+          getQueries.push(getQuery);
+        }
       });
 
-      return errors.length ? reject(errors) : resolve(result);
-    }).fail(reject));
+      requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;--&#x27;;
+      requestBody += getQueries.join(&#x27;&#x27;);
+      requestBody += &#x27;\r\n--&#x27; + boundary + &#x27;--&#x27;;
+
+      const url = &#x60;${this._buildURL()}/$batch&#x60;;
+
+      const headers = $.extend({}, this.get(&#x27;headers&#x27;));
+      headers[&#x27;Content-Type&#x27;] = &#x60;multipart/mixed;boundary=${boundary}&#x60;;
+      const httpMethod = &#x27;POST&#x27;;
+
+      const options = {
+        method: httpMethod,
+        headers,
+        dataType: &#x27;text&#x27;,
+        data: requestBody,
+      };
+
+      return new Promise((resolve, reject) =&gt; $.ajax(url, options).done((response, statusText, xhr) =&gt; {
+        const meta = getResponseMeta(xhr.getResponseHeader(&#x27;Content-Type&#x27;));
+        if (meta.contentType !== &#x27;multipart/mixed&#x27;) {
+          return reject(new DS.AdapterError(&#x27;Invalid response type.&#x27;));
+        }
+
+        const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+        const getResponses = batchResponses.filter(r =&gt; r.contentType === &#x27;application/http&#x27;);
+        const updateResponse = batchResponses.find(r =&gt; r.contentType === &#x27;multipart/mixed&#x27;);
+
+        const errorsChangesets = updateResponse.changesets.filter(c =&gt; !this.isSuccess(c.meta.status));
+        if (errorsChangesets.length) {
+          return reject(errorsChangesets.map(c =&gt; new DS.AdapterError(c.body)));
+        }
+
+        const errors = [];
+        const result = [];
+        // eslint-disable-next-line ember/jquery-ember-run
+        models.forEach((model) =&gt; {
+          const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
+          if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27;) {
+            const { response } = getResponses.shift();
+            if (this.isSuccess(response.meta.status)) {
+              const modelName = model.constructor.modelName;
+              const payload = { [modelName]: response.body };
+              run(() =&gt; {
+                store.pushPayload(modelName, payload);
+                model.rollbackAttributes(); // forced adjustment of model state
+              });
+            } else {
+              errors.push(new DS.AdapterError(response.body));
+            }
+          } else if (modelDirtyType === &#x27;deleted&#x27;) {
+            run(store, store.unloadRecord, model);
+          }
+
+          result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
+        });
+
+        return errors.length ? reject(errors) : resolve(result);
+      }).fail(reject));
+    });
+  },
+
+  /**
+    A method to generate url part from queryParams.
+
+    @method _generateFunctionQueryString
+    @param {Object} queryParams
+    @param {DS.Store} store
+    @return {String}
+    @private
+  */
+  _generateFunctionQueryString(queryParams, store) {
+    const adapter = new ODataQueryAdapter(&#x27;1&#x27;, store);
+    let queryUrlString = &#x27;&#x27;;
+
+    if (queryParams.expand || queryParams.select) {
+      queryUrlString = adapter.getODataFunctionQuery(queryParams);
+    }
+
+    return queryUrlString;
+  },
+
+  /**
+    A method to make args object function/action call method&#x27;s.
+
+    @method _getODataArgs
+    @param {Object} params
+    @param {Boolean} isEmber
+    @param {Boolean} isAction
+    @return {Object}
+    @private
+  */
+  _getODataArgs(params, isEmber, isAction) {
+    const paramsLastIndex = isEmber ? 8 : 6;
+    let args = {};
+    args[isAction ? &#x27;actionName&#x27; : &#x27;functionName&#x27;] = params[0];
+    args[isAction ? &#x27;data&#x27; : &#x27;params&#x27;] = params[1];
+    args.url = params[2];
+    args.fields = params[3];
+    if (isEmber) {
+      args.store = params[4];
+      args.modelName = params[5];
+    }
+
+    args.successCallback = params[paramsLastIndex - 2];
+    args.failCallback = params[paramsLastIndex - 1];
+    args.alwaysCallback = params[paramsLastIndex];
+
+    return args;
   },
 
   /**
@@ -703,12 +788,16 @@ export default DS.RESTAdapter.extend({
     assert(&#x27;Params must be Object!&#x27;, typeof params === &#x27;object&#x27;);
     assert(&#x27;params.method or params.url is not defined.&#x27;, !(isNone(params.method) || isNone(params.url)));
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       $.ajax(params).done((msg) =&gt; {
         if (!isNone(store) &amp;&amp; !isNone(modelname)) {
-          const normalizedRecords = { data: [] };
+          const normalizedRecords = { data: A(), included: A() };
           Object.values(msg.value).forEach(record =&gt; {
-            normalizedRecords.data.push(store.normalize(modelname, record).data);
+            const normalized = store.normalize(modelname, record);
+            normalizedRecords.data.addObject(normalized.data);
+            if (normalized.included) {
+              normalizedRecords.included.addObjects(normalized.included);
+            }
           });
           msg = store.push(normalizedRecords);
         }
