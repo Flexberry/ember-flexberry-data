@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.4.0-beta.1] - 2020-05-18
+### Added
+- Changes from [`2.4.0`](#240---2020-05-18) and [`2.4.1`](#241---2020-05-18) versions.
+
 ## [2.4.1] - 2020-05-18
 ### Fixed
 - The `fields` parameter with the `xhrFields` property for the request in the `callFunction` and `callAction` methods of the `OData` adapter is lost.
