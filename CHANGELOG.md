@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.5.0-beta.0] - 2020-05-29
+### Fixed
+- [WIP] The `batchUpdate` method of the `Offline` adapter for models with polymorphic relationships does not work.
+
 ## [2.4.1] - 2020-05-18
 ### Fixed
 - The `fields` parameter with the `xhrFields` property for the request in the `callFunction` and `callAction` methods of the `OData` adapter is lost.
