@@ -170,6 +170,25 @@ export default DS.JSONSerializer.extend({
   },
 
   /**
+    If the adapter returns the &#x60;belongsTo&#x60; relation as an identifier, we will replace it with an object with the &#x60;id&#x60; property.
+
+    See [EmberJS API](https://emberjs.com/api/).
+
+    @param {DS.Model} typeClass
+    @param {Object} hash
+    @return {Object}
+  */
+  normalize(typeClass, hash) {
+    typeClass.eachRelationship((name, { kind }) =&gt; {
+      if (kind === &#x27;belongsTo&#x27; &amp;&amp; typeof hash[name] === &#x27;string&#x27;) {
+        hash[name] = { id: hash[name] };
+      }
+    });
+
+    return this._super(...arguments);
+  },
+
+  /**
     Returns the resource&#x27;s attributes formatted as a JSON-API &quot;attributes object&quot;.
     [More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_extractAttributes).
 

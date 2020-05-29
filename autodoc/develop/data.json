@@ -5728,6 +5728,30 @@
         {
             "file": "addon/serializers/offline.js",
             "line": 27,
+            "description": "If the adapter returns the `belongsTo` relation as an identifier, we will replace it with an object with the `id` property.\n\nSee [EmberJS API](https://emberjs.com/api/).",
+            "params": [
+                {
+                    "name": "typeClass",
+                    "description": "",
+                    "type": "DS.Model"
+                },
+                {
+                    "name": "hash",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Object"
+            },
+            "class": "Serializer.Offline",
+            "module": "ember-flexberry-data",
+            "namespace": "Serializer"
+        },
+        {
+            "file": "addon/serializers/offline.js",
+            "line": 46,
             "description": "Returns the resource's attributes formatted as a JSON-API \"attributes object\".\n[More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_extractAttributes).",
             "itemtype": "method",
             "name": "extractAttributes",
@@ -5753,7 +5777,7 @@
         },
         {
             "file": "addon/serializers/offline.js",
-            "line": 50,
+            "line": 69,
             "description": "Method `serializeAttribute` can be used to customize how DS.attr properties are serialized.\n[More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_serializeAttribute).",
             "itemtype": "method",
             "name": "serializeAttribute",
@@ -5785,7 +5809,7 @@
         },
         {
             "file": "addon/serializers/offline.js",
-            "line": 124,
+            "line": 143,
             "description": "Normalization method for arrays of objects.\n[More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_normalizeArrayResponse).",
             "itemtype": "method",
             "name": "normalizeArrayResponse",
@@ -8909,6 +8933,10 @@
         {
             "message": "Missing item type\nReturns key for a given relationship.",
             "line": " addon/serializers/odata.js:49"
+        },
+        {
+            "message": "Missing item type\nIf the adapter returns the `belongsTo` relation as an identifier, we will replace it with an object with the `id` property.\n\nSee [EmberJS API](https://emberjs.com/api/).",
+            "line": " addon/serializers/offline.js:27"
         },
         {
             "message": "Missing item type",
