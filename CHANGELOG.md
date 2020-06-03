@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Serializing not loaded masters on save.
 
 ## [2.5.0-beta.0] - 2020-05-29
 ### Fixed
