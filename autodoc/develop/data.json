@@ -5697,7 +5697,7 @@
         },
         {
             "file": "addon/serializers/odata.js",
-            "line": 49,
+            "line": 53,
             "description": "Returns key for a given relationship.",
             "params": [
                 {
@@ -5715,7 +5715,7 @@
         },
         {
             "file": "addon/serializers/odata.js",
-            "line": 64,
+            "line": 68,
             "description": "Fixes error with hasMany polymorphic relationships.\nDelete this after ember-data 3.5.0 update.",
             "itemtype": "method",
             "name": "_normalizeEmbeddedRelationship",
@@ -8732,7 +8732,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/serializers/odata.js:49"
+            "line": " addon/serializers/odata.js:53"
         },
         {
             "message": "replacing incorrect tag: function with method",
@@ -8932,7 +8932,7 @@
         },
         {
             "message": "Missing item type\nReturns key for a given relationship.",
-            "line": " addon/serializers/odata.js:49"
+            "line": " addon/serializers/odata.js:53"
         },
         {
             "message": "Missing item type\nIf the adapter returns the `belongsTo` relation as an identifier, we will replace it with an object with the `id` property.\n\nSee [EmberJS API](https://emberjs.com/api/).",
