@@ -34,6 +34,10 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
 
     var key = relationship.key;
     var belongsToId = snapshot.belongsTo(key, { id: true });
+    if (belongsToId === undefined) {
+      return;
+    }
+
     var payloadKey = this.keyForRelationship(key, relationship.kind, 'serialize');
     if (Ember.isNone(belongsToId)) {
       json[payloadKey] = null;
