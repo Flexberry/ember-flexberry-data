@@ -1,8 +1,10 @@
 # Change Log
 
 ## [Unreleased]
+
+## [2.5.0-beta.1] - 2020-06-10
 ### Fixed
-- Serializing not loaded masters on save.
+- Not loaded `belongsTo` relationships were serialized to `null` when saved.
 
 ## [2.5.0-beta.0] - 2020-05-29
 ### Fixed
