@@ -244,4 +244,16 @@ export default DS.Store.extend({
   batchUpdate(models) {
     return this.adapterFor('application').batchUpdate(this, models);
   },
+
+  /**
+   * Pushes into store the model that exists in backend without a request to it.
+   * @param {String} modelName Name of the model to push into store.
+   * @param {String} primaryKey Primery key of the model to push into store.
+   */
+  createExistingRecord(modelName, primaryKey) {
+    const adapter = this.adapterFor(modelName);
+    Ember.assert('Method \'createExistingRecord\' is missing', !Ember.isNone(adapter.createExistingRecord));
+
+    return adapter.createExistingRecord(this, modelName,primaryKey);
+  }
 });
