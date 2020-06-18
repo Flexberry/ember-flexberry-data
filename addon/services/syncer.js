@@ -314,6 +314,29 @@ export default Ember.Service.extend({
   },
 
   /**
+   * Return name of projection to sync up by model name.
+   * @method getSyncUpProjectionName
+   * @param {String} modelName Name of model to get sync up projection name.
+   * @returns Name of projection to sync up.
+  */
+  getSyncUpProjectionName(store, modelName) {  
+    const modelClass = store.modelFor(modelName);
+
+    let projectionName = modelName.indexOf('-') > -1 ? modelName.substring(modelName.indexOf('-') + 1) : modelName;
+    projectionName = projectionName.camelize().capitalize() + 'E';
+
+    if (modelClass.projections) {
+      if (modelClass.projections.get(projectionName)) {
+        return projectionName;
+      } else {
+        return modelClass.projections[0].name;
+      }
+    }
+
+    return null;
+  },
+
+  /**
   */
   _runJobs(store, jobs, continueOnError, jobCount) {
     let _this = this;
@@ -650,18 +673,14 @@ export default Ember.Service.extend({
   /**
   */
   _createQuery(store, job) {
-    //TODO: Get projection for sync up from generated list of projections for models.
-    let modelName = job.get('objectType.name');
-    let modelClass = store.modelFor(modelName);
-    let projectionName = modelName.indexOf('-') > -1 ? modelName.substring(modelName.indexOf('-') + 1) : modelName;
-    projectionName = projectionName.camelize().capitalize() + 'E';
+    const modelName = job.get('objectType.name'),
+      projectionName = this.getSyncUpProjectionName(store, modelName);
 
-    let builder = new Builder(store).from(modelName);
-    if (modelClass.projections && modelClass.projections.get(projectionName)) {
+    let builder = new Builder(store).from(modelName).byId(job.get('objectPrimaryKey'));
+    if (projectionName) {
       builder = builder.selectByProjection(projectionName);
     }
 
-    builder = builder.byId(job.get('objectPrimaryKey'));
     let query = builder.build();
     query.useOnlineStore = true;
     return query;
