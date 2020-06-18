@@ -596,14 +596,14 @@ export default Ember.Service.extend({
       let promises = [];
       let attributes = get(store.modelFor(job.get('objectType.name')), 'attributes');
       job.get('auditFields').forEach((auditField) => {
-        let descriptorField = auditField.get('field').split('@');
-        let field = descriptorField.shift();
-        let type = descriptorField.shift();
+        const [field, type] = auditField.get('field').split('@');
+
         if (type) {
-          let builder = new Builder(store, type).byId(auditField.get('newValue'));
-          promises.push(store.queryRecord(type, builder.build()).then((relationship) => {
+          let relationship = store.peekRecord(type, auditField.get('newValue'));
+          if (!relationship && !Ember.isBlank(auditField.get('newValue'))) {
+            relationship = store.createExistingRecord(type, auditField.get('newValue'));
+          } 
             changes[field] = relationship;
-          }));
         } else {
           let value = auditField.get('newValue');
           switch (attributes.get(field).type) {
