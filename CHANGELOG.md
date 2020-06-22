@@ -1,6 +1,8 @@
 # Change Log
 
-## [2.5.0-beta.2] - [Unreleased]
+## [Unreleased]
+
+## [2.5.0-beta.2] - 2020-06-22
 ### Added
 - Store
     - createExistingRecord method to create record, that exists in backend, without request to it.
