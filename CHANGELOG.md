@@ -1,6 +1,13 @@
 # Change Log
 
-## [Unreleased]
+## [2.5.0-beta.2] - [Unreleased]
+### Added
+- Store
+    - createExistingRecord method to create record, that exists in backend, without request to it.
+- Syncer service
+    - Implemented sync up through batch update when useBatchUpdate flag set to true.
+### Moved 
+- Logic for getting projection for syncing up into syncer service method.
 
 ## [2.5.0-beta.1] - 2020-06-10
 ### Fixed
