@@ -561,6 +561,17 @@ export default DS.Store.extend({
   },
 
   /**
+   * Pushes into store the model that exists in backend without a request to it.
+   * @method createExistingRecord
+   * @param {String} modelName Name of the model to push into store.
+   * @param {String} primaryKey Primery key of the model to push into store.
+   * @param {Boolean} [useOnlineStore] Allow to explicitly specify online or offline store using independently of global online status
+   */
+  createExistingRecord() {
+    return this._callSuperMethod(&#x27;createExistingRecord&#x27;, 2, arguments);
+  },
+
+  /**
     A method to send batch update, create or delete models in single transaction.
 
     All models saving using this method must have identifiers.
