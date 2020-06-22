@@ -529,24 +529,6 @@ export default DS.Adapter.extend({
   },
 
   /**
-   * Pushes into store the model that exists in backend without a request to it.
-   * @param {DS.Store} store 
-   * @param {String} modelName Name of the model to push into store.
-   * @param {String} primaryKey Primery key of the model to push into store.
-   */
-  createExistingRecord(store, modelName, primaryKey) {
-    Ember.assert('Model name for store.createExistingRecord() method must not be blank.', !Ember.isBlank(modelName));
-    Ember.assert('Model primary key for store.createExistingRecord() method must not be blank.', !Ember.isBlank(primaryKey));
-
-    return store.push({
-      data: {
-        id: primaryKey,
-        type: modelName
-      }
-    });
-  },
-
-  /**
     Stores hash for performing bulk operaion into map.
 
     @method _storeHashForBulkOperation

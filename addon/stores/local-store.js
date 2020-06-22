@@ -251,9 +251,14 @@ export default DS.Store.extend({
    * @param {String} primaryKey Primery key of the model to push into store.
    */
   createExistingRecord(modelName, primaryKey) {
-    const adapter = this.adapterFor(modelName);
-    Ember.assert('Method \'createExistingRecord\' is missing', !Ember.isNone(adapter.createExistingRecord));
+    Ember.assert('Model name for store.createExistingRecord() method must not be blank.', !Ember.isBlank(modelName));
+    Ember.assert('Model primary key for store.createExistingRecord() method must not be blank.', !Ember.isBlank(primaryKey));
 
-    return adapter.createExistingRecord(this, modelName,primaryKey);
+    return store.push({
+      data: {
+        id: primaryKey,
+        type: modelName
+      }
+    });
   }
 });
