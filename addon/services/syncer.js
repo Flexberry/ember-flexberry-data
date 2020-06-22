@@ -218,9 +218,9 @@ export default Ember.Service.extend({
 
       return this.get('offlineStore').query(modelName, builder.build()).then((jobs) => {
         dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
-        return options.useBatchUpdate
-          ? this._runJobsThroughBatch(store, jobs)
-          : this._runJobs(store, jobs, options && options.continueOnError);
+        return options && options.useBatchUpdate ?
+          this._runJobsThroughBatch(store, jobs) :
+          this._runJobs(store, jobs, options && options.continueOnError);
       });
     }
   },
@@ -322,7 +322,7 @@ export default Ember.Service.extend({
    * @param {String} modelName Name of model to get sync up projection name.
    * @returns Name of projection to sync up.
    */
-  getSyncUpProjectionName(store, modelName) {  
+  getSyncUpProjectionName(store, modelName) {
     const modelClass = store.modelFor(modelName);
 
     let projectionName = modelName.indexOf('-') > -1 ? modelName.substring(modelName.indexOf('-') + 1) : modelName;
@@ -368,8 +368,8 @@ export default Ember.Service.extend({
   },
 
   /**
-   * Starts syncing up through batch. 
-   * @param {DS.Store} store 
+   * Starts syncing up through batch.
+   * @param {DS.Store} store
    * @param {Array} jobs
    */
   _runJobsThroughBatch(store, jobs) {
@@ -380,19 +380,19 @@ export default Ember.Service.extend({
     return new RSVP.Promise((resolve, reject) => {
       jobs.forEach(job => {
         switch (job.get('operationType')) {
-          case 'INSERT': 
+          case 'INSERT':
             recordsToSyncUp.push(this._getRecordToCreate(store, job));
             break;
-          case 'UPDATE': 
+          case 'UPDATE':
             recordsToSyncUp.push(this._getRecordToUpdate(store, job));
             break;
-          case 'DELETE': 
+          case 'DELETE':
             recordsToSyncUp.push(this._getRecordToRemove(store, job));
             break;
-          default: 
+          default:
             throw new Error('Unsupported operation type.');
         }
-      })
+      });
 
       return RSVP.Promise.all(recordsToSyncUp).then(records => {
         return store.batchUpdate(records).then(() => {
@@ -400,9 +400,9 @@ export default Ember.Service.extend({
             RSVP.all(job.get('auditFields').map(field => field.destroyRecord())).then(() => {
               resolve(job.destroyRecord());
             }, reject);
-          })
-        })
-      })
+          });
+        });
+      });
     });
   },
 
@@ -453,14 +453,14 @@ export default Ember.Service.extend({
 
     return this._changesForRecord(store, job).then((changes) => {
       record.setProperties(changes);
-      return RSVP.Promise.resolve(record);
+      return record;
     });
   },
 
   /**
   */
   _runCreatingJob(store, job) {
-    this._getRecordToCreate(store, job).then(record => {
+    return this._getRecordToCreate(store, job).then(record => {
       return record.save().then(() => {
         job.set('executionResult', 'Выполнено');
         return job.save();
@@ -484,7 +484,7 @@ export default Ember.Service.extend({
         record.set('isSyncingUp', true);
         return this._changesForRecord(store, job).then((changes) => {
           record.setProperties(changes);
-          return RSVP.Promise.resolve(record);
+          return record;
         });
       } else {
         return this.resolveNotFoundRecord(job);
@@ -519,7 +519,7 @@ export default Ember.Service.extend({
       if (record) {
         record.set('isSyncingUp', true);
         record.deleteRecord();
-        return RSVP.Promise.resolve(record);
+        return record;
       } else {
         return this.resolveNotFoundRecord(job);
       }
@@ -529,7 +529,7 @@ export default Ember.Service.extend({
   /**
   */
   _runRemovingJob(store, job) {
-    this._getRecordToRemove(store, job).then(record => {
+    return this._getRecordToRemove(store, job).then(record => {
       return record.destroyRecord().then(() => {
         record.set('isDestroyedDuringSyncUp', true);
         job.set('executionResult', 'Выполнено');
@@ -675,10 +675,12 @@ export default Ember.Service.extend({
         const [field, type] = auditField.get('field').split('@');
 
         if (type) {
-          let relationship = store.peekRecord(type, auditField.get('newValue'));
-          if (!relationship && !Ember.isBlank(auditField.get('newValue'))) {
-            relationship = store.createExistingRecord(type, auditField.get('newValue'));
-          } 
+          let relationship = null;
+          if (auditField.get('newValue')) {
+            relationship = store.peekRecord(type, auditField.get('newValue')) ||
+              store.createExistingRecord(type, auditField.get('newValue'));
+          }
+
           changes[field] = relationship;
         } else {
           let value = auditField.get('newValue');
@@ -749,8 +751,8 @@ export default Ember.Service.extend({
   /**
   */
   _createQuery(store, job) {
-    const modelName = job.get('objectType.name'),
-      projectionName = this.getSyncUpProjectionName(store, modelName);
+    const modelName = job.get('objectType.name');
+    const projectionName = this.getSyncUpProjectionName(store, modelName);
 
     let builder = new Builder(store).from(modelName).byId(job.get('objectPrimaryKey'));
     if (projectionName) {

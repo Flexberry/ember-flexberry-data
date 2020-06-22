@@ -254,7 +254,7 @@ export default DS.Store.extend({
     Ember.assert('Model name for store.createExistingRecord() method must not be blank.', !Ember.isBlank(modelName));
     Ember.assert('Model primary key for store.createExistingRecord() method must not be blank.', !Ember.isBlank(primaryKey));
 
-    return store.push({
+    return this.push({
       data: {
         id: primaryKey,
         type: modelName

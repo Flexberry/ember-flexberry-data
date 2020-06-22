@@ -46,7 +46,7 @@ export default DS.Store.extend({
   batchUpdate(models) {
     return this.adapterFor('application').batchUpdate(this, models);
   },
-  
+
   /**
    * Pushes into store the model that exists in backend without a request to it.
    * @param {String} modelName Name of the model to push into store.
@@ -56,7 +56,7 @@ export default DS.Store.extend({
     Ember.assert('Model name for store.createExistingRecord() method must not be blank.', !Ember.isBlank(modelName));
     Ember.assert('Model primary key for store.createExistingRecord() method must not be blank.', !Ember.isBlank(primaryKey));
 
-    return store.push({
+    return this.push({
       data: {
         id: primaryKey,
         type: modelName
