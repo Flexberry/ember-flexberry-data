@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [3.4.0-beta.1] - 2020-05-18
+## [3.4.0] - 2020-07-10
 ### Added
 - Changes from [`2.4.0`](#240---2020-05-18) and [`2.4.1`](#241---2020-05-18) versions.
 
@@ -26,10 +26,6 @@
 
 ### Breaking changes
 - Now, when saving using batch update methods, the `save` method with the `softSave` option is called for all models.
-
-## [3.4.0-beta.0] - 2020-04-06
-### Added
-- Changes from [`2.4.0-beta.0`](#240-beta0---2020-03-18) and [`2.4.0-beta.1`](#240-beta1---2020-04-06) versions.
 
 ## [3.3.0] - 2020-03-23
 ### Added
