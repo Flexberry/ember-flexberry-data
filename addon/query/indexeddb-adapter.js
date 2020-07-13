@@ -22,10 +22,11 @@ import Queue from '../utils/queue';
 export default class extends BaseAdapter {
   /**
     @param {Dexie} db Dexie database instance.
+    @param {Boolean} [skipConstraintsErrors=false] If `true`, errors of inconsistency of data will be replaced by warnings.
     @class IndexedDBAdapter
     @constructor
   */
-  constructor(db) {
+  constructor(db, skipConstraintsErrors = false) {
     super();
 
     if (!db) {
@@ -33,6 +34,7 @@ export default class extends BaseAdapter {
     }
 
     this._db = db;
+    this._skipConstraintsErrors = skipConstraintsErrors;
   }
 
   /**
@@ -118,10 +120,14 @@ export default class extends BaseAdapter {
             if (masterKey > masterDataValue[masterPrimaryKeyName] && masterIndex < masterDataLength) {
               masterIndex++;
             } else if (masterKey < masterDataValue[masterPrimaryKeyName] || masterIndex >= masterDataLength) {
-              let objectId = data[dataIndex].id;
-              let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}. ` +
-              `It used in object of type '${dataTypeName}' with id '${objectId}'`);
-              reject(error);
+              const errorMessage = `Data constraint error. Not found object type '${masterTypeName}' with id '${masterKey}'. ` +
+                `It used in object of type '${dataTypeName}' with id '${data[dataIndex].id}'.`;
+              if (_this._skipConstraintsErrors) {
+                Ember.warn(errorMessage, false, { id: 'ember-flexberry-data-debug.offline.indexeddb-inconsistent-database' });
+              } else {
+                reject(new Error(errorMessage));
+              }
+
               break;
             }
 
@@ -150,10 +156,14 @@ export default class extends BaseAdapter {
             let detailObj = detailsData.get(detailKey);
 
             if (!detailObj) {
-              let objectId = data[dataIndex].id;
-              let error = new Error(`Data constraint error. Not found object type '${detailsTypeName}' with id ${detailKey}. ` +
-              `It used in object of type '${dataTypeName}' with id '${objectId}'`);
-              reject(error);
+              const errorMessage = `Data constraint error. Not found object type '${detailsTypeName}' with id '${detailKey}'. ` +
+                `It used in object of type '${dataTypeName}' with id '${data[dataIndex].id}'.`;
+              if (_this._skipConstraintsErrors) {
+                Ember.warn(errorMessage, false, { id: 'ember-flexberry-data-debug.offline.indexeddb-inconsistent-database' });
+              } else {
+                reject(new Error(errorMessage));
+              }
+
               break;
             }
 
