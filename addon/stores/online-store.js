@@ -48,6 +48,35 @@ export default DS.Store.extend({
   },
 
   /**
+    A method to get array of models.
+
+    @method batchQuery
+    @param {String} modelName Model name.
+    @param {Query} query Flexberry Query object.
+    @return {Promise} A promise that fulfilled with an array of models.
+  */
+  batchQuery(modelName, query) {
+    return this.adapterFor('application').batchQuery(this, modelName, query).then(result => {
+      const array = this.recordArrayManager.createAdapterPopulatedRecordArray(modelName, query);
+      array.loadRecords(this.push(result), result);
+      return array;
+    });
+  },
+
+  /**
+    A method to get single record with batch request.
+
+    @method batchFindRecord
+    @param {String} modelName Model name.
+    @param {String} modelId Record id.
+    @param {String} projectionName Projection name.
+    @return {Promise} A promise that fulfilled with single record.
+  */
+  batchFindRecord(modelName, modelId, projectionName) {
+    return this.adapterFor('application').batchFindRecord(this, modelName, modelId, projectionName);
+  },
+
+  /**
    * Pushes into store the model that exists in backend without a request to it.
    * @param {String} modelName Name of the model to push into store.
    * @param {String} primaryKey Primery key of the model to push into store.

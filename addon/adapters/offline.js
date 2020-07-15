@@ -529,6 +529,33 @@ export default DS.Adapter.extend({
   },
 
   /**
+    A method to get array of models.
+
+    @method batchQuery
+    @param {DS.Store} store The store.
+    @param {String} type Model name.
+    @param {Query} query Flexberry Query object.
+    @return {Promise} A promise that fulfilled with an array of models.
+  */
+  batchQuery(store, type, query) {
+    return store.query(type, query);
+  },
+
+  /**
+    A method to get single record.
+
+    @method batchFindRecord
+    @param {DS.Store} store The store.
+    @param {String} modelName Model name.
+    @param {String} modelId Record id.
+    @param {String} projectionName Projection name.
+    @return {Promise} A promise that fulfilled with single record.
+  */
+  batchFindRecord(store, modelName, modelId, projectionName) {
+    return store.findRecord(modelName, modelId, projectionName);
+  },
+
+  /**
     Stores hash for performing bulk operaion into map.
 
     @method _storeHashForBulkOperation
