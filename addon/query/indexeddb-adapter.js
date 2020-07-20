@@ -111,9 +111,14 @@ export default class extends BaseAdapter {
 
             // TODO: Check if Debug Mode build then use this.
             if (!masterDataValue || !masterDataValue.hasOwnProperty(masterPrimaryKeyName)) {
-              let error = new Error(`Metadata consistance error. ` +
-              `Not found property '${masterPrimaryKeyName}' in type '${masterTypeName}'.`);
-              reject(error);
+              const errorMessage = 'Metadata consistance error. ' +
+                `Not found property '${masterPrimaryKeyName}' in type '${masterTypeName}'.`;
+              if (_this._skipConstraintsErrors) {
+                Ember.warn(errorMessage, false, { id: 'ember-flexberry-data-debug.offline.indexeddb-inconsistent-database' });
+              } else {
+                reject(new Error(errorMessage));
+              }
+
               break;
             }
 
