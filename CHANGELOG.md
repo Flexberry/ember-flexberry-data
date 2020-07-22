@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [2.5.0-beta.3] - 2020-07-13
+## [2.5.0-beta.4] - 2020-07-22
 ### Added
 - [WIP] The ability to skip data inconsistency errors when reading with the `IndexedDBAdapter` adapter.
 
