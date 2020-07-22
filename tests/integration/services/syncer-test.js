@@ -8,7 +8,7 @@ import startApp from 'dummy/tests/helpers/start-app';
 
 if (config.APP.testODataService) {
   let App;
-  let baseUrl;
+  let baseUrl = null;
   if (config.APP.testODataServiceURL.indexOf('http') >= 0) {
     let index = config.APP.testODataServiceURL.lastIndexOf('/');
     if (index !== config.APP.testODataServiceURL.length - 1) {
@@ -16,11 +16,7 @@ if (config.APP.testODataService) {
     } else {
       baseUrl = config.APP.testODataServiceURL;
     }
-  } else {
-    baseUrl = 'http://rtc-web:8081/odatatmp/';
   }
-
-  baseUrl += 'ember' + Math.floor(Math.random() * 9999);
 
   moduleFor('service:syncer', 'Integration | Service | syncer', {
     needs: [
