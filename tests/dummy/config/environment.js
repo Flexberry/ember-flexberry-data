@@ -51,8 +51,9 @@ module.exports = function(environment) {
 
     ENV.APP.rootElement = '#ember-testing';
 
-    // TODO: find proper way to pass arguments to tests
-    var testODataServiceURL = process.env.TEST_ODATA_SERVICE_URL;
+    // URL of the backend running in docker
+    var testODataServiceURL = 'http://localhost:6500';
+
     ENV.APP.testODataService = !!testODataServiceURL;
     ENV.APP.testODataServiceURL = testODataServiceURL;
   }
