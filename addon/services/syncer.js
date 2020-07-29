@@ -4,6 +4,7 @@ import { SimplePredicate } from '../query/predicate';
 import { reloadLocalRecords, createLocalRecord } from '../utils/reload-local-records';
 import isModelInstance from '../utils/is-model-instance';
 import Queue from '../utils/queue';
+import { camelize, capitalize } from '../utils/string-functions';
 
 const { RSVP, isNone, isArray, getOwner, get } = Ember;
 
@@ -326,7 +327,7 @@ export default Ember.Service.extend({
     const modelClass = store.modelFor(modelName);
 
     let projectionName = modelName.indexOf('-') > -1 ? modelName.substring(modelName.indexOf('-') + 1) : modelName;
-    projectionName = projectionName.camelize().capitalize() + 'E';
+    projectionName = capitalize(camelize(projectionName)) + 'E';
 
     if (modelClass.projections) {
       if (modelClass.projections.get(projectionName)) {
