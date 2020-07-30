@@ -329,12 +329,8 @@ export default Ember.Service.extend({
     let projectionName = modelName.indexOf('-') > -1 ? modelName.substring(modelName.indexOf('-') + 1) : modelName;
     projectionName = capitalize(camelize(projectionName)) + 'E';
 
-    if (modelClass.projections) {
-      if (modelClass.projections.get(projectionName)) {
-        return projectionName;
-      } else {
-        return modelClass.projections[0].name;
-      }
+    if (modelClass.projections && modelClass.projections.get(projectionName)) {
+      return projectionName;
     }
 
     return null;
