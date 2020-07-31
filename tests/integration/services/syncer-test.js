@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import Dexie from 'npm:dexie';
-import { moduleFor, test } from 'ember-qunit';
+import { moduleFor, skip, test } from 'ember-qunit';
 import { Adapter, Query, } from 'ember-flexberry-data';
 import config from 'dummy/config/environment';
 import startApp from 'dummy/tests/helpers/start-app';
@@ -247,7 +247,7 @@ if (config.APP.testODataService) {
     });
   });
 
-  test('sync up with not found record', function(assert) {
+  skip('sync up with not found record', function(assert) {
     runTest(App, 3, assert, (store, syncer, done) => {
       store.createRecord('ember-flexberry-dummy-application-user', {
         name: 'Man',
