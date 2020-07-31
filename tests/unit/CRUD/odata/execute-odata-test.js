@@ -7,6 +7,8 @@ import { Adapter, Projection } from 'ember-flexberry-data';
 import startApp from '../../../helpers/start-app';
 import config from '../../../../../dummy/config/environment';
 
+import { clearOnlineData } from '../../../helpers/clear-data';
+
 export default function executeTest(testName, callback) {
   if (config.APP.testODataService) {
     let baseUrl;
@@ -46,6 +48,6 @@ export default function executeTest(testName, callback) {
 
     module('CRUD | odata-' + testName);
 
-    test(testName, (assert) => callback(store, assert, app));
+    test(testName, (assert) => clearOnlineData(store).then(() => callback(store, assert, app)));
   }
 }
