@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Rejecting promise if sync up through batch update failed.
 
 ## [2.5.0-beta.4] - 2020-07-22
 ### Added
