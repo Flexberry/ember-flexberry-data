@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Rejecting promise if sync up through batch update failed.
+
 ### Fixed
 - Prevent unloading record in syncer for not created entities.
 
