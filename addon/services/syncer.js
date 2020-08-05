@@ -443,11 +443,11 @@ export default Ember.Service.extend({
    */
   _getRecordToCreate(store, job) {
     let record = store.peekRecord(job.get('objectType.name'), job.get('objectPrimaryKey'));
-    if (record) {
+    if (record && record.get('dirtyType') !== 'created') {
       store.unloadRecord(record);
+      record = store.createRecord(job.get('objectType.name'), job.get('objectPrimaryKey'));
     }
 
-    record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
     record.set('isSyncingUp', true);
     record.set('isCreatedDuringSyncUp', true);
 

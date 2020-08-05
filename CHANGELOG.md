@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Prevent unloading record in syncer for not created entities.
 
 ## [2.5.0-beta.4] - 2020-07-22
 ### Added
