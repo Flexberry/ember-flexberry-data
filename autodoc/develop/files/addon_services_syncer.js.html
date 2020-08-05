@@ -546,6 +546,8 @@ export default Ember.Service.extend({
               resolve(job.destroyRecord());
             }, reject);
           });
+        }).catch(error =&gt; {
+          reject(error);
         });
       });
     });
