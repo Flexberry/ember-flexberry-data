@@ -589,11 +589,8 @@ export default Ember.Service.extend({
    * @param {DS.Model} job Job for sync up.
    */
   _getRecordToCreate(store, job) {
-    let record = store.peekRecord(job.get(&#x27;objectType.name&#x27;), job.get(&#x27;objectPrimaryKey&#x27;));
-    if (record &amp;&amp; record.get(&#x27;dirtyType&#x27;) !== &#x27;created&#x27;) {
-      store.unloadRecord(record);
-      record = store.createRecord(job.get(&#x27;objectType.name&#x27;), job.get(&#x27;objectPrimaryKey&#x27;));
-    }
+    let record = store.peekRecord(job.get(&#x27;objectType.name&#x27;), job.get(&#x27;objectPrimaryKey&#x27;)) ||
+      store.createRecord(job.get(&#x27;objectType.name&#x27;), { id: job.get(&#x27;objectPrimaryKey&#x27;) });
 
     record.set(&#x27;isSyncingUp&#x27;, true);
     record.set(&#x27;isCreatedDuringSyncUp&#x27;, true);
