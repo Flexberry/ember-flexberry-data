@@ -865,7 +865,7 @@ export default Ember.Service.extend({
     } else {
       record.eachAttribute((name) =&gt; {
         let value = record.get(name);
-        if (value) {
+        if (value !== undefined) {
           changes[name] = [null, value];
         }
       });
@@ -874,7 +874,7 @@ export default Ember.Service.extend({
     let changedRelationships = record.changedBelongsTo();
     let snapshot = record._createSnapshot();
     record.eachRelationship((name, descriptor) =&gt; {
-      let changedRelationship = changedRelationships[name];
+      let changedRelationship = this.get(&#x27;auditEnabled&#x27;) ? changedRelationships[name] : [null, record.get(name)];
       if (changedRelationship &amp;&amp; descriptor.kind === &#x27;belongsTo&#x27;) {
         let relationshipType = descriptor.type;
         if (descriptor.options &amp;&amp; descriptor.options.polymorphic) {
