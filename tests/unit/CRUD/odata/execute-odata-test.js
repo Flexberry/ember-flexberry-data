@@ -42,7 +42,6 @@ export default function executeTest(testName, callback) {
     // Define OData-adapter as default adapter for online store.
     const adapter = Adapter.Odata.create(app.__container__.ownerInjection());
     Ember.set(adapter, 'host', baseUrl);
-    Ember.set(adapter, 'store', store);
     store.get('onlineStore').reopen({
       adapterFor() {
 
