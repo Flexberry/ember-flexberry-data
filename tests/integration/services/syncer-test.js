@@ -12,9 +12,9 @@ if (config.APP.testODataService) {
   if (config.APP.testODataServiceURL.indexOf('http') >= 0) {
     let index = config.APP.testODataServiceURL.lastIndexOf('/');
     if (index !== config.APP.testODataServiceURL.length - 1) {
-      baseUrl = config.APP.testODataServiceURL + '/';
-    } else {
       baseUrl = config.APP.testODataServiceURL;
+    } else {
+      baseUrl = config.APP.testODataServiceURL.slice(0, -1);
     }
   }
 
