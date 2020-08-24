@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.5.0-beta.7] - 2020-08-24
+### Fixed
+- When processing the response in the `batchUpdate` method of the `OData` adapter, models with only the `belongsTo` relationships changed were ignored.
+
 ### Changed
 - When records stored in `IndexedDB` refer to other records that are not in `IndexedDB`, when querying those records using `IndexedDBAdapter`, you will see a warning in the console instead of a query error.
 
