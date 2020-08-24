@@ -2891,32 +2891,16 @@
         {
             "file": "addon/adapters/offline.js",
             "line": 431,
-            "description": "Performing batch update operaion.",
+            "description": "This method is not implemented.",
             "itemtype": "method",
             "name": "batchUpdate",
-            "params": [
-                {
-                    "name": "store",
-                    "description": "",
-                    "type": "DS.Store"
-                },
-                {
-                    "name": "models",
-                    "description": "Is array of models or single model for batch update.",
-                    "type": "DS.Model[]|DS.Model"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Promise"
-            },
             "class": "Adapter.Offline",
             "module": "ember-flexberry-data",
             "namespace": "Adapter"
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 531,
+            "line": 440,
             "description": "Stores hash for performing bulk operaion into map.",
             "itemtype": "method",
             "name": "_storeHashForBulkOperation",
@@ -2940,7 +2924,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 549,
+            "line": 458,
             "description": "Makes {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} out of queries that look like this:\n {\n   <property to query>: <value to match>,\n   ...\n }.",
             "itemtype": "method",
             "name": "_makeQueryObject",
@@ -2978,7 +2962,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 600,
+            "line": 509,
             "description": "Retrieves projection from query and returns it.\nRetrieved projection removes from the query.",
             "itemtype": "method",
             "name": "_extractProjectionFromQuery",
@@ -5728,30 +5712,6 @@
         {
             "file": "addon/serializers/offline.js",
             "line": 27,
-            "description": "If the adapter returns the `belongsTo` relation as an identifier, we will replace it with an object with the `id` property.\n\nSee [EmberJS API](https://emberjs.com/api/).",
-            "params": [
-                {
-                    "name": "typeClass",
-                    "description": "",
-                    "type": "DS.Model"
-                },
-                {
-                    "name": "hash",
-                    "description": "",
-                    "type": "Object"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Object"
-            },
-            "class": "Serializer.Offline",
-            "module": "ember-flexberry-data",
-            "namespace": "Serializer"
-        },
-        {
-            "file": "addon/serializers/offline.js",
-            "line": 46,
             "description": "Returns the resource's attributes formatted as a JSON-API \"attributes object\".\n[More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_extractAttributes).",
             "itemtype": "method",
             "name": "extractAttributes",
@@ -5777,7 +5737,7 @@
         },
         {
             "file": "addon/serializers/offline.js",
-            "line": 69,
+            "line": 50,
             "description": "Method `serializeAttribute` can be used to customize how DS.attr properties are serialized.\n[More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_serializeAttribute).",
             "itemtype": "method",
             "name": "serializeAttribute",
@@ -5809,7 +5769,7 @@
         },
         {
             "file": "addon/serializers/offline.js",
-            "line": 143,
+            "line": 124,
             "description": "Normalization method for arrays of objects.\n[More info](http://emberjs.com/api/data/classes/DS.JSONSerializer.html#method_normalizeArrayResponse).",
             "itemtype": "method",
             "name": "normalizeArrayResponse",
@@ -7648,7 +7608,7 @@
         {
             "file": "addon/stores/local-store.js",
             "line": 231,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
+            "description": "Calls the `save` method on each passed model and returns a promise that is resolved by an array of saved models.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -7668,7 +7628,7 @@
         },
         {
             "file": "addon/stores/local-store.js",
-            "line": 248,
+            "line": 252,
             "description": "Pushes into store the model that exists in backend without a request to it.",
             "params": [
                 {
@@ -9113,10 +9073,6 @@
             "line": " addon/serializers/odata.js:53"
         },
         {
-            "message": "Missing item type\nIf the adapter returns the `belongsTo` relation as an identifier, we will replace it with an object with the `id` property.\n\nSee [EmberJS API](https://emberjs.com/api/).",
-            "line": " addon/serializers/offline.js:27"
-        },
-        {
             "message": "Missing item type",
             "line": " addon/services/syncer.js:50"
         },
@@ -9218,7 +9174,7 @@
         },
         {
             "message": "Missing item type\nPushes into store the model that exists in backend without a request to it.",
-            "line": " addon/stores/local-store.js:248"
+            "line": " addon/stores/local-store.js:252"
         },
         {
             "message": "Missing item type\nPushes into store the model that exists in backend without a request to it.",
