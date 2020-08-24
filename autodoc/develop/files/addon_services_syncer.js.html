@@ -149,6 +149,7 @@ import { SimplePredicate } from &#x27;../query/predicate&#x27;;
 import { reloadLocalRecords, createLocalRecord } from &#x27;../utils/reload-local-records&#x27;;
 import isModelInstance from &#x27;../utils/is-model-instance&#x27;;
 import Queue from &#x27;../utils/queue&#x27;;
+import { camelize, capitalize } from &#x27;../utils/string-functions&#x27;;
 
 const { RSVP, isNone, isArray, getOwner, get } = Ember;
 
@@ -471,14 +472,10 @@ export default Ember.Service.extend({
     const modelClass = store.modelFor(modelName);
 
     let projectionName = modelName.indexOf(&#x27;-&#x27;) &gt; -1 ? modelName.substring(modelName.indexOf(&#x27;-&#x27;) + 1) : modelName;
-    projectionName = projectionName.camelize().capitalize() + &#x27;E&#x27;;
+    projectionName = capitalize(camelize(projectionName)) + &#x27;E&#x27;;
 
-    if (modelClass.projections) {
-      if (modelClass.projections.get(projectionName)) {
-        return projectionName;
-      } else {
-        return modelClass.projections[0].name;
-      }
+    if (modelClass.projections &amp;&amp; modelClass.projections.get(projectionName)) {
+      return projectionName;
     }
 
     return null;
