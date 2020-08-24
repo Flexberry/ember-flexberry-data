@@ -229,9 +229,7 @@ export default DS.Store.extend({
   },
 
   /**
-    A method to send batch update, create or delete models in single transaction.
-
-    All models saving using this method must have identifiers.
+    Calls the `save` method on each passed model and returns a promise that is resolved by an array of saved models.
 
     The array which fulfilled the promise may contain the following values:
     - `same model object` - for created, updated or unaltered records.
@@ -242,7 +240,13 @@ export default DS.Store.extend({
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate(models) {
-    return this.adapterFor('application').batchUpdate(this, models);
+    return Ember.RSVP.all(Ember.isArray(models) ? models.map((model) => {
+      if (model.get('dirtyType') === 'deleted') {
+        return model.save().then(() => null);
+      }
+
+      return model.save();
+    }) : [models.save()]);
   },
 
   /**

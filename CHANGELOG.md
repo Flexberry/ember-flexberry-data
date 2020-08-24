@@ -5,6 +5,9 @@
 ### Changed
 - When records stored in `IndexedDB` refer to other records that are not in `IndexedDB`, when querying those records using `IndexedDBAdapter`, you will see a warning in the console instead of a query error.
 
+### Breaking changes
+- The implementation of the `batchUpdate` method in the `Adapter.Offline` adapter has been removed, and the `save` method is now used instead.
+
 ## [2.5.0-beta.6] - 2020-08-06
 ### Added
 - Rejecting promise if sync up through batch update failed.
