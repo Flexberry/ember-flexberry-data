@@ -4383,7 +4383,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 40,
+            "line": 38,
             "description": "Loads data from IndexedDB.",
             "itemtype": "method",
             "name": "query",
@@ -4409,7 +4409,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 589,
+            "line": 582,
             "description": "Builds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
             "params": [
                 {
@@ -4438,7 +4438,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 703,
+            "line": 696,
             "description": "Checks query on contains restrictions by relationships.",
             "itemtype": "method",
             "name": "containsRelationships",
@@ -8818,7 +8818,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/indexeddb-adapter.js:589"
+            "line": " addon/query/indexeddb-adapter.js:582"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -9006,7 +9006,7 @@
         },
         {
             "message": "Missing item type\nBuilds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
-            "line": " addon/query/indexeddb-adapter.js:589"
+            "line": " addon/query/indexeddb-adapter.js:582"
         },
         {
             "message": "Missing item type\nBuilds function for windowing array of objects using data from the query.",
