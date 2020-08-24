@@ -2,9 +2,16 @@
 
 ## [Unreleased]
 
-
 ### Changed
 - When records stored in `IndexedDB` refer to other records that are not in `IndexedDB`, when querying those records using `IndexedDBAdapter`, you will see a warning in the console instead of a query error.
+
+## [2.5.0-beta.6] - 2020-08-06
+### Added
+- Rejecting promise if sync up through batch update failed.
+
+### Fixed
+- Prevent unloading record in syncer for not created entities completely.
+- Logic of storing entities in offline if audit disabled.
 
 ## [2.5.0-beta.4] - 2020-07-22
 ### Added

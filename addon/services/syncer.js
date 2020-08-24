@@ -4,6 +4,7 @@ import { SimplePredicate } from '../query/predicate';
 import { reloadLocalRecords, createLocalRecord } from '../utils/reload-local-records';
 import isModelInstance from '../utils/is-model-instance';
 import Queue from '../utils/queue';
+import { camelize, capitalize } from '../utils/string-functions';
 
 const { RSVP, isNone, isArray, getOwner, get } = Ember;
 
@@ -326,14 +327,10 @@ export default Ember.Service.extend({
     const modelClass = store.modelFor(modelName);
 
     let projectionName = modelName.indexOf('-') > -1 ? modelName.substring(modelName.indexOf('-') + 1) : modelName;
-    projectionName = projectionName.camelize().capitalize() + 'E';
+    projectionName = capitalize(camelize(projectionName)) + 'E';
 
-    if (modelClass.projections) {
-      if (modelClass.projections.get(projectionName)) {
-        return projectionName;
-      } else {
-        return modelClass.projections[0].name;
-      }
+    if (modelClass.projections && modelClass.projections.get(projectionName)) {
+      return projectionName;
     }
 
     return null;
@@ -401,6 +398,8 @@ export default Ember.Service.extend({
               resolve(job.destroyRecord());
             }, reject);
           });
+        }).catch(error => {
+          reject(error);
         });
       });
     });
@@ -442,12 +441,9 @@ export default Ember.Service.extend({
    * @param {DS.Model} job Job for sync up.
    */
   _getRecordToCreate(store, job) {
-    let record = store.peekRecord(job.get('objectType.name'), job.get('objectPrimaryKey'));
-    if (record) {
-      store.unloadRecord(record);
-    }
+    let record = store.peekRecord(job.get('objectType.name'), job.get('objectPrimaryKey')) ||
+      store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
 
-    record = store.createRecord(job.get('objectType.name'), { id: job.get('objectPrimaryKey') });
     record.set('isSyncingUp', true);
     record.set('isCreatedDuringSyncUp', true);
 
@@ -721,7 +717,7 @@ export default Ember.Service.extend({
     } else {
       record.eachAttribute((name) => {
         let value = record.get(name);
-        if (value) {
+        if (value !== undefined) {
           changes[name] = [null, value];
         }
       });
@@ -730,7 +726,7 @@ export default Ember.Service.extend({
     let changedRelationships = record.changedBelongsTo();
     let snapshot = record._createSnapshot();
     record.eachRelationship((name, descriptor) => {
-      let changedRelationship = changedRelationships[name];
+      let changedRelationship = this.get('auditEnabled') ? changedRelationships[name] : [null, record.get(name)];
       if (changedRelationship && descriptor.kind === 'belongsTo') {
         let relationshipType = descriptor.type;
         if (descriptor.options && descriptor.options.polymorphic) {

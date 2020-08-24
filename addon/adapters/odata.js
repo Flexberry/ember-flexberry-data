@@ -547,7 +547,7 @@ export default DS.RESTAdapter.extend({
         const result = [];
         models.forEach((model) => {
           const modelDirtyType = model.get('dirtyType');
-          if (modelDirtyType === 'created' || modelDirtyType === 'updated') {
+          if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
             const { response } = getResponses.shift();
             if (this.isSuccess(response.meta.status)) {
               const modelName = model.constructor.modelName;
