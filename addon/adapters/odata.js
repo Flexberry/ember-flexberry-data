@@ -320,8 +320,10 @@ export default DS.RESTAdapter.extend({
       resultUrl += queryParamsForUrl;
     }
 
+    const headers = Ember.$.extend({}, this.get('headers'));
+
     return this._callAjax(
-      { url: resultUrl, method: 'GET', xhrFields: args.fields ? args.fields : {} },
+      { url: resultUrl, method: 'GET', headers, xhrFields: args.fields ? args.fields : {} },
       args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
