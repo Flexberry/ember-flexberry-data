@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Passing headers when adapter's callFunction or callAction method called.
 
 ## [2.5.0-beta.7] - 2020-08-24
 ### Fixed
