@@ -377,7 +377,7 @@ export default DS.RESTAdapter.extend({
       args = this._getODataArgs(arguments, false, true);
     }
 
-    const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);   
+    const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);
     const headers = Ember.$.extend({}, this.get('headers'));
 
     return this._callAjax(
