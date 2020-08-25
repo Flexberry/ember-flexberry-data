@@ -377,7 +377,9 @@ export default DS.RESTAdapter.extend({
       args = this._getODataArgs(arguments, false, true);
     }
 
-    const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);
+    const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);   
+    const headers = Ember.$.extend({}, this.get('headers'));
+
     return this._callAjax(
       {
         data: JSON.stringify(args.data || {}),
@@ -385,6 +387,7 @@ export default DS.RESTAdapter.extend({
         method: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
+        headers,
         xhrFields: args.fields ? args.fields : {}
       }, args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
