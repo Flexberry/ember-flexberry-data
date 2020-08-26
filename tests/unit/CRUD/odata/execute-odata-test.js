@@ -3,6 +3,7 @@ import { A } from '@ember/array';
 import { module, skip, test } from 'qunit';
 
 import OnlineStore from 'ember-flexberry-data/stores/online-store';
+import OfflineStore from 'ember-flexberry-data/stores/local-store';
 import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 import StoreMixin from 'ember-flexberry-data/mixins/store';
 
@@ -25,6 +26,7 @@ export default function executeTest(testName, callback) {
     }
 
     const app = startApp();
+    app.__container__.registry.register('store:local', OfflineStore);
     const store = app.__container__.lookup('service:store');
     let onlineStore = OnlineStore.reopen(StoreMixin).create(app.__container__.ownerInjection());
     store.set('onlineStore', onlineStore);
