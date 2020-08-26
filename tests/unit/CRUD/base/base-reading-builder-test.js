@@ -118,21 +118,18 @@ function initTestData(store) {
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Vasya',
       eMail: '1@mail.ru',
-      gender: null,
       karma: 5
     }).save(),
 
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Vasya',
       eMail: '2@mail.ru',
-      gender: null,
       karma: 3
     }).save(),
 
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Oleg',
       eMail: '3@mail.ru',
-      gender: null,
       activated: true,
       karma: 4
     }).save()
