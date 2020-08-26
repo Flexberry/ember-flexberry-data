@@ -2,7 +2,7 @@ import { run } from '@ember/runloop';
 import RSVP from 'rsvp';
 import DS from 'ember-data';
 import Dexie from 'npm:dexie';
-import { moduleFor, test } from 'ember-qunit';
+import { moduleFor, skip, test } from 'ember-qunit';
 import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 import Builder from 'ember-flexberry-data/query/builder';
 import config from 'dummy/config/environment';
@@ -10,19 +10,15 @@ import startApp from 'dummy/tests/helpers/start-app';
 
 if (config.APP.testODataService) {
   let App;
-  let baseUrl;
+  let baseUrl = null;
   if (config.APP.testODataServiceURL.indexOf('http') >= 0) {
     let index = config.APP.testODataServiceURL.lastIndexOf('/');
     if (index !== config.APP.testODataServiceURL.length - 1) {
-      baseUrl = config.APP.testODataServiceURL + '/';
-    } else {
       baseUrl = config.APP.testODataServiceURL;
+    } else {
+      baseUrl = config.APP.testODataServiceURL.slice(0, -1);
     }
-  } else {
-    baseUrl = 'http://rtc-web:8081/odatatmp/';
   }
-
-  baseUrl += 'ember' + Math.floor(Math.random() * 9999);
 
   moduleFor('service:syncer', 'Integration | Service | syncer', {
     needs: [
@@ -253,7 +249,7 @@ if (config.APP.testODataService) {
     });
   });
 
-  test('sync up with not found record', function(assert) {
+  skip('sync up with not found record', function(assert) {
     runTest(App, 3, assert, (store, syncer, done) => {
       store.createRecord('ember-flexberry-dummy-application-user', {
         name: 'Man',

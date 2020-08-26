@@ -1,13 +1,22 @@
 import { set } from '@ember/object';
 import { A } from '@ember/array';
 import DS from 'ember-data';
-import { module, test } from 'qunit';
+
+import Ember from 'ember';
+import { module, skip, test } from 'qunit';
+import OnlineStore from 'ember-flexberry-data/stores/online-store';
 
 import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 import StoreMixin from 'ember-flexberry-data/mixins/store';
 
 import startApp from '../../../helpers/start-app';
 import config from '../../../../../dummy/config/environment';
+
+import { clearOnlineData } from '../../../helpers/clear-data';
+
+const skipTestNames = [
+  'reading | restrictions | odata functions',
+];
 
 export default function executeTest(testName, callback) {
   if (config.APP.testODataService) {
@@ -20,7 +29,7 @@ export default function executeTest(testName, callback) {
 
     const app = startApp();
     const store = app.__container__.lookup('service:store');
-    let onlineStore = DS.Store.reopen(StoreMixin).create(app.__container__.ownerInjection());
+    let onlineStore = OnlineStore.reopen(Projection.StoreMixin).create(app.__container__.ownerInjection());
     store.set('onlineStore', onlineStore);
 
     // Override store.unloadAll method.
@@ -47,6 +56,10 @@ export default function executeTest(testName, callback) {
 
     module('CRUD | odata-' + testName);
 
-    test(testName, (assert) => callback(store, assert, app));
+    if (skipTestNames.indexOf(testName) > -1) {
+      skip(testName, (assert) => clearOnlineData(store).then(() => callback(store, assert, app)));
+    } else {
+      test(testName, (assert) => clearOnlineData(store).then(() => callback(store, assert, app)));
+    }
   }
 }

@@ -437,103 +437,12 @@ export default DS.Adapter.extend({
   },
 
   /**
-    Performing batch update operaion.
+    This method is not implemented.
 
     @method batchUpdate
-    @param {DS.Store} store
-  	@param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
-    @return {Promise}
   */
-  batchUpdate(store, models) {
-    if (isEmpty(models)) {
-      return RSVP.resolve(models);
-    }
-
-    models = isArray(models) ? models : A([models]);
-
-    const dexieService = this.get('dexieService');
-    const db = dexieService.dexie(this.get('dbName'), store);
-
-    return RSVP.all(models.map((m) => m.save({ softSave: true }))).then(() => {
-
-      const modelsMap = {};
-
-      models.forEach((model) => {
-        const snapshot = model._createSnapshot();
-        const modelName = snapshot.modelName;
-        const serializer = store.serializerFor(modelName);
-
-        modelsMap[modelName] = modelsMap[modelName] || { add: [], update: [], delete: [] };
-
-        const dirtyType = model.get('dirtyType') || model.hasChangedBelongsTo() ? 'updated' : undefined;
-
-        switch (dirtyType) {
-          case 'created':
-            modelsMap[modelName].add.push(serializer.serialize(snapshot, { includeId: true }));
-            break;
-
-          case 'updated':
-            modelsMap[modelName].update.push(serializer.serialize(snapshot, { includeId: true }));
-            break;
-
-          case 'deleted':
-            modelsMap[modelName].delete.push(model.get('id'));
-            break;
-        }
-      });
-
-      const tableNames = Object.keys(modelsMap);
-      const batchUpdateOperation = (db) => db.transaction('rw', tableNames, () => new Dexie.Promise((resolve, reject) => {
-        const promises = [];
-        tableNames.forEach((tableName) => {
-          const table = db.table(tableName);
-          const mapItem = modelsMap[tableName];
-
-          if (mapItem.add.length) {
-            promises.push(table.bulkAdd(mapItem.add));
-          }
-
-          if (mapItem.update.length) {
-            promises.push(table.bulkPut(mapItem.update));
-          }
-
-          if (mapItem.delete.length) {
-            promises.push(table.bulkDelete(mapItem.delete));
-          }
-        });
-
-        Dexie.Promise.all(promises).then(() => {
-          Dexie.Promise.all(models.map((model) => {
-            const modelName = model.constructor.modelName;
-            const { id, dirtyType } = model.getProperties('id', 'dirtyType');
-
-            return dirtyType === 'deleted' ? Dexie.Promise.resolve(null) : db.table(modelName).get(id);
-          })).then((rawModels) => {
-            resolve(models.map((model, index) => {
-              if (model.get('dirtyType') === 'deleted') {
-                run(store, store.unloadRecord, model);
-              }
-
-              const rawModel = rawModels[index];
-              if (rawModel) {
-                const modelName = model.constructor.modelName;
-                const modelClass = store.modelFor(modelName);
-                const serializer = store.serializerFor(modelName);
-
-                run(store, store.push, serializer.normalize(modelClass, rawModel));
-                run(model, model.rollbackAttributes);
-
-                return model;
-              }
-
-              return null;
-            }));
-          }).catch(reject);
-        }).catch(reject);
-      }));
-
-      return dexieService.performOperation(db, batchUpdateOperation);
-    });
+  batchUpdate() {
+    throw new Error('Not implemented.');
   },
 
   /**

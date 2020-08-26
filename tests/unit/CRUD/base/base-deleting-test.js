@@ -125,7 +125,9 @@ export default function deleting(store, assert) {
       return store.findRecord('ember-flexberry-dummy-comment', commentId)
         .then((comment) => {
           comment.deleteRecord();
-          return RSVP.all([comment.save(), comment.get('suggestion').save()]);
+
+          // In offline when delete 'detail' need to update 'master'.
+          return store._isOnline() ? comment.save() : Ember.RSVP.all([comment.get('suggestion').save(), comment.save()]);
         })
 
         .then(() => {

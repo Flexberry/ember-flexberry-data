@@ -2,9 +2,52 @@
 
 ## [Unreleased]
 
+## [2.5.0-beta.8] - 2020-08-25
+### Added
+- Passing headers when adapter's callFunction or callAction method called.
+
+## [2.5.0-beta.7] - 2020-08-24
+### Fixed
+- When processing the response in the `batchUpdate` method of the `OData` adapter, models with only the `belongsTo` relationships changed were ignored.
+
+### Changed
+- When records stored in `IndexedDB` refer to other records that are not in `IndexedDB`, when querying those records using `IndexedDBAdapter`, you will see a warning in the console instead of a query error.
+
+### Breaking changes
+- The implementation of the `batchUpdate` method in the `Adapter.Offline` adapter has been removed, and the `save` method is now used instead.
+
+## [2.5.0-beta.6] - 2020-08-06
+### Added
+- Rejecting promise if sync up through batch update failed.
+
+### Fixed
+- Prevent unloading record in syncer for not created entities completely.
+- Logic of storing entities in offline if audit disabled.
+
+## [2.5.0-beta.4] - 2020-07-22
+### Added
+- [WIP] The ability to skip data inconsistency errors when reading with the `IndexedDBAdapter` adapter.
+
 ## [3.4.0] - 2020-07-10
 ### Added
 - Changes from [`2.4.0`](#240---2020-05-18) and [`2.4.1`](#241---2020-05-18) versions.
+
+## [2.5.0-beta.2] - 2020-06-22
+### Added
+- Store
+    - createExistingRecord method to create record, that exists in backend, without request to it.
+- Syncer service
+    - Implemented sync up through batch update when useBatchUpdate flag set to true.
+### Moved 
+- Logic for getting projection for syncing up into syncer service method.
+
+## [2.5.0-beta.1] - 2020-06-10
+### Fixed
+- Not loaded `belongsTo` relationships were serialized to `null` when saved.
+
+## [2.5.0-beta.0] - 2020-05-29
+### Fixed
+- [WIP] The `batchUpdate` method of the `Offline` adapter for models with polymorphic relationships does not work.
 
 ## [2.4.1] - 2020-05-18
 ### Fixed

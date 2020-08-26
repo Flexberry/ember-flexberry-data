@@ -109,21 +109,26 @@ export default class extends BaseAdapter {
           while (moveMastersForvard) {
             let masterDataValue = masterData[masterIndex];
 
-            // TODO: Check if Debug Mode build then use this.
             if (!masterDataValue || !masterDataValue.hasOwnProperty(masterPrimaryKeyName)) {
-              let error = new Error(`Metadata consistance error. ` +
-              `Not found property '${masterPrimaryKeyName}' in type '${masterTypeName}'.`);
-              reject(error);
+              Ember.warn(
+                `Metadata consistance error. Not found property '${masterPrimaryKeyName}' in type '${masterTypeName}'.`,
+                false,
+                { id: 'ember-flexberry-data-debug.offline.indexeddb-inconsistent-database' }
+              );
+
               break;
             }
 
             if (masterKey > masterDataValue[masterPrimaryKeyName] && masterIndex < masterDataLength) {
               masterIndex++;
             } else if (masterKey < masterDataValue[masterPrimaryKeyName] || masterIndex >= masterDataLength) {
-              let objectId = data[dataIndex].id;
-              let error = new Error(`Data constraint error. Not found object type '${masterTypeName}' with id ${masterKey}. ` +
-              `It used in object of type '${dataTypeName}' with id '${objectId}'`);
-              reject(error);
+              Ember.warn(
+                `Data constraint error. Not found object type '${masterTypeName}' with id '${masterKey}'. ` +
+                `It used in object of type '${dataTypeName}' with id '${data[dataIndex].id}'.`,
+                false,
+                { id: 'ember-flexberry-data-debug.offline.indexeddb-inconsistent-database' }
+              );
+
               break;
             }
 
@@ -152,11 +157,14 @@ export default class extends BaseAdapter {
             let detailObj = detailsData.get(detailKey);
 
             if (!detailObj) {
-              let objectId = data[dataIndex].id;
-              let error = new Error(`Data constraint error. Not found object type '${detailsTypeName}' with id ${detailKey}. ` +
-              `It used in object of type '${dataTypeName}' with id '${objectId}'`);
-              reject(error);
-              break;
+              Ember.warn(
+                `Data constraint error. Not found object type '${detailsTypeName}' with id ${detailKey}. ` +
+                `It used in object of type '${dataTypeName}' with id '${data[dataIndex].id}'.`,
+                false,
+                { id: 'ember-flexberry-data-debug.offline.indexeddb-inconsistent-database' }
+              );
+
+              continue;
             }
 
             detailsObjects.push(detailObj);
