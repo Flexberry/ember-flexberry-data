@@ -127,7 +127,7 @@ export default function deleting(store, assert) {
           comment.deleteRecord();
 
           // In offline when delete 'detail' need to update 'master'.
-          return store._isOnline() ? comment.save() : Ember.RSVP.all([comment.get('suggestion').save(), comment.save()]);
+          return store._isOnline() ? comment.save() : RSVP.all([comment.get('suggestion').save(), comment.save()]);
         })
 
         .then(() => {

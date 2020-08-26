@@ -333,7 +333,7 @@ export default DS.RESTAdapter.extend({
       resultUrl += queryParamsForUrl;
     }
 
-    const headers = Ember.$.extend({}, this.get('headers'));
+    const headers = $.extend({}, this.get('headers'));
 
     return this._callAjax(
       { url: resultUrl, method: 'GET', headers, xhrFields: args.fields ? args.fields : {} },
@@ -391,7 +391,7 @@ export default DS.RESTAdapter.extend({
     }
 
     const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);
-    const headers = Ember.$.extend({}, this.get('headers'));
+    const headers = $.extend({}, this.get('headers'));
 
     return this._callAjax(
       {

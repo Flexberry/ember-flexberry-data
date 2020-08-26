@@ -6,7 +6,7 @@ import { computed } from '@ember/object';
 import { getOwner } from '@ember/application';
 import { isArray } from '@ember/array';
 import { assert, debug } from '@ember/debug';
-import { isNone } from '@ember/utils';
+import { isNone, isBlank } from '@ember/utils';
 import RSVP from 'rsvp';
 import DS from 'ember-data';
 import OfflineAdapter from '../adapters/offline';
@@ -244,7 +244,7 @@ export default DS.Store.extend({
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate(models) {
-    return Ember.RSVP.all(Ember.isArray(models) ? models.map((model) => {
+    return RSVP.all(isArray(models) ? models.map((model) => {
       if (model.get('dirtyType') === 'deleted') {
         return model.save().then(() => null);
       }
@@ -259,8 +259,8 @@ export default DS.Store.extend({
    * @param {String} primaryKey Primery key of the model to push into store.
    */
   createExistingRecord(modelName, primaryKey) {
-    Ember.assert('Model name for store.createExistingRecord() method must not be blank.', !Ember.isBlank(modelName));
-    Ember.assert('Model primary key for store.createExistingRecord() method must not be blank.', !Ember.isBlank(primaryKey));
+    assert('Model name for store.createExistingRecord() method must not be blank.', !isBlank(modelName));
+    assert('Model primary key for store.createExistingRecord() method must not be blank.', !isBlank(primaryKey));
 
     return this.push({
       data: {

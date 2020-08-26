@@ -110,7 +110,7 @@ export default class extends BaseAdapter {
             let masterDataValue = masterData[masterIndex];
 
             if (!masterDataValue || !masterDataValue.hasOwnProperty(masterPrimaryKeyName)) {
-              Ember.warn(
+              warn(
                 `Metadata consistance error. Not found property '${masterPrimaryKeyName}' in type '${masterTypeName}'.`,
                 false,
                 { id: 'ember-flexberry-data-debug.offline.indexeddb-inconsistent-database' }
@@ -122,7 +122,7 @@ export default class extends BaseAdapter {
             if (masterKey > masterDataValue[masterPrimaryKeyName] && masterIndex < masterDataLength) {
               masterIndex++;
             } else if (masterKey < masterDataValue[masterPrimaryKeyName] || masterIndex >= masterDataLength) {
-              Ember.warn(
+              warn(
                 `Data constraint error. Not found object type '${masterTypeName}' with id '${masterKey}'. ` +
                 `It used in object of type '${dataTypeName}' with id '${data[dataIndex].id}'.`,
                 false,
@@ -157,7 +157,7 @@ export default class extends BaseAdapter {
             let detailObj = detailsData.get(detailKey);
 
             if (!detailObj) {
-              Ember.warn(
+              warn(
                 `Data constraint error. Not found object type '${detailsTypeName}' with id ${detailKey}. ` +
                 `It used in object of type '${dataTypeName}' with id '${data[dataIndex].id}'.`,
                 false,

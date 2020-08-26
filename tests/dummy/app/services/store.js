@@ -1,10 +1,8 @@
 import { getOwner } from '@ember/application';
 import { computed } from '@ember/object';
-import DS from 'ember-data';
+
 import BaseStore from 'ember-flexberry-data/stores/base-store';
 import StoreMixin from 'ember-flexberry-data/mixins/store';
-import Ember from 'ember';
-import { Offline, Projection } from 'ember-flexberry-data';
 import OnlineStore from 'ember-flexberry-data/stores/online-store';
 
 export default BaseStore.extend({
@@ -56,8 +54,8 @@ export default BaseStore.extend({
         }
       },
     });
-    let owner = Ember.getOwner(this);
-    this.set('onlineStore', OnlineStore.extend(Projection.StoreMixin).create(owner.ownerInjection()));
+    let owner = getOwner(this);
+    this.set('onlineStore', OnlineStore.extend(StoreMixin).create(owner.ownerInjection()));
     this._super(...arguments);
     this.set('offlineStore.dbName', 'TestDB');
   }

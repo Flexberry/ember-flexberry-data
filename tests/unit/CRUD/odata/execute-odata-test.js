@@ -1,11 +1,8 @@
 import { set } from '@ember/object';
 import { A } from '@ember/array';
-import DS from 'ember-data';
-
-import Ember from 'ember';
 import { module, skip, test } from 'qunit';
-import OnlineStore from 'ember-flexberry-data/stores/online-store';
 
+import OnlineStore from 'ember-flexberry-data/stores/online-store';
 import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 import StoreMixin from 'ember-flexberry-data/mixins/store';
 
@@ -29,7 +26,7 @@ export default function executeTest(testName, callback) {
 
     const app = startApp();
     const store = app.__container__.lookup('service:store');
-    let onlineStore = OnlineStore.reopen(Projection.StoreMixin).create(app.__container__.ownerInjection());
+    let onlineStore = OnlineStore.reopen(StoreMixin).create(app.__container__.ownerInjection());
     store.set('onlineStore', onlineStore);
 
     // Override store.unloadAll method.

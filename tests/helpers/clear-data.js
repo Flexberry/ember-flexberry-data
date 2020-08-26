@@ -1,4 +1,8 @@
-import Ember from 'ember';
+import { A } from '@ember/array';
+import { set } from '@ember/object';
+
+import { all } from 'rsvp';
+
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 function clearOnlineData(store) {
@@ -31,11 +35,11 @@ function _clearData(store, modelsToClear, maxItemsCount = 0)
   modelsToClear.forEach(item => {
     let builder = new QueryBuilder(store, item).top(limit);
     promises.push(
-      store.query(item, builder.build()).then((d) => Ember.set(data, item, d))
+      store.query(item, builder.build()).then((d) => set(data, item, d))
     );
   });
 
-  return Ember.RSVP.all(promises).then(() => {
+  return all(promises).then(() => {
     let itemsCount = Object.values(data).reduce((sum, current) => sum + current.get('length'), 0);
 
     if (itemsCount > maxItemsCount) {
@@ -50,7 +54,7 @@ function _clearData(store, modelsToClear, maxItemsCount = 0)
       });
     });
 
-    return store.batchUpdate(Ember.A(a));
+    return store.batchUpdate(A(a));
   });
 }
 
