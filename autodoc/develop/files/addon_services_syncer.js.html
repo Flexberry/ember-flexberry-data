@@ -366,7 +366,7 @@ export default Ember.Service.extend({
         dexieService.set(&#x27;queueSyncUpTotalWorksCount&#x27;, jobs.get(&#x27;length&#x27;));
         return options &amp;&amp; options.useBatchUpdate ?
           this._runJobsThroughBatch(store, jobs) :
-          this._runJobs(store, jobs, options &amp;&amp; options.continueOnError);
+          this._runJobs(store, jobs.toArray(), options &amp;&amp; options.continueOnError);
       });
     }
   },
