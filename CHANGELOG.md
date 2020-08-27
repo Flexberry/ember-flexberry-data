@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.5.0-beta.0] - 2020-08-27
+### Added
+- Changes from all `2.5.0` beta versions.
+
 ## [2.5.0-beta.8] - 2020-08-25
 ### Added
 - Passing headers when adapter's callFunction or callAction method called.
