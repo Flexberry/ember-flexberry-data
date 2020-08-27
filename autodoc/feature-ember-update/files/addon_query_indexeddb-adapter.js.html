@@ -247,21 +247,26 @@ export default class extends BaseAdapter {
           while (moveMastersForvard) {
             let masterDataValue = masterData[masterIndex];
 
-            // TODO: Check if Debug Mode build then use this.
             if (!masterDataValue || !masterDataValue.hasOwnProperty(masterPrimaryKeyName)) {
-              let error = new Error(&#x60;Metadata consistance error. &#x60; +
-              &#x60;Not found property &#x27;${masterPrimaryKeyName}&#x27; in type &#x27;${masterTypeName}&#x27;.&#x60;);
-              reject(error);
+              warn(
+                &#x60;Metadata consistance error. Not found property &#x27;${masterPrimaryKeyName}&#x27; in type &#x27;${masterTypeName}&#x27;.&#x60;,
+                false,
+                { id: &#x27;ember-flexberry-data-debug.offline.indexeddb-inconsistent-database&#x27; }
+              );
+
               break;
             }
 
             if (masterKey &gt; masterDataValue[masterPrimaryKeyName] &amp;&amp; masterIndex &lt; masterDataLength) {
               masterIndex++;
             } else if (masterKey &lt; masterDataValue[masterPrimaryKeyName] || masterIndex &gt;= masterDataLength) {
-              let objectId = data[dataIndex].id;
-              let error = new Error(&#x60;Data constraint error. Not found object type &#x27;${masterTypeName}&#x27; with id ${masterKey}. &#x60; +
-              &#x60;It used in object of type &#x27;${dataTypeName}&#x27; with id &#x27;${objectId}&#x27;&#x60;);
-              reject(error);
+              warn(
+                &#x60;Data constraint error. Not found object type &#x27;${masterTypeName}&#x27; with id &#x27;${masterKey}&#x27;. &#x60; +
+                &#x60;It used in object of type &#x27;${dataTypeName}&#x27; with id &#x27;${data[dataIndex].id}&#x27;.&#x60;,
+                false,
+                { id: &#x27;ember-flexberry-data-debug.offline.indexeddb-inconsistent-database&#x27; }
+              );
+
               break;
             }
 
@@ -290,11 +295,14 @@ export default class extends BaseAdapter {
             let detailObj = detailsData.get(detailKey);
 
             if (!detailObj) {
-              let objectId = data[dataIndex].id;
-              let error = new Error(&#x60;Data constraint error. Not found object type &#x27;${detailsTypeName}&#x27; with id ${detailKey}. &#x60; +
-              &#x60;It used in object of type &#x27;${dataTypeName}&#x27; with id &#x27;${objectId}&#x27;&#x60;);
-              reject(error);
-              break;
+              warn(
+                &#x60;Data constraint error. Not found object type &#x27;${detailsTypeName}&#x27; with id ${detailKey}. &#x60; +
+                &#x60;It used in object of type &#x27;${dataTypeName}&#x27; with id &#x27;${data[dataIndex].id}&#x27;.&#x60;,
+                false,
+                { id: &#x27;ember-flexberry-data-debug.offline.indexeddb-inconsistent-database&#x27; }
+              );
+
+              continue;
             }
 
             detailsObjects.push(detailObj);

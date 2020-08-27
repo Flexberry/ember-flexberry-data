@@ -471,8 +471,10 @@ export default DS.RESTAdapter.extend({
       resultUrl += queryParamsForUrl;
     }
 
+    const headers = $.extend({}, this.get(&#x27;headers&#x27;));
+
     return this._callAjax(
-      { url: resultUrl, method: &#x27;GET&#x27;, xhrFields: args.fields ? args.fields : {} },
+      { url: resultUrl, method: &#x27;GET&#x27;, headers, xhrFields: args.fields ? args.fields : {} },
       args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
@@ -527,6 +529,8 @@ export default DS.RESTAdapter.extend({
     }
 
     const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);
+    const headers = $.extend({}, this.get(&#x27;headers&#x27;));
+
     return this._callAjax(
       {
         data: JSON.stringify(args.data || {}),
@@ -534,6 +538,7 @@ export default DS.RESTAdapter.extend({
         method: &#x27;POST&#x27;,
         contentType: &#x27;application/json; charset=utf-8&#x27;,
         dataType: &#x27;json&#x27;,
+        headers,
         xhrFields: args.fields ? args.fields : {}
       }, args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
@@ -699,7 +704,7 @@ export default DS.RESTAdapter.extend({
         // eslint-disable-next-line ember/jquery-ember-run
         models.forEach((model) =&gt; {
           const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
-          if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27;) {
+          if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27; || model.hasChangedBelongsTo()) {
             const { response } = getResponses.shift();
             if (this.isSuccess(response.meta.status)) {
               const modelName = model.constructor.modelName;

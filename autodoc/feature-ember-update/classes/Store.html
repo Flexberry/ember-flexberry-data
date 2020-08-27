@@ -189,6 +189,10 @@ service:store should point to instance of that class.</p>
 
                             </li>
                             <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_createExistingRecord" data-tablink="createExistingRecord">createExistingRecord</a>
+
+                            </li>
+                            <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_createRecord" data-tablink="createRecord">createRecord</a>
 
                             </li>
@@ -324,7 +328,7 @@ service:store should point to instance of that class.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_stores_base-store.js.html#l568"><code>addon&#x2F;stores&#x2F;base-store.js:568</code></a>
+                            <a href="../files/addon_stores_base-store.js.html#l579"><code>addon&#x2F;stores&#x2F;base-store.js:579</code></a>
                             </p>
                     
                     
@@ -367,7 +371,7 @@ service:store should point to instance of that class.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_stores_base-store.js.html#l521"><code>addon&#x2F;stores&#x2F;base-store.js:521</code></a>
+                            <a href="../files/addon_stores_base-store.js.html#l532"><code>addon&#x2F;stores&#x2F;base-store.js:532</code></a>
                             </p>
                     
                     
@@ -442,7 +446,7 @@ service:store should point to instance of that class.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_stores_base-store.js.html#l444"><code>addon&#x2F;stores&#x2F;base-store.js:444</code></a>
+                            <a href="../files/addon_stores_base-store.js.html#l455"><code>addon&#x2F;stores&#x2F;base-store.js:455</code></a>
                             </p>
                     
                     
@@ -521,7 +525,7 @@ service:store should point to instance of that class.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_stores_base-store.js.html#l426"><code>addon&#x2F;stores&#x2F;base-store.js:426</code></a>
+                            <a href="../files/addon_stores_base-store.js.html#l437"><code>addon&#x2F;stores&#x2F;base-store.js:437</code></a>
                             </p>
                     
                     
@@ -578,6 +582,88 @@ service:store should point to instance of that class.</p>
                     
                                 </div>
                             </div>
+                    
+                    </div>
+                    <div id="method_createExistingRecord" class="method item">
+                        <h3 class="name"><code>createExistingRecord</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>modelName</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>primaryKey</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code class="optional">[useOnlineStore]</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_stores_base-store.js.html#l426"><code>addon&#x2F;stores&#x2F;base-store.js:426</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Pushes into store the model that exists in backend without a request to it.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">modelName</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Name of the model to push into store.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">primaryKey</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Primery key of the model to push into store.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[useOnlineStore]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Allow to explicitly specify online or offline store using independently of global online status</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
                     
                     </div>
                     <div id="method_createRecord" class="method item">
@@ -1947,7 +2033,7 @@ service:store should point to instance of that class.</p>
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_stores_base-store.js.html#l463"><code>addon&#x2F;stores&#x2F;base-store.js:463</code></a>
+                            <a href="../files/addon_stores_base-store.js.html#l474"><code>addon&#x2F;stores&#x2F;base-store.js:474</code></a>
                             </p>
                     
                     

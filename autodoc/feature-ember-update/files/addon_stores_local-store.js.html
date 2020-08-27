@@ -144,7 +144,7 @@ import { computed } from &#x27;@ember/object&#x27;;
 import { getOwner } from &#x27;@ember/application&#x27;;
 import { isArray } from &#x27;@ember/array&#x27;;
 import { assert, debug } from &#x27;@ember/debug&#x27;;
-import { isNone } from &#x27;@ember/utils&#x27;;
+import { isNone, isBlank } from &#x27;@ember/utils&#x27;;
 import RSVP from &#x27;rsvp&#x27;;
 import DS from &#x27;ember-data&#x27;;
 import OfflineAdapter from &#x27;../adapters/offline&#x27;;
@@ -371,9 +371,7 @@ export default DS.Store.extend({
   },
 
   /**
-    A method to send batch update, create or delete models in single transaction.
-
-    All models saving using this method must have identifiers.
+    Calls the &#x60;save&#x60; method on each passed model and returns a promise that is resolved by an array of saved models.
 
     The array which fulfilled the promise may contain the following values:
     - &#x60;same model object&#x60; - for created, updated or unaltered records.
@@ -384,8 +382,31 @@ export default DS.Store.extend({
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate(models) {
-    return this.adapterFor(&#x27;application&#x27;).batchUpdate(this, models);
+    return RSVP.all(isArray(models) ? models.map((model) =&gt; {
+      if (model.get(&#x27;dirtyType&#x27;) === &#x27;deleted&#x27;) {
+        return model.save().then(() =&gt; null);
+      }
+
+      return model.save();
+    }) : [models.save()]);
   },
+
+  /**
+   * Pushes into store the model that exists in backend without a request to it.
+   * @param {String} modelName Name of the model to push into store.
+   * @param {String} primaryKey Primery key of the model to push into store.
+   */
+  createExistingRecord(modelName, primaryKey) {
+    assert(&#x27;Model name for store.createExistingRecord() method must not be blank.&#x27;, !isBlank(modelName));
+    assert(&#x27;Model primary key for store.createExistingRecord() method must not be blank.&#x27;, !isBlank(primaryKey));
+
+    return this.push({
+      data: {
+        id: primaryKey,
+        type: modelName
+      }
+    });
+  }
 });
 
     </pre>

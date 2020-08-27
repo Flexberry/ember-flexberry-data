@@ -141,7 +141,7 @@
 */
 
 import { assert } from &#x27;@ember/debug&#x27;;
-import { isNone } from &#x27;@ember/utils&#x27;;
+import { isNone, isBlank } from &#x27;@ember/utils&#x27;;
 
 import DS from &#x27;ember-data&#x27;;
 
@@ -186,6 +186,23 @@ export default DS.Store.extend({
   batchUpdate(models) {
     return this.adapterFor(&#x27;application&#x27;).batchUpdate(this, models);
   },
+
+  /**
+   * Pushes into store the model that exists in backend without a request to it.
+   * @param {String} modelName Name of the model to push into store.
+   * @param {String} primaryKey Primery key of the model to push into store.
+   */
+  createExistingRecord(modelName, primaryKey) {
+    assert(&#x27;Model name for store.createExistingRecord() method must not be blank.&#x27;, !isBlank(modelName));
+    assert(&#x27;Model primary key for store.createExistingRecord() method must not be blank.&#x27;, !isBlank(primaryKey));
+
+    return this.push({
+      data: {
+        id: primaryKey,
+        type: modelName
+      }
+    });
+  }
 });
 
     </pre>

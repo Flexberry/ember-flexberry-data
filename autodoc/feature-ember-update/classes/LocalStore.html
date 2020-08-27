@@ -314,8 +314,7 @@
                         </div>
                     
                         <div class="description">
-                            <p>A method to send batch update, create or delete models in single transaction.</p>
-                    <p>All models saving using this method must have identifiers.</p>
+                            <p>Calls the <code>save</code> method on each passed model and returns a promise that is resolved by an array of saved models.</p>
                     <p>The array which fulfilled the promise may contain the following values:</p>
                     <ul>
                     <li><code>same model object</code> - for created, updated or unaltered records.</li>
