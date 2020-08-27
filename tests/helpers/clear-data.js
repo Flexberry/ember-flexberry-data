@@ -20,7 +20,7 @@ function clearOnlineData(store) {
     'ember-flexberry-dummy-test-poly-child',
     'ember-flexberry-dummy-vote',
   ];
-  const maxItemsCount = 61;
+  const maxItemsCount = 61 + 42;
 
   return _clearData(store, modelsToClear, maxItemsCount);
 }
