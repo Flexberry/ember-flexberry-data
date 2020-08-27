@@ -3,6 +3,8 @@ import EmberFlexberryDataModel from 'ember-flexberry-data/models/model';
 import OfflineModelMixin from 'ember-flexberry-data/mixins/offline-model';
 import { attr } from 'ember-flexberry-data/utils/attributes';
 
+import EmberFlexberryDummyGenderEnum from '../enums/ember-flexberry-dummy-gender';
+
 let Model = EmberFlexberryDataModel.extend(OfflineModelMixin, {
   name: DS.attr('string'),
   eMail: DS.attr('string'),
@@ -14,7 +16,7 @@ let Model = EmberFlexberryDataModel.extend(OfflineModelMixin, {
   facebook: DS.attr('string'),
   twitter: DS.attr('string'),
   birthday: DS.attr('date'),
-  gender: DS.attr('ember-flexberry-dummy-gender'),
+  gender: DS.attr('ember-flexberry-dummy-gender', { defaultValue: EmberFlexberryDummyGenderEnum.Male }),
   vip: DS.attr('boolean'),
   karma: DS.attr('decimal'),
   coordinates: DS.attr('string'),
