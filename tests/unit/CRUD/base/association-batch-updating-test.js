@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default function associationBatchUpdating(store, assert) {
-  assert.expect(6);
+  assert.expect(10);
   let done = assert.async();
 
   Ember.run(() => {
@@ -48,6 +48,11 @@ export default function associationBatchUpdating(store, assert) {
 
               assert.ok(result[0].get('parent') === record3);
               assert.ok(result[1].get('parent') === record3);
+              assert.ok(result[2].get('parent') === null);
+
+              assert.equal(result[0].get('name'), 'Type 1');
+              assert.equal(result[1].get('name'), 'Updated name for Type 2');
+              assert.equal(result[2].get('name'), 'Updated name for Parent');
             });
           });
       })

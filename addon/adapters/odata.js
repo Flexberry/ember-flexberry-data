@@ -320,8 +320,10 @@ export default DS.RESTAdapter.extend({
       resultUrl += queryParamsForUrl;
     }
 
+    const headers = Ember.$.extend({}, this.get('headers'));
+
     return this._callAjax(
-      { url: resultUrl, method: 'GET', xhrFields: args.fields ? args.fields : {} },
+      { url: resultUrl, method: 'GET', headers, xhrFields: args.fields ? args.fields : {} },
       args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
 
@@ -376,6 +378,8 @@ export default DS.RESTAdapter.extend({
     }
 
     const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);
+    const headers = Ember.$.extend({}, this.get('headers'));
+
     return this._callAjax(
       {
         data: JSON.stringify(args.data || {}),
@@ -383,6 +387,7 @@ export default DS.RESTAdapter.extend({
         method: 'POST',
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
+        headers,
         xhrFields: args.fields ? args.fields : {}
       }, args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
   },
@@ -547,7 +552,7 @@ export default DS.RESTAdapter.extend({
         const result = [];
         models.forEach((model) => {
           const modelDirtyType = model.get('dirtyType');
-          if (modelDirtyType === 'created' || modelDirtyType === 'updated') {
+          if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
             const { response } = getResponses.shift();
             if (this.isSuccess(response.meta.status)) {
               const modelName = model.constructor.modelName;

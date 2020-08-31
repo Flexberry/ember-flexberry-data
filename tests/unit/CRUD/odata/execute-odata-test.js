@@ -1,11 +1,17 @@
 import Ember from 'ember';
-import { module, test } from 'qunit';
+import { module, skip, test } from 'qunit';
 import OnlineStore from 'ember-flexberry-data/stores/online-store';
 
 import { Adapter, Projection } from 'ember-flexberry-data';
 
 import startApp from '../../../helpers/start-app';
 import config from '../../../../../dummy/config/environment';
+
+import { clearOnlineData } from '../../../helpers/clear-data';
+
+const skipTestNames = [
+  'reading | restrictions | odata functions',
+];
 
 export default function executeTest(testName, callback) {
   if (config.APP.testODataService) {
@@ -46,6 +52,10 @@ export default function executeTest(testName, callback) {
 
     module('CRUD | odata-' + testName);
 
-    test(testName, (assert) => callback(store, assert, app));
+    if (skipTestNames.indexOf(testName) > -1) {
+      skip(testName, (assert) => clearOnlineData(store).then(() => callback(store, assert, app)));
+    } else {
+      test(testName, (assert) => clearOnlineData(store).then(() => callback(store, assert, app)));
+    }
   }
 }
