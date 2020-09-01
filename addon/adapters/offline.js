@@ -440,14 +440,14 @@ export default DS.Adapter.extend({
   /**
     A method to get array of models.
 
-    @method batchQuery
+    @method batchSelect
     @param {DS.Store} store The store.
-    @param {String} type Model name.
-    @param {Query} query Flexberry Query object.
-    @return {Promise} A promise that fulfilled with an array of models.
+    @param {Query} queries Array of Flexberry Query objects.
+    @return {Promise} A promise that fulfilled with an array of query responses.
   */
-  batchQuery(store, type, query) {
-    return store.query(type, query);
+  batchSelect(store, queries) {
+    const promises = queries.map(query => store.query(query.modelName, query));
+    return Ember.RSVP.all(promises).then(result => Ember.A(result));
   },
 
   /**

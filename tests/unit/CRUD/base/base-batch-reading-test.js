@@ -3,23 +3,30 @@ import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 export default function batchReadingFunctions(store, assert) {
   Ember.run(() => {
-    assert.expect(10);
+    assert.expect(20);
     const done = assert.async();
 
-    let createdRecords;
     let userId;
+    let user2Id;
     initTestData(store)
 
     // byId.
     .then((records) => {
-      createdRecords = records;
       userId = records[0].get('id');
       const builder = new QueryBuilder(store)
         .from('ember-flexberry-dummy-application-user')
         .byId(userId);
-      return runTest(store, builder, (data) => {
-        assert.equal(data.get('length'), 1, 'byId | Length');
-        assert.equal(data.get('firstObject.id'), userId, 'byId | Data');
+      user2Id = records[1].get('id');
+      const builder2 = new QueryBuilder(store)
+        .from('ember-flexberry-dummy-application-user')
+        .byId(user2Id);
+      const queries = [builder.build(), builder2.build()];
+      return runTest(store, queries, (data) => {
+        assert.equal(data.get('length'), 2, 'response | Length');
+        assert.equal(data[0].get('length'), 1, 'byId | Length');
+        assert.equal(data[0].get('firstObject.id'), userId, 'byId | Data');
+        assert.equal(data[1].get('length'), 1, 'byId | Length');
+        assert.equal(data[1].get('firstObject.id'), user2Id, 'byId | Data');
       });
     })
 
@@ -37,9 +44,15 @@ export default function batchReadingFunctions(store, assert) {
       const builder = new QueryBuilder(store)
         .from('ember-flexberry-dummy-application-user')
         .where('name', '==', 'VasyaBatch');
-      return runTest(store, builder, (data) =>
-        assert.ok(data.every(item => item.get('name') === 'VasyaBatch') && data.get('length') === 2, 'where')
-      );
+      const builder2 = new QueryBuilder(store)
+        .from('ember-flexberry-dummy-application-user')
+        .where('name', '==', 'OlegBatch');
+      const queries = [builder.build(), builder2.build()];
+      return runTest(store, queries, (data) => {
+        assert.equal(data.get('length'), 2, 'response | Length');
+        assert.ok(data[0].get('length') === 2 && data[0].every(item => item.get('name') === 'VasyaBatch'), 'where');
+        assert.ok(data[1].get('length') === 1 && data[1].get('firstObject.name') === 'OlegBatch');
+      });
     })
 
     // orderBy.
@@ -47,14 +60,17 @@ export default function batchReadingFunctions(store, assert) {
       const builder = new QueryBuilder(store)
         .from('ember-flexberry-dummy-application-user')
         .orderBy('karma');
-      return runTest(store, builder, (data) => {
+      const queries = [builder.build()];
+      return runTest(store, queries, (data) => {
+        assert.equal(data.get('length'), 1, 'response | Length');
+
         let isDataCorrect = true;
-        for (let i = 0; i < data.get('length') - 1 && isDataCorrect; i++) {
-          if (data.objectAt(i).get('karma') > data.objectAt(i + 1).get('karma')) { isDataCorrect = false; }
+        for (let i = 0; i < data[0].get('length') - 1 && isDataCorrect; i++) {
+          if (data[0].objectAt(i).get('karma') > data[0].objectAt(i + 1).get('karma')) { isDataCorrect = false; }
         }
 
         assert.ok(isDataCorrect, 'orderBy | Data');
-        assert.equal(data.get('length'), 3, 'orderBy | Length');
+        assert.equal(data[0].get('length'), 3, 'orderBy | Length');
       });
     })
 
@@ -64,9 +80,11 @@ export default function batchReadingFunctions(store, assert) {
         .from('ember-flexberry-dummy-application-user')
         .orderBy('karma')
         .top(2);
-      return runTest(store, builder, (data) =>
-        assert.equal(data.get('length'), 2, 'top')
-      );
+      const queries = [builder.build()];
+      return runTest(store, queries, (data) => {
+        assert.equal(data.get('length'), 1, 'response | Length');
+        assert.equal(data[0].get('length'), 2, 'top');
+      });
     })
 
     // skip.
@@ -75,9 +93,11 @@ export default function batchReadingFunctions(store, assert) {
         .from('ember-flexberry-dummy-application-user')
         .orderBy('karma')
         .skip(1);
-      return runTest(store, builder, (data) => {
-        assert.equal(data.get('firstObject.karma'), 4, 'skip | Data');
-        assert.equal(data.get('length'), 2, 'skip | Length');
+      const queries = [builder.build()];
+      return runTest(store, queries, (data) => {
+        assert.equal(data.get('length'), 1, 'response | Length');
+        assert.equal(data[0].get('firstObject.karma'), 4, 'skip | Data');
+        assert.equal(data[0].get('length'), 2, 'skip | Length');
       });
     })
 
@@ -87,19 +107,22 @@ export default function batchReadingFunctions(store, assert) {
         .from('ember-flexberry-dummy-application-user')
         .where('name', '==', 'VasyaBatch')
         .count();
-      return runTest(store, builder, (data) => assert.equal(data.meta.count, 2, 'count'));
+      const builder2 = new QueryBuilder(store)
+        .from('ember-flexberry-dummy-application-user')
+        .where('name', '==', 'OlegBatch')
+        .count();
+      const queries = [builder.build(), builder2.build()];
+      return runTest(store, queries, (data) => {
+        assert.equal(data.get('length'), 2, 'response | Length');
+        assert.equal(data[0].meta.count, 2, 'count');
+        assert.equal(data[1].meta.count, 1, 'count');
+      });
     })
     .catch((e) => {
       console.log(e, e.message);
       throw e;
     })
-    .finally(() => {
-      if (createdRecords) {
-        Ember.RSVP.Promise.all(createdRecords.map(record => record.destroyRecord())).finally(done);
-      } else {
-        return done;
-      }
-    });
+    .finally(done);
   });
 }
 
@@ -126,7 +149,7 @@ function initTestData(store) {
   ]);
 }
 
-function runTest(store, builder, callback) {
-  return store.batchQuery('ember-flexberry-dummy-application-user', builder.build())
+function runTest(store, queries, callback) {
+  return store.batchSelect(queries)
   .then((data) => callback(data));
 }

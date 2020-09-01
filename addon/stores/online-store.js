@@ -50,16 +50,20 @@ export default DS.Store.extend({
   /**
     A method to get array of models.
 
-    @method batchQuery
-    @param {String} modelName Model name.
-    @param {Query} query Flexberry Query object.
-    @return {Promise} A promise that fulfilled with an array of models.
+    @method batchSelect
+    @param {Array} queries Array of Flexberry Query objects.
+    @return {Promise} A promise that fulfilled with an array of query responses.
   */
-  batchQuery(modelName, query) {
-    return this.adapterFor('application').batchQuery(this, modelName, query).then(result => {
-      const array = this.recordArrayManager.createAdapterPopulatedRecordArray(modelName, query);
-      array.loadRecords(this.push(result), result);
-      return array;
+  batchSelect(queries) {
+    return this.adapterFor('application').batchSelect(this, queries).then(result => {
+      const batchResult = Ember.A();
+      result.forEach((records, index) => {
+        const array = this.recordArrayManager.createAdapterPopulatedRecordArray(queries[index].modelName, queries[index]);
+        array.loadRecords(this.push(records), records);
+        batchResult.addObject(array);
+      });
+
+      return batchResult;
     });
   },
 

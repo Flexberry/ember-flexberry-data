@@ -3,7 +3,7 @@
 ## [Unreleased]
 ### Added
 - Store
-    - `batchQuery` and `batchFindRecord` methods for loading data with batch.
+    - `batchSelect` and `batchFindRecord` methods for loading data with batch.
 
 ## [2.5.0-beta.8] - 2020-08-25
 ### Added

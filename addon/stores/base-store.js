@@ -447,14 +447,13 @@ export default DS.Store.extend({
   /**
     A method to get array of models with batch request.
 
-    @method batchQuery
-    @param {String} type Model name.
-    @param {Query} query Flexberry Query object.
+    @method batchSelect
+    @param {Query} queries Array of Flexberry Query objects.
     @param {Boolean} [useOnlineStore] Allow to explicitly specify online or offline store using independently of global online status.
-    @return {Promise} A promise that fulfilled with an array of models.
+    @return {Promise} A promise that fulfilled with an array of query responses.
   */
-  batchQuery() {
-    return this._callSuperMethod('batchQuery', 2, arguments);
+  batchSelect() {
+    return this._callSuperMethod('batchSelect', 2, arguments);
   },
 
   /**

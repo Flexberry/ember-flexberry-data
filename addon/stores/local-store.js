@@ -252,13 +252,12 @@ export default DS.Store.extend({
   /**
     A method to get array of models with batch request.
 
-    @method batchQuery
-    @param {String} type Model name.
-    @param {Query} query Flexberry Query object.
-    @return {Promise} A promise that fulfilled with an array of models.
+    @method batchSelect
+    @param {Query} queries Array of Flexberry Query objects.
+    @return {Promise} A promise that fulfilled with an array of query responses.
   */
-  batchQuery(modelName, query) {
-    return this.adapterFor('application').batchQuery(this, modelName, query);
+  batchSelect(queries) {
+    return this.adapterFor('application').batchSelect(this, queries);
   },
 
   /**

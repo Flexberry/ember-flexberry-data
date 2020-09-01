@@ -579,31 +579,32 @@ export default DS.RESTAdapter.extend({
   /**
     A method to get array of models with batch request.
 
-    @method batchQuery
+    @method batchSelect
     @param {DS.Store} store The store.
-    @param {String} type Model name.
-    @param {Query} query Flexberry Query object.
-    @return {Promise} A promise that fulfilled with an array of models.
+    @param {Array} queries Array of Flexberry Query objects.
+    @return {Promise} A promise that fulfilled with an array of query responses.
   */
-  batchQuery(store, type, query) {
+  batchSelect(store, queries) {
     if (Ember.isNone(store)) {
       store = this.get('store');
     }
 
     const boundary = `batch_${generateUniqueId()}`;
-    let requestBody = `--${boundary}\r\n`;
+    let requestBody = '';
+    queries.forEach(query => {
+      requestBody += `--${boundary}\r\n`;
+      requestBody += 'Content-Type: application/http\r\n';
+      requestBody += 'Content-Transfer-Encoding: binary\r\n';
 
-    requestBody += 'Content-Type: application/http\r\n';
-    requestBody += 'Content-Transfer-Encoding: binary\r\n';
+      const getUrl = this._buildURL(query.modelName);
 
-    const getUrl = this._buildURL(type);
+      const queryAdapter = new ODataQueryAdapter(getUrl, store);
+      const fullUrl = queryAdapter.getODataFullUrl(query);
 
-    const queryAdapter = new ODataQueryAdapter(getUrl, store);
-    const fullUrl = queryAdapter.getODataFullUrl(query);
-
-    requestBody += '\r\nGET ' + fullUrl + ' HTTP/1.1\r\n';
-    requestBody += 'Content-Type: application/json;type=entry\r\n';
-    requestBody += 'Prefer: return=representation\r\n';
+      requestBody += '\r\nGET ' + fullUrl + ' HTTP/1.1\r\n';
+      requestBody += 'Content-Type: application/json;type=entry\r\n';
+      requestBody += 'Prefer: return=representation\r\n\r\n';
+    });
 
     const url = `${this._buildURL()}/$batch`;
 
@@ -632,20 +633,27 @@ export default DS.RESTAdapter.extend({
         return reject(errorsChangesets.map(c => new DS.AdapterError(c.body)));
       }
 
-      const getResponse = getResponses[0].response;
-      const requestResult = { data: Ember.A(), included: Ember.A(), meta: store.serializerFor(type).extractMeta(store, type, getResponse.body) };
-      const records = getResponse.body.value;
-      records.forEach(record => {
-        const normalized = store.normalize(type, record);
+      const result = Ember.A();
 
-        // eslint-disable-next-line ember/jquery-ember-run
-        requestResult.data.addObject(normalized.data);
-        if (normalized.included) {
-          requestResult.included.addObjects(normalized.included);
-        }
+      getResponses.forEach((response, index) => {
+        const getResponse = response.response;
+        const type = queries[index].modelName;
+        const requestResult = { data: Ember.A(), included: Ember.A(), meta: store.serializerFor(type).extractMeta(store, type, getResponse.body) };
+        const records = getResponse.body.value;
+        records.forEach(record => {
+          const normalized = store.normalize(type, record);
+
+          // eslint-disable-next-line ember/jquery-ember-run
+          requestResult.data.addObject(normalized.data);
+          if (normalized.included) {
+            requestResult.included.addObjects(normalized.included);
+          }
+        });
+
+        result.addObject(requestResult);
       });
 
-      return resolve(requestResult);
+      return resolve(result);
     }).fail(reject));
   },
 
