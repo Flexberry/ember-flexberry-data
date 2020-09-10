@@ -1378,7 +1378,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Offline",
             "file": "addon/services/syncer.js",
-            "line": 10,
+            "line": 11,
             "extends": "Ember.Object"
         },
         "Offline.Store": {
@@ -2104,7 +2104,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 328,
+            "line": 330,
             "description": "A method to call OData actions that returns model records using ajax request.",
             "itemtype": "method",
             "name": "callEmberOdataAction",
@@ -2172,7 +2172,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 357,
+            "line": 359,
             "description": "A method to call OData actions using ajax request.",
             "itemtype": "method",
             "name": "callAction",
@@ -2240,7 +2240,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 390,
+            "line": 395,
             "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
@@ -2266,7 +2266,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 574,
+            "line": 579,
             "description": "A method to generate url part from queryParams.",
             "itemtype": "method",
             "name": "_generateFunctionQueryString",
@@ -2294,7 +2294,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 594,
+            "line": 599,
             "description": "A method to make args object function/action call method's.",
             "itemtype": "method",
             "name": "_getODataArgs",
@@ -2327,7 +2327,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 623,
+            "line": 628,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2373,7 +2373,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 732,
+            "line": 737,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2401,7 +2401,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 772,
+            "line": 777,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2425,7 +2425,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 823,
+            "line": 828,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -2891,32 +2891,16 @@
         {
             "file": "addon/adapters/offline.js",
             "line": 431,
-            "description": "Performing batch update operaion.",
+            "description": "This method is not implemented.",
             "itemtype": "method",
             "name": "batchUpdate",
-            "params": [
-                {
-                    "name": "store",
-                    "description": "",
-                    "type": "DS.Store"
-                },
-                {
-                    "name": "models",
-                    "description": "Is array of models or single model for batch update.",
-                    "type": "DS.Model[]|DS.Model"
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Promise"
-            },
             "class": "Adapter.Offline",
             "module": "ember-flexberry-data",
             "namespace": "Adapter"
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 531,
+            "line": 440,
             "description": "Stores hash for performing bulk operaion into map.",
             "itemtype": "method",
             "name": "_storeHashForBulkOperation",
@@ -2940,7 +2924,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 549,
+            "line": 458,
             "description": "Makes {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} out of queries that look like this:\n {\n   <property to query>: <value to match>,\n   ...\n }.",
             "itemtype": "method",
             "name": "_makeQueryObject",
@@ -2978,7 +2962,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 600,
+            "line": 509,
             "description": "Retrieves projection from query and returns it.\nRetrieved projection removes from the query.",
             "itemtype": "method",
             "name": "_extractProjectionFromQuery",
@@ -4409,7 +4393,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 574,
+            "line": 582,
             "description": "Builds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
             "params": [
                 {
@@ -4438,7 +4422,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 688,
+            "line": 696,
             "description": "Checks query on contains restrictions by relationships.",
             "itemtype": "method",
             "name": "containsRelationships",
@@ -5697,7 +5681,7 @@
         },
         {
             "file": "addon/serializers/odata.js",
-            "line": 49,
+            "line": 53,
             "description": "Returns key for a given relationship.",
             "params": [
                 {
@@ -5715,7 +5699,7 @@
         },
         {
             "file": "addon/serializers/odata.js",
-            "line": 64,
+            "line": 68,
             "description": "Fixes error with hasMany polymorphic relationships.\nDelete this after ember-data 3.5.0 update.",
             "itemtype": "method",
             "name": "_normalizeEmbeddedRelationship",
@@ -6124,7 +6108,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 22,
+            "line": 23,
             "description": "Store that use for making requests in offline mode.\nBy default it is set to global instane of {{#crossLink \"LocalStore\"}}{{/crossLink}} class.",
             "itemtype": "property",
             "name": "offlineStore",
@@ -6135,7 +6119,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 31,
+            "line": 32,
             "description": "Number of \"main\" records (include related records for relationships) that should be accumulated before bulk operation will be performed.",
             "itemtype": "property",
             "name": "numberOfRecordsForPerformingBulkOperations",
@@ -6147,7 +6131,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 40,
+            "line": 41,
             "description": "Allows to enable or disable continuation of syncing down if error occurs.",
             "itemtype": "property",
             "name": "queueContinueOnError",
@@ -6159,14 +6143,14 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 49,
+            "line": 50,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 53,
+            "line": 54,
             "description": "Initialize offline store.",
             "itemtype": "method",
             "name": "init",
@@ -6178,7 +6162,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 69,
+            "line": 70,
             "description": "Save specified records into local store (IndexedDB).",
             "itemtype": "method",
             "name": "syncDown",
@@ -6233,7 +6217,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 124,
+            "line": 125,
             "description": "Remove all records in local store.",
             "itemtype": "method",
             "name": "",
@@ -6245,7 +6229,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 134,
+            "line": 135,
             "description": "Saves data to local store.",
             "itemtype": "method",
             "name": "_syncDownRecord",
@@ -6301,7 +6285,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 193,
+            "line": 194,
             "description": "Start sync up process.",
             "itemtype": "method",
             "name": "syncUp",
@@ -6323,6 +6307,12 @@
                             "description": "If `true` continue sync up if an error occurred.",
                             "type": "Boolean",
                             "optional": true
+                        },
+                        {
+                            "name": "useBatchUpdate",
+                            "description": "Do sync up through batch update or not.",
+                            "type": "Boolean",
+                            "optional": true
                         }
                     ]
                 }
@@ -6337,7 +6327,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 225,
+            "line": 229,
             "description": "This method is called when a sync process if at attempt create, update or delete record, server error return.\nDefault behavior: Marked `job` as 'Ошибка', execute further when called `syncUp` method.",
             "example": [
                 "\n  ```javascript\n  // app/services/syncer.js\n  import { Offline } from 'ember-flexberry-data';\n\n  export default Offline.Syncer.extend({\n    ...\n    resolveServerError(job, error) {\n      let _this = this;\n      return new Ember.RSVP.Promise((resolve, reject) => {\n        // Here `error.status` as example, as if user not authorized on server.\n        if (error.status === 401) {\n          // As if `auth` function authorize user.\n          auth().then(() => {\n            _this.syncUp(Ember.A([job])).then(() => {\n              job.set('executionResult', 'Выполнено');\n              resolve(job.save());\n            }, reject);\n          }, reject);\n        } else {\n          job.set('executionResult', 'Ошибка');\n          resolve(job.save());\n        }\n      });\n    },\n    ...\n  });\n\n  ```"
@@ -6366,7 +6356,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 270,
+            "line": 274,
             "description": "This method is called when a sync process not found record on server for delete or update.\nDefault behavior: Marked `job` as 'Не выполнено', not delete and not execute further when called `syncUp` method.",
             "example": [
                 "\n  ```javascript\n  // app/services/syncer.js\n  import { Offline } from 'ember-flexberry-data';\n\n  export default Offline.Syncer.extend({\n    ...\n    resolveNotFoundRecord(job) {\n      if (job.get('operationType') === 'UPDATE') {\n        // It will be executed when next called `syncUp` method.\n        job.set('executionResult', 'Ошибка');\n      } else if (job.get('operationType') === 'DELETE') {\n        // It will be immediately delete and not never executed.\n        job.set('executionResult', 'Выполнено');\n      }\n\n      return job.save();\n    },\n    ...\n  });\n\n  ```"
@@ -6390,42 +6380,61 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 306,
+            "line": 310,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 316,
+            "line": 320,
+            "description": "Return name of projection to sync up by model name.",
+            "itemtype": "method",
+            "name": "getSyncUpProjectionName",
+            "params": [
+                {
+                    "name": "modelName",
+                    "description": "Name of model to get sync up projection name.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Name of projection to sync up."
+            },
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 344,
+            "line": 339,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 360,
+            "line": 367,
+            "description": "Starts syncing up through batch.",
+            "params": [
+                {
+                    "name": "store",
+                    "description": "",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "jobs",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 374,
-            "class": "Offline.Syncer",
-            "module": "ember-flexberry-data",
-            "namespace": "Offline"
-        },
-        {
-            "file": "addon/services/syncer.js",
-            "line": 399,
+            "line": 408,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
@@ -6439,49 +6448,95 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 446,
+            "line": 438,
+            "description": "Returns record to create for syncing up.",
+            "params": [
+                {
+                    "name": "store",
+                    "description": "Store.",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "job",
+                    "description": "Job for sync up.",
+                    "type": "DS.Model"
+                }
+            ],
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 455,
+            "line": 456,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 461,
+            "line": 471,
+            "description": "Returns record to update for syncing up.",
+            "params": [
+                {
+                    "name": "store",
+                    "description": "Store.",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "job",
+                    "description": "Job for sync up.",
+                    "type": "DS.Model"
+                }
+            ],
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 488,
+            "line": 491,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 505,
+            "line": 507,
+            "description": "Returns record to remove for syncing up.",
+            "params": [
+                {
+                    "name": "store",
+                    "description": "Store.",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "job",
+                    "description": "Job for sync up.",
+                    "type": "DS.Model"
+                }
+            ],
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 517,
+            "line": 525,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 539,
+            "line": 541,
+            "class": "Offline.Syncer",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
+            "file": "addon/services/syncer.js",
+            "line": 550,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
@@ -6495,28 +6550,63 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 567,
+            "line": 583,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 611,
+            "line": 600,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 650,
+            "line": 612,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 670,
+            "line": 634,
+            "class": "Offline.Syncer",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
+            "file": "addon/services/syncer.js",
+            "line": 651,
+            "class": "Offline.Syncer",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
+            "file": "addon/services/syncer.js",
+            "line": 662,
+            "class": "Offline.Syncer",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
+            "file": "addon/services/syncer.js",
+            "line": 708,
+            "class": "Offline.Syncer",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
+            "file": "addon/services/syncer.js",
+            "line": 747,
+            "class": "Offline.Syncer",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
+            "file": "addon/services/syncer.js",
+            "line": 763,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
@@ -7138,6 +7228,34 @@
         {
             "file": "addon/stores/base-store.js",
             "line": 418,
+            "description": "Pushes into store the model that exists in backend without a request to it.",
+            "itemtype": "method",
+            "name": "createExistingRecord",
+            "params": [
+                {
+                    "name": "modelName",
+                    "description": "Name of the model to push into store.",
+                    "type": "String"
+                },
+                {
+                    "name": "primaryKey",
+                    "description": "Primery key of the model to push into store.",
+                    "type": "String"
+                },
+                {
+                    "name": "useOnlineStore",
+                    "description": "Allow to explicitly specify online or offline store using independently of global online status",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
+            "class": "Offline.Store",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
+            "file": "addon/stores/base-store.js",
+            "line": 429,
             "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
@@ -7164,7 +7282,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 436,
+            "line": 447,
             "description": "Returns an instance of the adapter for a given type.",
             "itemtype": "method",
             "name": "adapterFor",
@@ -7191,7 +7309,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 455,
+            "line": 466,
             "description": "Returns an instance of the serializer for a given type.",
             "itemtype": "method",
             "name": "serializerFor",
@@ -7218,7 +7336,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 513,
+            "line": 524,
             "description": "Detect model name by method name and arguments.",
             "itemtype": "method",
             "name": "_getModelName",
@@ -7246,7 +7364,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 560,
+            "line": 571,
             "description": "Update all databases in accordance with actual schemas.",
             "itemtype": "method",
             "name": "_dbInit",
@@ -7490,7 +7608,7 @@
         {
             "file": "addon/stores/local-store.js",
             "line": 231,
-            "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
+            "description": "Calls the `save` method on each passed model and returns a promise that is resolved by an array of saved models.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
             "params": [
@@ -7504,6 +7622,26 @@
                 "description": "A promise that fulfilled with an array of models in the new state.",
                 "type": "Promise"
             },
+            "class": "Offline.LocalStore",
+            "module": "ember-flexberry-data",
+            "namespace": "Offline"
+        },
+        {
+            "file": "addon/stores/local-store.js",
+            "line": 252,
+            "description": "Pushes into store the model that exists in backend without a request to it.",
+            "params": [
+                {
+                    "name": "modelName",
+                    "description": "Name of the model to push into store.",
+                    "type": "String"
+                },
+                {
+                    "name": "primaryKey",
+                    "description": "Primery key of the model to push into store.",
+                    "type": "String"
+                }
+            ],
             "class": "Offline.LocalStore",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
@@ -7547,6 +7685,26 @@
                 "description": "A promise that fulfilled with an array of models in the new state.",
                 "type": "Promise"
             },
+            "class": "OData.OnlineStore",
+            "module": "ember-flexberry-data",
+            "namespace": "OData"
+        },
+        {
+            "file": "addon/stores/online-store.js",
+            "line": 50,
+            "description": "Pushes into store the model that exists in backend without a request to it.",
+            "params": [
+                {
+                    "name": "modelName",
+                    "description": "Name of the model to push into store.",
+                    "type": "String"
+                },
+                {
+                    "name": "primaryKey",
+                    "description": "Primery key of the model to push into store.",
+                    "type": "String"
+                }
+            ],
             "class": "OData.OnlineStore",
             "module": "ember-flexberry-data",
             "namespace": "OData"
@@ -8620,7 +8778,7 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/indexeddb-adapter.js:574"
+            "line": " addon/query/indexeddb-adapter.js:582"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -8708,7 +8866,11 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/serializers/odata.js:49"
+            "line": " addon/serializers/odata.js:53"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " addon/services/syncer.js:320"
         },
         {
             "message": "replacing incorrect tag: function with method",
@@ -8768,7 +8930,7 @@
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:623"
+            "line": " addon/adapters/odata.js:628"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
@@ -8804,7 +8966,7 @@
         },
         {
             "message": "Missing item type\nBuilds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
-            "line": " addon/query/indexeddb-adapter.js:574"
+            "line": " addon/query/indexeddb-adapter.js:582"
         },
         {
             "message": "Missing item type\nBuilds function for windowing array of objects using data from the query.",
@@ -8908,67 +9070,63 @@
         },
         {
             "message": "Missing item type\nReturns key for a given relationship.",
-            "line": " addon/serializers/odata.js:49"
+            "line": " addon/serializers/odata.js:53"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:49"
+            "line": " addon/services/syncer.js:50"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:306"
+            "line": " addon/services/syncer.js:310"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:316"
+            "line": " addon/services/syncer.js:339"
+        },
+        {
+            "message": "Missing item type\nStarts syncing up through batch.",
+            "line": " addon/services/syncer.js:367"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:344"
-        },
-        {
-            "message": "Missing item type",
-            "line": " addon/services/syncer.js:360"
-        },
-        {
-            "message": "Missing item type",
-            "line": " addon/services/syncer.js:374"
-        },
-        {
-            "message": "Missing item type",
-            "line": " addon/services/syncer.js:399"
+            "line": " addon/services/syncer.js:408"
         },
         {
             "message": "Missing item type",
             "line": " addon/services/syncer.js:424"
         },
         {
-            "message": "Missing item type",
-            "line": " addon/services/syncer.js:446"
+            "message": "Missing item type\nReturns record to create for syncing up.",
+            "line": " addon/services/syncer.js:438"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:455"
+            "line": " addon/services/syncer.js:456"
+        },
+        {
+            "message": "Missing item type\nReturns record to update for syncing up.",
+            "line": " addon/services/syncer.js:471"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:461"
+            "line": " addon/services/syncer.js:491"
+        },
+        {
+            "message": "Missing item type\nReturns record to remove for syncing up.",
+            "line": " addon/services/syncer.js:507"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:488"
+            "line": " addon/services/syncer.js:525"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:505"
+            "line": " addon/services/syncer.js:541"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:517"
-        },
-        {
-            "message": "Missing item type",
-            "line": " addon/services/syncer.js:539"
+            "line": " addon/services/syncer.js:550"
         },
         {
             "message": "Missing item type",
@@ -8976,23 +9134,51 @@
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:567"
+            "line": " addon/services/syncer.js:583"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:611"
+            "line": " addon/services/syncer.js:600"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:650"
+            "line": " addon/services/syncer.js:612"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:670"
+            "line": " addon/services/syncer.js:634"
+        },
+        {
+            "message": "Missing item type",
+            "line": " addon/services/syncer.js:651"
+        },
+        {
+            "message": "Missing item type",
+            "line": " addon/services/syncer.js:662"
+        },
+        {
+            "message": "Missing item type",
+            "line": " addon/services/syncer.js:708"
+        },
+        {
+            "message": "Missing item type",
+            "line": " addon/services/syncer.js:747"
+        },
+        {
+            "message": "Missing item type",
+            "line": " addon/services/syncer.js:763"
         },
         {
             "message": "Missing item type",
             "line": " addon/services/user.js:8"
+        },
+        {
+            "message": "Missing item type\nPushes into store the model that exists in backend without a request to it.",
+            "line": " addon/stores/local-store.js:252"
+        },
+        {
+            "message": "Missing item type\nPushes into store the model that exists in backend without a request to it.",
+            "line": " addon/stores/online-store.js:50"
         },
         {
             "message": "Missing item type\nDeserializes serialized attribute value.",
