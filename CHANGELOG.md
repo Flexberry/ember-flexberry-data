@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [3.5.0-beta.1] - 2020-09-10
+- Changes from [`2.5.0`](#250---2020-09-10) version.
+
 ## [2.5.0] - 2020-09-10
 ### Added
 - The `createExistingRecord` method for the `LocalStore` and `OnlineStore` classes to create existing records in the storage without query.
