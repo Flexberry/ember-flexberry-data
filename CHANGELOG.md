@@ -2,48 +2,25 @@
 
 ## [Unreleased]
 
-## [2.5.0-beta.8] - 2020-08-25
+## [2.5.0] - 2020-09-10
 ### Added
-- Passing headers when adapter's callFunction or callAction method called.
+- The `createExistingRecord` method for the `LocalStore` and `OnlineStore` classes to create existing records in the storage without query.
 
-## [2.5.0-beta.7] - 2020-08-24
 ### Fixed
+- Not loaded `belongsTo` relationships were serialized to `null` when saved.
 - When processing the response in the `batchUpdate` method of the `OData` adapter, models with only the `belongsTo` relationships changed were ignored.
+- Creating data for syncing in the `Syncer` service when audit is disabled in it.
 
 ### Changed
+- Now, when calling the `callFunction` and `callAction` functions from the `OData` adapter, the headers from the `headers` property will be added to the request.
 - When records stored in `IndexedDB` refer to other records that are not in `IndexedDB`, when querying those records using `IndexedDBAdapter`, you will see a warning in the console instead of a query error.
 
 ### Breaking changes
-- The implementation of the `batchUpdate` method in the `Adapter.Offline` adapter has been removed, and the `save` method is now used instead.
+- The implementation of the `batchUpdate` method in the `Offline` adapter has been removed, and the `save` method is now used instead.
 
-## [2.5.0-beta.6] - 2020-08-06
-### Added
-- Rejecting promise if sync up through batch update failed.
-
-### Fixed
-- Prevent unloading record in syncer for not created entities completely.
-- Logic of storing entities in offline if audit disabled.
-
-## [2.5.0-beta.4] - 2020-07-22
-### Added
-- [WIP] The ability to skip data inconsistency errors when reading with the `IndexedDBAdapter` adapter.
-
-## [2.5.0-beta.2] - 2020-06-22
-### Added
-- Store
-    - createExistingRecord method to create record, that exists in backend, without request to it.
-- Syncer service
-    - Implemented sync up through batch update when useBatchUpdate flag set to true.
-### Moved 
-- Logic for getting projection for syncing up into syncer service method.
-
-## [2.5.0-beta.1] - 2020-06-10
-### Fixed
-- Not loaded `belongsTo` relationships were serialized to `null` when saved.
-
-## [2.5.0-beta.0] - 2020-05-29
-### Fixed
-- [WIP] The `batchUpdate` method of the `Offline` adapter for models with polymorphic relationships does not work.
+### Known issues
+- Implementation of sync up using batch update in `Syncer` service is in progress and not tested properly. You can use it (`syncer.syncUp(null, { useBatchUpdate: true })`), but you need to disable audit (`auditEnabled` property) and make sure that there is no data to sync created with audit.
+- See [all issues](https://github.com/Flexberry/ember-flexberry-data/issues).
 
 ## [2.4.1] - 2020-05-18
 ### Fixed
