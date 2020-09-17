@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [3.5.0-beta.1] - 2020-09-10
+## [3.5.0] - 2020-09-17
 - Changes from [`2.5.0`](#250---2020-09-10) version.
 
 ## [2.5.0] - 2020-09-10
@@ -24,10 +24,6 @@
 ### Known issues
 - Implementation of sync up using batch update in `Syncer` service is in progress and not tested properly. You can use it (`syncer.syncUp(null, { useBatchUpdate: true })`), but you need to disable audit (`auditEnabled` property) and make sure that there is no data to sync created with audit.
 - See [all issues](https://github.com/Flexberry/ember-flexberry-data/issues).
-
-## [3.5.0-beta.0] - 2020-08-27
-### Added
-- Changes from all `2.5.0` beta versions.
 
 ## [2.4.1] - 2020-05-18
 ### Fixed
