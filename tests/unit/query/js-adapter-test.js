@@ -5,7 +5,7 @@ import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
 import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate,
-  GeographyPredicate, GeometryPredicate } from 'ember-flexberry-data/query/predicate';
+  GeographyPredicate, GeometryPredicate, TruePredicate, FalsePredicate } from 'ember-flexberry-data/query/predicate';
 
 import startApp from '../../helpers/start-app';
 
@@ -556,4 +556,36 @@ test('adapter | js | geometry predicate | intersects', (assert) => {
   assert.equal(result[0].id, 1);
   assert.equal(result[1].id, 2);
   assert.equal(result[2].id, 3);
+});
+
+test('adapter | js | true predicate', (assert) => {
+  const data = [
+    { id: 1, Country: 'Argentina' },
+    { id: 2, Country: 'Paragwaj' },
+    { id: 3, Country: 'Russia' }
+  ];
+
+  let sp1 = new TruePredicate();
+  let builder = new QueryBuilder(store, 'employee').where(sp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+});
+
+test('adapter | js | false predicate', (assert) => {
+  const data = [
+    { id: 1, Country: 'Argentina' },
+    { id: 2, Country: 'Paragwaj' },
+    { id: 3, Country: 'Russia' }
+  ];
+
+  let sp1 = new FalsePredicate();
+  let builder = new QueryBuilder(store, 'employee').where(sp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
 });

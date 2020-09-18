@@ -635,6 +635,56 @@ export class IsOfPredicate extends BasePredicate {
 }
 
 /**
+ * The class of true predicate.
+ *
+ * @namespace Query
+ * @class TruePredicate
+ * @extends BasePredicate
+ * @constructor
+ */
+export class TruePredicate extends BasePredicate {
+  constructor() {
+    super();
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the predicate.
+   * @public
+   */
+  toString() {
+    return 'true';
+  }
+}
+
+/**
+ * The class of false predicate.
+ *
+ * @namespace Query
+ * @class FalsePredicate
+ * @extends BasePredicate
+ * @constructor
+ */
+export class FalsePredicate extends BasePredicate {
+  constructor() {
+    super();
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the predicate.
+   * @public
+   */
+  toString() {
+    return 'false';
+  }
+}
+
+/**
  * Combines specified predicates using `and` logic condition.
  *
  * @for BasePredicate

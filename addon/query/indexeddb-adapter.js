@@ -4,7 +4,17 @@
 
 import Ember from 'ember';
 import FilterOperator from './filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, GeometryPredicate } from './predicate';
+import {
+  SimplePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  DatePredicate,
+  GeographyPredicate,
+  GeometryPredicate,
+  TruePredicate,
+  FalsePredicate
+} from './predicate';
 import BaseAdapter from './base-adapter';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
@@ -679,6 +689,16 @@ function updateWhereClause(store, table, query) {
   }
 
   if (predicate instanceof StringPredicate) {
+    let jsAdapter = new JSAdapter();
+    return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
+  }
+
+  if (predicate instanceof TruePredicate) {
+    let jsAdapter = new JSAdapter();
+    return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
+  }
+
+  if (predicate instanceof FalsePredicate) {
     let jsAdapter = new JSAdapter();
     return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
   }

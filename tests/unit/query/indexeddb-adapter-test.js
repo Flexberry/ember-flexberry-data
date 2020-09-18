@@ -11,7 +11,9 @@ import {
   StringPredicate,
   DetailPredicate,
   GeographyPredicate,
-  GeometryPredicate
+  GeometryPredicate,
+  TruePredicate,
+  FalsePredicate
 } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
 
@@ -498,6 +500,42 @@ test('adapter | indexeddb | string predicate | contains', (assert) => {
     assert.equal(result.data.length, 2);
     assert.equal(result.data[0].id, 1);
     assert.equal(result.data[1].id, 3);
+  });
+});
+
+test('adapter | indexeddb | true predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, CountryName: 'Argentina' },
+      { id: 2, CountryName: 'Paragwaj' },
+      { id: 3, CountryName: 'Russia' },
+    ],
+  };
+
+  let sp1 = new TruePredicate();
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(sp1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+  });
+});
+
+test('adapter | indexeddb | false predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, CountryName: 'Argentina' },
+      { id: 2, CountryName: 'Paragwaj' },
+      { id: 3, CountryName: 'Russia' },
+    ],
+  };
+
+  let sp1 = new FalsePredicate();
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(sp1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 0);
   });
 });
 

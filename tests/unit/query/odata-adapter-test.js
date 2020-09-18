@@ -13,6 +13,8 @@ import {
   GeometryPredicate,
   NotPredicate,
   IsOfPredicate,
+  TruePredicate,
+  FalsePredicate
 } from 'ember-flexberry-data/query/predicate';
 import ODataAdapter from 'ember-flexberry-data/query/odata-adapter';
 import startApp from '../../helpers/start-app';
@@ -718,6 +720,22 @@ test('adapter | odata | isof predicate | inside not', function (assert) {
 
   // Assert.
   runTest(assert, builder, 'Creator', `$filter=not(isof($it,'.Bot'))&$select=CreatorID`);
+});
+
+test('adapter | odata | true predicate', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'customer').where(new TruePredicate());
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=true&$select=CustomerID`);
+});
+
+test('adapter | odata | false predicate', function (assert) {
+  // Arrange.
+  let builder = new QueryBuilder(store, 'customer').where(new FalsePredicate());
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=false&$select=CustomerID`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {
