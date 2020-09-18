@@ -693,12 +693,7 @@ function updateWhereClause(store, table, query) {
     return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
   }
 
-  if (predicate instanceof TruePredicate) {
-    let jsAdapter = new JSAdapter();
-    return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
-  }
-
-  if (predicate instanceof FalsePredicate) {
+  if ((predicate instanceof TruePredicate) || (predicate instanceof FalsePredicate)) {
     let jsAdapter = new JSAdapter();
     return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
   }
