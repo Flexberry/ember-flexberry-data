@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import ModelWithoutValidation from 'ember-flexberry-data/models/model-without-validation';
+import ModelWithoutValidation from './model-without-validation';
 import EmberValidations from 'ember-validations';
 
 /**
@@ -17,7 +17,6 @@ import EmberValidations from 'ember-validations';
   @param {Promise[]} promises Array to which custom 'preSave' promises could be pushed
 
   @public
-  @deprecated Use `ModelWithoutValidation` instead.
  */
 var Model = ModelWithoutValidation.extend(EmberValidations, {
   /**
@@ -127,12 +126,6 @@ var Model = ModelWithoutValidation.extend(EmberValidations, {
   */
   init() {
     this._super(...arguments);
-
-    // The class is deprecated.
-    Ember.deprecate(`The class is deprecated, use 'ModelWithoutValidation' class instead.`, false, {
-      id: 'ember-flexberry-data.models.model',
-      until: '3.0'
-    });
 
     // Attach validation observers for hasMany relationships.
     this.eachRelationship((name, attrs) => {
