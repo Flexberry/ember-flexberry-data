@@ -112,8 +112,7 @@ var ModelWithoutValidation = DS.Model.extend(Ember.Evented, Copyable, {
     options = Ember.merge({ softSave: false }, options || {});
 
     return new Ember.RSVP.Promise((resolve, reject) => {
-      let promise = Ember.RSVP.resolve();
-      promise.then(() => this.beforeSave(options)).then(() => {
+      this.beforeSave(options).then(() => {
         // Call to base class 'save' method with right context.
         // The problem is that call to current save method will be already finished,
         // and traditional _this._super will point to something else, but not to DS.Model 'save' method,
@@ -311,13 +310,6 @@ var ModelWithoutValidation = DS.Model.extend(Ember.Evented, Copyable, {
   rollbackAll() {
     this.rollbackRelationships();
     this.rollbackAttributes();
-  },
-
-  /**
-    Initializes model.
-  */
-  init() {
-    this._super(...arguments);
   },
 
   /**
