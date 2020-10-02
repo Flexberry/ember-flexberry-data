@@ -730,12 +730,74 @@ test('adapter | odata | true predicate', function (assert) {
   runTest(assert, builder, 'Customers', `$filter=true&$select=CustomerID`);
 });
 
+test('adapter | odata | true predicate | complex predicate', function (assert) {
+  // Arrange.
+  let sp1 = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
+  let tp1 = new TruePredicate();
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, tp1);
+
+  let builder = new QueryBuilder(store, 'customer').where(cp1);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=FirstName eq 'Vasya' or true&$select=CustomerID`);
+
+  // Arrange.
+  cp1 = new ComplexPredicate(Condition.And, sp1, tp1);
+
+  builder = new QueryBuilder(store, 'customer').where(cp1);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=FirstName eq 'Vasya' and true&$select=CustomerID`);
+});
+
+test('adapter | odata | true predicate | details predicate', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').all(new TruePredicate());
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:true)&$select=__PrimaryKey`);
+});
+
 test('adapter | odata | false predicate', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where(new FalsePredicate());
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', `$filter=false&$select=CustomerID`);
+});
+
+test('adapter | odata | false predicate | complex predicate', function (assert) {
+  // Arrange.
+  let sp1 = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
+  let fp1 = new FalsePredicate();
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, fp1);
+
+  let builder = new QueryBuilder(store, 'customer').where(cp1);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=FirstName eq 'Vasya' or false&$select=CustomerID`);
+
+  // Arrange.
+  cp1 = new ComplexPredicate(Condition.And, sp1, fp1);
+
+  builder = new QueryBuilder(store, 'customer').where(cp1);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=FirstName eq 'Vasya' and false&$select=CustomerID`);
+});
+
+test('adapter | odata | false predicate | details predicate', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').all(new FalsePredicate());
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:false)&$select=__PrimaryKey`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {

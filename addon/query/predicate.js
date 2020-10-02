@@ -668,9 +668,6 @@ export class TruePredicate extends BasePredicate {
  * @constructor
  */
 export class FalsePredicate extends BasePredicate {
-  constructor() {
-    super();
-  }
 
   /**
    * Converts this instance to string.

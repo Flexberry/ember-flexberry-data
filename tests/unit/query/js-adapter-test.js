@@ -4,8 +4,16 @@ import QueryBuilder from 'ember-flexberry-data/query/builder';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate,
-  GeographyPredicate, GeometryPredicate, TruePredicate, FalsePredicate } from 'ember-flexberry-data/query/predicate';
+import {
+  SimplePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  GeographyPredicate,
+  GeometryPredicate,
+  TruePredicate,
+  FalsePredicate
+} from 'ember-flexberry-data/query/predicate';
 
 import startApp from '../../helpers/start-app';
 
@@ -565,8 +573,52 @@ test('adapter | js | true predicate', (assert) => {
     { id: 3, Country: 'Russia' }
   ];
 
-  let sp1 = new TruePredicate();
-  let builder = new QueryBuilder(store, 'employee').where(sp1);
+  let tp1 = new TruePredicate();
+  let builder = new QueryBuilder(store, 'employee').where(tp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+});
+
+test('adapter | js | true predicate | complex predicate', (assert) => {
+  const data = [
+    { id: 1, Country: 'Argentina' },
+    { id: 2, Country: 'Paragwaj' },
+    { id: 3, Country: 'Russia' }
+  ];
+
+  let sp1 = new SimplePredicate('Country', FilterOperator.Eq, 'Argentina');
+  let tp1 = new TruePredicate();
+
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, tp1);
+  let builder = new QueryBuilder(store, 'employee').where(cp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+
+  cp1 = new ComplexPredicate(Condition.And, sp1, tp1);
+  builder = new QueryBuilder(store, 'employee').where(cp1);
+  filter = adapter.buildFunc(builder.build());
+
+  result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | true predicate | detail predicate', (assert) => {
+  const data = [
+    { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
+    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
+    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] }
+  ];
+
+  let dp = new DetailPredicate('Tags').any(new TruePredicate());
+  let builder = new QueryBuilder(store, 'employee').where(dp);
+
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -581,8 +633,52 @@ test('adapter | js | false predicate', (assert) => {
     { id: 3, Country: 'Russia' }
   ];
 
-  let sp1 = new FalsePredicate();
-  let builder = new QueryBuilder(store, 'employee').where(sp1);
+  let fp1 = new FalsePredicate();
+  let builder = new QueryBuilder(store, 'employee').where(fp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | false predicate | complex predicate', (assert) => {
+  const data = [
+    { id: 1, Country: 'Argentina' },
+    { id: 2, Country: 'Paragwaj' },
+    { id: 3, Country: 'Russia' }
+  ];
+
+  let sp1 = new SimplePredicate('Country', FilterOperator.Eq, 'Argentina');
+  let fp1 = new FalsePredicate();
+
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, fp1);
+  let builder = new QueryBuilder(store, 'employee').where(cp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+
+  cp1 = new ComplexPredicate(Condition.And, sp1, fp1);
+  builder = new QueryBuilder(store, 'employee').where(cp1);
+  filter = adapter.buildFunc(builder.build());
+
+  result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | false predicate | detail predicate', (assert) => {
+  const data = [
+    { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
+    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
+    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] }
+  ];
+
+  let dp = new DetailPredicate('Tags').any(new FalsePredicate());
+  let builder = new QueryBuilder(store, 'employee').where(dp);
+
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
