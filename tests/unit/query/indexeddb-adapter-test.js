@@ -14,6 +14,7 @@ import {
   GeometryPredicate
 } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
+import { EqZeroCustomPredicate, NotCustomPredicate } from '../utils/test-custom-predicate';
 
 import startApp from '../../helpers/start-app';
 
@@ -1488,5 +1489,54 @@ test('adapter | indexeddb | geometry predicate | intersects', (assert) => {
     assert.equal(result.data[0].id, 1);
     assert.equal(result.data[1].id, 2);
     assert.equal(result.data[2].id, 3);
+  });
+});
+
+test('adapter | indexeddb | custom predicate | eq 0', (assert) => {
+  // Arrange.
+  const data = {
+    employee: [
+      { id: 1, Name: 'X', Age: 0 },
+      { id: 2, Name: 'Y', Age: 10 },
+      { id: 3, Name: 'Z', Age: 0 },
+    ],
+  };
+
+  const p = new EqZeroCustomPredicate('Age');
+
+  // Act.
+  const builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).select('Name').where(p);
+
+  // Act & Assert.
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].Name, 'X');
+    assert.equal(result.data[1].Name, 'Z');
+  });
+});
+
+test('adapter | indexeddb | custom predicate | custom not', (assert) => {
+  // Arrange.
+  const data = {
+    employee: [
+      { id: 1, Name: 'A', Surname: 'X', Age: 10 },
+      { id: 2, Name: 'B', Surname: 'Y', Age: 11 },
+      { id: 3, Name: 'C', Surname: 'Z', Age: 12 },
+    ],
+  };
+
+  const innerPredicate = new SimplePredicate('Name', FilterOperator.Eq, 'B');
+  const np = new NotCustomPredicate(innerPredicate);
+
+  // Act.
+  const builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(np);
+
+  // Act & Assert.
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 2);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 3);
   });
 });

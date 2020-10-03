@@ -16,6 +16,7 @@ import {
 } from 'ember-flexberry-data/query/predicate';
 import ODataAdapter from 'ember-flexberry-data/query/odata-adapter';
 import startApp from '../../helpers/start-app';
+import { EqZeroCustomPredicate, NotCustomPredicate } from '../utils/test-custom-predicate';
 
 const baseUrl = 'http://services.odata.org/Northwind/Northwind.svc';
 const app = startApp();
@@ -718,6 +719,29 @@ test('adapter | odata | isof predicate | inside not', function (assert) {
 
   // Assert.
   runTest(assert, builder, 'Creator', `$filter=not(isof($it,'.Bot'))&$select=CreatorID`);
+});
+
+test('adapter | odata | custom predicate | eq 0', function (assert) {
+  // Arrange.
+  let predicate = new EqZeroCustomPredicate('Age');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'creator').where(predicate);
+
+  // Assert.
+  runTest(assert, builder, 'Creator', `$filter=Age eq 0&$select=CreatorID`);
+});
+
+test('adapter | odata | custom predicate | custom not', function (assert) {
+  // Arrange.
+  const innerPredicate = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
+  const np = new NotCustomPredicate(innerPredicate);
+
+  // Act.
+  const builder = new QueryBuilder(store, 'customer').where(np);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=not(FirstName eq 'Vasya')&$select=CustomerID`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {

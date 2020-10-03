@@ -1,6 +1,15 @@
 import Ember from 'ember';
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, GeometryPredicate } from './predicate';
+import {
+  SimplePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  DatePredicate,
+  GeographyPredicate,
+  GeometryPredicate,
+  CustomPredicate,
+} from './predicate';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
 import Information from '../utils/information';
@@ -245,7 +254,8 @@ export default class JSAdapter extends BaseAdapter {
     let b4 = predicate instanceof DatePredicate;
     let b5 = predicate instanceof GeographyPredicate;
     let b6 = predicate instanceof GeometryPredicate;
-    if (b1 || b2 || b3 || b4) {
+    let b7 = predicate instanceof CustomPredicate;
+    if (b1 || b2 || b3 || b4 || b7) {
       let filterFunction = this.getAttributeFilterFunction(predicate, options);
       return this.getFilterFunctionAnd([filterFunction]);
     }
@@ -417,6 +427,18 @@ export default class JSAdapter extends BaseAdapter {
         default:
           throw new Error(`Unsupported condition '${predicate.condition}'.`);
       }
+    }
+
+    if (predicate instanceof CustomPredicate) {
+      const jsConverter = predicate.jsConverter;
+      if (jsConverter instanceof Function) {
+        return jsConverter(this, predicate, options);
+      }
+
+      Ember.warn('CustomPredicate doesn\'t have a converter for js adapter');
+      return function (data) {
+        return data;
+      };
     }
 
     throw new Error(`Unsupported predicate '${predicate}'.`);

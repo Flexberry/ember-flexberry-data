@@ -4,7 +4,16 @@
 
 import Ember from 'ember';
 import FilterOperator from './filter-operator';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, GeometryPredicate } from './predicate';
+import {
+  SimplePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  DatePredicate,
+  GeographyPredicate,
+  GeometryPredicate,
+  CustomPredicate,
+} from './predicate';
 import BaseAdapter from './base-adapter';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
@@ -688,6 +697,17 @@ function updateWhereClause(store, table, query) {
     let jsAdapter = datePredicates.length > 0 ? new JSAdapter(Ember.getOwner(store).lookup('service:moment')) : new JSAdapter();
 
     return table.filter(jsAdapter.getAttributeFilterFunction(predicate, { booleanAsString: true }));
+  }
+
+  if (predicate instanceof CustomPredicate) {
+    const indexeddbConverter = predicate.indexeddbConverter;
+    if (indexeddbConverter instanceof Function) {
+      const jsAdapter = new JSAdapter(Ember.getOwner(store).lookup('service:moment'));
+      return indexeddbConverter(jsAdapter, predicate, table);
+    }
+
+    Ember.warn('CustomPredicate doesn\'t have a converter for indexeddb adapter');
+    return table;
   }
 
   throw new Error(`Unsupported predicate '${predicate}'`);

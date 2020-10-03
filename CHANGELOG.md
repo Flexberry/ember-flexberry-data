@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- `CustomPredicate` for implementing custom predicates.
 
 ## [2.5.0] - 2020-09-10
 ### Added

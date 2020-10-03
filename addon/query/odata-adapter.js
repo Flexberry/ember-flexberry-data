@@ -12,6 +12,7 @@ import {
   GeometryPredicate,
   NotPredicate,
   IsOfPredicate,
+  CustomPredicate,
 } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
@@ -137,6 +138,111 @@ export default class ODataAdapter extends BaseAdapter {
     return `${this._baseUrl}${queryMark}${queryPart}`;
   }
 
+  /**
+    Returns OData attribute name.
+
+    @method getODataAttributeName
+    @param {String} modelName Model name.
+    @param {String} attributePath Attribute path.
+    @param {String} prefix Prefix for detail attributes.
+    @param {Boolean} noIdConversion .
+    @return {String} OData attribute name.
+  */
+  getODataAttributeName(modelName, attributePath, prefix, noIdConversion) {
+    let attributeName = this._getODataAttributeName(modelName, attributePath, noIdConversion);
+    if (prefix) {
+      attributeName = `${prefix}/${attributeName}`;
+    }
+
+    return attributeName;
+  }
+
+  /**
+    Converts specified predicate into OData filter part.
+
+    @param {BasePredicate} predicate Predicate to convert.
+    @param {String} modelName Model name.
+    @param {String} prefix Prefix for detail attributes.
+    @param {Number} level Nesting level for recursion with comples predicates.
+    @return {String} OData filter part.
+  */
+  convertPredicateToODataFilterClause(predicate, modelName, prefix, level) {
+    if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
+      return this._buildODataSimplePredicate(predicate, modelName, prefix);
+    }
+
+    if (predicate instanceof StringPredicate) {
+      let attribute = this.getODataAttributeName(modelName, predicate.attributePath, prefix);
+
+      return `contains(${attribute},'${String(predicate.containsValue).replace(/'/g, `''`)}')`;
+    }
+
+    if (predicate instanceof NotPredicate) {
+      return `not(${this.convertPredicateToODataFilterClause(predicate.predicate, modelName, prefix, level)})`;
+    }
+
+    if (predicate instanceof IsOfPredicate) {
+      let type = this._store.modelFor(predicate.typeName);
+      let typeName = Ember.get(type, 'modelName');
+      let namespace = Ember.get(type, 'namespace');
+      let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : '$it';
+      let className = classify(typeName).replace(namespace.split('.').join(''), '');
+
+      return `isof(${expression},'${namespace}.${className}')`;
+    }
+
+    if (predicate instanceof GeographyPredicate) {
+      let attribute = this.getODataAttributeName(modelName, predicate.attributePath, prefix);
+
+      return `geo.intersects(geography1=${attribute},geography2=geography'${predicate.intersectsValue}')`;
+    }
+
+    if (predicate instanceof GeometryPredicate) {
+      let attribute = this.getODataAttributeName(modelName, predicate.attributePath, prefix);
+
+      return `geom.intersects(geometry1=${attribute},geometry2=geometry'${predicate.intersectsValue}')`;
+    }
+
+    if (predicate instanceof DetailPredicate) {
+      let func = '';
+      if (predicate.isAll) {
+        func = 'all';
+      } else if (predicate.isAny) {
+        func = 'any';
+      } else {
+        throw new Error(`OData supports only 'any' or 'or' operations for details`);
+      }
+
+      let additionalPrefix = 'f';
+      let meta = this._info.getMeta(modelName, predicate.detailPath);
+      let detailPredicate = this.convertPredicateToODataFilterClause(predicate.predicate, meta.type, prefix + additionalPrefix, level);
+      let detailPath = this._getODataAttributeName(modelName, predicate.detailPath);
+
+      return `${detailPath}/${func}(${additionalPrefix}:${detailPredicate})`;
+    }
+
+    if (predicate instanceof ComplexPredicate) {
+      let separator = ` ${predicate.condition} `;
+      let result = predicate.predicates
+        .map(i => this.convertPredicateToODataFilterClause(i, modelName, prefix, level + 1)).join(separator);
+      let lp = level > 0 ? '(' : '';
+      let rp = level > 0 ? ')' : '';
+      return lp + result + rp;
+    }
+
+    if (predicate instanceof CustomPredicate) {
+      const odataConverter = predicate.odataConverter;
+      if (odataConverter instanceof Function) {
+        return odataConverter(this, predicate, modelName, prefix, level);
+      }
+
+      Ember.warn('CustomPredicate doesn\'t have a converter for odata adapter');
+      return '';
+    }
+
+    throw new Error(`Unknown predicate '${predicate}'`);
+  }
+
   _buildODataSelect(query) {
     return query.select.map((i) => this._getODataAttributeName(query.modelName, i, true)).join(',');
   }
@@ -210,7 +316,7 @@ export default class ODataAdapter extends BaseAdapter {
       return null;
     }
 
-    return this._convertPredicateToODataFilterClause(predicate, query.modelName, '', 0);
+    return this.convertPredicateToODataFilterClause(predicate, query.modelName, '', 0);
   }
 
   _buildODataOrderBy(query) {
@@ -228,90 +334,6 @@ export default class ODataAdapter extends BaseAdapter {
     }
 
     return result;
-  }
-
-  /**
-   * Converts specified predicate into OData filter part.
-   *
-   * @param predicate {BasePredicate} Predicate to convert.
-   * @param {String} prefix Prefix for detail attributes.
-   * @param {Number} level Nesting level for recursion with comples predicates.
-   * @return {String} OData filter part.
-   */
-  _convertPredicateToODataFilterClause(predicate, modelName, prefix, level) {
-    if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
-      return this._buildODataSimplePredicate(predicate, modelName, prefix);
-    }
-
-    if (predicate instanceof StringPredicate) {
-      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
-      if (prefix) {
-        attribute = `${prefix}/${attribute}`;
-      }
-
-      return `contains(${attribute},'${String(predicate.containsValue).replace(/'/g, `''`)}')`;
-    }
-
-    if (predicate instanceof NotPredicate) {
-      return `not(${this._convertPredicateToODataFilterClause(predicate.predicate, modelName, prefix, level)})`;
-    }
-
-    if (predicate instanceof IsOfPredicate) {
-      let type = this._store.modelFor(predicate.typeName);
-      let typeName = Ember.get(type, 'modelName');
-      let namespace = Ember.get(type, 'namespace');
-      let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : '$it';
-      let className = classify(typeName).replace(namespace.split('.').join(''), '');
-
-      return `isof(${expression},'${namespace}.${className}')`;
-    }
-
-    if (predicate instanceof GeographyPredicate) {
-      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
-      if (prefix) {
-        attribute = `${prefix}/${attribute}`;
-      }
-
-      return `geo.intersects(geography1=${attribute},geography2=geography'${predicate.intersectsValue}')`;
-    }
-
-    if (predicate instanceof GeometryPredicate) {
-      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
-      if (prefix) {
-        attribute = `${prefix}/${attribute}`;
-      }
-
-      return `geom.intersects(geometry1=${attribute},geometry2=geometry'${predicate.intersectsValue}')`;
-    }
-
-    if (predicate instanceof DetailPredicate) {
-      let func = '';
-      if (predicate.isAll) {
-        func = 'all';
-      } else if (predicate.isAny) {
-        func = 'any';
-      } else {
-        throw new Error(`OData supports only 'any' or 'or' operations for details`);
-      }
-
-      let additionalPrefix = 'f';
-      let meta = this._info.getMeta(modelName, predicate.detailPath);
-      let detailPredicate = this._convertPredicateToODataFilterClause(predicate.predicate, meta.type, prefix + additionalPrefix, level);
-      let detailPath = this._getODataAttributeName(modelName, predicate.detailPath);
-
-      return `${detailPath}/${func}(${additionalPrefix}:${detailPredicate})`;
-    }
-
-    if (predicate instanceof ComplexPredicate) {
-      let separator = ` ${predicate.condition} `;
-      let result = predicate.predicates
-        .map(i => this._convertPredicateToODataFilterClause(i, modelName, prefix, level + 1)).join(separator);
-      let lp = level > 0 ? '(' : '';
-      let rp = level > 0 ? ')' : '';
-      return lp + result + rp;
-    }
-
-    throw new Error(`Unknown predicate '${predicate}'`);
   }
 
   /**
@@ -377,10 +399,7 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataSimplePredicate(predicate, modelName, prefix) {
-    let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
-    if (prefix) {
-      attribute = `${prefix}/${attribute}`;
-    }
+    let attribute = this.getODataAttributeName(modelName, predicate.attributePath, prefix);
 
     if (predicate.timeless) {
       attribute = `date(${attribute})`;
