@@ -29,7 +29,6 @@ export default function readingPredicatesTruePredicates(store, assert) {
       .then((data) => {
         assert.equal(data.get('length'), 4, `Must return all records`);
 
-
         let sp1 = new SimplePredicate('name', FilterOperator.Eq, 'Vasya1');
         let tp1 = new TruePredicate();
         let cp1 = sp1.or(tp1);
