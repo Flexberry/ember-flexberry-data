@@ -556,6 +556,7 @@ test('adapter | indexeddb | true predicate | detail predicate', (assert) => {
       { id: 1, Tags: [1, 3] },
       { id: 2, Tags: [3, 2] },
       { id: 3, Tags: [2, 1] },
+      { id: 4, Tags: [] },
     ],
     tag: [
       { id: 1, Name: 'Tag1' },
@@ -626,6 +627,7 @@ test('adapter | indexeddb | false predicate | detail predicate', (assert) => {
       { id: 1, Tags: [1, 3] },
       { id: 2, Tags: [3, 2] },
       { id: 3, Tags: [2, 1] },
+      { id: 4, Tags: [] },
     ],
     tag: [
       { id: 1, Name: 'Tag1' },

@@ -613,7 +613,8 @@ test('adapter | js | true predicate | detail predicate', (assert) => {
   const data = [
     { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
     { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
-    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] }
+    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] },
+    { id: 4, Tags: [] },
   ];
 
   let dp = new DetailPredicate('Tags').any(new TruePredicate());
@@ -673,7 +674,8 @@ test('adapter | js | false predicate | detail predicate', (assert) => {
   const data = [
     { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
     { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
-    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] }
+    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] },
+    { id: 4, Tags: [] },
   ];
 
   let dp = new DetailPredicate('Tags').any(new FalsePredicate());
