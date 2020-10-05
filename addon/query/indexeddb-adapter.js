@@ -698,10 +698,7 @@ function updateWhereClause(store, table, query) {
   }
 
   if (predicate instanceof FalsePredicate) {
-    let db = new Dexie('table');
-    db = table;
-
-    return db.limit(0);
+    return table.limit(0);
   }
 
   if (predicate instanceof ComplexPredicate) {

@@ -11,6 +11,7 @@ import { clearOnlineData } from '../../../helpers/clear-data';
 
 const skipTestNames = [
   'reading | restrictions | odata functions',
+  'reading | predicates | false predicates',
 ];
 
 export default function executeTest(testName, callback) {
