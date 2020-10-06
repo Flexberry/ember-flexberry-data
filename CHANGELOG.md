@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [2.6.0-beta.0] - 2020-10-06
+### Added
+- The `ModelWithoutValidation` model without validation.
+- The `TruePredicate` and `FalsePredicate` predicates with implementations for the `IndexedDBAdapter`, `JsAdapter`, and `ODataAdapter` adapters.
+
 ## [2.5.0] - 2020-09-10
 ### Added
 - The `createExistingRecord` method for the `LocalStore` and `OnlineStore` classes to create existing records in the storage without query.
