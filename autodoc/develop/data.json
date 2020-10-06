@@ -262,7 +262,9 @@
                 "Query.GeometryPredicate": 1,
                 "Query.DetailPredicate": 1,
                 "Query.NotPredicate": 1,
-                "Query.IsOfPredicate": 1
+                "Query.IsOfPredicate": 1,
+                "Query.TruePredicate": 1,
+                "Query.FalsePredicate": 1
             },
             "fors": {
                 "BasePredicate": 1,
@@ -574,6 +576,8 @@
                 "Query.DetailPredicate": 1,
                 "Query.NotPredicate": 1,
                 "Query.IsOfPredicate": 1,
+                "Query.TruePredicate": 1,
+                "Query.FalsePredicate": 1,
                 "Query.QueryObject": 1,
                 "Serializer.Base": 1,
                 "Serializer.OData": 1,
@@ -884,7 +888,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/js-adapter.js",
-            "line": 34,
+            "line": 44,
             "params": [
                 {
                     "name": "moment",
@@ -905,7 +909,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/js-adapter.js",
-            "line": 8,
+            "line": 18,
             "description": "Class of query language adapter that translates query object into JS function which\nfilters native JS array of objects by specified logic.\n\n```js\nconst data = [\n  { Name: 'A', Surname: 'X', Age: 10 },\n  { Name: 'B', Surname: 'Y', Age: 11 },\n  { Name: 'B', Surname: 'Z', Age: 12 }\n];\n\nlet adapter = new JSAdapter(moment);\nlet builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Eq, 'B');\nlet filter = adapter.buildFunc(builder.build());\n\nlet result = filter(data); // Y and Z\n```\n\nAll filters uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation))."
         },
         "Query.ODataAdapter": {
@@ -919,7 +923,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/odata-adapter.js",
-            "line": 30,
+            "line": 32,
             "params": [
                 {
                     "name": "baseUrl",
@@ -1202,6 +1206,38 @@
                     "multiple": true
                 }
             ],
+            "is_constructor": 1
+        },
+        "Query.TruePredicate": {
+            "name": "Query.TruePredicate",
+            "shortname": "Query.TruePredicate",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember-flexberry-data",
+            "namespace": "Query",
+            "file": "addon/query/predicate.js",
+            "line": 637,
+            "description": "The class of true predicate.",
+            "extends": "BasePredicate",
+            "is_constructor": 1
+        },
+        "Query.FalsePredicate": {
+            "name": "Query.FalsePredicate",
+            "shortname": "Query.FalsePredicate",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember-flexberry-data",
+            "namespace": "Query",
+            "file": "addon/query/predicate.js",
+            "line": 662,
+            "description": "The class of false predicate.",
+            "extends": "BasePredicate",
             "is_constructor": 1
         },
         "Query.QueryObject": {
@@ -4367,7 +4403,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 38,
+            "line": 48,
             "description": "Loads data from IndexedDB.",
             "itemtype": "method",
             "name": "query",
@@ -4393,7 +4429,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 582,
+            "line": 592,
             "description": "Builds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
             "params": [
                 {
@@ -4422,7 +4458,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 696,
+            "line": 714,
             "description": "Checks query on contains restrictions by relationships.",
             "itemtype": "method",
             "name": "containsRelationships",
@@ -4443,7 +4479,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 47,
+            "line": 57,
             "description": "Builds JS function for filtering JS array of objects by specified logic from query.",
             "itemtype": "method",
             "name": "buildFunc",
@@ -4463,7 +4499,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 64,
+            "line": 74,
             "description": "Builds function for windowing array of objects using data from the query.",
             "params": [
                 {
@@ -4482,7 +4518,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 93,
+            "line": 103,
             "description": "Builds function for ordering array of objects using data from the query.",
             "params": [
                 {
@@ -4501,7 +4537,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 145,
+            "line": 155,
             "description": "Builds function for selecting subset of properties from array of objects using data from the query.",
             "params": [
                 {
@@ -4520,7 +4556,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 234,
+            "line": 244,
             "description": "Builds function for filtering array of objects using predicate.",
             "params": [
                 {
@@ -4545,7 +4581,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 284,
+            "line": 296,
             "description": "Returns function for checkign single object using predicate.",
             "params": [
                 {
@@ -4578,7 +4614,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 425,
+            "line": 445,
             "description": "Loads value from object by specified attribute path.",
             "params": [
                 {
@@ -4602,7 +4638,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 451,
+            "line": 471,
             "description": "Returns complex filter function for `and` condition.\nResult function filters array of objects and returns those, for which\nall attribute filter functions returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
             "params": [
                 {
@@ -4621,7 +4657,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 481,
+            "line": 501,
             "description": "Returns complex filter function for `or` condition.\nResult function filters array of objects and returns those, for which\nat least one attribute filter function returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
             "params": [
                 {
@@ -4640,7 +4676,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 52,
+            "line": 54,
             "description": "Returns query data for querying OData feed (for query part).",
             "itemtype": "method",
             "name": "getODataQuery",
@@ -4663,7 +4699,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 92,
+            "line": 94,
             "description": "Returns select and expand query data for OData function.",
             "itemtype": "method",
             "name": "getODataFunctionQuery",
@@ -4684,7 +4720,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 118,
+            "line": 120,
             "description": "Returns full URL for querying OData feed (base part and query part).",
             "itemtype": "method",
             "name": "getODataFullUrl",
@@ -4705,7 +4741,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 233,
+            "line": 235,
             "description": "Converts specified predicate into OData filter part.",
             "params": [
                 {
@@ -4734,7 +4770,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 317,
+            "line": 327,
             "description": "Converts filter operator to OData representation.",
             "params": [
                 {
@@ -5251,7 +5287,39 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 637,
+            "line": 650,
+            "description": "Converts this instance to string.",
+            "itemtype": "method",
+            "name": "toString",
+            "return": {
+                "description": "Text representation of the predicate.",
+                "type": "String"
+            },
+            "access": "public",
+            "tagname": "",
+            "class": "Query.TruePredicate",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
+            "file": "addon/query/predicate.js",
+            "line": 672,
+            "description": "Converts this instance to string.",
+            "itemtype": "method",
+            "name": "toString",
+            "return": {
+                "description": "Text representation of the predicate.",
+                "type": "String"
+            },
+            "access": "public",
+            "tagname": "",
+            "class": "Query.FalsePredicate",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
+            "file": "addon/query/predicate.js",
+            "line": 684,
             "description": "Combines specified predicates using `and` logic condition.",
             "itemtype": "method",
             "name": "and",
@@ -5274,7 +5342,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 651,
+            "line": 698,
             "description": "Combines specified predicates using `or` logic condition.",
             "itemtype": "method",
             "name": "or",
@@ -5298,7 +5366,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 665,
+            "line": 712,
             "description": "Throws error if specified argument is not a predicate.",
             "params": [
                 {
@@ -5313,7 +5381,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 676,
+            "line": 723,
             "description": "Creates predicate by various parameters.",
             "itemtype": "method",
             "name": "createPredicate",
@@ -5333,7 +5401,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 700,
+            "line": 747,
             "description": "Convert string to predicate.",
             "itemtype": "method",
             "name": "stringToPredicate",
@@ -8778,43 +8846,43 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/indexeddb-adapter.js:582"
+            "line": " addon/query/indexeddb-adapter.js:592"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:47"
+            "line": " addon/query/js-adapter.js:57"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:64"
+            "line": " addon/query/js-adapter.js:74"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:93"
+            "line": " addon/query/js-adapter.js:103"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:145"
+            "line": " addon/query/js-adapter.js:155"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:284"
+            "line": " addon/query/js-adapter.js:296"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:425"
+            "line": " addon/query/js-adapter.js:445"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:451"
+            "line": " addon/query/js-adapter.js:471"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:481"
+            "line": " addon/query/js-adapter.js:501"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/odata-adapter.js:317"
+            "line": " addon/query/odata-adapter.js:327"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -8966,47 +9034,47 @@
         },
         {
             "message": "Missing item type\nBuilds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
-            "line": " addon/query/indexeddb-adapter.js:582"
+            "line": " addon/query/indexeddb-adapter.js:592"
         },
         {
             "message": "Missing item type\nBuilds function for windowing array of objects using data from the query.",
-            "line": " addon/query/js-adapter.js:64"
+            "line": " addon/query/js-adapter.js:74"
         },
         {
             "message": "Missing item type\nBuilds function for ordering array of objects using data from the query.",
-            "line": " addon/query/js-adapter.js:93"
+            "line": " addon/query/js-adapter.js:103"
         },
         {
             "message": "Missing item type\nBuilds function for selecting subset of properties from array of objects using data from the query.",
-            "line": " addon/query/js-adapter.js:145"
+            "line": " addon/query/js-adapter.js:155"
         },
         {
             "message": "Missing item type\nBuilds function for filtering array of objects using predicate.",
-            "line": " addon/query/js-adapter.js:234"
+            "line": " addon/query/js-adapter.js:244"
         },
         {
             "message": "Missing item type\nReturns function for checkign single object using predicate.",
-            "line": " addon/query/js-adapter.js:284"
+            "line": " addon/query/js-adapter.js:296"
         },
         {
             "message": "Missing item type\nLoads value from object by specified attribute path.",
-            "line": " addon/query/js-adapter.js:425"
+            "line": " addon/query/js-adapter.js:445"
         },
         {
             "message": "Missing item type\nReturns complex filter function for `and` condition.\nResult function filters array of objects and returns those, for which\nall attribute filter functions returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
-            "line": " addon/query/js-adapter.js:451"
+            "line": " addon/query/js-adapter.js:471"
         },
         {
             "message": "Missing item type\nReturns complex filter function for `or` condition.\nResult function filters array of objects and returns those, for which\nat least one attribute filter function returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
-            "line": " addon/query/js-adapter.js:481"
+            "line": " addon/query/js-adapter.js:501"
         },
         {
             "message": "Missing item type\nConverts specified predicate into OData filter part.",
-            "line": " addon/query/odata-adapter.js:233"
+            "line": " addon/query/odata-adapter.js:235"
         },
         {
             "message": "Missing item type\nConverts filter operator to OData representation.",
-            "line": " addon/query/odata-adapter.js:317"
+            "line": " addon/query/odata-adapter.js:327"
         },
         {
             "message": "Missing item type\nThe path to the detail for predicate.",
@@ -9026,7 +9094,7 @@
         },
         {
             "message": "Missing item type\nThrows error if specified argument is not a predicate.",
-            "line": " addon/query/predicate.js:665"
+            "line": " addon/query/predicate.js:712"
         },
         {
             "message": "Missing item type\nFlag: indicates whether to use new {@link http://jsonapi.org|JSON API} serialization.",

@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Query.TruePredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -78,6 +78,7 @@
 	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
 	                            <li><a href="../classes/Query.DatePredicate.html">Query.DatePredicate</a></li>
 	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
+	                            <li><a href="../classes/Query.FalsePredicate.html">Query.FalsePredicate</a></li>
 	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
 	                            <li><a href="../classes/Query.GeographyPredicate.html">Query.GeographyPredicate</a></li>
 	                            <li><a href="../classes/Query.GeometryPredicate.html">Query.GeometryPredicate</a></li>
@@ -90,6 +91,7 @@
 	                            <li><a href="../classes/Query.QueryObject.html">Query.QueryObject</a></li>
 	                            <li><a href="../classes/Query.SimplePredicate.html">Query.SimplePredicate</a></li>
 	                            <li><a href="../classes/Query.StringPredicate.html">Query.StringPredicate</a></li>
+	                            <li><a href="../classes/Query.TruePredicate.html">Query.TruePredicate</a></li>
 	                            <li><a href="../classes/Security.html">Security</a></li>
 	                            <li><a href="../classes/Serializer.html">Serializer</a></li>
 	                            <li><a href="../classes/Serializer.Base.html">Serializer.Base</a></li>
@@ -145,7 +147,17 @@
     <pre class="prettyprint linenums">
 import Ember from &#x27;ember&#x27;;
 import BaseAdapter from &#x27;./base-adapter&#x27;;
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, GeometryPredicate } from &#x27;./predicate&#x27;;
+import {
+  SimplePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  DatePredicate,
+  GeographyPredicate,
+  GeometryPredicate,
+  TruePredicate,
+  FalsePredicate
+} from &#x27;./predicate&#x27;;
 import FilterOperator from &#x27;./filter-operator&#x27;;
 import Condition from &#x27;./condition&#x27;;
 import Information from &#x27;../utils/information&#x27;;
@@ -390,7 +402,9 @@ export default class JSAdapter extends BaseAdapter {
     let b4 = predicate instanceof DatePredicate;
     let b5 = predicate instanceof GeographyPredicate;
     let b6 = predicate instanceof GeometryPredicate;
-    if (b1 || b2 || b3 || b4) {
+    let b7 = predicate instanceof TruePredicate;
+    let b8 = predicate instanceof FalsePredicate;
+    if (b1 || b2 || b3 || b4 || b7 || b8) {
       let filterFunction = this.getAttributeFilterFunction(predicate, options);
       return this.getFilterFunctionAnd([filterFunction]);
     }
@@ -501,6 +515,14 @@ export default class JSAdapter extends BaseAdapter {
 
     if (predicate instanceof StringPredicate) {
       return (i) =&gt; (_this.getValue(i, predicate.attributePath) || &#x27;&#x27;).toLowerCase().indexOf(predicate.containsValue.toLowerCase()) &gt; -1;
+    }
+
+    if (predicate instanceof TruePredicate) {
+      return () =&gt; true;
+    }
+
+    if (predicate instanceof FalsePredicate) {
+      return () =&gt; false;
     }
 
     if (predicate instanceof DetailPredicate) {
