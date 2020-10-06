@@ -11,7 +11,9 @@ import {
   StringPredicate,
   DetailPredicate,
   GeographyPredicate,
-  GeometryPredicate
+  GeometryPredicate,
+  TruePredicate,
+  FalsePredicate
 } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
 
@@ -498,6 +500,148 @@ test('adapter | indexeddb | string predicate | contains', (assert) => {
     assert.equal(result.data.length, 2);
     assert.equal(result.data[0].id, 1);
     assert.equal(result.data[1].id, 3);
+  });
+});
+
+test('adapter | indexeddb | true predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, CountryName: 'Argentina' },
+      { id: 2, CountryName: 'Paragwaj' },
+      { id: 3, CountryName: 'Russia' },
+    ],
+  };
+
+  let sp1 = new TruePredicate();
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(sp1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+  });
+});
+
+test('adapter | indexeddb | true predicate | complex predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, CountryName: 'Argentina' },
+      { id: 2, CountryName: 'Paragwaj' },
+      { id: 3, CountryName: 'Russia' },
+    ],
+  };
+
+  let sp1 = new SimplePredicate('CountryName', FilterOperator.Eq, 'Argentina');
+  let tp1 = new TruePredicate();
+
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, tp1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(cp1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+  });
+
+  cp1 = new ComplexPredicate(Condition.And, sp1, tp1);
+  builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(cp1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+  });
+});
+
+test('adapter | indexeddb | true predicate | detail predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Tags: [1, 3] },
+      { id: 2, Tags: [3, 2] },
+      { id: 3, Tags: [2, 1] },
+      { id: 4, Tags: [] },
+    ],
+    tag: [
+      { id: 1, Name: 'Tag1' },
+      { id: 2, Name: 'Tag2' },
+      { id: 3, Name: 'Tag3' },
+    ],
+  };
+
+  let dp = new DetailPredicate('Tags').any(new TruePredicate());
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+  });
+});
+
+test('adapter | indexeddb | false predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, CountryName: 'Argentina' },
+      { id: 2, CountryName: 'Paragwaj' },
+      { id: 3, CountryName: 'Russia' },
+    ],
+  };
+
+  let sp1 = new FalsePredicate();
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(sp1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 0);
+  });
+});
+
+test('adapter | indexeddb | false predicate | complex predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, CountryName: 'Argentina' },
+      { id: 2, CountryName: 'Paragwaj' },
+      { id: 3, CountryName: 'Russia' },
+    ],
+  };
+
+  let sp1 = new SimplePredicate('CountryName', FilterOperator.Eq, 'Argentina');
+  let fp1 = new FalsePredicate();
+
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, fp1);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(cp1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+  });
+
+  cp1 = new ComplexPredicate(Condition.And, sp1, fp1);
+  builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(cp1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 0);
+  });
+});
+
+test('adapter | indexeddb | false predicate | detail predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Tags: [1, 3] },
+      { id: 2, Tags: [3, 2] },
+      { id: 3, Tags: [2, 1] },
+      { id: 4, Tags: [] },
+    ],
+    tag: [
+      { id: 1, Name: 'Tag1' },
+      { id: 2, Name: 'Tag2' },
+      { id: 3, Name: 'Tag3' },
+    ],
+  };
+
+  let dp = new DetailPredicate('Tags').any(new FalsePredicate());
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 0);
   });
 });
 
