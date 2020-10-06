@@ -1,7 +1,17 @@
 import { isNone } from '@ember/utils';
 import { warn } from '@ember/debug';
 import BaseAdapter from './base-adapter';
-import { SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, GeographyPredicate, GeometryPredicate } from './predicate';
+import {
+  SimplePredicate,
+  ComplexPredicate,
+  StringPredicate,
+  DetailPredicate,
+  DatePredicate,
+  GeographyPredicate,
+  GeometryPredicate,
+  TruePredicate,
+  FalsePredicate
+} from './predicate';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
 import Information from '../utils/information';
@@ -245,7 +255,9 @@ export default class JSAdapter extends BaseAdapter {
     let b4 = predicate instanceof DatePredicate;
     let b5 = predicate instanceof GeographyPredicate;
     let b6 = predicate instanceof GeometryPredicate;
-    if (b1 || b2 || b3 || b4) {
+    let b7 = predicate instanceof TruePredicate;
+    let b8 = predicate instanceof FalsePredicate;
+    if (b1 || b2 || b3 || b4 || b7 || b8) {
       let filterFunction = this.getAttributeFilterFunction(predicate, options);
       return this.getFilterFunctionAnd([filterFunction]);
     }
@@ -360,6 +372,14 @@ export default class JSAdapter extends BaseAdapter {
 
     if (predicate instanceof StringPredicate) {
       return (i) => (_this.getValue(i, predicate.attributePath) || '').toLowerCase().indexOf(predicate.containsValue.toLowerCase()) > -1;
+    }
+
+    if (predicate instanceof TruePredicate) {
+      return () => true;
+    }
+
+    if (predicate instanceof FalsePredicate) {
+      return () => false;
     }
 
     if (predicate instanceof DetailPredicate) {

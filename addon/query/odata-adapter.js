@@ -13,6 +13,8 @@ import {
   GeometryPredicate,
   NotPredicate,
   IsOfPredicate,
+  TruePredicate,
+  FalsePredicate,
 } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
@@ -309,6 +311,14 @@ export default class ODataAdapter extends BaseAdapter {
       let lp = level > 0 ? '(' : '';
       let rp = level > 0 ? ')' : '';
       return lp + result + rp;
+    }
+
+    if (predicate instanceof TruePredicate) {
+      return 'true';
+    }
+
+    if (predicate instanceof FalsePredicate) {
+      return 'false';
     }
 
     throw new Error(`Unknown predicate '${predicate}'`);
