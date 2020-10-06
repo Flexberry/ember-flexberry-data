@@ -126,6 +126,17 @@
                 "Projection": 1
             }
         },
+        "addon/models/model-without-validation.js": {
+            "name": "addon/models/model-without-validation.js",
+            "modules": {},
+            "classes": {
+                "Projection.ModelWithoutValidation": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "Projection": 1
+            }
+        },
         "addon/models/model.js": {
             "name": "addon/models/model.js",
             "modules": {},
@@ -555,6 +566,7 @@
                 "CopyableMixin": 1,
                 "Offline.ModelMixin": 1,
                 "Projection.StoreMixin": 1,
+                "Projection.ModelWithoutValidation": 1,
                 "Projection.Model": 1,
                 "Offline.Model": 1,
                 "Query.BaseAdapter": 1,
@@ -628,7 +640,6 @@
             "access": "public",
             "tagname": "",
             "uses": [
-                "EmberValidationsMixin",
                 "Ember.EventedMixin",
                 "CopyableMixin"
             ],
@@ -761,6 +772,20 @@
             "line": 5,
             "description": "Mixin for {{#crossLink \"DS.Store\"}}Store{{/crossLink}} to support\nfetching models using projection."
         },
+        "Projection.ModelWithoutValidation": {
+            "name": "Projection.ModelWithoutValidation",
+            "shortname": "Projection.ModelWithoutValidation",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember-flexberry-data",
+            "namespace": "Projection",
+            "file": "addon/models/model-without-validation.js",
+            "line": 6,
+            "description": "Base model that supports projections and copying."
+        },
         "Projection.Model": {
             "name": "Projection.Model",
             "shortname": "Projection.Model",
@@ -772,7 +797,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Projection",
             "file": "addon/models/model.js",
-            "line": 7,
+            "line": 6,
             "description": "Base model that supports projections, validations and copying."
         },
         "Offline.Model": {
@@ -3418,112 +3443,69 @@
             "namespace": "Projection"
         },
         {
-            "file": "addon/models/model.js",
-            "line": 25,
+            "file": "addon/models/model-without-validation.js",
+            "line": 23,
             "description": "Stored canonical `belongsTo` relationships.",
             "itemtype": "property",
             "name": "_canonicalBelongsTo",
             "type": "Object",
             "access": "private",
             "tagname": "",
-            "class": "Projection.Model",
+            "class": "Projection.ModelWithoutValidation",
             "module": "ember-flexberry-data",
             "namespace": "Projection"
         },
         {
-            "file": "addon/models/model.js",
-            "line": 34,
-            "description": "Model validation rules.",
-            "itemtype": "property",
-            "name": "validations",
-            "type": "Object",
-            "default": "{}",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 43,
+            "file": "addon/models/model-without-validation.js",
+            "line": 32,
             "description": "Flag that indicates sync up process of model is processing.",
             "itemtype": "property",
             "name": "isSyncingUp",
             "type": "Boolean",
             "default": "false",
-            "class": "Projection.Model",
+            "class": "Projection.ModelWithoutValidation",
             "module": "ember-flexberry-data",
             "namespace": "Projection"
         },
         {
-            "file": "addon/models/model.js",
-            "line": 52,
+            "file": "addon/models/model-without-validation.js",
+            "line": 41,
             "description": "Flag that indicates model is created during sync up process.",
             "itemtype": "property",
             "name": "isCreatedDuringSyncUp",
             "type": "Boolean",
             "default": "false",
-            "class": "Projection.Model",
+            "class": "Projection.ModelWithoutValidation",
             "module": "ember-flexberry-data",
             "namespace": "Projection"
         },
         {
-            "file": "addon/models/model.js",
-            "line": 61,
+            "file": "addon/models/model-without-validation.js",
+            "line": 50,
             "description": "Flag that indicates model is updated last time during sync up process.",
             "itemtype": "property",
             "name": "isCreatedDuringSyncUp",
             "type": "Boolean",
             "default": "false",
-            "class": "Projection.Model",
+            "class": "Projection.ModelWithoutValidation",
             "module": "ember-flexberry-data",
             "namespace": "Projection"
         },
         {
-            "file": "addon/models/model.js",
-            "line": 70,
+            "file": "addon/models/model-without-validation.js",
+            "line": 59,
             "description": "Flag that indicates model is destroyed during sync up process.",
             "itemtype": "property",
             "name": "isCreatedDuringSyncUp",
             "type": "Boolean",
             "default": "false",
-            "class": "Projection.Model",
+            "class": "Projection.ModelWithoutValidation",
             "module": "ember-flexberry-data",
             "namespace": "Projection"
         },
         {
-            "file": "addon/models/model.js",
-            "line": 79,
-            "description": "Checks that model satisfies validation rules defined in 'validations' property.",
-            "itemtype": "method",
-            "name": "validate",
-            "params": [
-                {
-                    "name": "options",
-                    "description": "Method options",
-                    "type": "Object",
-                    "optional": true,
-                    "props": [
-                        {
-                            "name": "validateDeleted",
-                            "description": "Flag: indicates whether to validate model, if it is deleted, or not",
-                            "type": "Boolean",
-                            "optional": true,
-                            "optdefault": " true"
-                        }
-                    ]
-                }
-            ],
-            "return": {
-                "description": "A promise that will be resolved if model satisfies validation rules defined in 'validations' property",
-                "type": "Promise"
-            },
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 129,
+            "file": "addon/models/model-without-validation.js",
+            "line": 68,
             "description": "Triggers model's 'preSave' event & allows to execute some additional async logic before model will be saved.",
             "itemtype": "method",
             "name": "beforeSave",
@@ -3554,13 +3536,376 @@
                 "description": "A promise that will be resolved after all 'preSave' event handlers promises will be resolved",
                 "type": "Promise"
             },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 101,
+            "description": "Triggers 'preSave' event, and finally saves model.",
+            "itemtype": "method",
+            "name": "save",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Method options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "softSave",
+                            "description": "Flag: indicates whether following 'save' will be soft\n(without sending a request to server) or not",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": " false"
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be resolved after model will be successfully saved",
+                "type": "Promise"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 139,
+            "description": "Turns model into 'updated.uncommitted' state.\n\nTransition into the `updated.uncommitted` state\nif the model in the `saved` state (no local changes).\nAlternative: this.get('currentState').becomeDirty();",
+            "itemtype": "method",
+            "name": "makeDirty",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 152,
+            "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two array, array with index `0` this old values, array with index `1` this new values.",
+            "example": [
+                "\n  ```javascript\n  {\n    key: [\n      [oldValues],\n      [newValues],\n    ],\n  }\n  ```"
+            ],
+            "itemtype": "method",
+            "name": "changedHasMany",
+            "return": {
+                "description": "Object with changes, empty object if no change.",
+                "type": "Object"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 188,
+            "description": "Rollback changes for `hasMany` relationships.",
+            "itemtype": "method",
+            "name": "rollbackHasMany",
+            "params": [
+                {
+                    "name": "forOnlyKey",
+                    "description": "If specified, it is rollback invoked for relationship with this key.",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 212,
+            "description": "Сheck whether there is a changed `belongsTo` relationships.",
+            "itemtype": "method",
+            "name": "hasChangedBelongsTo",
+            "return": {
+                "description": "Returns `true` if `belongsTo` relationships have changed, else `false`.",
+                "type": "Boolean"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 236,
+            "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two items, old value, with index `0`, and new value, with index `1`.",
+            "example": [
+                "\n  ```javascript\n  {\n    key: [oldValue, newValue],\n  }\n  ```"
+            ],
+            "itemtype": "method",
+            "name": "changedBelongsTo",
+            "return": {
+                "description": "Object with changes, empty object if no change.",
+                "type": "Object"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 267,
+            "description": "Rollback changes for `belongsTo` relationships.",
+            "itemtype": "method",
+            "name": "rollbackBelongsTo",
+            "params": [
+                {
+                    "name": "forOnlyKey",
+                    "description": "If specified, it is rollback invoked for relationship with this key.",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 295,
+            "description": "Rollback changes for all relationships.",
+            "itemtype": "method",
+            "name": "rollbackRelationships",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 305,
+            "description": "Rollback all changes.",
+            "itemtype": "method",
+            "name": "rollbackAll",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 315,
+            "description": "Fired when the record is loaded from the server.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).",
+            "itemtype": "method",
+            "name": "didLoad",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 326,
+            "description": "Fired when the record is updated.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didUpdate).",
+            "itemtype": "method",
+            "name": "didUpdate",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 337,
+            "description": "Fired when the record is created.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didCreate).",
+            "itemtype": "method",
+            "name": "didCreate",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 348,
+            "description": "Set each `belongsTo` relationship, observer, that save canonical state.",
+            "itemtype": "method",
+            "name": "_saveCanonicalBelongsTo",
+            "access": "private",
+            "tagname": "",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 374,
+            "description": "Save canonical state for `belongsTo` relationships.",
+            "itemtype": "method",
+            "name": "_saveBelongsToObserver",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "sender",
+                    "description": "",
+                    "type": "DS.Model"
+                },
+                {
+                    "name": "key",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 390,
+            "description": "Defined projections for current model type.",
+            "itemtype": "property",
+            "name": "projections",
+            "type": "Ember.Object",
+            "default": "null",
+            "access": "public",
+            "tagname": "",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 401,
+            "description": "Flag that indicates model id type.",
+            "itemtype": "property",
+            "name": "isType",
+            "type": "string",
+            "default": "'guid'",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 410,
+            "description": "The namespace in which this model is defined.",
+            "itemtype": "property",
+            "name": "namespace",
+            "type": "string",
+            "default": "''",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 420,
+            "description": "Defines idType for specified model type.",
+            "itemtype": "method",
+            "name": "defineIdType",
+            "params": [
+                {
+                    "name": "newIdType",
+                    "description": "Model id type.",
+                    "type": "String"
+                }
+            ],
+            "access": "public",
+            "tagname": "",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 434,
+            "description": "Defines projection for specified model type.",
+            "itemtype": "method",
+            "name": "defineProjection",
+            "params": [
+                {
+                    "name": "projectionName",
+                    "description": "Projection name, eg 'EmployeeE'.",
+                    "type": "String"
+                },
+                {
+                    "name": "modelName",
+                    "description": "The name of the model type.",
+                    "type": "String"
+                },
+                {
+                    "name": "attributes",
+                    "description": "Projection attributes.",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "Created projection.",
+                "type": "Object"
+            },
+            "access": "public",
+            "tagname": "",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 463,
+            "description": "Parent model type name.",
+            "itemtype": "property",
+            "name": "_parentModelName",
+            "type": "String",
+            "default": "null",
+            "access": "private",
+            "tagname": "",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model.js",
+            "line": 22,
+            "description": "Model validation rules.",
+            "itemtype": "property",
+            "name": "validations",
+            "type": "Object",
+            "default": "{}",
             "class": "Projection.Model",
             "module": "ember-flexberry-data",
             "namespace": "Projection"
         },
         {
             "file": "addon/models/model.js",
-            "line": 162,
+            "line": 31,
+            "description": "Checks that model satisfies validation rules defined in 'validations' property.",
+            "itemtype": "method",
+            "name": "validate",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Method options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "validateDeleted",
+                            "description": "Flag: indicates whether to validate model, if it is deleted, or not",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": " true"
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be resolved if model satisfies validation rules defined in 'validations' property",
+                "type": "Promise"
+            },
+            "class": "Projection.Model",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model.js",
+            "line": 81,
             "description": "Validates model, triggers 'preSave' event, and finally saves model.",
             "itemtype": "method",
             "name": "save",
@@ -3591,121 +3936,7 @@
         },
         {
             "file": "addon/models/model.js",
-            "line": 205,
-            "description": "Turns model into 'updated.uncommitted' state.\n\nTransition into the `updated.uncommitted` state\nif the model in the `saved` state (no local changes).\nAlternative: this.get('currentState').becomeDirty();",
-            "itemtype": "method",
-            "name": "makeDirty",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 218,
-            "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two array, array with index `0` this old values, array with index `1` this new values.",
-            "example": [
-                "\n  ```javascript\n  {\n    key: [\n      [oldValues],\n      [newValues],\n    ],\n  }\n  ```"
-            ],
-            "itemtype": "method",
-            "name": "changedHasMany",
-            "return": {
-                "description": "Object with changes, empty object if no change.",
-                "type": "Object"
-            },
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 254,
-            "description": "Rollback changes for `hasMany` relationships.",
-            "itemtype": "method",
-            "name": "rollbackHasMany",
-            "params": [
-                {
-                    "name": "forOnlyKey",
-                    "description": "If specified, it is rollback invoked for relationship with this key.",
-                    "type": "String",
-                    "optional": true
-                }
-            ],
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 278,
-            "description": "Сheck whether there is a changed `belongsTo` relationships.",
-            "itemtype": "method",
-            "name": "hasChangedBelongsTo",
-            "return": {
-                "description": "Returns `true` if `belongsTo` relationships have changed, else `false`.",
-                "type": "Boolean"
-            },
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 302,
-            "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two items, old value, with index `0`, and new value, with index `1`.",
-            "example": [
-                "\n  ```javascript\n  {\n    key: [oldValue, newValue],\n  }\n  ```"
-            ],
-            "itemtype": "method",
-            "name": "changedBelongsTo",
-            "return": {
-                "description": "Object with changes, empty object if no change.",
-                "type": "Object"
-            },
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 333,
-            "description": "Rollback changes for `belongsTo` relationships.",
-            "itemtype": "method",
-            "name": "rollbackBelongsTo",
-            "params": [
-                {
-                    "name": "forOnlyKey",
-                    "description": "If specified, it is rollback invoked for relationship with this key.",
-                    "type": "String",
-                    "optional": true
-                }
-            ],
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 361,
-            "description": "Rollback changes for all relationships.",
-            "itemtype": "method",
-            "name": "rollbackRelationships",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 371,
-            "description": "Rollback all changes.",
-            "itemtype": "method",
-            "name": "rollbackAll",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 381,
+            "line": 124,
             "description": "Initializes model.",
             "class": "Projection.Model",
             "module": "ember-flexberry-data",
@@ -3713,37 +3944,7 @@
         },
         {
             "file": "addon/models/model.js",
-            "line": 399,
-            "description": "Fired when the record is loaded from the server.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).",
-            "itemtype": "method",
-            "name": "didLoad",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 410,
-            "description": "Fired when the record is updated.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didUpdate).",
-            "itemtype": "method",
-            "name": "didUpdate",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 421,
-            "description": "Fired when the record is created.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didCreate).",
-            "itemtype": "method",
-            "name": "didCreate",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 432,
+            "line": 142,
             "description": "Destroys model.",
             "class": "Projection.Model",
             "module": "ember-flexberry-data",
@@ -3751,7 +3952,7 @@
         },
         {
             "file": "addon/models/model.js",
-            "line": 450,
+            "line": 160,
             "description": "Observes & handles changes in each hasMany relationship.",
             "itemtype": "method",
             "name": "_onChangeHasManyRelationship",
@@ -3775,7 +3976,7 @@
         },
         {
             "file": "addon/models/model.js",
-            "line": 462,
+            "line": 172,
             "description": "Aggregates validation error messages for hasMany relationships.",
             "itemtype": "method",
             "name": "_aggregateHasManyRelationshipValidationErrors",
@@ -3793,151 +3994,6 @@
             ],
             "access": "private",
             "tagname": "",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 504,
-            "description": "Set each `belongsTo` relationship, observer, that save canonical state.",
-            "itemtype": "method",
-            "name": "_saveCanonicalBelongsTo",
-            "access": "private",
-            "tagname": "",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 530,
-            "description": "Save canonical state for `belongsTo` relationships.",
-            "itemtype": "method",
-            "name": "_saveBelongsToObserver",
-            "access": "private",
-            "tagname": "",
-            "params": [
-                {
-                    "name": "sender",
-                    "description": "",
-                    "type": "DS.Model"
-                },
-                {
-                    "name": "key",
-                    "description": "",
-                    "type": "String"
-                }
-            ],
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 546,
-            "description": "Defined projections for current model type.",
-            "itemtype": "property",
-            "name": "projections",
-            "type": "Ember.Object",
-            "default": "null",
-            "access": "public",
-            "tagname": "",
-            "static": 1,
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 557,
-            "description": "Flag that indicates model id type.",
-            "itemtype": "property",
-            "name": "isType",
-            "type": "string",
-            "default": "'guid'",
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 566,
-            "description": "The namespace in which this model is defined.",
-            "itemtype": "property",
-            "name": "namespace",
-            "type": "string",
-            "default": "''",
-            "static": 1,
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 576,
-            "description": "Defines idType for specified model type.",
-            "itemtype": "method",
-            "name": "defineIdType",
-            "params": [
-                {
-                    "name": "newIdType",
-                    "description": "Model id type.",
-                    "type": "String"
-                }
-            ],
-            "access": "public",
-            "tagname": "",
-            "static": 1,
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 590,
-            "description": "Defines projection for specified model type.",
-            "itemtype": "method",
-            "name": "defineProjection",
-            "params": [
-                {
-                    "name": "projectionName",
-                    "description": "Projection name, eg 'EmployeeE'.",
-                    "type": "String"
-                },
-                {
-                    "name": "modelName",
-                    "description": "The name of the model type.",
-                    "type": "String"
-                },
-                {
-                    "name": "attributes",
-                    "description": "Projection attributes.",
-                    "type": "Object"
-                }
-            ],
-            "return": {
-                "description": "Created projection.",
-                "type": "Object"
-            },
-            "access": "public",
-            "tagname": "",
-            "static": 1,
-            "class": "Projection.Model",
-            "module": "ember-flexberry-data",
-            "namespace": "Projection"
-        },
-        {
-            "file": "addon/models/model.js",
-            "line": 619,
-            "description": "Parent model type name.",
-            "itemtype": "property",
-            "name": "_parentModelName",
-            "type": "String",
-            "default": "null",
-            "access": "private",
-            "tagname": "",
-            "static": 1,
             "class": "Projection.Model",
             "module": "ember-flexberry-data",
             "namespace": "Projection"
@@ -9026,11 +9082,11 @@
         },
         {
             "message": "Missing item type\nInitializes model.",
-            "line": " addon/models/model.js:381"
+            "line": " addon/models/model.js:124"
         },
         {
             "message": "Missing item type\nDestroys model.",
-            "line": " addon/models/model.js:432"
+            "line": " addon/models/model.js:142"
         },
         {
             "message": "Missing item type\nBuilds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",

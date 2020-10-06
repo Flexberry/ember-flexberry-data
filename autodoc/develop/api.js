@@ -23,6 +23,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Projection",
         "Projection.AdapterMixin",
         "Projection.Model",
+        "Projection.ModelWithoutValidation",
         "Projection.StoreMixin",
         "Query",
         "Query.BaseAdapter",
