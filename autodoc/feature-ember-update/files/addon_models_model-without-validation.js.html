@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>addon/models/model.js - Flexberry Documentation</title>
+    <title>addon/models/model-without-validation.js - Flexberry Documentation</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -134,25 +134,26 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>addon/models/model.js <small>File</small></h1>
+    <h1>addon/models/model-without-validation.js <small>File</small></h1>
 </div>
 
 <div class="file">
     <pre class="prettyprint linenums">
+import { Promise, all } from &#x27;rsvp&#x27;;
 import Evented from &#x27;@ember/object/evented&#x27;;
-import RSVP from &#x27;rsvp&#x27;;
 import EmberObject, { computed } from &#x27;@ember/object&#x27;;
-import { isArray } from &#x27;@ember/array&#x27;;
 import { merge } from &#x27;@ember/polyfills&#x27;;
+import { isArray } from &#x27;@ember/array&#x27;;
 import DS from &#x27;ember-data&#x27;;
 import createProj from &#x27;../utils/create&#x27;;
 import Copyable from &#x27;../mixins/copyable&#x27;;
 
 /**
-  Base model that supports projections.
+  Base model that supports projections and copying.
 
   @module ember-flexberry-data
-  @class Model
+  @class ModelWithoutValidation
+  @namespace Projection
   @extends DS.Model
   @uses Ember.EventedMixin
   @uses CopyableMixin
@@ -162,8 +163,8 @@ import Copyable from &#x27;../mixins/copyable&#x27;;
   @param {Promise[]} promises Array to which custom &#x27;preSave&#x27; promises could be pushed
 
   @public
-*/
-let Model = DS.Model.extend(Evented, Copyable, {
+ */
+var ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
   /**
     Stored canonical &#x60;belongsTo&#x60; relationships.
 
@@ -223,7 +224,7 @@ let Model = DS.Model.extend(Evented, Copyable, {
   beforeSave(options) {
     options = merge({ softSave: false, promises: [] }, options || {});
 
-    return new RSVP.Promise((resolve, reject) =&gt; {
+    return new Promise((resolve, reject) =&gt; {
       // Trigger &#x27;preSave&#x27; event, and  give its handlers possibility to run some &#x27;preSave&#x27; asynchronous logic,
       // by adding it&#x27;s promises to options.promises array.
       this.trigger(&#x27;preSave&#x27;, options);
@@ -231,10 +232,10 @@ let Model = DS.Model.extend(Evented, Copyable, {
       // Promises array could be totally changed in &#x27;preSave&#x27; event handlers, we should prevent possible errors.
       options.promises = isArray(options.promises) ? options.promises : [];
       options.promises = options.promises.filter(function(item) {
-        return item instanceof RSVP.Promise;
+        return item instanceof Promise;
       });
 
-      RSVP.all(options.promises).then(values =&gt; {
+      all(options.promises).then(values =&gt; {
         resolve(values);
       }).catch(reason =&gt; {
         reject(reason);
@@ -243,7 +244,7 @@ let Model = DS.Model.extend(Evented, Copyable, {
   },
 
   /**
-    The &#x27;preSave&#x27; event is called and finally saves model.
+    Triggers &#x27;preSave&#x27; event, and finally saves model.
 
     @method save
 
@@ -255,7 +256,7 @@ let Model = DS.Model.extend(Evented, Copyable, {
   save(options) {
     options = merge({ softSave: false }, options || {});
 
-    return new RSVP.Promise((resolve, reject) =&gt; {
+    return new Promise((resolve, reject) =&gt; {
       this.beforeSave(options).then(() =&gt; {
         // Call to base class &#x27;save&#x27; method with right context.
         // The problem is that call to current save method will be already finished,
@@ -320,8 +321,8 @@ let Model = DS.Model.extend(Evented, Copyable, {
       if (kind === &#x27;hasMany&#x27;) {
         if (this.get(key).filterBy(&#x27;hasDirtyAttributes&#x27;, true).length) {
           changedHasMany[key] = [
-            this.get(&#x60;${key}.canonicalState&#x60;).map(internalModel =&gt; internalModel ? internalModel.getRecord() : undefined),
-            this.get(&#x60;${key}.currentState&#x60;).map(internalModel =&gt; internalModel ? internalModel.getRecord() : undefined),
+            this.get(&#x60;${key}.canonicalState&#x60;).map(internalModel =&gt; internalModel ? internalModel.record : undefined),
+            this.get(&#x60;${key}.currentState&#x60;).map(internalModel =&gt; internalModel ? internalModel.record : undefined),
           ];
         }
       }
@@ -340,7 +341,7 @@ let Model = DS.Model.extend(Evented, Copyable, {
       if (kind === &#x27;hasMany&#x27; &amp;&amp; (!forOnlyKey || forOnlyKey === key)) {
         if (this.get(key).filterBy(&#x27;hasDirtyAttributes&#x27;, true).length) {
           [this.get(&#x60;${key}.canonicalState&#x60;), this.get(&#x60;${key}.currentState&#x60;)].forEach((state, i) =&gt; {
-            let records = state.map(internalModel =&gt; internalModel.getRecord());
+            let records = state.map(internalModel =&gt; internalModel.record);
             records.forEach((record) =&gt; {
               record.rollbackAll();
             });
@@ -530,16 +531,16 @@ let Model = DS.Model.extend(Evented, Copyable, {
   },
 });
 
-Model.reopenClass({
+ModelWithoutValidation.reopenClass({
   /**
-    Defined projections for current model type.
-
-    @property projections
-    @type Ember.Object
-    @default null
-    @public
-    @static
-  */
+   * Defined projections for current model type.
+   *
+   * @property projections
+   * @type Ember.Object
+   * @default null
+   * @public
+   * @static
+   */
   projections: null,
 
   /**
@@ -605,18 +606,18 @@ Model.reopenClass({
   },
 
   /**
-    Parent model type name.
-
-    @property _parentModelName
-    @type String
-    @default null
-    @private
-    @static
-  */
+   * Parent model type name.
+   *
+   * @property _parentModelName
+   * @type String
+   * @default null
+   * @private
+   * @static
+   */
   _parentModelName: null
 });
 
-export default Model;
+export default ModelWithoutValidation;
 
     </pre>
 </div>

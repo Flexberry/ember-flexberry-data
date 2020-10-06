@@ -112,6 +112,17 @@
             "fors": {},
             "namespaces": {}
         },
+        "addon/models/model-without-validation.js": {
+            "name": "addon/models/model-without-validation.js",
+            "modules": {},
+            "classes": {
+                "Projection.ModelWithoutValidation": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "Projection": 1
+            }
+        },
         "addon/models/model.js": {
             "name": "addon/models/model.js",
             "modules": {},
@@ -226,7 +237,9 @@
                 "Query.GeometryPredicate": 1,
                 "Query.DetailPredicate": 1,
                 "Query.NotPredicate": 1,
-                "Query.IsOfPredicate": 1
+                "Query.IsOfPredicate": 1,
+                "Query.TruePredicate": 1,
+                "Query.FalsePredicate": 1
             },
             "fors": {
                 "BasePredicate": 1
@@ -480,6 +493,7 @@
                 "CopyableMixin": 1,
                 "ModelMixin": 1,
                 "StoreMixin": 1,
+                "Projection.ModelWithoutValidation": 1,
                 "Model": 1,
                 "BaseAdapter": 1,
                 "BaseBuilder": 1,
@@ -503,6 +517,8 @@
                 "Query.DetailPredicate": 1,
                 "Query.NotPredicate": 1,
                 "Query.IsOfPredicate": 1,
+                "Query.TruePredicate": 1,
+                "Query.FalsePredicate": 1,
                 "QueryObject": 1,
                 "Base": 1,
                 "DexieService": 1,
@@ -527,6 +543,7 @@
                 "Projection": 1
             },
             "namespaces": {
+                "Projection": 1,
                 "Query": 1,
                 "OData": 1
             },
@@ -667,6 +684,20 @@
             "line": 8,
             "description": "Mixin for {{#crossLink \"DS.Store\"}}Store{{/crossLink}} to support\nfetching models using projection."
         },
+        "Projection.ModelWithoutValidation": {
+            "name": "Projection.ModelWithoutValidation",
+            "shortname": "Projection.ModelWithoutValidation",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember-flexberry-data",
+            "namespace": "Projection",
+            "file": "addon/models/model-without-validation.js",
+            "line": 10,
+            "description": "Base model that supports projections and copying."
+        },
         "Model": {
             "name": "Model",
             "shortname": "Model",
@@ -803,7 +834,7 @@
             "module": "ember-flexberry-data",
             "namespace": "",
             "file": "addon/query/js-adapter.js",
-            "line": 34,
+            "line": 44,
             "description": "Class of query language adapter that allows to load data from IndexedDB.",
             "extends": "Query.BaseAdapter",
             "params": [
@@ -826,7 +857,7 @@
             "module": "ember-flexberry-data",
             "namespace": "",
             "file": "addon/query/js-adapter.js",
-            "line": 9,
+            "line": 19,
             "description": "Class of query language adapter that translates query object into JS function which\nfilters native JS array of objects by specified logic.\n\n```js\nconst data = [\n  { Name: 'A', Surname: 'X', Age: 10 },\n  { Name: 'B', Surname: 'Y', Age: 11 },\n  { Name: 'B', Surname: 'Z', Age: 12 }\n];\n\nlet adapter = new JSAdapter(moment);\nlet builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Eq, 'B');\nlet filter = adapter.buildFunc(builder.build());\n\nlet result = filter(data); // Y and Z\n```\n\nAll filters uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation))."
         },
         "ODataAdapter": {
@@ -840,7 +871,7 @@
             "module": "ember-flexberry-data",
             "namespace": "",
             "file": "addon/query/odata-adapter.js",
-            "line": 30,
+            "line": 32,
             "description": "Class of query adapter that translates query object into OData URL.",
             "params": [
                 {
@@ -1140,6 +1171,38 @@
                     "multiple": true
                 }
             ],
+            "is_constructor": 1
+        },
+        "Query.TruePredicate": {
+            "name": "Query.TruePredicate",
+            "shortname": "Query.TruePredicate",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember-flexberry-data",
+            "namespace": "Query",
+            "file": "addon/query/predicate.js",
+            "line": 629,
+            "description": "The class of true predicate.",
+            "extends": "BasePredicate",
+            "is_constructor": 1
+        },
+        "Query.FalsePredicate": {
+            "name": "Query.FalsePredicate",
+            "shortname": "Query.FalsePredicate",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember-flexberry-data",
+            "namespace": "Query",
+            "file": "addon/query/predicate.js",
+            "line": 654,
+            "description": "The class of false predicate.",
+            "extends": "BasePredicate",
             "is_constructor": 1
         },
         "QueryObject": {
@@ -3115,6 +3178,424 @@
             "module": "ember-flexberry-data"
         },
         {
+            "file": "addon/models/model-without-validation.js",
+            "line": 27,
+            "description": "Stored canonical `belongsTo` relationships.",
+            "itemtype": "property",
+            "name": "_canonicalBelongsTo",
+            "type": "Object",
+            "access": "private",
+            "tagname": "",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 36,
+            "description": "Flag that indicates sync up process of model is processing.",
+            "itemtype": "property",
+            "name": "isSyncingUp",
+            "type": "Boolean",
+            "default": "false",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 45,
+            "description": "Flag that indicates model is created during sync up process.",
+            "itemtype": "property",
+            "name": "isCreatedDuringSyncUp",
+            "type": "Boolean",
+            "default": "false",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 54,
+            "description": "Flag that indicates model is updated last time during sync up process.",
+            "itemtype": "property",
+            "name": "isCreatedDuringSyncUp",
+            "type": "Boolean",
+            "default": "false",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 63,
+            "description": "Flag that indicates model is destroyed during sync up process.",
+            "itemtype": "property",
+            "name": "isCreatedDuringSyncUp",
+            "type": "Boolean",
+            "default": "false",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 72,
+            "description": "Triggers model's 'preSave' event & allows to execute some additional async logic before model will be saved.",
+            "itemtype": "method",
+            "name": "beforeSave",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Method options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "softSave",
+                            "description": "Flag: indicates whether following 'save' will be soft\n(without sending a request to server) or not",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": " false"
+                        },
+                        {
+                            "name": "promises",
+                            "description": "Array to which 'preSave' event handlers could add some asynchronous operations promises",
+                            "type": "Promise[]",
+                            "optional": true
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be resolved after all 'preSave' event handlers promises will be resolved",
+                "type": "Promise"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 105,
+            "description": "Triggers 'preSave' event, and finally saves model.",
+            "itemtype": "method",
+            "name": "save",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "Method options",
+                    "type": "Object",
+                    "optional": true,
+                    "props": [
+                        {
+                            "name": "softSave",
+                            "description": "Flag: indicates whether following 'save' will be soft\n(without sending a request to server) or not",
+                            "type": "Boolean",
+                            "optional": true,
+                            "optdefault": " false"
+                        }
+                    ]
+                }
+            ],
+            "return": {
+                "description": "A promise that will be resolved after model will be successfully saved",
+                "type": "Promise"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 143,
+            "description": "Turns model into 'updated.uncommitted' state.\n\nTransition into the `updated.uncommitted` state\nif the model in the `saved` state (no local changes).\nAlternative: this.get('currentState').becomeDirty();",
+            "itemtype": "method",
+            "name": "makeDirty",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 156,
+            "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two array, array with index `0` this old values, array with index `1` this new values.",
+            "example": [
+                "\n  ```javascript\n  {\n    key: [\n      [oldValues],\n      [newValues],\n    ],\n  }\n  ```"
+            ],
+            "itemtype": "method",
+            "name": "changedHasMany",
+            "return": {
+                "description": "Object with changes, empty object if no change.",
+                "type": "Object"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 192,
+            "description": "Rollback changes for `hasMany` relationships.",
+            "itemtype": "method",
+            "name": "rollbackHasMany",
+            "params": [
+                {
+                    "name": "forOnlyKey",
+                    "description": "If specified, it is rollback invoked for relationship with this key.",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 216,
+            "description": "Сheck whether there is a changed `belongsTo` relationships.",
+            "itemtype": "method",
+            "name": "hasChangedBelongsTo",
+            "return": {
+                "description": "Returns `true` if `belongsTo` relationships have changed, else `false`.",
+                "type": "Boolean"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 240,
+            "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two items, old value, with index `0`, and new value, with index `1`.",
+            "example": [
+                "\n  ```javascript\n  {\n    key: [oldValue, newValue],\n  }\n  ```"
+            ],
+            "itemtype": "method",
+            "name": "changedBelongsTo",
+            "return": {
+                "description": "Object with changes, empty object if no change.",
+                "type": "Object"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 271,
+            "description": "Rollback changes for `belongsTo` relationships.",
+            "itemtype": "method",
+            "name": "rollbackBelongsTo",
+            "params": [
+                {
+                    "name": "forOnlyKey",
+                    "description": "If specified, it is rollback invoked for relationship with this key.",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 299,
+            "description": "Rollback changes for all relationships.",
+            "itemtype": "method",
+            "name": "rollbackRelationships",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 309,
+            "description": "Rollback all changes.",
+            "itemtype": "method",
+            "name": "rollbackAll",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 319,
+            "description": "Fired when the record is loaded from the server.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).",
+            "itemtype": "method",
+            "name": "didLoad",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 330,
+            "description": "Fired when the record is updated.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didUpdate).",
+            "itemtype": "method",
+            "name": "didUpdate",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 341,
+            "description": "Fired when the record is created.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didCreate).",
+            "itemtype": "method",
+            "name": "didCreate",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 352,
+            "description": "Set each `belongsTo` relationship, observer, that save canonical state.",
+            "itemtype": "method",
+            "name": "_saveCanonicalBelongsTo",
+            "access": "private",
+            "tagname": "",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 378,
+            "description": "Save canonical state for `belongsTo` relationships.",
+            "itemtype": "method",
+            "name": "_saveBelongsToObserver",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "sender",
+                    "description": "",
+                    "type": "DS.Model"
+                },
+                {
+                    "name": "key",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 394,
+            "description": "Defined projections for current model type.",
+            "itemtype": "property",
+            "name": "projections",
+            "type": "Ember.Object",
+            "default": "null",
+            "access": "public",
+            "tagname": "",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 405,
+            "description": "Flag that indicates model id type.",
+            "itemtype": "property",
+            "name": "isType",
+            "type": "string",
+            "default": "'guid'",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 414,
+            "description": "The namespace in which this model is defined.",
+            "itemtype": "property",
+            "name": "namespace",
+            "type": "string",
+            "default": "''",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 424,
+            "description": "Defines idType for specified model type.",
+            "itemtype": "method",
+            "name": "defineIdType",
+            "params": [
+                {
+                    "name": "newIdType",
+                    "description": "Model id type.",
+                    "type": "String"
+                }
+            ],
+            "access": "public",
+            "tagname": "",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 438,
+            "description": "Defines projection for specified model type.",
+            "itemtype": "method",
+            "name": "defineProjection",
+            "params": [
+                {
+                    "name": "projectionName",
+                    "description": "Projection name, eg 'EmployeeE'.",
+                    "type": "String"
+                },
+                {
+                    "name": "modelName",
+                    "description": "The name of the model type.",
+                    "type": "String"
+                },
+                {
+                    "name": "attributes",
+                    "description": "Projection attributes.",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "Created projection.",
+                "type": "Object"
+            },
+            "access": "public",
+            "tagname": "",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 467,
+            "description": "Parent model type name.",
+            "itemtype": "property",
+            "name": "_parentModelName",
+            "type": "String",
+            "default": "null",
+            "access": "private",
+            "tagname": "",
+            "static": 1,
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
             "file": "addon/models/model.js",
             "line": 26,
             "description": "Stored canonical `belongsTo` relationships.",
@@ -3943,7 +4424,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 40,
+            "line": 50,
             "description": "Loads data from IndexedDB.",
             "itemtype": "method",
             "name": "query",
@@ -3968,7 +4449,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 584,
+            "line": 594,
             "description": "Builds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
             "params": [
                 {
@@ -3996,7 +4477,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 702,
+            "line": 720,
             "description": "Checks query on contains restrictions by relationships.",
             "itemtype": "method",
             "name": "containsRelationships",
@@ -4016,7 +4497,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 47,
+            "line": 57,
             "description": "Builds JS function for filtering JS array of objects by specified logic from query.",
             "itemtype": "method",
             "name": "buildFunc",
@@ -4035,7 +4516,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 64,
+            "line": 74,
             "description": "Builds function for windowing array of objects using data from the query.",
             "params": [
                 {
@@ -4053,7 +4534,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 93,
+            "line": 103,
             "description": "Builds function for ordering array of objects using data from the query.",
             "params": [
                 {
@@ -4071,7 +4552,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 145,
+            "line": 155,
             "description": "Builds function for selecting subset of properties from array of objects using data from the query.",
             "params": [
                 {
@@ -4089,7 +4570,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 234,
+            "line": 244,
             "description": "Builds function for filtering array of objects using predicate.",
             "params": [
                 {
@@ -4113,7 +4594,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 288,
+            "line": 300,
             "description": "Returns function for checkign single object using predicate.",
             "params": [
                 {
@@ -4145,7 +4626,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 429,
+            "line": 449,
             "description": "Loads value from object by specified attribute path.",
             "params": [
                 {
@@ -4168,7 +4649,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 455,
+            "line": 475,
             "description": "Returns complex filter function for `and` condition.\nResult function filters array of objects and returns those, for which\nall attribute filter functions returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
             "params": [
                 {
@@ -4186,7 +4667,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 485,
+            "line": 505,
             "description": "Returns complex filter function for `or` condition.\nResult function filters array of objects and returns those, for which\nat least one attribute filter function returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
             "params": [
                 {
@@ -4204,7 +4685,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 52,
+            "line": 54,
             "description": "Returns query data for querying OData feed (for query part).",
             "itemtype": "method",
             "name": "getODataQuery",
@@ -4226,7 +4707,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 92,
+            "line": 94,
             "description": "Returns select and expand query data for OData function.",
             "itemtype": "method",
             "name": "getODataFunctionQuery",
@@ -4246,7 +4727,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 118,
+            "line": 120,
             "description": "Returns full URL for querying OData feed (base part and query part).",
             "itemtype": "method",
             "name": "getODataFullUrl",
@@ -4266,7 +4747,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 233,
+            "line": 235,
             "description": "Converts specified predicate into OData filter part.",
             "params": [
                 {
@@ -4294,7 +4775,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 317,
+            "line": 327,
             "description": "Converts filter operator to OData representation.",
             "params": [
                 {
@@ -4792,7 +5273,39 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 629,
+            "line": 642,
+            "description": "Converts this instance to string.",
+            "itemtype": "method",
+            "name": "toString",
+            "return": {
+                "description": "Text representation of the predicate.",
+                "type": "String"
+            },
+            "access": "public",
+            "tagname": "",
+            "class": "Query.TruePredicate",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
+            "file": "addon/query/predicate.js",
+            "line": 664,
+            "description": "Converts this instance to string.",
+            "itemtype": "method",
+            "name": "toString",
+            "return": {
+                "description": "Text representation of the predicate.",
+                "type": "String"
+            },
+            "access": "public",
+            "tagname": "",
+            "class": "Query.FalsePredicate",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
+            "file": "addon/query/predicate.js",
+            "line": 676,
             "description": "Combines specified predicates using `and` logic condition.",
             "itemtype": "method",
             "name": "and",
@@ -4815,7 +5328,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 643,
+            "line": 690,
             "description": "Combines specified predicates using `or` logic condition.",
             "itemtype": "method",
             "name": "or",
@@ -4838,7 +5351,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 657,
+            "line": 704,
             "description": "Throws error if specified argument is not a predicate.",
             "params": [
                 {
@@ -4852,7 +5365,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 668,
+            "line": 715,
             "description": "Creates predicate by various parameters.",
             "itemtype": "method",
             "name": "createPredicate",
@@ -4871,7 +5384,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 691,
+            "line": 738,
             "description": "Convert string to predicate.",
             "itemtype": "method",
             "name": "stringToPredicate",
@@ -8190,43 +8703,43 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/indexeddb-adapter.js:584"
+            "line": " addon/query/indexeddb-adapter.js:594"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:47"
+            "line": " addon/query/js-adapter.js:57"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:64"
+            "line": " addon/query/js-adapter.js:74"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:93"
+            "line": " addon/query/js-adapter.js:103"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:145"
+            "line": " addon/query/js-adapter.js:155"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:288"
+            "line": " addon/query/js-adapter.js:300"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:429"
+            "line": " addon/query/js-adapter.js:449"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:455"
+            "line": " addon/query/js-adapter.js:475"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:485"
+            "line": " addon/query/js-adapter.js:505"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/odata-adapter.js:317"
+            "line": " addon/query/odata-adapter.js:327"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -8370,47 +8883,47 @@
         },
         {
             "message": "Missing item type\nBuilds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
-            "line": " addon/query/indexeddb-adapter.js:584"
+            "line": " addon/query/indexeddb-adapter.js:594"
         },
         {
             "message": "Missing item type\nBuilds function for windowing array of objects using data from the query.",
-            "line": " addon/query/js-adapter.js:64"
+            "line": " addon/query/js-adapter.js:74"
         },
         {
             "message": "Missing item type\nBuilds function for ordering array of objects using data from the query.",
-            "line": " addon/query/js-adapter.js:93"
+            "line": " addon/query/js-adapter.js:103"
         },
         {
             "message": "Missing item type\nBuilds function for selecting subset of properties from array of objects using data from the query.",
-            "line": " addon/query/js-adapter.js:145"
+            "line": " addon/query/js-adapter.js:155"
         },
         {
             "message": "Missing item type\nBuilds function for filtering array of objects using predicate.",
-            "line": " addon/query/js-adapter.js:234"
+            "line": " addon/query/js-adapter.js:244"
         },
         {
             "message": "Missing item type\nReturns function for checkign single object using predicate.",
-            "line": " addon/query/js-adapter.js:288"
+            "line": " addon/query/js-adapter.js:300"
         },
         {
             "message": "Missing item type\nLoads value from object by specified attribute path.",
-            "line": " addon/query/js-adapter.js:429"
+            "line": " addon/query/js-adapter.js:449"
         },
         {
             "message": "Missing item type\nReturns complex filter function for `and` condition.\nResult function filters array of objects and returns those, for which\nall attribute filter functions returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
-            "line": " addon/query/js-adapter.js:455"
+            "line": " addon/query/js-adapter.js:475"
         },
         {
             "message": "Missing item type\nReturns complex filter function for `or` condition.\nResult function filters array of objects and returns those, for which\nat least one attribute filter function returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
-            "line": " addon/query/js-adapter.js:485"
+            "line": " addon/query/js-adapter.js:505"
         },
         {
             "message": "Missing item type\nConverts specified predicate into OData filter part.",
-            "line": " addon/query/odata-adapter.js:233"
+            "line": " addon/query/odata-adapter.js:235"
         },
         {
             "message": "Missing item type\nConverts filter operator to OData representation.",
-            "line": " addon/query/odata-adapter.js:317"
+            "line": " addon/query/odata-adapter.js:327"
         },
         {
             "message": "Missing item type\nThe path to the detail for predicate.",
@@ -8430,7 +8943,7 @@
         },
         {
             "message": "Missing item type\nThrows error if specified argument is not a predicate.",
-            "line": " addon/query/predicate.js:657"
+            "line": " addon/query/predicate.js:704"
         },
         {
             "message": "Missing item type\nFlag: indicates whether to use new {@link http://jsonapi.org|JSON API} serialization.",
