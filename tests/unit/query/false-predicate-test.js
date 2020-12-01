@@ -20,7 +20,7 @@ test('predicate | simple | false | or', function (assert) {
   let p2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Ivanov');
   let fp = new FalsePredicate();
 
-  let result = p1.or(p2).or(fp);
+  let result = p1.or(p2.or(fp));
 
   assert.ok(result);
   assert.ok(result instanceof ComplexPredicate);
@@ -33,7 +33,7 @@ test('predicate | simple | false| and', function (assert) {
   let p2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Ivanov');
   let fp = new FalsePredicate();
 
-  let result = p1.and(p2).and(fp);
+  let result = p1.and(p2.and(fp));
 
   assert.ok(result);
   assert.ok(result instanceof ComplexPredicate);
