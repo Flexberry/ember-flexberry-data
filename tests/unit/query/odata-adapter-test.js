@@ -761,6 +761,17 @@ test('adapter | odata | true predicate | details predicate', function (assert) {
   runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:true)&$select=__PrimaryKey`);
 });
 
+test('adapter | odata | true predicate | details predicate', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').any(new TruePredicate());
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:true)&$select=__PrimaryKey`);
+});
+
 test('adapter | odata | false predicate', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').where(new FalsePredicate());
@@ -798,6 +809,17 @@ test('adapter | odata | false predicate | details predicate', function (assert) 
 
   // Act && Assert.
   runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:false)&$select=__PrimaryKey`);
+});
+
+test('adapter | odata | false predicate | details predicate', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').any(new FalsePredicate());
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:false)&$select=__PrimaryKey`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {

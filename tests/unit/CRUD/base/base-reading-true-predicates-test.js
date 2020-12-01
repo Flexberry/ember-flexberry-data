@@ -4,7 +4,7 @@ import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import { TruePredicate, SimplePredicate, DetailPredicate } from 'ember-flexberry-data/query/predicate';
 
 export default function readingPredicatesTruePredicates(store, assert) {
-  assert.expect(6);
+  assert.expect(7);
   let done = assert.async();
 
   Ember.run(() => {
@@ -53,7 +53,16 @@ export default function readingPredicatesTruePredicates(store, assert) {
 
             return store.query('ember-flexberry-dummy-comment', builder.build())
             .then((data) => {
-              assert.equal(data.get('length'), 3, `Must return all records`);
+              assert.equal(data.get('length'), 3, `Must return all records when using any`);
+
+              let dp = new DetailPredicate('userVotes').all(new TruePredicate());
+              let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp)
+              .selectByProjection('CommentE');
+
+              return store.query('ember-flexberry-dummy-comment', builder.build())
+              .then((data) => {
+                assert.equal(data.get('length'), 3, `Must return all records when using all`);
+              });
             });
           });
         });

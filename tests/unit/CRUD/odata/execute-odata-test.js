@@ -10,8 +10,7 @@ import config from '../../../../../dummy/config/environment';
 import { clearOnlineData } from '../../../helpers/clear-data';
 
 const skipTestNames = [
-  'reading | restrictions | odata functions',
-  'reading | predicates | false predicates',
+  'reading | restrictions | odata functions'
 ];
 
 export default function executeTest(testName, callback) {

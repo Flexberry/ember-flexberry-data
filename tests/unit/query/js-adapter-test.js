@@ -627,6 +627,24 @@ test('adapter | js | true predicate | detail predicate', (assert) => {
   assert.equal(result.length, 3);
 });
 
+test('adapter | js | true predicate | detail predicate', (assert) => {
+  const data = [
+    { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
+    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
+    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] },
+    { id: 4, Tags: [] },
+  ];
+
+  let dp = new DetailPredicate('Tags').all(new TruePredicate());
+  let builder = new QueryBuilder(store, 'employee').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 4);
+});
+
 test('adapter | js | false predicate', (assert) => {
   const data = [
     { id: 1, Country: 'Argentina' },
@@ -686,4 +704,22 @@ test('adapter | js | false predicate | detail predicate', (assert) => {
   let result = filter(data);
   assert.ok(result);
   assert.equal(result.length, 0);
+});
+
+test('adapter | js | false predicate | detail predicate', (assert) => {
+  const data = [
+    { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
+    { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
+    { id: 3, Tags: [{ Creator: { Name: 'Y' } }, { Creator: { Name: 'A' } }] },
+    { id: 4, Tags: [] },
+  ];
+
+  let dp = new DetailPredicate('Tags').all(new FalsePredicate());
+  let builder = new QueryBuilder(store, 'employee').where(dp);
+
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
 });
