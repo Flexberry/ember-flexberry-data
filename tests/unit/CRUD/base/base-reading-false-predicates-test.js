@@ -61,7 +61,7 @@ export default function readingPredicatesFalsePredicates(store, assert) {
 
               return store.query('ember-flexberry-dummy-comment', builder.build())
               .then((data) => {
-                assert.equal(data.get('length'), 0, `return 0 record when use all`);
+                assert.equal(data.get('length'), 1, `return 1 record when use all`);
               });
             });
           });
