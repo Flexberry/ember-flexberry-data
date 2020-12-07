@@ -48,9 +48,7 @@ jobs:
         sudo chown root /opt/google/chrome/chrome-sandbox
         sudo sudo chmod 4755 /opt/google/chrome/chrome-sandbox
         google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost & 
-        
-
-       
+               
     - name: Run ember   
       run: |
         set -x
@@ -64,7 +62,4 @@ jobs:
       run: |
         export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
         [  "$GITHUB_EVENT_NAME" = 'push' ] && ( [ "$GITHUB_REF" = 'refs/heads/master' ]  || [ "$GITHUB_REF" = 'refs/heads/develop' ] ) && bash scripts/update-docs.sh
-npm install -g ember-cli@2.4.3
-yarn install
-bower install
         exit 0      
