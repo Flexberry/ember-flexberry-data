@@ -44,7 +44,7 @@ jobs:
       run: |
        set -x 
        yarn global add bower
-       yarn global add ember-cli
+       yarn global add ember-cli@2.4.3
        yarn install
        npm install -g bower
        npm install -g ember-cli
