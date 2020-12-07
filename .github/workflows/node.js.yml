@@ -34,6 +34,8 @@ jobs:
        yarn global add bower
        yarn global add ember-cli@2.4.3
        yarn install
+       sudo find / -name 'ember*' 
+       sudo find / -name 'bower*'        
        npm install -g bower
        npm install -g ember-cli
        bower install      
