@@ -27,6 +27,17 @@ jobs:
     - name: Install packages
       run: sudo apt-get install docker-compose curl
       
+    - name: yarn init
+      run: |
+       set -x 
+       node -v
+       yarn global add bower
+       yarn global add ember-cli@2.4.3
+       yarn install
+       npm install -g bower
+       npm install -g ember-cli
+       bower install      
+      
     - name: StartUp docker services
       run: |
         docker pull flexberry/ember-flexberry-stand-backend:latest
@@ -40,15 +51,7 @@ jobs:
         sudo sudo chmod 4755 /opt/google/chrome/chrome-sandbox
         google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost & 
         
-    - name: yarn init
-      run: |
-       set -x 
-       yarn global add bower
-       yarn global add ember-cli@2.4.3
-       yarn install
-       npm install -g bower
-       npm install -g ember-cli
-       bower install
+
        
     - name: Run ember   
       run: |
