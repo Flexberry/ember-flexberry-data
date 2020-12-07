@@ -63,5 +63,8 @@ jobs:
     - name: Update documentation
       run: |
         export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-        [  "$GITHUB_EVENT_NAME" = 'push' ] && ( [ "$GITHUB_REF" = 'refs/heads/master' ]  || [ "$GITHUB_REF" = 'refs/heads/develop' ] ) && bash Doxygen/update-autodoc.sh
+        [  "$GITHUB_EVENT_NAME" = 'push' ] && ( [ "$GITHUB_REF" = 'refs/heads/master' ]  || [ "$GITHUB_REF" = 'refs/heads/develop' ] ) && bash scripts/update-docs.sh
+npm install -g ember-cli@2.4.3
+yarn install
+bower install
         exit 0      
