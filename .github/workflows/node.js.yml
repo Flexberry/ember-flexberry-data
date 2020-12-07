@@ -31,13 +31,9 @@ jobs:
       run: |
        set -x 
        node -v
-       yarn global add bower
+       npm install -g bower
+       npm install -g ember-cli@2.4.3
        yarn install
-       sudo find / -name 'bower*'        
-       yarn global add ember-cli@2.4.3
-       sudo find / -name 'ember*' 
-       #npm install -g bower
-       #npm install -g ember-cli
        bower install      
       
     - name: StartUp docker services
