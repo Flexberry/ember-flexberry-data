@@ -43,11 +43,8 @@ jobs:
     - name: yarn init
       run: |
        set -x 
-       yarn global add ember-cli@2.4.3
        yarn global add bower
        yarn install
-       npm install -g bower
-       npm install -g ember-cli@2.4.3
        bower install
        
     - name: Run ember   
