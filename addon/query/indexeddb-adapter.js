@@ -4,6 +4,7 @@
 
 import Ember from 'ember';
 import FilterOperator from './filter-operator';
+import Condition from 'ember-flexberry-data/query/condition';
 import {
   SimplePredicate,
   ComplexPredicate,
@@ -13,7 +14,8 @@ import {
   GeographyPredicate,
   GeometryPredicate,
   TruePredicate,
-  FalsePredicate
+  FalsePredicate,
+  InPredicate
 } from './predicate';
 import BaseAdapter from './base-adapter';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
@@ -699,6 +701,21 @@ function updateWhereClause(store, table, query) {
 
   if (predicate instanceof FalsePredicate) {
     return table.limit(0);
+  }
+
+  if (predicate instanceof InPredicate) {
+    let predicates = [];
+
+    predicate.valueArray.forEach(value => {
+      let sp = new SimplePredicate(predicate.attributePath, FilterOperator.Eq, value);
+      predicates.push(sp);
+    });
+
+    let finalPredicate = new ComplexPredicate(Condition.Or, ...predicates);
+    let queriWithIn = query;
+    queriWithIn.predicate = finalPredicate;
+
+    return updateWhereClause(store, table, query);
   }
 
   if (predicate instanceof ComplexPredicate) {
