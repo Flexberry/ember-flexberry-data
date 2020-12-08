@@ -9,7 +9,8 @@ import {
   GeographyPredicate,
   GeometryPredicate,
   TruePredicate,
-  FalsePredicate
+  FalsePredicate,
+  InPredicate
 } from './predicate';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
@@ -257,7 +258,8 @@ export default class JSAdapter extends BaseAdapter {
     let b6 = predicate instanceof GeometryPredicate;
     let b7 = predicate instanceof TruePredicate;
     let b8 = predicate instanceof FalsePredicate;
-    if (b1 || b2 || b3 || b4 || b7 || b8) {
+    let b9 = predicate instanceof InPredicate;
+    if (b1 || b2 || b3 || b4 || b7 || b8 || b9) {
       let filterFunction = this.getAttributeFilterFunction(predicate, options);
       return this.getFilterFunctionAnd([filterFunction]);
     }
@@ -376,6 +378,18 @@ export default class JSAdapter extends BaseAdapter {
 
     if (predicate instanceof FalsePredicate) {
       return () => false;
+    }
+
+    if (predicate instanceof InPredicate) {
+      return (i) => {
+        let attribute = _this.getValue(i, predicate.attributePath);
+        let valuesArray = predicate.valueArray;
+
+        let dataExist = !Ember.isNone(attribute) && !Ember.isNone(valuesArray);
+        let valueIncludes = dataExist && valuesArray.indexOf(attribute) !== -1;
+
+        return valueIncludes;
+      };
     }
 
     if (predicate instanceof DetailPredicate) {

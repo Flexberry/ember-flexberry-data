@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- The `InPredicate`.
 
 ## [2.6.0-beta.0] - 2020-10-06
 ### Added

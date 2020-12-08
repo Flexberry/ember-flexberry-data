@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
 import moment from 'moment';
@@ -678,6 +679,53 @@ export class FalsePredicate extends BasePredicate {
    */
   toString() {
     return 'false';
+  }
+}
+
+/**
+ * The class of in predicate.
+ *
+ * @namespace Query
+ * @class InPredicate
+ * @extends BasePredicate
+ * @constructor
+ */
+export class InPredicate extends BasePredicate {
+  constructor(attributePath, valueArray) {
+    super();
+
+    if (!attributePath) {
+      throw new Error('Attribute path is required for inPredicate constructor.');
+    }
+
+    if (!Ember.isArray(valueArray) && valueArray.length === 0) {
+      throw new Error('Array of compared values is required for inPredicate constructor.');
+    }
+
+    this._attributePath = attributePath;
+    this._valueArray = valueArray;
+  }
+
+  /**
+   * The path to the attribute for predicate.
+   *
+   * @property attributePath
+   * @type {String}
+   * @public
+   */
+  get attributePath() {
+    return this._attributePath;
+  }
+
+  /**
+   * Array of values, that check of attribute exist.
+   *
+   * @property valueArray
+   * @type {Array}
+   * @public
+   */
+  get valueArray() {
+    return this._valueArray;
   }
 }
 

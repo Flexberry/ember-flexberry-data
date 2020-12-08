@@ -13,7 +13,8 @@ import {
   GeographyPredicate,
   GeometryPredicate,
   TruePredicate,
-  FalsePredicate
+  FalsePredicate,
+  InPredicate
 } from 'ember-flexberry-data/query/predicate';
 import Condition from 'ember-flexberry-data/query/condition';
 
@@ -1632,5 +1633,36 @@ test('adapter | indexeddb | geometry predicate | intersects', (assert) => {
     assert.equal(result.data[0].id, 1);
     assert.equal(result.data[1].id, 2);
     assert.equal(result.data[2].id, 3);
+  });
+});
+
+test('adapter | indexeddb | in predicate', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, City: 'Perm' },
+      { id: 2, City: 'Paris' },
+      { id: 3, City: 'Bobruisk' }
+    ]
+  };
+
+  let filterArrayValues = ['Perm', 'New Yourk', 'Moscow'];
+
+  let ip1 = new InPredicate('City', filterArrayValues);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(ip1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
+    assert.equal(result.data[0].id, 1);
+  });
+
+  filterArrayValues = ['Mumbai', 'New Yourk', 'Moscow'];
+
+  ip1 = new InPredicate('City', filterArrayValues);
+  builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(ip1);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 0);
   });
 });

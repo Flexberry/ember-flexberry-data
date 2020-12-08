@@ -14,7 +14,8 @@ import {
   NotPredicate,
   IsOfPredicate,
   TruePredicate,
-  FalsePredicate
+  FalsePredicate,
+  InPredicate
 } from 'ember-flexberry-data/query/predicate';
 import ODataAdapter from 'ember-flexberry-data/query/odata-adapter';
 import startApp from '../../helpers/start-app';
@@ -798,6 +799,17 @@ test('adapter | odata | false predicate | details predicate', function (assert) 
 
   // Act && Assert.
   runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:false)&$select=__PrimaryKey`);
+});
+
+test('adapter | odata | in predicate', (assert) => {
+  let filterArrayValues = ['Vasya', 'SpiderMan', 'Batman'];
+  let ip = new InPredicate('firstName', filterArrayValues);
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(ip);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=FirstName eq 'Vasya' or FirstName eq 'SpiderMan' or FirstName eq 'Batman'&$select=CustomerID`);
 });
 
 function runTest(assert, builder, modelPath, expectedUrl) {

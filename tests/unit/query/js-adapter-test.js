@@ -12,7 +12,8 @@ import {
   GeographyPredicate,
   GeometryPredicate,
   TruePredicate,
-  FalsePredicate
+  FalsePredicate,
+  InPredicate
 } from 'ember-flexberry-data/query/predicate';
 
 import startApp from '../../helpers/start-app';
@@ -684,6 +685,67 @@ test('adapter | js | false predicate | detail predicate', (assert) => {
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | in predicate', (assert) => {
+  const data = [
+    { id: 1, City: 'Perm' },
+    { id: 2, City: 'Paris' },
+    { id: 3, City: 'Bobruisk' }
+  ];
+
+  let filterArrayValues = ['Perm', 'New Yourk', 'Moscow'];
+
+  let ip1 = new InPredicate('City', filterArrayValues);
+  let builder = new QueryBuilder(store, 'employee').where(ip1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].id, 1);
+
+  filterArrayValues = ['London', 'New Yourk', 'Moscow'];
+
+  ip1 = new InPredicate('City', filterArrayValues);
+  builder = new QueryBuilder(store, 'employee').where(ip1);
+  filter = adapter.buildFunc(builder.build());
+
+  result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | in predicate | complex predicate', (assert) => {
+  const data = [
+    { id: 1, Country: 'Argentina' },
+    { id: 2, Country: 'Paragwaj' },
+    { id: 3, Country: 'Russia' }
+  ];
+
+  let sp1 = new SimplePredicate('Country', FilterOperator.Eq, 'Argentina');
+
+  let filterArrayValues = ['Argentina', 'Uganda', 'USA'];
+  let ip1 = new InPredicate('Country', filterArrayValues);
+
+  let cp1 = new ComplexPredicate(Condition.Or, sp1, ip1);
+  let builder = new QueryBuilder(store, 'employee').where(cp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+
+  filterArrayValues = ['Italy', 'Uganda', 'USA'];
+  ip1 = new InPredicate('Country', filterArrayValues);
+
+  cp1 = new ComplexPredicate(Condition.And, sp1, ip1);
+  builder = new QueryBuilder(store, 'employee').where(cp1);
+  filter = adapter.buildFunc(builder.build());
+
+  result = filter(data);
   assert.ok(result);
   assert.equal(result.length, 0);
 });

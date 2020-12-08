@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
+import Condition from 'ember-flexberry-data/query/condition';
 import {
   SimplePredicate,
   ComplexPredicate,
@@ -14,6 +15,7 @@ import {
   IsOfPredicate,
   TruePredicate,
   FalsePredicate,
+  InPredicate
 } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
@@ -319,6 +321,20 @@ export default class ODataAdapter extends BaseAdapter {
 
     if (predicate instanceof FalsePredicate) {
       return 'false';
+    }
+
+    if (predicate instanceof InPredicate) {
+      let separator = ` ${Condition.Or} `;
+
+      let result = predicate.valueArray
+        .map(i => {
+          let sp = new SimplePredicate(predicate.attributePath, FilterOperator.Eq, i);
+          return this._convertPredicateToODataFilterClause(sp, modelName, prefix, level + 1);
+        }).join(separator);
+
+      let lp = level > 0 ? '(' : '';
+      let rp = level > 0 ? ')' : '';
+      return lp + result + rp;
     }
 
     throw new Error(`Unknown predicate '${predicate}'`);
