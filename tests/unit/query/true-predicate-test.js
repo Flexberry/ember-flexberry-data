@@ -6,16 +6,13 @@ import { SimplePredicate, ComplexPredicate, TruePredicate } from 'ember-flexberr
 
 module('query');
 
-test('predicate | simple | constructor', function (assert) {
-  let p = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
+test('predicate | true | constructor', function (assert) {
+  let p = new TruePredicate();
 
   assert.ok(p);
-  assert.equal(p.attributePath, 'Name');
-  assert.equal(p.operator, FilterOperator.Eq);
-  assert.equal(p.value, 'Vasya');
 });
 
-test('predicate | simple | true | or', function (assert) {
+test('predicate | true | simple | or', function (assert) {
   let p1 = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
   let p2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Ivanov');
   let tp = new TruePredicate();
@@ -28,7 +25,7 @@ test('predicate | simple | true | or', function (assert) {
   assert.equal(result.predicates.length, 3);
 });
 
-test('predicate | simple | true | and', function (assert) {
+test('predicate | true | simple | and', function (assert) {
   let p1 = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
   let p2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Ivanov');
   let tp = new TruePredicate();

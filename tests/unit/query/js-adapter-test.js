@@ -609,7 +609,7 @@ test('adapter | js | true predicate | complex predicate', (assert) => {
   assert.equal(result.length, 1);
 });
 
-test('adapter | js | true predicate | detail predicate', (assert) => {
+test('adapter | js | true predicate | detail predicate any', (assert) => {
   const data = [
     { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
     { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
@@ -627,7 +627,7 @@ test('adapter | js | true predicate | detail predicate', (assert) => {
   assert.equal(result.length, 3);
 });
 
-test('adapter | js | true predicate | detail predicate', (assert) => {
+test('adapter | js | true predicate | detail predicate all', (assert) => {
   const data = [
     { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
     { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
@@ -688,7 +688,7 @@ test('adapter | js | false predicate | complex predicate', (assert) => {
   assert.equal(result.length, 0);
 });
 
-test('adapter | js | false predicate | detail predicate', (assert) => {
+test('adapter | js | false predicate | detail predicate any', (assert) => {
   const data = [
     { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
     { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },
@@ -706,7 +706,7 @@ test('adapter | js | false predicate | detail predicate', (assert) => {
   assert.equal(result.length, 0);
 });
 
-test('adapter | js | false predicate | detail predicate', (assert) => {
+test('adapter | js | false predicate | detail predicate all', (assert) => {
   const data = [
     { id: 1, Tags: [{ Creator: { Name: 'M' } }, { Creator: { Name: 'Z' } }] },
     { id: 2, Tags: [{ Creator: { Name: 'Z' } }, { Creator: { Name: 'X' } }] },

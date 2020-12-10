@@ -550,7 +550,7 @@ test('adapter | indexeddb | true predicate | complex predicate', (assert) => {
   });
 });
 
-test('adapter | indexeddb | true predicate | detail predicate', (assert) => {
+test('adapter | indexeddb | true predicate | detail predicate any', (assert) => {
   let data = {
     employee: [
       { id: 1, Tags: [1, 3] },
@@ -574,7 +574,7 @@ test('adapter | indexeddb | true predicate | detail predicate', (assert) => {
   });
 });
 
-test('adapter | indexeddb | true predicate | detail predicate', (assert) => {
+test('adapter | indexeddb | true predicate | detail predicate all', (assert) => {
   let data = {
     employee: [
       { id: 1, Tags: [1, 3] },
@@ -645,7 +645,7 @@ test('adapter | indexeddb | false predicate | complex predicate', (assert) => {
   });
 });
 
-test('adapter | indexeddb | false predicate | detail predicate', (assert) => {
+test('adapter | indexeddb | false predicate | detail predicate any', (assert) => {
   let data = {
     employee: [
       { id: 1, Tags: [1, 3] },
@@ -669,7 +669,7 @@ test('adapter | indexeddb | false predicate | detail predicate', (assert) => {
   });
 });
 
-test('adapter | indexeddb | false predicate | detail predicate', (assert) => {
+test('adapter | indexeddb | false predicate | detail predicate all', (assert) => {
   let data = {
     employee: [
       { id: 1, Tags: [1, 3] },

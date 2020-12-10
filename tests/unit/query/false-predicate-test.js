@@ -6,21 +6,18 @@ import { SimplePredicate, ComplexPredicate, FalsePredicate } from 'ember-flexber
 
 module('query');
 
-test('predicate | simple | constructor', function (assert) {
-  let p = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
+test('predicate | false | constructor', function (assert) {
+  let p = new FalsePredicate();
 
   assert.ok(p);
-  assert.equal(p.attributePath, 'Name');
-  assert.equal(p.operator, FilterOperator.Eq);
-  assert.equal(p.value, 'Vasya');
 });
 
-test('predicate | simple | false | or', function (assert) {
+test('predicate | false | simple | or', function (assert) {
   let p1 = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
   let p2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Ivanov');
   let fp = new FalsePredicate();
 
-  let result = p1.or(p2).or(fp);
+  let result = fp.or(p1).or(p2);
 
   assert.ok(result);
   assert.ok(result instanceof ComplexPredicate);
@@ -28,12 +25,12 @@ test('predicate | simple | false | or', function (assert) {
   assert.equal(result.predicates.length, 3);
 });
 
-test('predicate | simple | false| and', function (assert) {
+test('predicate | false | simple | and', function (assert) {
   let p1 = new SimplePredicate('Name', FilterOperator.Eq, 'Vasya');
   let p2 = new SimplePredicate('Surname', FilterOperator.Eq, 'Ivanov');
   let fp = new FalsePredicate();
 
-  let result = p1.and(p2).and(fp);
+  let result = fp.and(p1).and(p2);
 
   assert.ok(result);
   assert.ok(result instanceof ComplexPredicate);
