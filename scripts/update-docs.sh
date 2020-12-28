@@ -1,8 +1,10 @@
 # Exit with nonzero exit code if anything fails.
 set -e
 
+set  -x
+
 # Define repository relative GitHub address.
-repositoryRelativeGitHubAddress="Flexberry/ember-flexberry-data"
+repositoryRelativeGitHubAddress=$GITHUB_REPOSITORY
 
 # Clone project into 'repository' subdirectory && move to it.
 echo "Prepare for deploy to gh-pages."
@@ -62,6 +64,6 @@ git add --all
 git commit -m "Update gh-pages for ${TRAVIS_BRANCH} branch"
 
 # Redirect any output to /dev/null to hide any sensitive credential data that might otherwise be exposed.
-git push --force --quiet "https://${GH_TOKEN}@github.com/${repositoryRelativeGitHubAddress}.git" > /dev/null 2>&1
+git push --force --quiet "git@github.com:${repositoryRelativeGitHubAddress}.git" #> /dev/null 2>&1
 
 echo "Deploy to gh-pages finished."
