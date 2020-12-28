@@ -64,6 +64,8 @@ git add --all
 git commit -m "Update gh-pages for ${TRAVIS_BRANCH} branch"
 
 # Redirect any output to /dev/null to hide any sensitive credential data that might otherwise be exposed.
-git push --force --quiet "git@github.com:${repositoryRelativeGitHubAddress}.git" #> /dev/null 2>&1
+git push --force --quiet "git@github.com:${repositoryRelativeGitHubAddress}.git" 
+
+#> /dev/null 2>&1
 
 echo "Deploy to gh-pages finished."
