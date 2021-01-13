@@ -1,10 +1,6 @@
 name: Node.js CI
 
-on:
-  push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+on: [ push, pull_request ]
 
 jobs:
   build:
@@ -81,5 +77,5 @@ jobs:
         export SSH_AUTH_SOCK=/tmp/ssh_agent.sock
         export TRAVIS_BRANCH=$1
         export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
-        [  "$GITHUB_EVENT_NAME" = 'push' ] && ( [ "$GITHUB_REF" = 'refs/heads/master' ]  || [ "$GITHUB_REF" = 'refs/heads/develop' ] ) && bash scripts/update-docs.sh
+        bash scripts/update-docs.sh
         exit 0      
