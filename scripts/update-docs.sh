@@ -19,7 +19,7 @@ git pull
 cd ..
 
 # Generate autodoc.
-npm install -g yuidocjs
+sudo npm install -g yuidocjs
 
 # Define yuidoc theme repository relative GitHub address.
 repositoryYuidocTheme="Flexberry/flexberry-yuidoc-theme"
