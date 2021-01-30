@@ -44,7 +44,12 @@ jobs:
         sudo sudo chmod 4755 /opt/google/chrome/chrome-sandbox
         google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
 
-    - name: Run ember try default test
+    - name: Run linters
+      id: linting
+      run: yarn run lint
+
+    - name: Run addon tests
+      if: ${{ success() || steps.linting.conclusion == 'failure' }}
       run: |
         set -x
         ember try default test

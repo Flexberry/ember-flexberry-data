@@ -18,6 +18,9 @@
   },
   "scripts": {
     "build": "ember build",
+    "lint": "npm-run-all --aggregate-output --continue-on-error --parallel lint:*",
+    "lint:hbs": "ember-template-lint .",
+    "lint:js": "eslint .",
     "start": "ember server",
     "test": "ember try:testall"
   },
@@ -25,6 +28,7 @@
     "node": ">= 0.10.0"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "ember-cli": "2.4.3",
     "ember-cli-app-version": "^1.0.0",
     "ember-cli-dependency-checker": "^1.2.0",
@@ -39,7 +43,10 @@
     "ember-load-initializers": "^0.5.1",
     "ember-ajax": "0.7.1",
     "ember-resolver": "^2.0.3",
+    "ember-template-lint": "^2.18.0",
     "ember-try": "^0.2.2",
+    "eslint": "^7.18.0",
+    "eslint-plugin-ember": "^10.1.2",
     "loader.js": "^4.0.1",
     "broccoli-asset-rev": "^2.4.2",
     "dexie": "^1.4.2",
@@ -48,7 +55,8 @@
     "ember-browserify": "1.1.9",
     "ember-data": "2.4.3",
     "ember-moment": "6.0.0",
-    "ember-cli-moment-shim": "2.2.1"
+    "ember-cli-moment-shim": "2.2.1",
+    "npm-run-all": "^4.1.5"
   },
   "dependencies": {
     "ember-cli-babel": "^5.1.6",
