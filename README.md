@@ -1,4 +1,5 @@
 # Ember Flexberry Data
+
 [![Build Status Master](https://img.shields.io/travis/Flexberry/ember-flexberry-data/master.svg?label=master%20build%20)](https://travis-ci.org/Flexberry/ember-flexberry-data)
 [![Build Status Develop](https://img.shields.io/travis/Flexberry/ember-flexberry-data/develop.svg?label=develop%20build)](https://travis-ci.org/Flexberry/ember-flexberry-data/branches)
 [![NPM Version](https://badge.fury.io/js/ember-flexberry-data.svg)](https://badge.fury.io/js/ember-flexberry-data)
