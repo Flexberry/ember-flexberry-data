@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [6.x]
+        node-version: [10.x]
 
     steps:
 
