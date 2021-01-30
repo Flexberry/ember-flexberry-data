@@ -1,3 +1,5 @@
+name: Deploy to gh-pages
+
 on:
   push:
     branches: [ develop, master, feature-ember-update ]
@@ -7,14 +9,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    #strategy:
-      #matrix:
-        #node-version: [6.x]
-
     steps:
-    
+
     - uses: actions/checkout@v2
-    
+
     - name: Tune ssh-keys
       env:
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
@@ -34,11 +32,11 @@ jobs:
 
     - name: Update documentation
       run: |
-        ifs=$IFS; IFS=/; set -- $GITHUB_REF; IFS=$ifs; while [ $# -gt 1 ]; do shift; done; 
+        ifs=$IFS; IFS=/; set -- $GITHUB_REF; IFS=$ifs; while [ $# -gt 1 ]; do shift; done;
         export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
         export SSH_AUTH_SOCK=/tmp/ssh_agent.sock
         export TRAVIS_BRANCH=$1
         export GH_TOKEN=${{ secrets.GITHUB_TOKEN }}
         bash scripts/update-docs.sh
-        exit 0      
-    
+        exit 0
+

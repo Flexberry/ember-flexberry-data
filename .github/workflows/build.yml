@@ -10,28 +10,27 @@ jobs:
     strategy:
       matrix:
         node-version: [6.x]
-        #node-version: [10.x, 12.x, 14.x]
 
     steps:
-    
+
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        
-    - name: Install packages
+
+    - name: Install linux packages
       run: sudo apt-get install docker-compose curl
-      
-    - name: yarn init
+
+    - name: Init NodeJS env
       run: |
-       set -x 
+       set -x
        node -v
        npm install -g bower
        npm install -g ember-cli@2.4.3
        yarn install
-       bower install      
-      
+       bower install
+
     - name: StartUp docker services
       run: |
         docker pull flexberry/ember-flexberry-stand-backend:latest
@@ -39,18 +38,18 @@ jobs:
         curl  -o docker-compose.yml -O https://raw.githubusercontent.com/Flexberry/FlexberryEmberTestStand.ODataBackend/master/Docker/ember-flexberry-stand-postgres.yml
         docker-compose up -d
 
-    - name: Run google
+    - name: Run Google Chrome
       run: |
         sudo chown root /opt/google/chrome/chrome-sandbox
         sudo sudo chmod 4755 /opt/google/chrome/chrome-sandbox
-        google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost & 
-               
-    - name: Run ember   
+        google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
+
+    - name: Run ember try default test
       run: |
         set -x
         ember try default test
 
-    - name: Shutdown services
+    - name: Shutdown docker services
       run: |
-        docker-compose   down 
-  
+        docker-compose down
+
