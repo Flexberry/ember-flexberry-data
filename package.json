@@ -42,7 +42,6 @@
     "ember-try": "^0.2.2",
     "loader.js": "^4.0.1",
     "broccoli-asset-rev": "^2.4.2",
-    "broccoli-jscs": "1.2.2",
     "dexie": "^1.4.2",
     "node-uuid": "^1.4.7",
     "inflection": "1.10.0",
