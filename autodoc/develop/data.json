@@ -1847,7 +1847,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 124,
+            "line": 122,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch single record by ID from the server.",
             "itemtype": "method",
             "name": "findRecord",
@@ -1883,7 +1883,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 144,
+            "line": 140,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch all records from the server.",
             "itemtype": "method",
             "name": "findAll",
@@ -1919,7 +1919,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 164,
+            "line": 158,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), that determines the pathname for a given type.\nAdditionally capitalizes the type name (requirement of Flexberry OData Server).",
             "itemtype": "method",
             "name": "pathForType",
@@ -1940,7 +1940,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 178,
+            "line": 172,
             "description": "A method to make ajax requests.",
             "itemtype": "method",
             "name": "makeRequest",
@@ -1959,7 +1959,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 190,
+            "line": 184,
             "description": "A method to generate url for ajax request to odata function.",
             "params": [
                 {
@@ -1988,7 +1988,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 239,
+            "line": 233,
             "description": "A method to generate url for ajax request to odata action.",
             "itemtype": "method",
             "name": "generateActionUrl",
@@ -2019,7 +2019,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 259,
+            "line": 253,
             "description": "A method to call OData functions that returns model records using ajax request.",
             "itemtype": "method",
             "name": "callEmberOdataFunction",
@@ -2092,7 +2092,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 289,
+            "line": 283,
             "description": "A method to call OData functions using ajax request.",
             "itemtype": "method",
             "name": "callFunction",
@@ -2165,7 +2165,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 330,
+            "line": 324,
             "description": "A method to call OData actions that returns model records using ajax request.",
             "itemtype": "method",
             "name": "callEmberOdataAction",
@@ -2233,7 +2233,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 359,
+            "line": 353,
             "description": "A method to call OData actions using ajax request.",
             "itemtype": "method",
             "name": "callAction",
@@ -2301,7 +2301,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 395,
+            "line": 389,
             "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
@@ -2327,7 +2327,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 579,
+            "line": 573,
             "description": "A method to generate url part from queryParams.",
             "itemtype": "method",
             "name": "_generateFunctionQueryString",
@@ -2355,7 +2355,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 599,
+            "line": 593,
             "description": "A method to make args object function/action call method's.",
             "itemtype": "method",
             "name": "_getODataArgs",
@@ -2388,7 +2388,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 628,
+            "line": 622,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2434,7 +2434,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 737,
+            "line": 731,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2462,7 +2462,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 777,
+            "line": 771,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2486,7 +2486,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 828,
+            "line": 822,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -5637,7 +5637,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 123,
+            "line": 121,
             "description": "Return model name for relationship.",
             "itemtype": "method",
             "name": "modelNameFromRelationshipType",
@@ -5654,7 +5654,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 133,
+            "line": 131,
             "description": "Serialization method to serialize record into hash.",
             "params": [
                 {
@@ -5680,7 +5680,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 150,
+            "line": 148,
             "description": "You can use this method to customize how polymorphic objects are serialized.\n[More info](http://emberjs.com/api/data/classes/DS.RESTSerializer.html#method_serializePolymorphicType).",
             "itemtype": "method",
             "name": "serializePolymorphicType",
@@ -5707,7 +5707,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 167,
+            "line": 165,
             "description": "You can use this method to customize how a polymorphic relationship should be extracted.\n[More info](http://emberjs.com/api/data/classes/DS.RESTSerializer.html#method_extractPolymorphicRelationship).",
             "itemtype": "method",
             "name": "extractPolymorphicRelationship",
@@ -5733,7 +5733,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 187,
+            "line": 185,
             "description": "This method is used to convert each JSON root key in the payload into a modelName that it can use to look up the appropriate model for that part of the payload.\n[More info](http://emberjs.com/api/data/classes/DS.RESTSerializer.html#method_modelNameFromPayloadKey).",
             "itemtype": "method",
             "name": "modelNameFromPayloadKey",
@@ -5754,7 +5754,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 199,
+            "line": 197,
             "description": "Moves metadata from one object to another.",
             "params": [
                 {
@@ -7856,7 +7856,7 @@
         },
         {
             "file": "addon/transforms/file.js",
-            "line": 33,
+            "line": 32,
             "description": "Serializes deserialized attribute value.",
             "class": "FileTransform",
             "module": "ember-flexberry-data"
@@ -9050,11 +9050,11 @@
         },
         {
             "message": "Missing item type\nA method to generate url for ajax request to odata function.",
-            "line": " addon/adapters/odata.js:190"
+            "line": " addon/adapters/odata.js:184"
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:628"
+            "line": " addon/adapters/odata.js:622"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
@@ -9186,11 +9186,11 @@
         },
         {
             "message": "Missing item type\nSerialization method to serialize record into hash.",
-            "line": " addon/serializers/base.js:133"
+            "line": " addon/serializers/base.js:131"
         },
         {
             "message": "Missing item type\nMoves metadata from one object to another.",
-            "line": " addon/serializers/base.js:199"
+            "line": " addon/serializers/base.js:197"
         },
         {
             "message": "Missing item type\nReturns key for a given relationship.",
@@ -9318,7 +9318,7 @@
         },
         {
             "message": "Missing item type\nSerializes deserialized attribute value.",
-            "line": " addon/transforms/file.js:33"
+            "line": " addon/transforms/file.js:32"
         },
         {
             "message": "Missing item type\nAn overridable method called when objects are instantiated.\nFor more information see [init](http://emberjs.com/api/classes/Ember.View.html#method_init) method of [Ember.View](http://emberjs.com/api/classes/Ember.View.html).",
