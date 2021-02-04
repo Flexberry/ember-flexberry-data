@@ -114,11 +114,9 @@ export default DS.RESTSerializer.extend({
    * @param relationship Relationship.
    * @returns {string} Key for a given relationship.
    */
-  /* jshint unused:vars */
   keyForRelationship(key, relationship) {
     return capitalize(key) + '@odata.bind';
   },
-  /* jshint unused:true */
 
   /**
     Return model name for relationship.

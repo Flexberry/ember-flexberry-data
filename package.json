@@ -18,38 +18,59 @@
   },
   "scripts": {
     "build": "ember build",
+    "lint": "npm-run-all --aggregate-output --continue-on-error --parallel lint:*",
+    "lint:hbs": "ember-template-lint .",
+    "lint:js": "eslint .",
     "start": "ember server",
     "test": "ember try:testall"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --no-ignore",
+    "*.hbs": "ember-template-lint --config '{ \"extends\": [\"recommended\", \"stylistic\"], \"rules\": { \"no-bare-strings\": true } }'"
   },
   "engines": {
     "node": ">= 0.10.0"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "broccoli-asset-rev": "^2.4.2",
+    "dexie": "^1.4.2",
+    "ember-ajax": "0.7.1",
+    "ember-browserify": "1.1.9",
     "ember-cli": "2.4.3",
     "ember-cli-app-version": "^1.0.0",
     "ember-cli-dependency-checker": "^1.2.0",
     "ember-cli-htmlbars-inline-precompile": "^0.3.1",
     "ember-cli-inject-live-reload": "^1.4.0",
+    "ember-cli-moment-shim": "2.2.1",
     "ember-cli-qunit": "^1.4.0",
     "ember-cli-release": "0.2.8",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^1.2.0",
+    "ember-data": "2.4.3",
     "ember-disable-prototype-extensions": "^1.1.0",
     "ember-export-application-global": "^1.0.5",
     "ember-load-initializers": "^0.5.1",
-    "ember-ajax": "0.7.1",
-    "ember-resolver": "^2.0.3",
-    "ember-try": "^0.2.2",
-    "loader.js": "^4.0.1",
-    "broccoli-asset-rev": "^2.4.2",
-    "broccoli-jscs": "1.2.2",
-    "dexie": "^1.4.2",
-    "node-uuid": "^1.4.7",
-    "inflection": "1.10.0",
-    "ember-browserify": "1.1.9",
-    "ember-data": "2.4.3",
     "ember-moment": "6.0.0",
-    "ember-cli-moment-shim": "2.2.1"
+    "ember-resolver": "^2.0.3",
+    "ember-template-lint": "^2.18.0",
+    "ember-try": "^0.2.2",
+    "eslint": "^7.18.0",
+    "eslint-plugin-ember": "^10.1.2",
+    "eslint-plugin-jsdoc": "^31.4.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-qunit": "^5.3.0",
+    "husky": "^4.3.8",
+    "inflection": "1.10.0",
+    "lint-staged": "^10.5.3",
+    "loader.js": "^4.0.1",
+    "node-uuid": "^1.4.7",
+    "npm-run-all": "^4.1.5"
   },
   "dependencies": {
     "ember-cli-babel": "^5.1.6",
