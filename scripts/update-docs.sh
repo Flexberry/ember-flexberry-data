@@ -55,6 +55,14 @@ cp -r ../../repositoryYuidocTheme/autodoc-result/* ${TRAVIS_BRANCH}
 
 cd ..
 
+# Prevent "empty" commit and build failure.
+if [ -f ".gitkeep" ]
+then
+  rm -rf .gitkeep
+else
+  touch .gitkeep
+fi
+
 # Configure git.
 git config user.name "Flexberry-man"
 git config user.email "mail@flexberry.net"
