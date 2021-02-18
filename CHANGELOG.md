@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.6.0-beta.1] - 2020-02-18
+No functionality was added, changed or fixed.
+Just technical release for testing. 
+
 ## [2.6.0-beta.0] - 2020-10-06
 ### Added
 - The `ModelWithoutValidation` model without validation.
