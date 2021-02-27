@@ -28,7 +28,7 @@ jobs:
        node -v
        npm install -g bower
        npm install -g ember-cli@2.4.3
-       yarn install
+       npm install
        bower install
 
     - name: StartUp docker services
@@ -46,7 +46,7 @@ jobs:
 
     - name: Run linters
       id: linting
-      run: yarn run lint
+      run: npm run lint
 
     - name: Run addon tests
       if: ${{ success() || steps.linting.conclusion == 'failure' }}
