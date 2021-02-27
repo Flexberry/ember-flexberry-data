@@ -7,13 +7,6 @@ module.exports = {
   },
   pending: [
     {
-      "moduleId": "tests/dummy/app/templates/application",
-      "only": [
-        "eol-last",
-        "no-bare-strings"
-      ]
-    },
-    {
       "moduleId": "tests/dummy/app/templates/suggestion",
       "only": [
         "no-bare-strings"
