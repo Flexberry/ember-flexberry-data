@@ -178,11 +178,23 @@
 
                             </li>
                             <li class="index-item method private inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method__onLookup" data-tablink="_onLookup">_onLookup</a>
+                                <a href="#" data-tabid="#methods" data-anchor="#method__scheduledDestroy" data-tablink="_scheduledDestroy">_scheduledDestroy</a>
 
                             </li>
                             <li class="index-item method private inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method__scheduledDestroy" data-tablink="_scheduledDestroy">_scheduledDestroy</a>
+                                <a href="#" data-tabid="#methods" data-anchor="#method_init" data-tablink="init">init</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_syncDown" data-tablink="syncDown">syncDown</a>
+
+                            </li>
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_" data-tablink=""></a>
+
+                            </li>
+                            <li class="index-item method private inherited">
+                                <a href="#" data-tabid="#methods" data-anchor="#method__onLookup" data-tablink="_onLookup">_onLookup</a>
 
                             </li>
                             <li class="index-item method private">
@@ -237,14 +249,6 @@
                                 <a href="#" data-tabid="#methods" data-anchor="#method_incrementProperty" data-tablink="incrementProperty">incrementProperty</a>
 
                             </li>
-                            <li class="index-item method public">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_" data-tablink=""></a>
-
-                            </li>
-                            <li class="index-item method private inherited">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_init" data-tablink="init">init</a>
-
-                            </li>
                             <li class="index-item method public inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_notifyPropertyChange" data-tablink="notifyPropertyChange">notifyPropertyChange</a>
 
@@ -283,10 +287,6 @@
                             </li>
                             <li class="index-item method public inherited">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_setProperties" data-tablink="setProperties">setProperties</a>
-
-                            </li>
-                            <li class="index-item method public">
-                                <a href="#" data-tabid="#methods" data-anchor="#method_syncDown" data-tablink="syncDown">syncDown</a>
 
                             </li>
                             <li class="index-item method">
@@ -391,36 +391,6 @@
                             </div>
                     
                     </div>
-                    <div id="method__onLookup" class="method item private inherited">
-                        <h3 class="name"><code>_onLookup</code></h3>
-                    
-                            <span class="paren">()</span>
-                    
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>Inherited from
-                                    <a href="http://emberjs.com/api/classes/Ember.CoreObject.html#method__onLookup">Ember.CoreObject</a>:
-                            <a href="http://emberjs.com/api/files/packages_ember-runtime_lib_system_core_object.js.html#l903"><code>packages&#x2F;ember-runtime&#x2F;lib&#x2F;system&#x2F;core_object.js:903</code></a>
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            Provides lookup-time type validation for injected properties.
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="method__scheduledDestroy" class="method item private inherited">
                         <h3 class="name"><code>_scheduledDestroy</code></h3>
                     
@@ -447,6 +417,234 @@
                         <div class="description">
                             Invoked by the run loop to actually destroy the object. This is
                     scheduled for execution by the <code>destroy</code> method.
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="method_init" class="method item private">
+                        <h3 class="name"><code>init</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                <p>Inherited from
+                                <a href="http://emberjs.com/api/classes/Ember.CoreObject.html#method_init">
+                                    Ember.CoreObject
+                                </a>
+                                but overwritten in
+                            <a href="../files/addon_services_syncer.js.html#l58"><code>addon&#x2F;services&#x2F;syncer.js:58</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Initialize offline store.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="method_syncDown" class="method item public">
+                        <h3 class="name"><code>syncDown</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>descriptor</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code class="optional">[reload]</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code class="optional">[projectionName]</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code class="optional">[params]</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_services_syncer.js.html#l75"><code>addon&#x2F;services&#x2F;syncer.js:75</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Save specified records into local store (IndexedDB).</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">descriptor</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a> | <a href="http://emberjs.com/api/data/classes/DS.Model.html" class="crosslink external" target="_blank">DS.Model</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>typeName, record, records.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[reload]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>If set to true then syncer perform remote reload for data, otherwise data will get from the store.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[projectionName]</code>
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Name of projection for remote reload of data. If not set then all properties of record, except navigation properties, will be read.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name optional">[params]</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                            <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Additional parameters for syncing down.</p>
+                    
+                                        </div>
+                    
+                                            <ul class="params-list">
+                                                <li class="param">
+                                                        <code class="param-name optional">[queryObject]</code>
+                                                        <span class="type">Query.QueryObject</span>
+                                                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                                                    <div class="param-description">
+                                                        <p>QueryObject instance to make query if descriptor is a typeName.</p>
+                    
+                                                    </div>
+                    
+                                                </li>
+                                                <li class="param">
+                                                        <code class="param-name optional">[unloadSyncedRecords]</code>
+                                                        <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                                                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+                                                    <div class="param-description">
+                                                        <p>If set to true then synced records will be unloaded from online store.</p>
+                    
+                                                    </div>
+                    
+                                                </li>
+                                            </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_" class="method item public">
+                        <h3 class="name"><code></code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_services_syncer.js.html#l130"><code>addon&#x2F;services&#x2F;syncer.js:130</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Remove all records in local store.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+                    <div id="method__onLookup" class="method item private inherited">
+                        <h3 class="name"><code>_onLookup</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>Inherited from
+                                    <a href="http://emberjs.com/api/classes/Ember.CoreObject.html#method__onLookup">Ember.CoreObject</a>:
+                            <a href="http://emberjs.com/api/files/packages_ember-runtime_lib_system_core_object.js.html#l903"><code>packages&#x2F;ember-runtime&#x2F;lib&#x2F;system&#x2F;core_object.js:903</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            Provides lookup-time type validation for injected properties.
                         </div>
                     
                     
@@ -1456,71 +1654,6 @@
                             </div>
                     
                     </div>
-                    <div id="method_" class="method item public">
-                        <h3 class="name"><code></code></h3>
-                    
-                            <span class="paren">()</span>
-                    
-                    
-                    
-                            <span class="flag public">public</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/addon_services_syncer.js.html#l130"><code>addon&#x2F;services&#x2F;syncer.js:130</code></a>
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Remove all records in local store.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="method_init" class="method item private">
-                        <h3 class="name"><code>init</code></h3>
-                    
-                            <span class="paren">()</span>
-                    
-                    
-                    
-                            <span class="flag private">private</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                <p>Inherited from
-                                <a href="http://emberjs.com/api/classes/Ember.CoreObject.html#method_init">
-                                    Ember.CoreObject
-                                </a>
-                                but overwritten in
-                            <a href="../files/addon_services_syncer.js.html#l58"><code>addon&#x2F;services&#x2F;syncer.js:58</code></a>
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Initialize offline store.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
                     <div id="method_notifyPropertyChange" class="method item public inherited">
                         <h3 class="name"><code>notifyPropertyChange</code></h3>
                     
@@ -2322,139 +2455,6 @@
                                 <div class="returns-description">
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
                                         The passed in hash
-                                </div>
-                            </div>
-                    
-                    </div>
-                    <div id="method_syncDown" class="method item public">
-                        <h3 class="name"><code>syncDown</code></h3>
-                    
-                            <div class="args">
-                                <span class="paren">(</span><ul class="args-list inline commas">
-                                    <li class="arg">
-                                            <code>descriptor</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code class="optional">[reload]</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code class="optional">[projectionName]</code>
-                                    </li>
-                                    <li class="arg">
-                                            <code class="optional">[params]</code>
-                                    </li>
-                                </ul><span class="paren">)</span>
-                            </div>
-                    
-                            <span class="returns-inline">
-                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>
-                            </span>
-                    
-                    
-                            <span class="flag public">public</span>
-                    
-                    
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/addon_services_syncer.js.html#l75"><code>addon&#x2F;services&#x2F;syncer.js:75</code></a>
-                            </p>
-                    
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Save specified records into local store (IndexedDB).</p>
-                    
-                        </div>
-                    
-                            <div class="params">
-                                <h4>Parameters:</h4>
-                    
-                                <ul class="params-list">
-                                    <li class="param">
-                                            <code class="param-name">descriptor</code>
-                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a> | <a href="http://emberjs.com/api/data/classes/DS.Model.html" class="crosslink external" target="_blank">DS.Model</a> | <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>typeName, record, records.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[reload]</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>If set to true then syncer perform remote reload for data, otherwise data will get from the store.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[projectionName]</code>
-                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Name of projection for remote reload of data. If not set then all properties of record, except navigation properties, will be read.</p>
-                    
-                                        </div>
-                    
-                                    </li>
-                                    <li class="param">
-                                            <code class="param-name optional">[params]</code>
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
-                                            <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-                    
-                                        <div class="param-description">
-                                            <p>Additional parameters for syncing down.</p>
-                    
-                                        </div>
-                    
-                                            <ul class="params-list">
-                                                <li class="param">
-                                                        <code class="param-name optional">[queryObject]</code>
-                                                        <span class="type">Query.QueryObject</span>
-                                                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-                                                    <div class="param-description">
-                                                        <p>QueryObject instance to make query if descriptor is a typeName.</p>
-                    
-                                                    </div>
-                    
-                                                </li>
-                                                <li class="param">
-                                                        <code class="param-name optional">[unloadSyncedRecords]</code>
-                                                        <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
-                                                        <span class="flag optional" title="This parameter is optional.">optional</span>
-                    
-                                                    <div class="param-description">
-                                                        <p>If set to true then synced records will be unloaded from online store.</p>
-                    
-                                                    </div>
-                    
-                                                </li>
-                                            </ul>
-                                    </li>
-                                </ul>
-                            </div>
-                    
-                            <div class="returns">
-                                <h4>Returns:</h4>
-                    
-                                <div class="returns-description">
-                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>:
                                 </div>
                             </div>
                     
