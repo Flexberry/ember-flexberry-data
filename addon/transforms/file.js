@@ -26,7 +26,6 @@ export default StringTransform.extend({
     Deserializes serialized attribute value.
   */
   /* eslint-disable no-unused-vars */
-    /* jshint unused:vars */
     deserialize(serialized) {
     return this._super(...arguments);
   },
@@ -34,7 +33,6 @@ export default StringTransform.extend({
   /**
     Serializes deserialized attribute value.
   */
-    /* jshint unused:vars */
     serialize(deserialized) {
     return this._super(...arguments);
   }

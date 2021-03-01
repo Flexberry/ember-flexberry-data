@@ -569,7 +569,7 @@ test('adapter | indexeddb | true predicate | complex predicate', (assert) => {
   });
 });
 
-test('adapter | indexeddb | true predicate | detail predicate', (assert) => {
+test('adapter | indexeddb | true predicate | detail predicate any', (assert) => {
   let data = {
     employee: [
       { id: 1, Tags: [1, 3] },
@@ -590,6 +590,30 @@ test('adapter | indexeddb | true predicate | detail predicate', (assert) => {
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
     assert.equal(result.data.length, 3);
+  });
+});
+
+test('adapter | indexeddb | true predicate | detail predicate all', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Tags: [1, 3] },
+      { id: 2, Tags: [3, 2] },
+      { id: 3, Tags: [2, 1] },
+      { id: 4, Tags: [] },
+    ],
+    tag: [
+      { id: 1, Name: 'Tag1' },
+      { id: 2, Name: 'Tag2' },
+      { id: 3, Name: 'Tag3' },
+    ],
+  };
+
+  let dp = new DetailPredicate('Tags').all(new TruePredicate());
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 4);
   });
 });
 
@@ -640,7 +664,7 @@ test('adapter | indexeddb | false predicate | complex predicate', (assert) => {
   });
 });
 
-test('adapter | indexeddb | false predicate | detail predicate', (assert) => {
+test('adapter | indexeddb | false predicate | detail predicate any', (assert) => {
   let data = {
     employee: [
       { id: 1, Tags: [1, 3] },
@@ -661,6 +685,30 @@ test('adapter | indexeddb | false predicate | detail predicate', (assert) => {
   executeTest(data, builder.build(), assert, (result) => {
     assert.ok(result.data);
     assert.equal(result.data.length, 0);
+  });
+});
+
+test('adapter | indexeddb | false predicate | detail predicate all', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Tags: [1, 3] },
+      { id: 2, Tags: [3, 2] },
+      { id: 3, Tags: [2, 1] },
+      { id: 4, Tags: [] },
+    ],
+    tag: [
+      { id: 1, Name: 'Tag1' },
+      { id: 2, Name: 'Tag2' },
+      { id: 3, Name: 'Tag3' },
+    ],
+  };
+
+  let dp = new DetailPredicate('Tags').all(new FalsePredicate());
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(dp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 1);
   });
 });
 

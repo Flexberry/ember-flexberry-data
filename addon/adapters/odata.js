@@ -121,14 +121,12 @@ export default DS.RESTAdapter.extend({
    * @param {Query} query
    * @return {Promise} promise
    */
-  /* jshint unused:vars */
   queryRecord(store, type, query) {
     debug(`Flexberry ODataAdapter::queryRecord '${type}'`, query);
 
     // TODO: query support for direct calls
     return this._super.apply(this, arguments);
   },
-  /* jshint unused:true */
 
   /**
    * Overloaded method from `RESTAdapter` (Ember Data).
@@ -141,7 +139,6 @@ export default DS.RESTAdapter.extend({
    * @param {DS.Snapshot} snapshot
    * @return {Promise} promise
   */
-  /* jshint unused:vars */
   /* eslint-disable no-unused-vars */
   findRecord(store, type, id, snapshot) {
     debug(`Flexberry ODataAdapter::findRecord '${type}(${id})'`);
@@ -150,7 +147,6 @@ export default DS.RESTAdapter.extend({
     return this._super.apply(this, arguments);
   },
   /* eslint-enable no-unused-vars */
-  /* jshint unused:true */
 
   /**
    * Overloaded method from `RESTAdapter` (Ember Data).
@@ -163,7 +159,6 @@ export default DS.RESTAdapter.extend({
    * @param {DS.SnapshotRecordArray} snapshotRecordArray
    * @return {Promise} promise
    */
-  /* jshint unused:vars */
   /* eslint-disable no-unused-vars */
   findAll(store, type, sinceToken, snapshotRecordArray) {
     debug(`Flexberry ODataAdapter::findAll '${type}'`);
@@ -172,7 +167,6 @@ export default DS.RESTAdapter.extend({
     return this._super.apply(this, arguments);
   },
   /* eslint-enable no-unused-vars */
-  /* jshint unused:true */
 
   /**
    * Overloaded method from `build-url-mixin` (Ember Data), that determines the pathname for a given type.
