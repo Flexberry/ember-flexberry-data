@@ -1,9 +1,9 @@
 import Ember from 'ember';
-import { module, test } from 'qunit';
+import { module, test, skip } from 'qunit';
 import startApp from '../../../helpers/start-app';
 import destroyApp from '../../../helpers/destroy-app';
 
-export default function executeTest(testName, callback) {
+export default function executeTest(testName, callback, skipTest) {
   let AppExecuteOfflineTest;
   let storeExecuteOfflineTest;
   let testDbName;
@@ -40,5 +40,5 @@ export default function executeTest(testName, callback) {
     }
   });
 
-  test(testName, (assert) => callback(storeExecuteOfflineTest, assert, AppExecuteOfflineTest));
+  (skipTest ? skip : test)(testName, (assert) => callback(storeExecuteOfflineTest, assert, AppExecuteOfflineTest));
 }
