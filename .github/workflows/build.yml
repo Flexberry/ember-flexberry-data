@@ -27,7 +27,7 @@ jobs:
        set -x
        node -v
        npm install -g bower
-       npm install -g ember-cli@2.4.3
+       npm install -g ember-cli@3.1.4
        npm install
        bower install
 
@@ -52,7 +52,7 @@ jobs:
       if: ${{ success() || steps.linting.conclusion == 'failure' }}
       run: |
         set -x
-        ember try default test
+        ember try:one ember-default --skip-cleanup
 
     - name: Shutdown docker services
       run: |
