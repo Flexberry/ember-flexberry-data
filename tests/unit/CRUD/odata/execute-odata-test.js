@@ -9,13 +9,7 @@ import config from '../../../../../dummy/config/environment';
 
 import { clearOnlineData } from '../../../helpers/clear-data';
 
-const skipTestNames = [
-  'reading | restrictions | odata functions',
-  'reading | predicates | false predicates',
-  'reading | predicates | true predicates'
-];
-
-export default function executeTest(testName, callback) {
+export default function executeTest(testName, callback, skipTest) {
   if (config.APP.testODataService) {
     let baseUrl;
     if (config.APP.testODataServiceURL.indexOf('http') >= 0) {
@@ -53,10 +47,6 @@ export default function executeTest(testName, callback) {
 
     module('CRUD | odata-' + testName);
 
-    if (skipTestNames.indexOf(testName) > -1) {
-      skip(testName, (assert) => clearOnlineData(store).then(() => callback(store, assert, app)));
-    } else {
-      test(testName, (assert) => clearOnlineData(store).then(() => callback(store, assert, app)));
-    }
+    (skipTest ? skip : test)(testName, (assert) => clearOnlineData(store).then(() => callback(store, assert, app)));
   }
 }
