@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.6.0-beta.2] - 2021-03-29
+### Fixed
+- Error unloading record with deleted dirty type in batch update.
+
 ## [2.6.0-beta.1] - 2020-02-18
 No functionality was added, changed or fixed.
 Just technical release for testing. 
