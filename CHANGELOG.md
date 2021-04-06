@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.6.0-beta.3] - 2021-04-06
+### Fixed
+- Resolving Promise on sync up with no jobs.
+
 ## [2.6.0-beta.2] - 2021-03-29
 ### Fixed
 - Error unloading record with deleted dirty type in batch update.
