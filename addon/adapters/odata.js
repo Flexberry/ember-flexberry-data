@@ -425,7 +425,7 @@ export default DS.RESTAdapter.extend({
         let modelDirtyType = model.get('dirtyType');
 
         if (!modelDirtyType) {
-          if (model.hasChangedBelongsTo()) {
+          if (model.hasChangedBelongsTo() || model.hasChangedHasMany()) {
             modelDirtyType = 'updated';
           } else {
             return;

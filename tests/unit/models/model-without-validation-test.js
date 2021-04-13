@@ -33,9 +33,13 @@ test('rollback hasMany relationships', function(assert) {
     let comment1 = store.createRecord('ember-flexberry-dummy-comment');
     let comment2 = store.createRecord('ember-flexberry-dummy-comment');
 
+    assert.notOk(suggestion.hasChangedHasMany());
+
     //Change `hasMany` relationships.
     suggestion.set('userVotes', [vote1, vote2]);
     suggestion.set('comments', [comment1, comment2]);
+
+    assert.ok(suggestion.hasChangedHasMany());
 
     //Diff `hasMany` relationships.
     assert.deepEqual(suggestion.changedHasMany(), {
@@ -45,6 +49,7 @@ test('rollback hasMany relationships', function(assert) {
 
     //Rollback `hasMany` for only `userVotes` relationship.
     suggestion.rollbackHasMany('userVotes');
+    assert.ok(suggestion.hasChangedHasMany());
     assert.deepEqual({
       userVotes: suggestion.get('userVotes').map(record => record),
       comments: suggestion.get('comments').map(record => record),
@@ -55,6 +60,7 @@ test('rollback hasMany relationships', function(assert) {
 
     //Rollback all `hasMany` relationships.
     suggestion.rollbackHasMany();
+    assert.notOk(suggestion.hasChangedHasMany());
     assert.deepEqual({
       userVotes: suggestion.get('userVotes').map(record => record),
       comments: suggestion.get('comments').map(record => record),
