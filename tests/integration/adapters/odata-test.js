@@ -26,6 +26,8 @@ if (config.APP.testODataService) {
 
       store = App.__container__.lookup('service:store');
       odataAdapter = store.adapterFor('application');
+      let applicationSerializer = Ember.getOwner(odataAdapter).lookup('serializer:application');
+      Ember.set(applicationSerializer, "store", store);
     },
 
     afterEach() {
@@ -95,7 +97,7 @@ if (config.APP.testODataService) {
         actionName: 'ODataTestMultyTypedResult',
         data: null,
         store: store,
-        modelName: 'model',
+        modelName: null,
         url: baseUrl
       })
       .then((records) => {
@@ -121,7 +123,7 @@ if (config.APP.testODataService) {
         actionName: 'ODataTestMultyTypedWithLinksResult',
         data: null,
         store: store,
-        modelName: 'model',
+        modelName: null,
         url: baseUrl
       })
       .then((records) => {
@@ -134,6 +136,18 @@ if (config.APP.testODataService) {
         assert.equal(Ember.get(records[1], 'text'), 'TestSuggestionText');
       })
       .finally(done);     
+    });
+  });
+
+  test('check method throws exception', function(assert) {
+    Ember.run(() => {
+       assert.throws(odataAdapter.callAction({
+        actionName: 'ODataTestTypedResult',
+        data: null,
+        store: store,
+        modelName: null,
+        url: baseUrl
+      }));     
     });
   });
 }
