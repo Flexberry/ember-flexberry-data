@@ -57,7 +57,7 @@ export default Ember.Service.extend({
    * @method init
    * @private
    */
-  init: function() {
+  init: function () {
     let _this = this;
 
     let localStore = getOwner(this).lookup('store:local');
@@ -80,7 +80,7 @@ export default Ember.Service.extend({
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
    * @return {Promise}
    */
-  syncDown: function(descriptor, reload, projectionName, params) {
+  syncDown: function (descriptor, reload, projectionName, params) {
     let _this = this;
 
     _this.set('_recordsToUnload', []);
@@ -103,9 +103,9 @@ export default Ember.Service.extend({
         bulkUpdateOrCreateCall(descriptor, resolve, reject), reject).then(() => _this._unloadRecordsAfterSyncDown(store, params)));
     } else if (isArray(descriptor)) {
       let store = getOwner(this).lookup('service:store');
-      let recordsCount =  descriptor.get ? descriptor.get('length') : descriptor.length;
+      let recordsCount = descriptor.get ? descriptor.get('length') : descriptor.length;
       let accumulatedRecordsCount = 0;
-      let updatedRecords = descriptor.map(function(record) {
+      let updatedRecords = descriptor.map(function (record) {
         return _this._syncDownQueue.attach((resolve, reject) => _this._syncDownRecord(store, record, reload, projectionName, params).then(() => {
           accumulatedRecordsCount++;
           if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
@@ -128,7 +128,7 @@ export default Ember.Service.extend({
    * @method
    * @public
    */
-  reset: function() {
+  reset: function () {
     return this.get('offlineStore.adapter').clear();
   },
 
@@ -145,7 +145,7 @@ export default Ember.Service.extend({
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
    * @private
    */
-  _syncDownRecord: function(store, record, reload, projectionName, params) {
+  _syncDownRecord: function (store, record, reload, projectionName, params) {
     var _this = this;
 
     function saveRecordToLocalStore(store, record, projectionName) {
@@ -177,7 +177,7 @@ export default Ember.Service.extend({
       };
       options = isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
       return new Ember.RSVP.Promise((resolve, reject) => {
-        store.findRecord(modelName, record.id, options).then(function(reloadedRecord) {
+        store.findRecord(modelName, record.id, options).then(function (reloadedRecord) {
 
           // TODO: Uncomment this after fix bug with load unloaded models.
           // store.get('onlineStore').unloadRecord(reloadedRecord);
@@ -218,6 +218,10 @@ export default Ember.Service.extend({
         .where(predicate);
 
       return this.get('offlineStore').query(modelName, builder.build()).then((jobs) => {
+        if (jobs.get('length') === 0) {
+          return RSVP.resolve();
+        }
+
         dexieService.set('queueSyncUpTotalWorksCount', jobs.get('length'));
         return options && options.useBatchUpdate ?
           this._runJobsThroughBatch(store, jobs) :
@@ -616,18 +620,18 @@ export default Ember.Service.extend({
     let userService = getOwner(_this).lookup('service:user');
     let operationType = _this._getOperationType(record.get('dirtyType'));
     return userService.getCurrentUser().then(currentUser => _this._getObjectType(record._createSnapshot().modelName).then(objectType => ({
-          objectPrimaryKey: record.get('id'),
-          operationTime: new Date(),
-          operationType: operationType,
-          executionResult: 'Не выполнено',
-          createTime: record.get('createTime'),
-          creator: record.get('creator'),
-          editTime: record.get('editTime'),
-          editor: record.get('editor'),
-          user: currentUser,
-          objectType: objectType,
-        })
-      )
+      objectPrimaryKey: record.get('id'),
+      operationTime: new Date(),
+      operationType: operationType,
+      executionResult: 'Не выполнено',
+      createTime: record.get('createTime'),
+      creator: record.get('creator'),
+      editTime: record.get('editTime'),
+      editor: record.get('editor'),
+      user: currentUser,
+      objectType: objectType,
+    })
+    )
     );
   },
 
