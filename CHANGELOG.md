@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.6.0-beta.4] - 2021-04-22
+### Fixed
+- Batch details save with unchanged aggregator.
+
 ## [2.6.0-beta.3] - 2021-04-06
 ### Fixed
 - Resolving Promise on sync up with no jobs.
