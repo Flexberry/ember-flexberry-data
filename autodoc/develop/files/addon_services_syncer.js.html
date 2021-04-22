@@ -205,7 +205,7 @@ export default Ember.Service.extend({
    * @method init
    * @private
    */
-  init: function() {
+  init: function () {
     let _this = this;
 
     let localStore = getOwner(this).lookup(&#x27;store:local&#x27;);
@@ -228,7 +228,7 @@ export default Ember.Service.extend({
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
    * @return {Promise}
    */
-  syncDown: function(descriptor, reload, projectionName, params) {
+  syncDown: function (descriptor, reload, projectionName, params) {
     let _this = this;
 
     _this.set(&#x27;_recordsToUnload&#x27;, []);
@@ -251,9 +251,9 @@ export default Ember.Service.extend({
         bulkUpdateOrCreateCall(descriptor, resolve, reject), reject).then(() =&gt; _this._unloadRecordsAfterSyncDown(store, params)));
     } else if (isArray(descriptor)) {
       let store = getOwner(this).lookup(&#x27;service:store&#x27;);
-      let recordsCount =  descriptor.get ? descriptor.get(&#x27;length&#x27;) : descriptor.length;
+      let recordsCount = descriptor.get ? descriptor.get(&#x27;length&#x27;) : descriptor.length;
       let accumulatedRecordsCount = 0;
-      let updatedRecords = descriptor.map(function(record) {
+      let updatedRecords = descriptor.map(function (record) {
         return _this._syncDownQueue.attach((resolve, reject) =&gt; _this._syncDownRecord(store, record, reload, projectionName, params).then(() =&gt; {
           accumulatedRecordsCount++;
           if ((accumulatedRecordsCount % _this.numberOfRecordsForPerformingBulkOperations === 0) || accumulatedRecordsCount === recordsCount) {
@@ -276,7 +276,7 @@ export default Ember.Service.extend({
    * @method
    * @public
    */
-  reset: function() {
+  reset: function () {
     return this.get(&#x27;offlineStore.adapter&#x27;).clear();
   },
 
@@ -293,7 +293,7 @@ export default Ember.Service.extend({
    * @param {Boolean} [params.unloadSyncedRecords] If set to true then synced records will be unloaded from online store.
    * @private
    */
-  _syncDownRecord: function(store, record, reload, projectionName, params) {
+  _syncDownRecord: function (store, record, reload, projectionName, params) {
     var _this = this;
 
     function saveRecordToLocalStore(store, record, projectionName) {
@@ -325,7 +325,7 @@ export default Ember.Service.extend({
       };
       options = isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
       return new Ember.RSVP.Promise((resolve, reject) =&gt; {
-        store.findRecord(modelName, record.id, options).then(function(reloadedRecord) {
+        store.findRecord(modelName, record.id, options).then(function (reloadedRecord) {
 
           // TODO: Uncomment this after fix bug with load unloaded models.
           // store.get(&#x27;onlineStore&#x27;).unloadRecord(reloadedRecord);
@@ -366,6 +366,10 @@ export default Ember.Service.extend({
         .where(predicate);
 
       return this.get(&#x27;offlineStore&#x27;).query(modelName, builder.build()).then((jobs) =&gt; {
+        if (jobs.get(&#x27;length&#x27;) === 0) {
+          return RSVP.resolve();
+        }
+
         dexieService.set(&#x27;queueSyncUpTotalWorksCount&#x27;, jobs.get(&#x27;length&#x27;));
         return options &amp;&amp; options.useBatchUpdate ?
           this._runJobsThroughBatch(store, jobs) :
@@ -764,18 +768,18 @@ export default Ember.Service.extend({
     let userService = getOwner(_this).lookup(&#x27;service:user&#x27;);
     let operationType = _this._getOperationType(record.get(&#x27;dirtyType&#x27;));
     return userService.getCurrentUser().then(currentUser =&gt; _this._getObjectType(record._createSnapshot().modelName).then(objectType =&gt; ({
-          objectPrimaryKey: record.get(&#x27;id&#x27;),
-          operationTime: new Date(),
-          operationType: operationType,
-          executionResult: &#x27;Не выполнено&#x27;,
-          createTime: record.get(&#x27;createTime&#x27;),
-          creator: record.get(&#x27;creator&#x27;),
-          editTime: record.get(&#x27;editTime&#x27;),
-          editor: record.get(&#x27;editor&#x27;),
-          user: currentUser,
-          objectType: objectType,
-        })
-      )
+      objectPrimaryKey: record.get(&#x27;id&#x27;),
+      operationTime: new Date(),
+      operationType: operationType,
+      executionResult: &#x27;Не выполнено&#x27;,
+      createTime: record.get(&#x27;createTime&#x27;),
+      creator: record.get(&#x27;creator&#x27;),
+      editTime: record.get(&#x27;editTime&#x27;),
+      editor: record.get(&#x27;editor&#x27;),
+      user: currentUser,
+      objectType: objectType,
+    })
+    )
     );
   },
 

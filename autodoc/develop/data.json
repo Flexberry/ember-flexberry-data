@@ -6465,7 +6465,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 229,
+            "line": 233,
             "description": "This method is called when a sync process if at attempt create, update or delete record, server error return.\nDefault behavior: Marked `job` as 'Ошибка', execute further when called `syncUp` method.",
             "example": [
                 "\n  ```javascript\n  // app/services/syncer.js\n  import { Offline } from 'ember-flexberry-data';\n\n  export default Offline.Syncer.extend({\n    ...\n    resolveServerError(job, error) {\n      let _this = this;\n      return new Ember.RSVP.Promise((resolve, reject) => {\n        // Here `error.status` as example, as if user not authorized on server.\n        if (error.status === 401) {\n          // As if `auth` function authorize user.\n          auth().then(() => {\n            _this.syncUp(Ember.A([job])).then(() => {\n              job.set('executionResult', 'Выполнено');\n              resolve(job.save());\n            }, reject);\n          }, reject);\n        } else {\n          job.set('executionResult', 'Ошибка');\n          resolve(job.save());\n        }\n      });\n    },\n    ...\n  });\n\n  ```"
@@ -6494,7 +6494,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 274,
+            "line": 278,
             "description": "This method is called when a sync process not found record on server for delete or update.\nDefault behavior: Marked `job` as 'Не выполнено', not delete and not execute further when called `syncUp` method.",
             "example": [
                 "\n  ```javascript\n  // app/services/syncer.js\n  import { Offline } from 'ember-flexberry-data';\n\n  export default Offline.Syncer.extend({\n    ...\n    resolveNotFoundRecord(job) {\n      if (job.get('operationType') === 'UPDATE') {\n        // It will be executed when next called `syncUp` method.\n        job.set('executionResult', 'Ошибка');\n      } else if (job.get('operationType') === 'DELETE') {\n        // It will be immediately delete and not never executed.\n        job.set('executionResult', 'Выполнено');\n      }\n\n      return job.save();\n    },\n    ...\n  });\n\n  ```"
@@ -6518,14 +6518,14 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 310,
+            "line": 314,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 320,
+            "line": 324,
             "description": "Return name of projection to sync up by model name.",
             "itemtype": "method",
             "name": "getSyncUpProjectionName",
@@ -6545,14 +6545,14 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 339,
+            "line": 343,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 367,
+            "line": 371,
             "description": "Starts syncing up through batch.",
             "params": [
                 {
@@ -6572,21 +6572,21 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 408,
+            "line": 412,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 424,
+            "line": 428,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 438,
+            "line": 442,
             "description": "Returns record to create for syncing up.",
             "params": [
                 {
@@ -6606,14 +6606,14 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 456,
+            "line": 460,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 471,
+            "line": 475,
             "description": "Returns record to update for syncing up.",
             "params": [
                 {
@@ -6633,14 +6633,14 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 491,
+            "line": 495,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 507,
+            "line": 511,
             "description": "Returns record to remove for syncing up.",
             "params": [
                 {
@@ -6660,91 +6660,91 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 525,
+            "line": 529,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 541,
+            "line": 545,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 550,
+            "line": 554,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 556,
+            "line": 560,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 583,
+            "line": 587,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 600,
+            "line": 604,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 612,
+            "line": 616,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 634,
+            "line": 638,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 651,
+            "line": 655,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 662,
+            "line": 666,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 708,
+            "line": 712,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 747,
+            "line": 751,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 763,
+            "line": 767,
             "class": "Offline.Syncer",
             "module": "ember-flexberry-data",
             "namespace": "Offline"
@@ -9008,7 +9008,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/services/syncer.js:320"
+            "line": " addon/services/syncer.js:324"
         },
         {
             "message": "replacing incorrect tag: function with method",
@@ -9216,95 +9216,95 @@
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:310"
+            "line": " addon/services/syncer.js:314"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:339"
+            "line": " addon/services/syncer.js:343"
         },
         {
             "message": "Missing item type\nStarts syncing up through batch.",
-            "line": " addon/services/syncer.js:367"
+            "line": " addon/services/syncer.js:371"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:408"
+            "line": " addon/services/syncer.js:412"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:424"
+            "line": " addon/services/syncer.js:428"
         },
         {
             "message": "Missing item type\nReturns record to create for syncing up.",
-            "line": " addon/services/syncer.js:438"
+            "line": " addon/services/syncer.js:442"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:456"
+            "line": " addon/services/syncer.js:460"
         },
         {
             "message": "Missing item type\nReturns record to update for syncing up.",
-            "line": " addon/services/syncer.js:471"
+            "line": " addon/services/syncer.js:475"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:491"
+            "line": " addon/services/syncer.js:495"
         },
         {
             "message": "Missing item type\nReturns record to remove for syncing up.",
-            "line": " addon/services/syncer.js:507"
+            "line": " addon/services/syncer.js:511"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:525"
+            "line": " addon/services/syncer.js:529"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:541"
+            "line": " addon/services/syncer.js:545"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:550"
+            "line": " addon/services/syncer.js:554"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:556"
+            "line": " addon/services/syncer.js:560"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:583"
+            "line": " addon/services/syncer.js:587"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:600"
+            "line": " addon/services/syncer.js:604"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:612"
+            "line": " addon/services/syncer.js:616"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:634"
+            "line": " addon/services/syncer.js:638"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:651"
+            "line": " addon/services/syncer.js:655"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:662"
+            "line": " addon/services/syncer.js:666"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:708"
+            "line": " addon/services/syncer.js:712"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:747"
+            "line": " addon/services/syncer.js:751"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:763"
+            "line": " addon/services/syncer.js:767"
         },
         {
             "message": "Missing item type",
