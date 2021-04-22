@@ -3601,6 +3601,20 @@
         {
             "file": "addon/models/model-without-validation.js",
             "line": 188,
+            "description": "Сheck whether there is a changed `hasMany` relationships.",
+            "itemtype": "method",
+            "name": "hasChangedHasMany",
+            "return": {
+                "description": "Returns `true` if `hasMany` relationships are changed.",
+                "type": "Boolean"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 200,
             "description": "Rollback changes for `hasMany` relationships.",
             "itemtype": "method",
             "name": "rollbackHasMany",
@@ -3618,7 +3632,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 212,
+            "line": 224,
             "description": "Сheck whether there is a changed `belongsTo` relationships.",
             "itemtype": "method",
             "name": "hasChangedBelongsTo",
@@ -3632,7 +3646,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 236,
+            "line": 248,
             "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two items, old value, with index `0`, and new value, with index `1`.",
             "example": [
                 "\n  ```javascript\n  {\n    key: [oldValue, newValue],\n  }\n  ```"
@@ -3649,7 +3663,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 267,
+            "line": 279,
             "description": "Rollback changes for `belongsTo` relationships.",
             "itemtype": "method",
             "name": "rollbackBelongsTo",
@@ -3667,7 +3681,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 295,
+            "line": 307,
             "description": "Rollback changes for all relationships.",
             "itemtype": "method",
             "name": "rollbackRelationships",
@@ -3677,7 +3691,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 305,
+            "line": 317,
             "description": "Rollback all changes.",
             "itemtype": "method",
             "name": "rollbackAll",
@@ -3687,7 +3701,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 315,
+            "line": 327,
             "description": "Fired when the record is loaded from the server.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).",
             "itemtype": "method",
             "name": "didLoad",
@@ -3697,7 +3711,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 326,
+            "line": 338,
             "description": "Fired when the record is updated.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didUpdate).",
             "itemtype": "method",
             "name": "didUpdate",
@@ -3707,7 +3721,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 337,
+            "line": 349,
             "description": "Fired when the record is created.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didCreate).",
             "itemtype": "method",
             "name": "didCreate",
@@ -3717,7 +3731,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 348,
+            "line": 360,
             "description": "Set each `belongsTo` relationship, observer, that save canonical state.",
             "itemtype": "method",
             "name": "_saveCanonicalBelongsTo",
@@ -3729,7 +3743,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 374,
+            "line": 386,
             "description": "Save canonical state for `belongsTo` relationships.",
             "itemtype": "method",
             "name": "_saveBelongsToObserver",
@@ -3753,7 +3767,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 390,
+            "line": 402,
             "description": "Defined projections for current model type.",
             "itemtype": "property",
             "name": "projections",
@@ -3768,7 +3782,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 401,
+            "line": 413,
             "description": "Flag that indicates model id type.",
             "itemtype": "property",
             "name": "isType",
@@ -3780,7 +3794,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 410,
+            "line": 422,
             "description": "The namespace in which this model is defined.",
             "itemtype": "property",
             "name": "namespace",
@@ -3793,7 +3807,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 420,
+            "line": 432,
             "description": "Defines idType for specified model type.",
             "itemtype": "method",
             "name": "defineIdType",
@@ -3813,7 +3827,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 434,
+            "line": 446,
             "description": "Defines projection for specified model type.",
             "itemtype": "method",
             "name": "defineProjection",
@@ -3847,7 +3861,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 463,
+            "line": 475,
             "description": "Parent model type name.",
             "itemtype": "property",
             "name": "_parentModelName",
