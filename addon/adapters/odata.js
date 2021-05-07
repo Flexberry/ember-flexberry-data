@@ -635,17 +635,12 @@ export default DS.RESTAdapter.extend({
     Ember.assert('Params must be Object!', typeof params === 'object');
     Ember.assert('params.method or params.url is not defined.', !(Ember.isNone(params.method) || Ember.isNone(params.url)));
 
-    let self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
       Ember.$.ajax(params).done((msg) => {
-        if (!Ember.isNone(store)) {
+        if (!Ember.isNone(store) && !Ember.isNone(modelname)) {
           const normalizedRecords = { data: Ember.A(), included: Ember.A() };
-          let normalizator = Ember.isNone(modelname) 
-                              ? store.serializerFor('application')
-                              : store;
-          let actualModelName = Ember.isNone(modelname) ? '' : modelname;
           Object.values(msg.value).forEach(record => {
-            const normalized = normalizator.normalize(actualModelName, record);
+            const normalized = store.normalize(modelname, record);
             normalizedRecords.data.addObject(normalized.data);
             if (normalized.included) {
               normalizedRecords.included.addObjects(normalized.included);

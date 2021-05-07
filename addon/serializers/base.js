@@ -70,7 +70,7 @@ export default DS.RESTSerializer.extend({
     if (hash.hasOwnProperty(`${odataType}`)) {
       let hashModel = this.modelNameFromPayloadKey(hash[odataType]);
       if (hashModel !== typeClass.modelName) {
-        let newTypeClass = Ember.get(this, "store").modelFor(hashModel);
+        let newTypeClass = this.store.modelFor(hashModel);
         return this._super(newTypeClass, hash);
       }
     }

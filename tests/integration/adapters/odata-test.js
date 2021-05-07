@@ -26,8 +26,6 @@ if (config.APP.testODataService) {
 
       store = App.__container__.lookup('service:store');
       odataAdapter = store.adapterFor('application');
-      let applicationSerializer = Ember.getOwner(odataAdapter).lookup('serializer:application');
-      Ember.set(applicationSerializer, "store", store);
     },
 
     afterEach() {
@@ -91,13 +89,15 @@ if (config.APP.testODataService) {
 
   test('check method returns multy typed result', function(assert) {
     let done = assert.async();
+    let applicationSerializer = store.serializerFor('application');
+    Ember.set(applicationSerializer, 'primaryKey', '__PrimaryKey');
 
     Ember.run(() => {
        odataAdapter.callAction({
         actionName: 'ODataTestMultyTypedResult',
         data: null,
         store: store,
-        modelName: null,
+        modelName: 'model',
         url: baseUrl
       })
       .then((records) => {
@@ -117,16 +117,19 @@ if (config.APP.testODataService) {
 
   test('check method returns multy typed linked result', function(assert) {
     let done = assert.async();
+    let applicationSerializer = store.serializerFor('application');
+    Ember.set(applicationSerializer, 'primaryKey', '__PrimaryKey');
 
     Ember.run(() => {
        odataAdapter.callAction({
         actionName: 'ODataTestMultyTypedWithLinksResult',
         data: null,
         store: store,
-        modelName: null,
+        modelName: 'model',
         url: baseUrl
       })
       .then((records) => {
+        // OData actions not return masters yet.
         assert.equal(records.length, 2);
         assert.equal(records[0].constructor.modelName, 'ember-flexberry-dummy-application-user');
         assert.equal(Ember.get(records[0], 'name'), 'TestUserName');
@@ -139,9 +142,10 @@ if (config.APP.testODataService) {
     });
   });
 
-  test('check method throws exception', function(assert) {
+  test('check method throws exception when model is not defined', function(assert) {
     Ember.run(() => {
-       assert.throws(odataAdapter.callAction({
+       assert.throws(
+         odataAdapter.callAction({
         actionName: 'ODataTestTypedResult',
         data: null,
         store: store,
