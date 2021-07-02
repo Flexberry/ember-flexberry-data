@@ -2,26 +2,15 @@
 
 ## [Unreleased]
 
-## [2.6.0-beta.4] - 2021-04-22
-### Fixed
-- Batch details save with unchanged aggregator.
-
-## [2.6.0-beta.3] - 2021-04-06
-### Fixed
-- Resolving Promise on sync up with no jobs.
-
-## [2.6.0-beta.2] - 2021-03-29
-### Fixed
-- Error unloading record with deleted dirty type in batch update.
-
-## [2.6.0-beta.1] - 2020-02-18
-No functionality was added, changed or fixed.
-Just technical release for testing. 
-
-## [2.6.0-beta.0] - 2020-10-06
+## [2.6.0] - 2021-07-02
 ### Added
 - The `ModelWithoutValidation` model without validation.
 - The `TruePredicate` and `FalsePredicate` predicates with implementations for the `IndexedDBAdapter`, `JsAdapter`, and `ODataAdapter` adapters.
+
+### Fixed
+- Batch details save with unchanged aggregator.
+- Resolving Promise on sync up with no jobs.
+- Error unloading record with deleted dirty type in batch update.
 
 ## [2.5.0] - 2020-09-10
 ### Added
