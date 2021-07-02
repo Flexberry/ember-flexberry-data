@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.ModelWithoutValidation", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Query.TruePredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -68,6 +68,7 @@
 	                            <li><a href="../classes/Projection.html">Projection</a></li>
 	                            <li><a href="../classes/Projection.AdapterMixin.html">Projection.AdapterMixin</a></li>
 	                            <li><a href="../classes/Projection.Model.html">Projection.Model</a></li>
+	                            <li><a href="../classes/Projection.ModelWithoutValidation.html">Projection.ModelWithoutValidation</a></li>
 	                            <li><a href="../classes/Projection.StoreMixin.html">Projection.StoreMixin</a></li>
 	                            <li><a href="../classes/Query.html">Query</a></li>
 	                            <li><a href="../classes/Query.BaseAdapter.html">Query.BaseAdapter</a></li>
@@ -78,6 +79,7 @@
 	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
 	                            <li><a href="../classes/Query.DatePredicate.html">Query.DatePredicate</a></li>
 	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
+	                            <li><a href="../classes/Query.FalsePredicate.html">Query.FalsePredicate</a></li>
 	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
 	                            <li><a href="../classes/Query.GeographyPredicate.html">Query.GeographyPredicate</a></li>
 	                            <li><a href="../classes/Query.GeometryPredicate.html">Query.GeometryPredicate</a></li>
@@ -90,6 +92,7 @@
 	                            <li><a href="../classes/Query.QueryObject.html">Query.QueryObject</a></li>
 	                            <li><a href="../classes/Query.SimplePredicate.html">Query.SimplePredicate</a></li>
 	                            <li><a href="../classes/Query.StringPredicate.html">Query.StringPredicate</a></li>
+	                            <li><a href="../classes/Query.TruePredicate.html">Query.TruePredicate</a></li>
 	                            <li><a href="../classes/Security.html">Security</a></li>
 	                            <li><a href="../classes/Serializer.html">Serializer</a></li>
 	                            <li><a href="../classes/Serializer.Base.html">Serializer.Base</a></li>
@@ -776,6 +779,53 @@ export class IsOfPredicate extends BasePredicate {
    */
   toString() {
     return &#x60;isof(${this._expression ? &#x60;${this._expression}, &#x60; : &#x27;&#x27;}&#x27;${this._typeName}&#x27;)&#x60;;
+  }
+}
+
+/**
+ * The class of true predicate.
+ *
+ * @namespace Query
+ * @class TruePredicate
+ * @extends BasePredicate
+ * @constructor
+ */
+export class TruePredicate extends BasePredicate {
+  constructor() {
+    super();
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the predicate.
+   * @public
+   */
+  toString() {
+    return &#x27;true&#x27;;
+  }
+}
+
+/**
+ * The class of false predicate.
+ *
+ * @namespace Query
+ * @class FalsePredicate
+ * @extends BasePredicate
+ * @constructor
+ */
+export class FalsePredicate extends BasePredicate {
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the predicate.
+   * @public
+   */
+  toString() {
+    return &#x27;false&#x27;;
   }
 }
 

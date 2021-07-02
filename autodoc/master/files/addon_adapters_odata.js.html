@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.ModelWithoutValidation", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Query.TruePredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -68,6 +68,7 @@
 	                            <li><a href="../classes/Projection.html">Projection</a></li>
 	                            <li><a href="../classes/Projection.AdapterMixin.html">Projection.AdapterMixin</a></li>
 	                            <li><a href="../classes/Projection.Model.html">Projection.Model</a></li>
+	                            <li><a href="../classes/Projection.ModelWithoutValidation.html">Projection.ModelWithoutValidation</a></li>
 	                            <li><a href="../classes/Projection.StoreMixin.html">Projection.StoreMixin</a></li>
 	                            <li><a href="../classes/Query.html">Query</a></li>
 	                            <li><a href="../classes/Query.BaseAdapter.html">Query.BaseAdapter</a></li>
@@ -78,6 +79,7 @@
 	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
 	                            <li><a href="../classes/Query.DatePredicate.html">Query.DatePredicate</a></li>
 	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
+	                            <li><a href="../classes/Query.FalsePredicate.html">Query.FalsePredicate</a></li>
 	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
 	                            <li><a href="../classes/Query.GeographyPredicate.html">Query.GeographyPredicate</a></li>
 	                            <li><a href="../classes/Query.GeometryPredicate.html">Query.GeometryPredicate</a></li>
@@ -90,6 +92,7 @@
 	                            <li><a href="../classes/Query.QueryObject.html">Query.QueryObject</a></li>
 	                            <li><a href="../classes/Query.SimplePredicate.html">Query.SimplePredicate</a></li>
 	                            <li><a href="../classes/Query.StringPredicate.html">Query.StringPredicate</a></li>
+	                            <li><a href="../classes/Query.TruePredicate.html">Query.TruePredicate</a></li>
 	                            <li><a href="../classes/Security.html">Security</a></li>
 	                            <li><a href="../classes/Serializer.html">Serializer</a></li>
 	                            <li><a href="../classes/Serializer.Base.html">Serializer.Base</a></li>
@@ -257,14 +260,12 @@ export default DS.RESTAdapter.extend({
    * @param {Query} query
    * @return {Promise} promise
    */
-  /* jshint unused:vars */
   queryRecord(store, type, query) {
     Ember.debug(&#x60;Flexberry ODataAdapter::queryRecord &#x27;${type}&#x27;&#x60;, query);
 
     // TODO: query support for direct calls
     return this._super.apply(this, arguments);
   },
-  /* jshint unused:true */
 
   /**
    * Overloaded method from &#x60;RESTAdapter&#x60; (Ember Data).
@@ -277,14 +278,12 @@ export default DS.RESTAdapter.extend({
    * @param {DS.Snapshot} snapshot
    * @return {Promise} promise
   */
-  /* jshint unused:vars */
   findRecord(store, type, id, snapshot) {
     Ember.debug(&#x60;Flexberry ODataAdapter::findRecord &#x27;${type}(${id})&#x27;&#x60;);
 
     // TODO: query support for direct calls
     return this._super.apply(this, arguments);
   },
-  /* jshint unused:true */
 
   /**
    * Overloaded method from &#x60;RESTAdapter&#x60; (Ember Data).
@@ -297,14 +296,12 @@ export default DS.RESTAdapter.extend({
    * @param {DS.SnapshotRecordArray} snapshotRecordArray
    * @return {Promise} promise
    */
-  /* jshint unused:vars */
   findAll(store, type, sinceToken, snapshotRecordArray) {
     Ember.debug(&#x60;Flexberry ODataAdapter::findAll &#x27;${type}&#x27;&#x60;);
 
     // TODO: query support for direct calls
     return this._super.apply(this, arguments);
   },
-  /* jshint unused:true */
 
   /**
    * Overloaded method from &#x60;build-url-mixin&#x60; (Ember Data), that determines the pathname for a given type.
@@ -576,7 +573,7 @@ export default DS.RESTAdapter.extend({
         let modelDirtyType = model.get(&#x27;dirtyType&#x27;);
 
         if (!modelDirtyType) {
-          if (model.hasChangedBelongsTo()) {
+          if (model.hasChangedBelongsTo() || model.hasChangedHasMany()) {
             modelDirtyType = &#x27;updated&#x27;;
           } else {
             return;
@@ -697,7 +694,9 @@ export default DS.RESTAdapter.extend({
         const result = [];
         models.forEach((model) =&gt; {
           const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
-          if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27; || model.hasChangedBelongsTo()) {
+          if (modelDirtyType === &#x27;deleted&#x27;) {
+            Ember.run(store, store.unloadRecord, model);
+          } else if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27; || model.hasChangedBelongsTo()) {
             const { response } = getResponses.shift();
             if (this.isSuccess(response.meta.status)) {
               const modelName = model.constructor.modelName;
@@ -709,8 +708,6 @@ export default DS.RESTAdapter.extend({
             } else {
               errors.push(new DS.AdapterError(response.body));
             }
-          } else if (modelDirtyType === &#x27;deleted&#x27;) {
-            Ember.run(store, store.unloadRecord, model);
           }
 
           result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
