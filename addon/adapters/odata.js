@@ -561,7 +561,7 @@ export default DS.RESTAdapter.extend({
         models.forEach((model) => {
           const modelDirtyType = model.get('dirtyType');
           if (modelDirtyType === 'deleted') {
-            Ember.run(store, store.unloadRecord, model);
+            run(store, store.unloadRecord, model);
           } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
             const { response } = getResponses.shift();
             if (this.isSuccess(response.meta.status)) {
