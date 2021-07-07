@@ -36,7 +36,6 @@ addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-gr
 addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js
 addon/mixins/store.js
 addon/models/model-without-validation.js
-addon/models/model.js
 addon/models/offline-model.js
 addon/query/builder.js
 addon/query/indexeddb-adapter.js
