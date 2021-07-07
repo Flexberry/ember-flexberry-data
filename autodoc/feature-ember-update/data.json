@@ -3336,6 +3336,20 @@
         {
             "file": "addon/models/model-without-validation.js",
             "line": 192,
+            "description": "Сheck whether there is a changed `hasMany` relationships.",
+            "itemtype": "method",
+            "name": "hasChangedHasMany",
+            "return": {
+                "description": "Returns `true` if `hasMany` relationships are changed.",
+                "type": "Boolean"
+            },
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 204,
             "description": "Rollback changes for `hasMany` relationships.",
             "itemtype": "method",
             "name": "rollbackHasMany",
@@ -3353,7 +3367,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 216,
+            "line": 228,
             "description": "Сheck whether there is a changed `belongsTo` relationships.",
             "itemtype": "method",
             "name": "hasChangedBelongsTo",
@@ -3367,7 +3381,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 240,
+            "line": 252,
             "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two items, old value, with index `0`, and new value, with index `1`.",
             "example": [
                 "\n  ```javascript\n  {\n    key: [oldValue, newValue],\n  }\n  ```"
@@ -3384,7 +3398,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 271,
+            "line": 283,
             "description": "Rollback changes for `belongsTo` relationships.",
             "itemtype": "method",
             "name": "rollbackBelongsTo",
@@ -3402,7 +3416,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 299,
+            "line": 311,
             "description": "Rollback changes for all relationships.",
             "itemtype": "method",
             "name": "rollbackRelationships",
@@ -3412,7 +3426,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 309,
+            "line": 321,
             "description": "Rollback all changes.",
             "itemtype": "method",
             "name": "rollbackAll",
@@ -3422,7 +3436,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 319,
+            "line": 331,
             "description": "Fired when the record is loaded from the server.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).",
             "itemtype": "method",
             "name": "didLoad",
@@ -3432,7 +3446,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 330,
+            "line": 342,
             "description": "Fired when the record is updated.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didUpdate).",
             "itemtype": "method",
             "name": "didUpdate",
@@ -3442,7 +3456,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 341,
+            "line": 353,
             "description": "Fired when the record is created.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didCreate).",
             "itemtype": "method",
             "name": "didCreate",
@@ -3452,7 +3466,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 352,
+            "line": 364,
             "description": "Set each `belongsTo` relationship, observer, that save canonical state.",
             "itemtype": "method",
             "name": "_saveCanonicalBelongsTo",
@@ -3464,7 +3478,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 378,
+            "line": 390,
             "description": "Save canonical state for `belongsTo` relationships.",
             "itemtype": "method",
             "name": "_saveBelongsToObserver",
@@ -3488,7 +3502,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 394,
+            "line": 406,
             "description": "Defined projections for current model type.",
             "itemtype": "property",
             "name": "projections",
@@ -3503,7 +3517,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 405,
+            "line": 417,
             "description": "Flag that indicates model id type.",
             "itemtype": "property",
             "name": "isType",
@@ -3515,7 +3529,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 414,
+            "line": 426,
             "description": "The namespace in which this model is defined.",
             "itemtype": "property",
             "name": "namespace",
@@ -3528,7 +3542,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 424,
+            "line": 436,
             "description": "Defines idType for specified model type.",
             "itemtype": "method",
             "name": "defineIdType",
@@ -3548,7 +3562,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 438,
+            "line": 450,
             "description": "Defines projection for specified model type.",
             "itemtype": "method",
             "name": "defineProjection",
@@ -3582,7 +3596,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 467,
+            "line": 479,
             "description": "Parent model type name.",
             "itemtype": "property",
             "name": "_parentModelName",
@@ -6330,7 +6344,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 234,
+            "line": 238,
             "description": "This method is called when a sync process if at attempt create, update or delete record, server error return.\nDefault behavior: Marked `job` as 'Ошибка', execute further when called `syncUp` method.",
             "example": [
                 "\n  ```javascript\n  // app/services/syncer.js\n  import Syncer from 'ember-flexberry-data/services/syncer';\n\n  export default Syncer.extend({\n    ...\n    resolveServerError(job, error) {\n      let _this = this;\n      return new RSVP.Promise((resolve, reject) => {\n        // Here `error.status` as example, as if user not authorized on server.\n        if (error.status === 401) {\n          // As if `auth` function authorize user.\n          auth().then(() => {\n            _this.syncUp(A([job])).then(() => {\n              job.set('executionResult', 'Выполнено');\n              resolve(job.save());\n            }, reject);\n          }, reject);\n        } else {\n          job.set('executionResult', 'Ошибка');\n          resolve(job.save());\n        }\n      });\n    },\n    ...\n  });\n\n  ```"
@@ -6358,7 +6372,7 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 279,
+            "line": 283,
             "description": "This method is called when a sync process not found record on server for delete or update.\nDefault behavior: Marked `job` as 'Не выполнено', not delete and not execute further when called `syncUp` method.",
             "example": [
                 "\n  ```javascript\n  // app/services/syncer.js\n  import Syncer from 'ember-flexberry-data/services/syncer';\n\n  export default Syncer.extend({\n    ...\n    resolveNotFoundRecord(job) {\n      if (job.get('operationType') === 'UPDATE') {\n        // It will be executed when next called `syncUp` method.\n        job.set('executionResult', 'Ошибка');\n      } else if (job.get('operationType') === 'DELETE') {\n        // It will be immediately delete and not never executed.\n        job.set('executionResult', 'Выполнено');\n      }\n\n      return job.save();\n    },\n    ...\n  });\n\n  ```"
@@ -6381,13 +6395,13 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 315,
+            "line": 319,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 325,
+            "line": 329,
             "description": "Return name of projection to sync up by model name.",
             "itemtype": "method",
             "name": "getSyncUpProjectionName",
@@ -6406,13 +6420,13 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 344,
+            "line": 348,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 372,
+            "line": 376,
             "description": "Starts syncing up through batch.",
             "params": [
                 {
@@ -6431,19 +6445,19 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 413,
+            "line": 417,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 429,
+            "line": 433,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 443,
+            "line": 447,
             "description": "Returns record to create for syncing up.",
             "params": [
                 {
@@ -6462,13 +6476,13 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 461,
+            "line": 465,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 476,
+            "line": 480,
             "description": "Returns record to update for syncing up.",
             "params": [
                 {
@@ -6487,13 +6501,13 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 496,
+            "line": 500,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 512,
+            "line": 516,
             "description": "Returns record to remove for syncing up.",
             "params": [
                 {
@@ -6512,79 +6526,79 @@
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 530,
+            "line": 534,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 546,
+            "line": 550,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 555,
+            "line": 559,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 561,
+            "line": 565,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 588,
+            "line": 592,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 605,
+            "line": 609,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 617,
+            "line": 621,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 639,
+            "line": 643,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 656,
+            "line": 660,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 667,
+            "line": 671,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 713,
+            "line": 717,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 752,
+            "line": 756,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/services/syncer.js",
-            "line": 768,
+            "line": 772,
             "class": "Syncer",
             "module": "ember-flexberry-data"
         },
@@ -8795,7 +8809,7 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/services/syncer.js:325"
+            "line": " addon/services/syncer.js:329"
         },
         {
             "message": "replacing incorrect tag: function with method",
@@ -8995,95 +9009,95 @@
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:315"
+            "line": " addon/services/syncer.js:319"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:344"
+            "line": " addon/services/syncer.js:348"
         },
         {
             "message": "Missing item type\nStarts syncing up through batch.",
-            "line": " addon/services/syncer.js:372"
+            "line": " addon/services/syncer.js:376"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:413"
+            "line": " addon/services/syncer.js:417"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:429"
+            "line": " addon/services/syncer.js:433"
         },
         {
             "message": "Missing item type\nReturns record to create for syncing up.",
-            "line": " addon/services/syncer.js:443"
+            "line": " addon/services/syncer.js:447"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:461"
+            "line": " addon/services/syncer.js:465"
         },
         {
             "message": "Missing item type\nReturns record to update for syncing up.",
-            "line": " addon/services/syncer.js:476"
+            "line": " addon/services/syncer.js:480"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:496"
+            "line": " addon/services/syncer.js:500"
         },
         {
             "message": "Missing item type\nReturns record to remove for syncing up.",
-            "line": " addon/services/syncer.js:512"
+            "line": " addon/services/syncer.js:516"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:530"
+            "line": " addon/services/syncer.js:534"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:546"
+            "line": " addon/services/syncer.js:550"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:555"
+            "line": " addon/services/syncer.js:559"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:561"
+            "line": " addon/services/syncer.js:565"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:588"
+            "line": " addon/services/syncer.js:592"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:605"
+            "line": " addon/services/syncer.js:609"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:617"
+            "line": " addon/services/syncer.js:621"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:639"
+            "line": " addon/services/syncer.js:643"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:656"
+            "line": " addon/services/syncer.js:660"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:667"
+            "line": " addon/services/syncer.js:671"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:713"
+            "line": " addon/services/syncer.js:717"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:752"
+            "line": " addon/services/syncer.js:756"
         },
         {
             "message": "Missing item type",
-            "line": " addon/services/syncer.js:768"
+            "line": " addon/services/syncer.js:772"
         },
         {
             "message": "Missing item type",

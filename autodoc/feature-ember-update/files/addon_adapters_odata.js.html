@@ -579,7 +579,7 @@ export default DS.RESTAdapter.extend({
         let modelDirtyType = model.get(&#x27;dirtyType&#x27;);
 
         if (!modelDirtyType) {
-          if (model.hasChangedBelongsTo()) {
+          if (model.hasChangedBelongsTo() || model.hasChangedHasMany()) {
             modelDirtyType = &#x27;updated&#x27;;
           } else {
             return;
@@ -701,7 +701,9 @@ export default DS.RESTAdapter.extend({
         // eslint-disable-next-line ember/jquery-ember-run
         models.forEach((model) =&gt; {
           const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
-          if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27; || model.hasChangedBelongsTo()) {
+          if (modelDirtyType === &#x27;deleted&#x27;) {
+            run(store, store.unloadRecord, model);
+          } else if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27; || model.hasChangedBelongsTo()) {
             const { response } = getResponses.shift();
             if (this.isSuccess(response.meta.status)) {
               const modelName = model.constructor.modelName;
@@ -713,8 +715,6 @@ export default DS.RESTAdapter.extend({
             } else {
               errors.push(new DS.AdapterError(response.body));
             }
-          } else if (modelDirtyType === &#x27;deleted&#x27;) {
-            run(store, store.unloadRecord, model);
           }
 
           result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);

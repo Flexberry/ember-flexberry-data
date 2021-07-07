@@ -330,6 +330,18 @@ var ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
     return changedHasMany;
   },
 
+    /**
+    Сheck whether there is a changed &#x60;hasMany&#x60; relationships.
+
+    @method hasChangedHasMany
+    @return {Boolean} Returns &#x60;true&#x60; if &#x60;hasMany&#x60; relationships are changed.
+  */
+  hasChangedHasMany() {
+    const changedHasMany = this.changedHasMany();
+
+    return Object.keys(changedHasMany).length !== 0;
+  },
+
   /**
     Rollback changes for &#x60;hasMany&#x60; relationships.
 
