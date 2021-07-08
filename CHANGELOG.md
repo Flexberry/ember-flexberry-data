@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.6.0-beta.1] - 2021-07-08
+### Added
+- Changes from [`2.6.0`](#260---2021-07-02) version.
+
 ## [2.6.0] - 2021-07-02
 ### Added
 - The `ModelWithoutValidation` model without validation.
