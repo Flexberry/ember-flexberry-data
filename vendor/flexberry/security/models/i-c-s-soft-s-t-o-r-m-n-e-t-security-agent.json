@@ -1,7 +1,8 @@
-﻿{
+{
   "name": "ICSSoftSTORMNETSecurityAgent",
   "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
   "className": "Agent",
+  "nameSpace": "ICSSoft.STORMNET.Security",
   "parentModelName": null,
   "parentClassName": null,
   "attrs": [
@@ -10,133 +11,198 @@
       "type": "string",
       "flexberryType": "string80",
       "notNull": true,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "login",
       "type": "string",
       "flexberryType": "string50",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "pwd",
       "type": "string",
       "flexberryType": "string50",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "isUser",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": true,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "isGroup",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": true,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "isRole",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": true,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "connString",
       "type": "string",
       "flexberryType": "string",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "enabled",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": false,
-      "defaultValue": "true"
+      "defaultValue": "true",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "email",
       "type": "string",
       "flexberryType": "string80",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
+    },
+    {
+      "name": "comment",
+      "type": "string",
+      "flexberryType": "stringMAX",
+      "notNull": false,
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "flexberryType": "string80",
+      "notNull": false,
+      "defaultValue": "",
+      "stored": false,
+      "ordered": false
+    },
+    {
+      "name": "agentKey",
+      "type": "guid",
+      "flexberryType": "tGuid",
+      "notNull": false,
+      "defaultValue": "",
+      "stored": false,
+      "ordered": false
     },
     {
       "name": "full",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": false,
+      "ordered": false
     },
     {
       "name": "read",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": false,
+      "ordered": false
     },
     {
       "name": "insert",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": false,
+      "ordered": false
     },
     {
       "name": "update",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": false,
+      "ordered": false
     },
     {
       "name": "delete",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": false,
+      "ordered": false
     },
     {
       "name": "execute",
       "type": "boolean",
       "flexberryType": "bool",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": false,
+      "ordered": false
     },
     {
       "name": "createTime",
       "type": "date",
       "flexberryType": "AuditNullableDateTime",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "creator",
       "type": "string",
       "flexberryType": "string",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "editTime",
       "type": "date",
       "flexberryType": "AuditNullableDateTime",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     },
     {
       "name": "editor",
       "type": "string",
       "flexberryType": "string",
       "notNull": false,
-      "defaultValue": ""
+      "defaultValue": "",
+      "stored": true,
+      "ordered": false
     }
   ],
   "belongsTo": [],
@@ -199,6 +265,12 @@
           "caption": "Email",
           "hidden": false,
           "index": 8
+        },
+        {
+          "name": "comment",
+          "caption": "Комментарий",
+          "hidden": false,
+          "index": 9
         }
       ],
       "belongsTo": [],
@@ -257,6 +329,12 @@
           "caption": "",
           "hidden": false,
           "index": 5
+        },
+        {
+          "name": "domain",
+          "caption": "",
+          "hidden": false,
+          "index": 6
         }
       ],
       "belongsTo": [],
@@ -301,6 +379,12 @@
           "caption": "",
           "hidden": false,
           "index": 5
+        },
+        {
+          "name": "comment",
+          "caption": "",
+          "hidden": false,
+          "index": 6
         }
       ],
       "belongsTo": [],
@@ -363,6 +447,12 @@
           "caption": "",
           "hidden": true,
           "index": 8
+        },
+        {
+          "name": "comment",
+          "caption": "",
+          "hidden": false,
+          "index": 9
         }
       ],
       "belongsTo": [],
@@ -425,6 +515,12 @@
           "caption": "",
           "hidden": false,
           "index": 8
+        },
+        {
+          "name": "comment",
+          "caption": "",
+          "hidden": false,
+          "index": 9
         }
       ],
       "belongsTo": [],
@@ -469,6 +565,12 @@
           "caption": "",
           "hidden": true,
           "index": 5
+        },
+        {
+          "name": "comment",
+          "caption": "Комментарий",
+          "hidden": false,
+          "index": 6
         }
       ],
       "belongsTo": [],
@@ -543,6 +645,12 @@
           "caption": "Редактор",
           "hidden": false,
           "index": 10
+        },
+        {
+          "name": "comment",
+          "caption": "Комментарий",
+          "hidden": false,
+          "index": 11
         }
       ],
       "belongsTo": [],
@@ -649,6 +757,62 @@
           "caption": "Запись активна",
           "hidden": false,
           "index": 5
+        },
+        {
+          "name": "comment",
+          "caption": "Комментарий",
+          "hidden": false,
+          "index": 6
+        }
+      ],
+      "belongsTo": [],
+      "hasMany": []
+    },
+    {
+      "name": "Sec_GroupsL",
+      "modelName": "i-c-s-soft-s-t-o-r-m-n-e-t-security-agent",
+      "attrs": [
+        {
+          "name": "name",
+          "caption": "Название",
+          "hidden": false,
+          "index": 0
+        },
+        {
+          "name": "isGroup",
+          "caption": "",
+          "hidden": true,
+          "index": 1
+        },
+        {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 2
+        },
+        {
+          "name": "createTime",
+          "caption": "Дата создания",
+          "hidden": false,
+          "index": 3
+        },
+        {
+          "name": "creator",
+          "caption": "Создатель",
+          "hidden": false,
+          "index": 4
+        },
+        {
+          "name": "editTime",
+          "caption": "Дата изменения",
+          "hidden": false,
+          "index": 5
+        },
+        {
+          "name": "editor",
+          "caption": "Редактор",
+          "hidden": false,
+          "index": 6
         }
       ],
       "belongsTo": [],
@@ -711,6 +875,12 @@
           "caption": "Редактор",
           "hidden": false,
           "index": 8
+        },
+        {
+          "name": "comment",
+          "caption": "Комментарий",
+          "hidden": false,
+          "index": 9
         }
       ],
       "belongsTo": [],
@@ -753,28 +923,40 @@
           "index": 1
         },
         {
+          "name": "enabled",
+          "caption": "",
+          "hidden": false,
+          "index": 2
+        },
+        {
           "name": "createTime",
           "caption": "Дата создания",
           "hidden": false,
-          "index": 2
+          "index": 3
         },
         {
           "name": "creator",
           "caption": "Создатель",
           "hidden": false,
-          "index": 3
+          "index": 4
         },
         {
           "name": "editTime",
           "caption": "Дата изменения",
           "hidden": false,
-          "index": 4
+          "index": 5
         },
         {
           "name": "editor",
           "caption": "Редактор",
           "hidden": false,
-          "index": 5
+          "index": 6
+        },
+        {
+          "name": "comment",
+          "caption": "Комментарий",
+          "hidden": false,
+          "index": 7
         }
       ],
       "belongsTo": [],
@@ -855,6 +1037,12 @@
           "caption": "",
           "hidden": true,
           "index": 11
+        },
+        {
+          "name": "comment",
+          "caption": "",
+          "hidden": false,
+          "index": 12
         }
       ],
       "belongsTo": [],
@@ -929,10 +1117,19 @@
           "caption": "",
           "hidden": false,
           "index": 10
+        },
+        {
+          "name": "comment",
+          "caption": "",
+          "hidden": false,
+          "index": 11
         }
       ],
       "belongsTo": [],
       "hasMany": []
     }
-  ]
+  ],
+  "stored": true,
+  "offline": true,
+  "external": false
 }
