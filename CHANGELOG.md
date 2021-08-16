@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [3.6.0-beta.1] - 2021-07-08
+## [3.6.0] - 2021-08-16
 ### Added
 - Changes from [`2.6.0`](#260---2021-07-02) version.
 
@@ -15,10 +15,6 @@
 - Batch details save with unchanged aggregator.
 - Resolving Promise on sync up with no jobs.
 - Error unloading record with deleted dirty type in batch update.
-
-## [3.6.0-beta.0] - 2020-10-07
-### Added
-- Changes from [`2.6.0-beta.0`](#260-beta0---2020-10-06) version.
 
 ## [3.5.0] - 2020-09-17
 - Changes from [`2.5.0`](#250---2020-09-10) version.
