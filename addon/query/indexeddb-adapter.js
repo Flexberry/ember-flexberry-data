@@ -10,8 +10,7 @@ import {
   StringPredicate,
   DetailPredicate,
   DatePredicate,
-  GeographyPredicate,
-  GeometryPredicate,
+  SpatialPredicate,
   TruePredicate,
   FalsePredicate
 } from './predicate';
@@ -610,13 +609,8 @@ function updateWhereClause(store, table, query) {
     }
   }
 
-  if (predicate instanceof GeographyPredicate) {
-    Ember.warn('GeographyPredicate is not supported in indexedDB-adapter');
-    return table;
-  }
-
-  if (predicate instanceof GeometryPredicate) {
-    Ember.warn('GeometryPredicate is not supported in indexedDB-adapter');
+  if (predicate instanceof SpatialPredicate) {
+    Ember.warn('SpatialPredicate subtypes are not supported in indexedDB-adapter');
     return table;
   }
 

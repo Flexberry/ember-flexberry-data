@@ -6,8 +6,7 @@ import {
   StringPredicate,
   DetailPredicate,
   DatePredicate,
-  GeographyPredicate,
-  GeometryPredicate,
+  SpatialPredicate,
   TruePredicate,
   FalsePredicate
 } from './predicate';
@@ -253,24 +252,16 @@ export default class JSAdapter extends BaseAdapter {
     let b2 = predicate instanceof StringPredicate;
     let b3 = predicate instanceof DetailPredicate;
     let b4 = predicate instanceof DatePredicate;
-    let b5 = predicate instanceof GeographyPredicate;
-    let b6 = predicate instanceof GeometryPredicate;
-    let b7 = predicate instanceof TruePredicate;
-    let b8 = predicate instanceof FalsePredicate;
-    if (b1 || b2 || b3 || b4 || b7 || b8) {
+    let b5 = predicate instanceof SpatialPredicate;
+    let b6 = predicate instanceof TruePredicate;
+    let b7 = predicate instanceof FalsePredicate;
+    if (b1 || b2 || b3 || b4 || b6 || b7) {
       let filterFunction = this.getAttributeFilterFunction(predicate, options);
       return this.getFilterFunctionAnd([filterFunction]);
     }
 
     if (b5) {
-      Ember.warn('GeographyPredicate is not supported in js-adapter');
-      return function (data) {
-        return data;
-      };
-    }
-
-    if (b6) {
-      Ember.warn('GeometryPredicate is not supported in js-adapter');
+      Ember.warn('SpatialPredicate subtypes are not supported in js-adapter');
       return function (data) {
         return data;
       };

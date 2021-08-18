@@ -293,25 +293,26 @@ export class StringPredicate extends BasePredicate {
 }
 
 /**
- * The predicate class for geography attributes.
+ * The base class of logical predicate for spatial attributes.
  *
  * @namespace Query
- * @class GeographyPredicate
+ * @class SpatialPredicate
  * @extends BasePredicate
  *
  * @param {String} attributePath The path to the attribute for predicate.
  * @constructor
  */
-export class GeographyPredicate extends BasePredicate {
+export class SpatialPredicate extends BasePredicate {
   constructor(attributePath) {
     super();
 
     if (!attributePath) {
-      throw new Error('Attribute path is required for GeographyPredicate constructor.');
+      throw new Error('Attribute path is required for SpatialPredicate constructor.');
     }
 
     this._attributePath = attributePath;
-    this._intersectsValue = null;
+    this._function = null;
+    this._value = null;
   }
 
   /**
@@ -326,27 +327,97 @@ export class GeographyPredicate extends BasePredicate {
   }
 
   /**
-   * The geography value that has to intersect with the attribute.
+   * The spatial function to call.
    *
-   * @property intersectsValue
+   * @property spatialFunction
    * @type {String}
    * @public
    */
-  get intersectsValue() {
-    return this._intersectsValue;
+  get spatialFunction() {
+    return this._function;
   }
 
   /**
-   * Sets the value that the attribute has to contain.
+   * The spatial value that has to be the second argument of the spatial function,
+   * assuming the attribute is the first argument.
+   *
+   * @property spatialValue
+   * @type {String}
+   * @public
+   */
+  get spatialValue() {
+    return this._value;
+  }
+
+  /**
+   * The spatial type namespace.
+   *
+   * @property spatialNamespace
+   * @type {String}
+   * @public
+   */
+  get spatialNamespace() {
+      throw this._getAbstractPropertyError('spatialNamespace');
+  }
+
+  /**
+   * The spatial type.
+   *
+   * @property spatialType
+   * @type {String}
+   * @public
+   */
+  get spatialType() {
+      throw this._getAbstractPropertyError('spatialType');
+  }
+
+  /**
+   * Sets the spatial type value that has to intersect with the attribute.
    *
    * @method contains
-   * @param {String} geography The geography value that has to intersect with the attribute.
-   * @return {Query.StringPredicate} Returns this instance.
+   * @param {String} value The spatial type value that has to intersect with the attribute.
+   * @return {Query.SpatialPredicate} Returns this instance.
    * @chainable
    */
-  intersects(geography) {
-    this._intersectsValue = geography;
+  intersects(value) {
+    this._function = 'intersects';
+    this._value = value;
     return this;
+  }
+
+  _getAbstractPropertyError(property) {
+    return new Error(`The ${property} property must be overridden in the SpatialPredicate subtypes.`);
+  }
+}
+
+/**
+ * The predicate class for geography attributes.
+ *
+ * @namespace Query
+ * @class GeographyPredicate
+ * @extends SpatialPredicate
+ */
+export class GeographyPredicate extends SpatialPredicate {
+  /**
+   * The geography type namespace.
+   *
+   * @property spatialNamespace
+   * @type {String}
+   * @public
+   */
+  get spatialNamespace() {
+    return 'geo';
+  }
+
+  /**
+   * The geography type.
+   *
+   * @property spatialType
+   * @type {String}
+   * @public
+   */
+  get spatialType() {
+    return 'geography';
   }
 }
 
@@ -355,56 +426,28 @@ export class GeographyPredicate extends BasePredicate {
  *
  * @namespace Query
  * @class GeometryPredicate
- * @extends BasePredicate
- *
- * @param {String} attributePath The path to the attribute for predicate.
- * @constructor
+ * @extends SpatialPredicate
  */
-export class GeometryPredicate extends BasePredicate {
-  constructor(attributePath) {
-    super();
-
-    if (!attributePath) {
-      throw new Error('Attribute path is required for GeometryPredicate constructor.');
-    }
-
-    this._attributePath = attributePath;
-    this._intersectsValue = null;
-  }
-
-  /**
-   * The path to the attribute for predicate.
+export class GeometryPredicate extends SpatialPredicate {  /**
+   * The geometry type namespace.
    *
-   * @property attributePath
+   * @property spatialNamespace
    * @type {String}
    * @public
    */
-  get attributePath() {
-    return this._attributePath;
+  get spatialNamespace() {
+    return 'geom';
   }
 
   /**
-   * The geometry value that has to intersect with the attribute.
+   * The geometry type.
    *
-   * @property intersectsValue
+   * @property spatialType
    * @type {String}
    * @public
    */
-  get intersectsValue() {
-    return this._intersectsValue;
-  }
-
-  /**
-   * Sets the value that the attribute has to contain.
-   *
-   * @method contains
-   * @param {String} geometry The geometry value that has to intersect with the attribute.
-   * @return {Query.StringPredicate} Returns this instance.
-   * @chainable
-   */
-  intersects(geometry) {
-    this._intersectsValue = geometry;
-    return this;
+  get spatialType() {
+    return 'geometry';
   }
 }
 

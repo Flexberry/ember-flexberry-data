@@ -8,8 +8,7 @@ import {
   StringPredicate,
   DetailPredicate,
   DatePredicate,
-  GeographyPredicate,
-  GeometryPredicate,
+  SpatialPredicate,
   NotPredicate,
   IsOfPredicate,
   TruePredicate,
@@ -268,22 +267,17 @@ export default class ODataAdapter extends BaseAdapter {
       return `isof(${expression},'${namespace}.${className}')`;
     }
 
-    if (predicate instanceof GeographyPredicate) {
+    if (predicate instanceof SpatialPredicate) {
       let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
       if (prefix) {
         attribute = `${prefix}/${attribute}`;
       }
 
-      return `geo.intersects(geography1=${attribute},geography2=geography'${predicate.intersectsValue}')`;
-    }
-
-    if (predicate instanceof GeometryPredicate) {
-      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
-      if (prefix) {
-        attribute = `${prefix}/${attribute}`;
-      }
-
-      return `geom.intersects(geometry1=${attribute},geometry2=geometry'${predicate.intersectsValue}')`;
+      let ns = predicate.spatialNamespace;
+      let tp = predicate.spatialType;
+      let fn = predicate.spatialFunction;
+      let vl = predicate.spatialValue;
+      return `${ns}.${fn}(${tp}1=${attribute},${tp}2=${tp}'${vl}')`;
     }
 
     if (predicate instanceof DetailPredicate) {
