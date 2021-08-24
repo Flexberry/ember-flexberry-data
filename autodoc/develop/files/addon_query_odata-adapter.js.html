@@ -166,7 +166,7 @@ import {
 import FilterOperator from &#x27;./filter-operator&#x27;;
 import Information from &#x27;../utils/information&#x27;;
 import getSerializedDateValue from &#x27;../utils/get-serialized-date-value&#x27;;
-import { classify } from &#x27;../utils/string-functions&#x27;;
+import { capitalize, camelize } from &#x27;../utils/string-functions&#x27;;
 
 /**
  * Class of query adapter that translates query object into OData URL.
@@ -411,7 +411,7 @@ export default class ODataAdapter extends BaseAdapter {
       let typeName = Ember.get(type, &#x27;modelName&#x27;);
       let namespace = Ember.get(type, &#x27;namespace&#x27;);
       let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : &#x27;$it&#x27;;
-      let className = classify(typeName).replace(namespace.split(&#x27;.&#x27;).join(&#x27;&#x27;), &#x27;&#x27;);
+      let className = capitalize(camelize(typeName)).replace(namespace.split(&#x27;.&#x27;).join(&#x27;&#x27;), &#x27;&#x27;);
 
       return &#x60;isof(${expression},&#x27;${namespace}.${className}&#x27;)&#x60;;
     }
@@ -563,7 +563,7 @@ export default class ODataAdapter extends BaseAdapter {
           Ember.warn(&#x60;Source type is not specified for the enum &#x27;${meta.type}&#x27; (${modelName}.${predicate.attributePath}).&#x60;,
           false,
           { id: &#x27;ember-flexberry-data-debug.odata-adapter.source-type-is-not-specified-for-enum&#x27; });
-          type = classify(meta.type);
+          type = capitalize(camelize(meta.type));
         }
 
         value = &#x60;${type}&#x27;${predicate.value}&#x27;&#x60;;
