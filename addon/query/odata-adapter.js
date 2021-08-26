@@ -277,7 +277,13 @@ export default class ODataAdapter extends BaseAdapter {
       let fn = predicate.spatialFunction;
       let tp = predicate.spatialType;
       let sp = predicate.spatial;
-      return `${ns}.${fn}(${tp}1=${attribute},${tp}2=${tp}'${sp}')`;
+
+      switch (fn) {
+        case 'intersects':
+          return `${ns}.${fn}(${tp}1=${attribute},${tp}2=${tp}'${sp}')`;
+      }
+
+      throw new Error(`Unsupported '${fn}' spatial function.`);
     }
 
     if (predicate instanceof DetailPredicate) {
