@@ -274,10 +274,10 @@ export default class ODataAdapter extends BaseAdapter {
       }
 
       let ns = predicate.spatialNamespace;
-      let tp = predicate.spatialType;
       let fn = predicate.spatialFunction;
-      let vl = predicate.spatialValue;
-      return `${ns}.${fn}(${tp}1=${attribute},${tp}2=${tp}'${vl}')`;
+      let tp = predicate.spatialType;
+      let sp = predicate.spatial;
+      return `${ns}.${fn}(${tp}1=${attribute},${tp}2=${tp}'${sp}')`;
     }
 
     if (predicate instanceof DetailPredicate) {

@@ -311,8 +311,7 @@ export class SpatialPredicate extends BasePredicate {
     }
 
     this._attributePath = attributePath;
-    this._function = null;
-    this._value = null;
+    this._options = null;
   }
 
   /**
@@ -327,6 +326,18 @@ export class SpatialPredicate extends BasePredicate {
   }
 
   /**
+   * The spatial type value that has to be the second argument of the spatial function,
+   * assuming the attribute is the first argument.
+   *
+   * @property spatial
+   * @type {String}
+   * @public
+   */
+   get spatial() {
+    return this._options.spatial;
+  }
+
+  /**
    * The spatial function to call.
    *
    * @property spatialFunction
@@ -335,18 +346,6 @@ export class SpatialPredicate extends BasePredicate {
    */
   get spatialFunction() {
     return this._function;
-  }
-
-  /**
-   * The spatial value that has to be the second argument of the spatial function,
-   * assuming the attribute is the first argument.
-   *
-   * @property spatialValue
-   * @type {String}
-   * @public
-   */
-  get spatialValue() {
-    return this._value;
   }
 
   /**
@@ -372,16 +371,18 @@ export class SpatialPredicate extends BasePredicate {
   }
 
   /**
-   * Sets the spatial type value that has to intersect with the attribute.
+   * Sets the spatial predicate metadata that has to be used on build the intersection condition with the attribute.
    *
-   * @method contains
-   * @param {String} value The spatial type value that has to intersect with the attribute.
+   * @method intesects
+   * @param {String} spatial The spatial type value that has to intersect with the attribute.
    * @return {Query.SpatialPredicate} Returns this instance.
    * @chainable
    */
-  intersects(value) {
+  intersects(spatial) {
     this._function = 'intersects';
-    this._value = value;
+    this._options = {
+      spatial: spatial,
+    }
     return this;
   }
 
