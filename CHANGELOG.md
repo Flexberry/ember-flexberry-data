@@ -1,6 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- The `distance` method for the `SpatialPredicate` predicate with implementation for the `ODataAdapter` adapter.
+
+### Changed
+- The `GeographyPredicate` and `GeometryPredicate` predicates are the `SpatialPredicate` predicate subtypes. 
 
 ## [2.6.0] - 2021-07-02
 ### Added

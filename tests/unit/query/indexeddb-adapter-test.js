@@ -1639,6 +1639,28 @@ function getJoinsPerformanceTestData(count, assert) {
   return data;
 }
 
+test('adapter | indexeddb | geography predicate | distance', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Coordinates: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+      { id: 2, Coordinates: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+      { id: 3, Coordinates: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' }
+    ]
+  };
+
+  let gp = new GeographyPredicate('Coordinates').
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0);
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(gp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 3);
+  });
+});
+
 test('adapter | indexeddb | geography predicate | intersects', (assert) => {
   let data = {
     employee: [
@@ -1650,6 +1672,28 @@ test('adapter | indexeddb | geography predicate | intersects', (assert) => {
 
   let gp = new GeographyPredicate('Coordinates').
   intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(gp);
+
+  executeTest(data, builder.build(), assert, (result) => {
+    assert.ok(result.data);
+    assert.equal(result.data.length, 3);
+    assert.equal(result.data[0].id, 1);
+    assert.equal(result.data[1].id, 2);
+    assert.equal(result.data[2].id, 3);
+  });
+});
+
+test('adapter | indexeddb | geometry predicate | distance', (assert) => {
+  let data = {
+    employee: [
+      { id: 1, Coordinates: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+      { id: 2, Coordinates: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+      { id: 3, Coordinates: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' }
+    ]
+  };
+
+  let gp = new GeometryPredicate('Coordinates').
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0);
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest).where(gp);
 
   executeTest(data, builder.build(), assert, (result) => {

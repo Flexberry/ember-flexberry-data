@@ -495,7 +495,20 @@ test('adapter | odata | select | master fields', function (assert) {
     );
 });
 
-test('adapter | odata | geography predicate | intersect', function (assert) {
+test('adapter | odata | geography predicate | distance', function (assert) {
+  // Arrange.
+  let gp = new GeographyPredicate('coordinates').
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0);
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(gp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=geo.distance(geography1=Coordinates,geography2=geography'SRID=12345;` +
+       `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') eq 0&$select=CustomerID`);
+});
+
+test('adapter | odata | geography predicate | intersects', function (assert) {
   // Arrange.
   let gp = new GeographyPredicate('coordinates').
   intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
@@ -508,7 +521,21 @@ test('adapter | odata | geography predicate | intersect', function (assert) {
        `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))')&$select=CustomerID`);
 });
 
-test('adapter | odata | geography predicate | inside complex', function (assert) {
+test('adapter | odata | geography predicate | inside complex | distance', function (assert) {
+  // Arrange.
+  let gp = new GeographyPredicate('coordinates').
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0);
+  let sp = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(gp.and(sp));
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=geo.distance(geography1=Coordinates,geography2=geography'SRID=12345;` +
+  `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') eq 0 and FirstName eq 'Vasya'&$select=CustomerID`);
+});
+
+test('adapter | odata | geography predicate | inside complex | intersects', function (assert) {
   // Arrange.
   let gp = new GeographyPredicate('coordinates').
   intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
@@ -522,10 +549,23 @@ test('adapter | odata | geography predicate | inside complex', function (assert)
   `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') and FirstName eq 'Vasya'&$select=CustomerID`);
 });
 
-test('adapter | odata | detail predicate | all | with geography predicate', function (assert) {
+test('adapter | odata | detail predicate | all | with geography predicate | distance ', function (assert) {
   // Arrange.
   let dp = new DetailPredicate('userVotes').all(new GeographyPredicate('applicationUser.coordinates').
-    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:geo.distance(geography1=f/ApplicationUser/Coordinates,` +
+    `geography2=geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') eq 0)&$select=__PrimaryKey`);
+});
+
+test('adapter | odata | detail predicate | all | with geography predicate | intersects ', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').all(new GeographyPredicate('applicationUser.coordinates').
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
 
   // Act.
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
@@ -535,20 +575,46 @@ test('adapter | odata | detail predicate | all | with geography predicate', func
     `geography2=geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
 });
 
-test('adapter | odata | detail predicate | any | with geography predicate', function (assert) {
+test('adapter | odata | detail predicate | any | with geography predicate | distance', function (assert) {
   // Arrange.
   let dp = new DetailPredicate('userVotes').any(new GeographyPredicate('applicationUser.coordinates').
-    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:geo.distance(geography1=f/ApplicationUser/Coordinates,` +
+    `geography2=geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') eq 0)&$select=__PrimaryKey`);
+});
+
+test('adapter | odata | detail predicate | any | with geography predicate | intersects', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').any(new GeographyPredicate('applicationUser.coordinates').
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
 
   // Act.
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
   runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:geo.intersects(geography1=f/ApplicationUser/Coordinates,` +
-     `geography2=geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
+    `geography2=geography'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
 });
 
-test('adapter | odata | geometry predicate | intersect', function (assert) {
+test('adapter | odata | geometry predicate | distance', function (assert) {
+  // Arrange.
+  let gp = new GeometryPredicate('coordinates').
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0);
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(gp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=geom.distance(geometry1=Coordinates,geometry2=geometry'SRID=12345;` +
+       `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') eq 0&$select=CustomerID`);
+});
+
+test('adapter | odata | geometry predicate | intersects', function (assert) {
   // Arrange.
   let gp = new GeometryPredicate('coordinates').
   intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
@@ -561,7 +627,21 @@ test('adapter | odata | geometry predicate | intersect', function (assert) {
        `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))')&$select=CustomerID`);
 });
 
-test('adapter | odata | geometry predicate | inside complex', function (assert) {
+test('adapter | odata | geometry predicate | inside complex | distance', function (assert) {
+  // Arrange.
+  let gp = new GeometryPredicate('coordinates').
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0);
+  let sp = new SimplePredicate('firstName', FilterOperator.Eq, 'Vasya');
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(gp.and(sp));
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=geom.distance(geometry1=Coordinates,geometry2=geometry'SRID=12345;` +
+  `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') eq 0 and FirstName eq 'Vasya'&$select=CustomerID`);
+});
+
+test('adapter | odata | geometry predicate | inside complex | intersects', function (assert) {
   // Arrange.
   let gp = new GeometryPredicate('coordinates').
   intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
@@ -575,10 +655,23 @@ test('adapter | odata | geometry predicate | inside complex', function (assert) 
   `POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') and FirstName eq 'Vasya'&$select=CustomerID`);
 });
 
-test('adapter | odata | detail predicate | all | with geometry predicate', function (assert) {
+test('adapter | odata | detail predicate | all | with geometry predicate | distance', function (assert) {
   // Arrange.
   let dp = new DetailPredicate('userVotes').all(new GeometryPredicate('applicationUser.coordinates').
-    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/all(f:geom.distance(geometry1=f/ApplicationUser/Coordinates,` +
+    `geometry2=geometry'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') eq 0)&$select=__PrimaryKey`);
+});
+
+test('adapter | odata | detail predicate | all | with geometry predicate | intersects', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').all(new GeometryPredicate('applicationUser.coordinates').
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
 
   // Act.
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
@@ -588,17 +681,30 @@ test('adapter | odata | detail predicate | all | with geometry predicate', funct
     `geometry2=geometry'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
 });
 
-test('adapter | odata | detail predicate | any | with geometry predicate', function (assert) {
+test('adapter | odata | detail predicate | any | with geometry predicate | distance', function (assert) {
   // Arrange.
   let dp = new DetailPredicate('userVotes').any(new GeometryPredicate('applicationUser.coordinates').
-    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0));
+
+  // Act.
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
+
+  // Act && Assert.
+  runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:geom.distance(geometry1=f/ApplicationUser/Coordinates,` +
+    `geometry2=geometry'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))') eq 0)&$select=__PrimaryKey`);
+});
+
+test('adapter | odata | detail predicate | any | with geometry predicate | intersects', function (assert) {
+  // Arrange.
+  let dp = new DetailPredicate('userVotes').any(new GeometryPredicate('applicationUser.coordinates').
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'));
 
   // Act.
   let builder = new QueryBuilder(store, 'ember-flexberry-dummy-comment').where(dp);
 
   // Act && Assert.
   runTest(assert, builder, 'EmberFlexberryDummyComments', `$filter=UserVotes/any(f:geom.intersects(geometry1=f/ApplicationUser/Coordinates,` +
-     `geometry2=geometry'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
+    `geometry2=geometry'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))'))&$select=__PrimaryKey`);
 });
 
 test('adapter | odata | not predicate | with simple predicate', function (assert) {
@@ -627,7 +733,20 @@ test('adapter | odata | not predicate | with complex predicate', function (asser
   runTest(assert, builder, 'Customers', `$filter=not(FirstName eq 'Vasya' or FirstName eq 'Petya')&$select=CustomerID`);
 });
 
-test('adapter | odata | not predicate | with geography predicate', function (assert) {
+test('adapter | odata | not predicate | with geography predicate | distance', function (assert) {
+  // Arrange.
+  const POLYGON = 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))';
+  let innerPredicate = new GeographyPredicate('coordinates').distance(POLYGON, FilterOperator.Eq, 0);
+  let np = new NotPredicate(innerPredicate);
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(np);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=not(geo.distance(geography1=Coordinates,geography2=geography'${POLYGON}') eq 0)&$select=CustomerID`);
+});
+
+test('adapter | odata | not predicate | with geography predicate | intersects', function (assert) {
   // Arrange.
   const POLYGON = 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))';
   let innerPredicate = new GeographyPredicate('coordinates').intersects(POLYGON);
@@ -640,7 +759,20 @@ test('adapter | odata | not predicate | with geography predicate', function (ass
   runTest(assert, builder, 'Customers', `$filter=not(geo.intersects(geography1=Coordinates,geography2=geography'${POLYGON}'))&$select=CustomerID`);
 });
 
-test('adapter | odata | not predicate | with geometry predicate', function (assert) {
+test('adapter | odata | not predicate | with geometry predicate | distance', function (assert) {
+  // Arrange.
+  const POLYGON = 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))';
+  let innerPredicate = new GeometryPredicate('coordinates').distance(POLYGON, FilterOperator.Eq, 0);
+  let np = new NotPredicate(innerPredicate);
+
+  // Act.
+  let builder = new QueryBuilder(store, 'customer').where(np);
+
+  // Act && Assert.
+  runTest(assert, builder, 'Customers', `$filter=not(geom.distance(geometry1=Coordinates,geometry2=geometry'${POLYGON}') eq 0)&$select=CustomerID`);
+});
+
+test('adapter | odata | not predicate | with geometry predicate | intersects', function (assert) {
   // Arrange.
   const POLYGON = 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))';
   let innerPredicate = new GeometryPredicate('coordinates').intersects(POLYGON);

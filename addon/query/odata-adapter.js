@@ -278,9 +278,15 @@ export default class ODataAdapter extends BaseAdapter {
       let tp = predicate.spatialType;
       let sp = predicate.spatial;
 
+      let expression = `${ns}.${fn}(${tp}1=${attribute},${tp}2=${tp}'${sp}')`;
       switch (fn) {
+        case 'distance': {
+          let operator = this._getODataFilterOperator(predicate.operator);
+          let value = predicate.value;
+          return `${expression} ${operator} ${value}`;
+        }
         case 'intersects':
-          return `${ns}.${fn}(${tp}1=${attribute},${tp}2=${tp}'${sp}')`;
+          return expression;
       }
 
       throw new Error(`Unsupported '${fn}' spatial function.`);

@@ -326,6 +326,17 @@ export class SpatialPredicate extends BasePredicate {
   }
 
   /**
+   * The filter operator.
+   *
+   * @property operator
+   * @type Query.FilterOperator
+   * @public
+   */
+   get operator() {
+    return this._options.operator;
+  }
+
+  /**
    * The spatial type value that has to be the second argument of the spatial function,
    * assuming the attribute is the first argument.
    *
@@ -368,6 +379,37 @@ export class SpatialPredicate extends BasePredicate {
    */
   get spatialType() {
       throw this._getAbstractPropertyError('spatialType');
+  }
+
+  /**
+   * The value for filtering.
+   *
+   * @property value
+   * @type String|Number
+   * @public
+   */
+   get value() {
+    return this._options.value;
+  }
+
+  /**
+   * Sets the spatial predicate metadata that has to be used on build the distance condition with the attribute.
+   * 
+   * @method distance
+   * @param {String} spatial The spatial type value that has to have a distance from the attribute.
+   * @param operator {Query.FilterOperator|String} The filter operator.
+   * @param value {String|Number} The value for filtering.
+   * @return {Query.SpatialPredicate} Returns this instance.
+   * @chainable
+   */
+  distance(spatial, operator, value) {
+    this._function = 'distance';
+    this._options = {
+      spatial: spatial,
+      operator: FilterOperator.tryCreate(operator),
+      value: value,
+    }
+    return this;
   }
 
   /**
