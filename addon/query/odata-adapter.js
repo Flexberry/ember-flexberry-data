@@ -19,6 +19,7 @@ import FilterOperator from './filter-operator';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
 import { capitalize, camelize } from '../utils/string-functions';
+import { ConstParam, AttributeParam } from './parameter';
 
 /**
  * Class of query adapter that translates query object into OData URL.
@@ -387,48 +388,108 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataSimplePredicate(predicate, modelName, prefix) {
-    let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+    // predicate.attributePath - attribute or AttributeParam or ConstParam.
+    // predicate.value - const or AttributeParam or ConstParam.
+
+    let attributePath = predicate.attributePath;
+    let predicateValue = predicate.value;
+    let attributeObject = null;
+    let valueObject = null;
+    let isFirstParameterAttribute = !(attributePath instanceof ConstParam);
+    let isSecondParameterAttribute = predicateValue instanceof AttributeParam;
+
+    if (isFirstParameterAttribute) {
+      attributeObject = this._processAttributeForODataSimplePredicate(predicate, modelName, prefix, attributePath);
+    }
+
+    if (isSecondParameterAttribute) {
+      valueObject = this._processAttributeForODataSimplePredicate(predicate, modelName, prefix, predicateValue);
+    }
+
+    if (!isFirstParameterAttribute) {
+      attributeObject = this._processConstForODataSimplePredicate(
+                            predicate,
+                            modelName,
+                            attributePath,
+                            isSecondParameterAttribute ? valueObject.attributePath : null);
+    }
+
+    if (!isSecondParameterAttribute) {
+      valueObject = this._processConstForODataSimplePredicate(
+                            predicate, 
+                            modelName, 
+                            predicateValue, 
+                            isFirstParameterAttribute ? attributeObject.attributePath : null);
+    }
+
+    let operator = this._getODataFilterOperator(predicate.operator);
+    return `${attributeObject.value} ${operator} ${valueObject.value}`;
+  }
+
+  _processAttributeForODataSimplePredicate(predicate, modelName, prefix, attributePathParameter)
+  {
+    let realAttributePath = attributePathParameter instanceof AttributeParam
+                            ? attributePathParameter.attributePath
+                            : attributePathParameter;
+    let attribute = this._getODataAttributeName(modelName, realAttributePath);
     if (prefix) {
       attribute = `${prefix}/${attribute}`;
     }
 
-    if (predicate.timeless) {
+    if (predicate.timeless) { // TODO: check for timeless.
       attribute = `date(${attribute})`;
     }
 
+    return { 
+      value: attribute,
+      attributePath: realAttributePath
+    };
+  }
+
+  _processConstForODataSimplePredicate(predicate, modelName, predicateValue, predicateAttribute)
+  {
     let value;
-    if (predicate.value === null) {
+    let realPredicateValue = predicateValue instanceof ConstParam
+                              ? predicateValue.constValue
+                              : predicateValue;
+
+    if (realPredicateValue === null) {
       value = 'null';
+    } else if (predicateAttribute === null) {
+      value = this._processConstForODataSimplePredicateByType(predicate, realPredicateValue, typeof realPredicateValue);
     } else {
-      let meta = this._info.getMeta(modelName, predicate.attributePath);
+      let meta = this._info.getMeta(modelName, predicateAttribute);
       if (meta.isKey) {
         if ((meta.keyType === 'guid') || (meta.keyType === 'number')) {
-          value = predicate.value;
+          value = realPredicateValue;
         } else if (meta.keyType === 'string') {
-          value = `'${predicate.value}'`;
+          value = `'${realPredicateValue}'`;
         } else {
           throw new Error(`Unsupported key type '${meta.keyType}'.`);
         }
       } else if (meta.isEnum) {
         let type = meta.sourceType;
         if (!type) {
-          Ember.warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`,
+          Ember.warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicateAttribute}).`,
           false,
           { id: 'ember-flexberry-data-debug.odata-adapter.source-type-is-not-specified-for-enum' });
           type = capitalize(camelize(meta.type));
         }
 
-        value = `${type}'${predicate.value}'`;
-      } else if (meta.type === 'string') {
-        value = `'${String(predicate.value).replace(/'/g, `''`)}'`;
-      } else if (meta.type === 'date') {
-        value = getSerializedDateValue.call(this._store, predicate.value, predicate.timeless);
+        value = `${type}'${realPredicateValue}'`;
       } else {
-        value = predicate.value;
+        value = this._processConstForODataSimplePredicateByType(predicate, realPredicateValue, meta.type);
       }
     }
 
-    let operator = this._getODataFilterOperator(predicate.operator);
-    return `${attribute} ${operator} ${value}`;
+    return { value: value };
+  }
+
+  _processConstForODataSimplePredicateByType(predicate, predicateValue, valueType){
+    return valueType === 'string'
+            ? `'${String(predicateValue).replace(/'/g, `''`)}'`
+            : (valueType === 'date'
+                ? getSerializedDateValue.call(this._store, predicateValue, predicate.timeless) // TODO: timeless?
+                : predicateValue);
   }
 }
