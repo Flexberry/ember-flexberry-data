@@ -26,6 +26,7 @@ const store = app.__container__.lookup('service:store');
 
 module('query');
 
+// TODO: add tests on master fields, on master ids.
 test('adapter | odata | id', function (assert) {
   // Arrange.
   let builder = new QueryBuilder(store, 'customer').byId(42);
@@ -69,11 +70,11 @@ test('adapter | odata | simple predicate | eq', function (assert) {
 
 test('adapter | odata | simple predicate | two attributes', function (assert) {
   // Arrange.
-  let resultString = `$filter=FirstName eq Email&$select=CustomerID`;
+  let resultString = `$filter=FirstName eq LastName&$select=CustomerID`;
   let builder = 
-    new QueryBuilder(store, 'customer').where(new SimplePredicate(new AttributeParam('firstName'), FilterOperator.Eq, new AttributeParam('email')));
+    new QueryBuilder(store, 'customer').where(new SimplePredicate(new AttributeParam('firstName'), FilterOperator.Eq, new AttributeParam('lastName')));
   let builder2 = 
-    new QueryBuilder(store, 'customer').where(new SimplePredicate('firstName', FilterOperator.Eq, new AttributeParam('email')));
+    new QueryBuilder(store, 'customer').where(new SimplePredicate('firstName', FilterOperator.Eq, new AttributeParam('lastName')));
 
   // Act && Assert.
   runTest(assert, builder, 'Customers', resultString);
@@ -321,14 +322,14 @@ test('adapter | odata | date predicate | eq', function (assert) {
   runTest(assert, builder1Attribute, 'Customers', resultString1);
   runTest(assert, builder1AttributeConst, 'Customers', resultString1);
   runTest(assert, builder2, 'Customers', resultString2);
-  runTest(assert, builder2Const, 'Customers', resultString1);
-  runTest(assert, builder2Attribute, 'Customers', resultString1);
-  runTest(assert, builder2AttributeConst, 'Customers', resultString1);
+  runTest(assert, builder2Const, 'Customers', resultString2);
+  runTest(assert, builder2Attribute, 'Customers', resultString2);
+  runTest(assert, builder2AttributeConst, 'Customers', resultString2);
 });
 
 test('adapter | odata | date predicate | two attributes', function (assert) {
   // Arrange.
-  let resultString1 = `$filter=RegDate eq RegDate &$select=CustomerID`;
+  let resultString1 = `$filter=RegDate eq RegDate&$select=CustomerID`;
   let resultString2 = `$filter=date(RegDate) eq date(RegDate)&$select=CustomerID`;
 
   let builder = 

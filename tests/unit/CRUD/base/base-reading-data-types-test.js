@@ -6,7 +6,7 @@ import { SimplePredicate, ComplexPredicate, DatePredicate } from 'ember-flexberr
 import { ConstParam, AttributeParam } from 'ember-flexberry-data/query/parameter';
 
 export default function readingDataTypes(store, assert, App) {
-  assert.expect(13);
+  assert.expect(41);
   let done = assert.async();
   let vasyaRecordsCount = 2;
 
@@ -107,11 +107,11 @@ export default function readingDataTypes(store, assert, App) {
     // String. AttributeParam and AttributeParam.
     .then(() => {
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Eq, new AttributeParam('email')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Eq, new AttributeParam('eMail')));
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) => {
-        assert.ok(data.every(item => item.get('name') === item.get('email')), 'Reading String type | AttributeParam and AttributeParam | Data');
+        assert.ok(data.every(item => item.get('name') === item.get('eMail')), 'Reading String type | AttributeParam and AttributeParam | Data');
         assert.equal(data.get('length'), 1, 'Reading String type | AttributeParam and AttributeParam | Length');
       });
     })
@@ -142,11 +142,11 @@ export default function readingDataTypes(store, assert, App) {
     // String. Attribute and AttributeParam.
     .then(() => {
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate('name', FilterOperator.Eq, new AttributeParam('email')));
+        .where(new SimplePredicate('name', FilterOperator.Eq, new AttributeParam('eMail')));
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) => {
-        assert.ok(data.every(item => item.get('name') === item.get('email')), 'Reading String type | Attribute and AttributeParam | Data');
+        assert.ok(data.every(item => item.get('name') === item.get('eMail')), 'Reading String type | Attribute and AttributeParam | Data');
         assert.equal(data.get('length'), 1, 'Reading String type | Attribute and AttributeParam | Length');
       });
     })
@@ -170,7 +170,7 @@ export default function readingDataTypes(store, assert, App) {
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) =>
-        assert.equal(data.get('length'), 2, `Reading Boolean type | Attribute and Const | Length`)
+        assert.equal(data.get('length'), 3, `Reading Boolean type | Attribute and Const | Length`)
       );
     })
 
@@ -181,7 +181,7 @@ export default function readingDataTypes(store, assert, App) {
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) =>
-        assert.equal(data.get('length'), 2, `Reading Boolean type | Attribute and ConstParam | Length`)
+        assert.equal(data.get('length'), 3, `Reading Boolean type | Attribute and ConstParam | Length`)
       );
     })
 
@@ -192,7 +192,7 @@ export default function readingDataTypes(store, assert, App) {
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) =>
-        assert.equal(data.get('length'), 1, `Reading Boolean type | AttributeParam and AttributeParam | Length`)
+        assert.equal(data.get('length'), 2, `Reading Boolean type | AttributeParam and AttributeParam | Length`)
       );
     })
 
@@ -250,7 +250,7 @@ export default function readingDataTypes(store, assert, App) {
 
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) => {
-        assert.equal(data.get('length') > 0, `Reading Date type as JavaScript date | AttributeParam and AttributeParam | Length`);
+        assert.ok(data.get('length') > 0, `Reading Date type as JavaScript date | AttributeParam and AttributeParam | Length`);
       });
     })
 

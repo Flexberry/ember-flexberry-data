@@ -488,7 +488,7 @@ export default class ODataAdapter extends BaseAdapter {
   _processConstForODataSimplePredicateByType(predicate, predicateValue, valueType){
     return valueType === 'string'
             ? `'${String(predicateValue).replace(/'/g, `''`)}'`
-            : (valueType === 'date'
+            : ((valueType === 'date' || (valueType === 'object' && predicateValue instanceof Date))
                 ? getSerializedDateValue.call(this._store, predicateValue, predicate.timeless) // TODO: timeless?
                 : predicateValue);
   }

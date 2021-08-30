@@ -5,7 +5,7 @@ import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
 import { ConstParam, AttributeParam } from 'ember-flexberry-data/query/parameter';
 
 export default function readingPredicatesSimplePredicatesOperators(store, assert) {
-  assert.expect(24);
+  assert.expect(72);
   let done = assert.async();
 
   Ember.run(() => {
@@ -53,16 +53,16 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
     // Eq among AttributeParams.
     .then(() => {
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new AttributeParam('name'), '==', new AttributeParam('email'));
+        .where(new AttributeParam('name'), '==', new AttributeParam('eMail'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Eq, new AttributeParam('email')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Eq, new AttributeParam('eMail')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Eq among AttributeParams with operator | Data', 'Eq among AttributeParams with operator | Length'],
           ['Eq among AttributeParams with simple predicate | Data', 'Eq among AttributeParams with simple predicate | Length']
         ],
         (data, messages) => {
-          assert.ok(data.every(item => item.get('name') === item.get('email')), messages[0]);
+          assert.ok(data.every(item => item.get('name') === item.get('eMail')), messages[0]);
           assert.equal(data.get('length'), 1, messages[1]);
         }
       );
@@ -81,7 +81,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
         ],
         (data, messages) => {
           assert.ok(data.every(item => item.get('karma') !== 5), messages[0]);
-          assert.equal(data.get('length'), 2, messages[1]);
+          assert.equal(data.get('length'), 3, messages[1]);
         }
       );
     })
@@ -99,7 +99,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
         ],
         (data, messages) => {
           assert.ok(data.every(item => item.get('karma') !== 5), messages[0]);
-          assert.equal(data.get('length'), 2, messages[1]);
+          assert.equal(data.get('length'), 3, messages[1]);
         }
       );
     })
@@ -107,16 +107,16 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
     // Neq among AttributeParams.
     .then(() => {
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new AttributeParam('name'), '!=', new AttributeParam('email'));
+        .where(new AttributeParam('name'), '!=', new AttributeParam('eMail'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Neq, new AttributeParam('email')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Neq, new AttributeParam('eMail')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Neq with operator | Data', 'Neq with operator | Length'],
           ['Neq with simple predicate | Data', 'Neq with simple predicate | Length']
         ],
         (data, messages) => {
-          assert.ok(data.every(item => item.get('name') !== item.get('email')), messages[0]);
+          assert.ok(data.every(item => item.get('name') !== item.get('eMail')), messages[0]);
           assert.equal(data.get('length'), 4, messages[1]);
         }
       );
@@ -135,7 +135,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
         ],
         (data, messages) => {
           assert.ok(data.every(item => item.get('karma') > 4), messages[0]);
-          assert.equal(data.get('length'), 3, messages[1]);
+          assert.equal(data.get('length'), 4, messages[1]);
         }
       );
     })
@@ -143,7 +143,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
     // Ge among AttributeParam and ConstParam.
     .then(() => {
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new AttributeParam('name'), '>', new ConstParam('Kolya'));
+        .where(new AttributeParam('name'), '>', new ConstParam('Andrey'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Ge, new ConstParam('Andrey')));
 
@@ -152,8 +152,8 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
           ['Ge among AttributeParam and ConstParam with simple predicate | Data', 'Ge among AttributeParam and ConstParam with simple predicate | Length'],
         ],
         (data, messages) => {
-          assert.ok(data.every(item => item.get('name') > 'Kolya'), messages[0]);
-          assert.equal(data.get('length'), 3, messages[1]);
+          assert.ok(data.every(item => item.get('name') > 'Andrey'), messages[0]);
+          assert.equal(data.get('length'), 4, messages[1]);
         }
       );
     })
@@ -161,16 +161,16 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
     // Ge among AttributeParams.
     .then(() => {
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new AttributeParam('name'), '>', new AttributeParam('email'));
+        .where(new AttributeParam('name'), '>', new AttributeParam('eMail'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Ge, new AttributeParam('email')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Ge, new AttributeParam('eMail')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Ge among AttributeParams with operator | Data', 'Ge among AttributeParams with operator | Length'],
           ['Ge among AttributeParams with simple predicate | Data', 'Ge among AttributeParams with simple predicate | Length'],
         ],
         (data, messages) => {
-          assert.ok(data.every(item => item.get('name') > item.get('email')), messages[0]);
+          assert.ok(data.every(item => item.get('name') > item.get('eMail')), messages[0]);
           assert.equal(data.get('length'), 4, messages[1]);
         }
       );
@@ -189,7 +189,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
         ],
         (data, messages) => {
           assert.ok(data.every(item => item.get('karma') >= 5), messages[0]);
-          assert.equal(data.get('length'), 3, messages[1]);
+          assert.equal(data.get('length'), 4, messages[1]);
         }
       );
     })
@@ -199,14 +199,14 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new AttributeParam('name'), '>=', new ConstParam('Kolya'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Geq, new ConstParam('Andrey')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Geq, new ConstParam('Kolya')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Geq among AttributeParam and ConstParam with operator | Data', 'Geq among AttributeParam and ConstParam with operator | Length'],
           ['Geq among AttributeParam and ConstParam with simple predicate | Data', 'Geq among AttributeParam and ConstParam with simple predicate | Length'],
         ],
         (data, messages) => {
-          assert.ok(data.every(item => item.get('name') > 'Kolya'), messages[0]);
+          assert.ok(data.every(item => item.get('name') >= 'Kolya'), messages[0]);
           assert.equal(data.get('length'), 4, messages[1]);
         }
       );
@@ -215,16 +215,16 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
     // Geq among AttributeParams.
     .then(() => {
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new AttributeParam('name'), '>=', new AttributeParam('email'));
+        .where(new AttributeParam('name'), '>=', new AttributeParam('eMail'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Geq, new AttributeParam('email')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Geq, new AttributeParam('eMail')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Geq among AttributeParams with operator | Data', 'Geq among AttributeParams with operator | Length'],
           ['Geq among AttributeParams with simple predicate | Data', 'Geq among AttributeParams with simple predicate | Length'],
         ],
         (data, messages) => {
-          assert.ok(data.every(item => item.get('name') >= item.get('email')), messages[0]);
+          assert.ok(data.every(item => item.get('name') >= item.get('eMail')), messages[0]);
           assert.equal(data.get('length'), 5, messages[1]);
         }
       );
@@ -253,7 +253,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new AttributeParam('name'), '<', new ConstParam('Kolya'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Le, new ConstParam('Andrey')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Le, new ConstParam('Kolya')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Le among AttributeParam and ConstParam with operator | Data', 'Le among AttributeParam and ConstParam with operator | Length'],
@@ -269,16 +269,16 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
     // Le among AttributeParams.
     .then(() => {
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new AttributeParam('name'), '<', new AttributeParam('email'));
+        .where(new AttributeParam('name'), '<', new AttributeParam('eMail'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Le, new AttributeParam('email')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Le, new AttributeParam('eMail')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Le among AttributeParams with operator | Data', 'Le among AttributeParams with operator | Length'],
           ['Le among AttributeParams with simple predicate | Data', 'Le among AttributeParams with simple predicate | Length'],
         ],
         (data, messages) => {
-          assert.ok(data.every(item => item.get('name') < item.get('email')), messages[0]);
+          assert.ok(data.every(item => item.get('name') < item.get('eMail')), messages[0]);
           assert.equal(data.get('length'), 0, messages[1]);
         }
       );
@@ -307,7 +307,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new AttributeParam('name'), '<=', new ConstParam('Kolya'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Leq, new ConstParam('Andrey')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Leq, new ConstParam('Kolya')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Leq among AttributeParam and ConstParam with operator | Data', 'Leq among AttributeParam and ConstParam with operator | Length'],
@@ -323,16 +323,16 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
     // Leq among AttributeParams.
     .then(() => {
       builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new AttributeParam('name'), '<=', new AttributeParam('email'));
+        .where(new AttributeParam('name'), '<=', new AttributeParam('eMail'));
       builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
-        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Leq, new AttributeParam('email')));
+        .where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Leq, new AttributeParam('eMail')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Leq among AttributeParams with operator | Data', 'Leq among AttributeParams with operator | Length'],
           ['Leq among AttributeParams with simple predicate | Data', 'Leq among AttributeParams with simple predicate | Length'],
         ],
         (data, messages) => {
-          assert.ok(data.every(item => item.get('name') <= item.get('email')), messages[0]);
+          assert.ok(data.every(item => item.get('name') <= item.get('eMail')), messages[0]);
           assert.equal(data.get('length'), 1, messages[1]);
         }
       );
