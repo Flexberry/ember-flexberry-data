@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.6.1] - 2021-08-31
+### Added
+- Changes from [`2.6.1`](#261---2021-08-24) version.
+
 ## [2.6.1] - 2021-08-24
 ### Fixed
 - `classify` doesn't work in odata-adapter. Replace with two functions `camelize` and `capitalize`.
