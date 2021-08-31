@@ -232,7 +232,7 @@ if (config.APP.testODataService) {
     });
   });
 
-  test('sync up with server error', function(assert) {
+  skip('sync up with server error', function(assert) {
     runTest(App, 2, assert, (store, syncer, done) => {
       // Not cast value and throw error.
       store.modelFor('ember-flexberry-dummy-application-user').reopen({
