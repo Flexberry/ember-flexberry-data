@@ -19,7 +19,7 @@ import {
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
-import { classify } from '../utils/string-functions';
+import { capitalize, camelize } from '../utils/string-functions';
 
 /**
  * Class of query adapter that translates query object into OData URL.
@@ -263,7 +263,7 @@ export default class ODataAdapter extends BaseAdapter {
       let typeName = get(type, 'modelName');
       let namespace = get(type, 'namespace');
       let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : '$it';
-      let className = classify(typeName).replace(namespace.split('.').join(''), '');
+      let className = capitalize(camelize(typeName)).replace(namespace.split('.').join(''), '');
 
       return `isof(${expression},'${namespace}.${className}')`;
     }
@@ -415,7 +415,7 @@ export default class ODataAdapter extends BaseAdapter {
           warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`,
           false,
           { id: 'ember-flexberry-data-debug.odata-adapter.source-type-is-not-specified-for-enum' });
-          type = classify(meta.type);
+          type = capitalize(camelize(meta.type));
         }
 
         value = `${type}'${predicate.value}'`;

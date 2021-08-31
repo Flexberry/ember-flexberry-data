@@ -222,7 +222,17 @@ if (config.APP.testODataService) {
     });
   });
 
-  skip('sync up with server error', function(assert) {
+  test('sync without data to sync', function(assert) {
+    runTest(App, 1, assert, (store, syncer, done) => {
+      syncer.get('auditEnabled', false);
+      store.get('offlineGlobals').setOnlineAvailable(true);
+      return syncer.syncUp().then((result) => {
+        assert.equal(result, undefined, 'No operation was executed and promise was resolved.');
+      }).finally(done);;
+    });
+  });
+
+  test('sync up with server error', function(assert) {
     runTest(App, 2, assert, (store, syncer, done) => {
       // Not cast value and throw error.
       store.modelFor('ember-flexberry-dummy-application-user').reopen({
