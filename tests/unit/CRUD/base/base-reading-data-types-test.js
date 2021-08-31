@@ -6,7 +6,7 @@ import { SimplePredicate, ComplexPredicate, DatePredicate } from 'ember-flexberr
 import { ConstParam, AttributeParam } from 'ember-flexberry-data/query/parameter';
 
 export default function readingDataTypes(store, assert, App) {
-  assert.expect(41);
+  assert.expect(61);
   let done = assert.async();
   let vasyaRecordsCount = 2;
 
@@ -82,7 +82,7 @@ export default function readingDataTypes(store, assert, App) {
       });
     })
 
-    // String. ConstParam with not equal Const.
+    // String. ConstParam with not equal ConstParam.
     .then(() => {
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
         .where(new SimplePredicate(new ConstParam('name'), FilterOperator.Eq, new ConstParam('Vasya')));
@@ -90,6 +90,17 @@ export default function readingDataTypes(store, assert, App) {
       return store.query('ember-flexberry-dummy-application-user', builder.build())
       .then((data) => {
         assert.ok(data.get('length') == 0, 'Reading String type | ConstParam with not equal ConstParam | Length');
+      });
+    })
+
+    // String. ConstParam with empty ConstParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new SimplePredicate(new ConstParam('name'), FilterOperator.Eq, new ConstParam('')));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.ok(data.get('length') == 0, 'Reading String type | ConstParam with empty ConstParam | Length');
       });
     })
 
@@ -185,6 +196,39 @@ export default function readingDataTypes(store, assert, App) {
       );
     })
 
+    // Boolean. ConstParam and AttributeParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new SimplePredicate(new ConstParam(true), FilterOperator.Eq, new AttributeParam('activated')));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) =>
+        assert.equal(data.get('length'), 3, `Reading Boolean type | ConstParam and AttributeParam | Length`)
+      );
+    })
+
+    // Boolean. ConstParam and equal ConstParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new SimplePredicate(new ConstParam(true), FilterOperator.Eq, new ConstParam(true)));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) =>
+        assert.equal(data.get('length'), 4, `Reading Boolean type | ConstParam and equal ConstParam | Length`)
+      );
+    })
+
+    // Boolean. ConstParam and not equal ConstParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new SimplePredicate(new ConstParam(false), FilterOperator.Eq, new ConstParam(true)));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) =>
+        assert.equal(data.get('length'), 0, `Reading Boolean type | ConstParam and not equal ConstParam | Length`)
+      );
+    })
+
     // Boolean. AttributeParam and AttributeParam.
     .then(() => {
       let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
@@ -217,6 +261,29 @@ export default function readingDataTypes(store, assert, App) {
       .then((data) => {
         assert.equal(data.get('length'), 1, `Reading Decimal type | Attribute and ConstParam | Length`);
         assert.equal(data.get('firstObject').get('name'), 'Kolya', `Reading Decimal type | Attribute and ConstParam | Data`);
+      });
+    })
+
+    // Decimal. ConstParam and AttributeParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new SimplePredicate(new ConstParam(10.7), FilterOperator.Eq, new AttributeParam('karma')));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.equal(data.get('length'), 1, `Reading Decimal type | ConstParam and AttributeParam | Length`);
+        assert.equal(data.get('firstObject').get('name'), 'Kolya', `Reading Decimal type | ConstParam and AttributeParam | Data`);
+      });
+    })
+
+    // Decimal. ConstParam and ConstParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new SimplePredicate(new ConstParam(10.7), FilterOperator.Eq, new ConstParam(10.7)));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.equal(data.get('length'), 4, `Reading Decimal type | ConstParam and ConstParam | Length`);
       });
     })
 
@@ -278,6 +345,14 @@ export default function readingDataTypes(store, assert, App) {
       });
     })
 
+    // Date as JavaScript Date. ConstParam Date and ConstParam Date.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new SimplePredicate(new ConstParam(new Date(2021, 8, 31, 14, 4, 56)), FilterOperator.Eq, new ConstParam(new Date(1974, 10, 12, 13, 14, 0))));
+
+      assert.ok(true, `Reading Date type as JavaScript date | ConstParam Date and ConstParam Date| NOT SUPPORTED`)
+    })
+
     // Date as String with some format.
     .then(() => {
       let moment = App.__container__.lookup('service:moment');
@@ -292,6 +367,44 @@ export default function readingDataTypes(store, assert, App) {
       });
     })
 
+    // Date as String with some format. AttributeParam and ConstParam.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = moment.moment(new Date(1974, 10, 12, 13, 14, 0)).format('YYYY-MM-DDTHH:mmZ');
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate(new AttributeParam('birthday'), FilterOperator.Eq, new ConstParam(dateBirth)));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.ok(data.every(item => item.get('name') === 'Vasya'), 'Reading Date as String with some format | AttributeParam and ConstParam | Data');
+        assert.equal(data.get('length'), 2, `Reading Date as String with some format | AttributeParam and ConstParam | Length`);
+      });
+    })
+
+    // Date as String with some format. ConstParam and ConstParam.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = moment.moment(new Date(1974, 10, 12, 13, 14, 0)).format('YYYY-MM-DDTHH:mmZ');
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate(new ConstParam(dateBirth), FilterOperator.Eq, new ConstParam(dateBirth)));
+
+      assert.ok(true, `Reading Date as String with some format | ConstParam and ConstParam | NOT SUPPORTED`)
+    })
+
+    // Date as String with some format. ConstParam and AttributeParam.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = moment.moment(new Date(1974, 10, 12, 13, 14, 0)).format('YYYY-MM-DDTHH:mmZ');
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate(new ConstParam(dateBirth), FilterOperator.Eq, new AttributeParam('birthday')));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.ok(data.every(item => item.get('name') === 'Vasya'), 'Reading Date as String with some format | ConstParam and AttributeParam | Data');
+        assert.equal(data.get('length'), 2, `Reading Date as String with some format | ConstParam and AttributeParam | Length`);
+      });
+    })
+
     // Timeless date as String with some format.
     .then(() => {
       let moment = App.__container__.lookup('service:moment');
@@ -303,6 +416,69 @@ export default function readingDataTypes(store, assert, App) {
       .then((data) => {
         assert.ok(data.every(item => item.get('name') === 'Kolya'), 'Reading timeless Date as String with some format| Data');
         assert.equal(data.get('length'), 1, `Reading timeless Date as String with some format | Length`);
+      });
+    })
+
+    // Timeless date as String with some format. AttributeParam and ConstParam.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = moment.moment(new Date(1980, 1, 24, 0, 0, 0)).format('YYYY-MM-DD');
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate(new AttributeParam('birthday'), FilterOperator.Eq, new ConstParam(dateBirth), true));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.ok(data.every(item => item.get('name') === 'Kolya'), 'Reading timeless Date as String with some format | AttributeParam and ConstParam | Data');
+        assert.equal(data.get('length'), 1, `Reading timeless Date as String with some format | AttributeParam and ConstParam | Length`);
+      });
+    })
+
+    // Timeless date as String with some format. ConstParam and AttributeParam.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = moment.moment(new Date(1980, 1, 24, 0, 0, 0)).format('YYYY-MM-DD');
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate(new ConstParam(dateBirth), FilterOperator.Eq, new AttributeParam('birthday'), true));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.ok(data.every(item => item.get('name') === 'Kolya'), 'Reading timeless Date as String with some format | ConstParam and AttributeParam | Data');
+        assert.equal(data.get('length'), 1, `Reading timeless Date as String with some format | ConstParam and AttributeParam | Length`);
+      });
+    })
+
+    // Timeless date as String with some format. ConstParam and ConstParam.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = moment.moment(new Date(1980, 1, 24, 13, 12, 1)).format('YYYY-MM-DDTHH:mmZ');
+      let dateBirth2 = moment.moment(new Date(1980, 1, 24, 11, 22, 33)).format('YYYY-MM-DDTHH:mmZ');
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate(new ConstParam(dateBirth), FilterOperator.Eq, new ConstParam(dateBirth2), true));
+
+      assert.ok(true, `Reading timeless Date as String with some format | ConstParam and ConstParam | NOT SUPPORTED`)
+    })
+
+    // Timeless date. ConstParam and ConstParam.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = new Date(1980, 1, 24, 13, 12, 1);
+      let dateBirth2 = new Date(1980, 1, 24, 11, 22, 33);
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate(new ConstParam(dateBirth), FilterOperator.Eq, new ConstParam(dateBirth2), true));
+
+      assert.ok(true, `Reading timeless Date | ConstParam and ConstParam | NOT SUPPORTED`)
+    })
+
+    // Timeless date. AttributeParam and ConstParam.
+    .then(() => {
+      let moment = App.__container__.lookup('service:moment');
+      let dateBirth = new Date(1974, 10, 12, 11, 12, 13);
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new DatePredicate(new AttributeParam('birthday'), FilterOperator.Eq, new ConstParam(dateBirth), true));
+
+      return store.query('ember-flexberry-dummy-application-user', builder.build())
+      .then((data) => {
+        assert.equal(data.get('length'), 3, `Reading timeless Date | AttributeParam and ConstParam | Length`);
       });
     })
 
@@ -361,7 +537,7 @@ function initTestData(store) {
       name: 'EqualRecord',
       eMail: 'EqualRecord',
       activated: true,
-      birthday: new Date(2021, 8, 27, 11, 0, 0),
+      birthday: new Date(1974, 10, 12, 11, 0, 0),
       karma: 16.6,
       vip: true
     }).save()
