@@ -3,6 +3,7 @@ import DS from 'ember-data';
 
 import BaseSerializer from './base';
 import { capitalize, camelize } from '../utils/string-functions';
+import Inflector from 'ember-inflector';
 
 /**
  * Serializer class for OData.
@@ -42,7 +43,7 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
     if (Ember.isNone(belongsToId)) {
       json[payloadKey] = null;
     } else {
-      json[payloadKey] = Ember.String.pluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';
+      json[payloadKey] = Inflector.odataInflector.pluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';
     }
 
     if (relationship.options.polymorphic) {

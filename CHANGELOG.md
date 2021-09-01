@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Breaking changes
+- Added `odataInflector` for OData requests. `custom-inflector-rules` for old inflector dont't work anymore. Instead create `instance-initializer` and add rules for `Inflector.odataInflector`.
 
 ## [2.6.1] - 2021-08-24
 ### Fixed

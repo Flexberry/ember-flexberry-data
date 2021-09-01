@@ -8,6 +8,7 @@ import isUUID from '../utils/is-uuid';
 import generateUniqueId from '../utils/generate-unique-id';
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
 import Builder from '../query/builder';
+import Inflector from 'ember-inflector';
 
 const { getOwner } = Ember;
 
@@ -166,7 +167,7 @@ export default DS.RESTAdapter.extend({
   pathForType(modelName) {
     var camelized = camelize(modelName);
     var capitalized = capitalize(camelized);
-    return Ember.String.pluralize(capitalized);
+    return Inflector.odataInflector.pluralize(capitalized);
   },
 
   /**
