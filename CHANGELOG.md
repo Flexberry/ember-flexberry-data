@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 ### Breaking changes
-- Added `odataInflector` for OData requests. `custom-inflector-rules` for old inflector dont't work anymore. Instead create `instance-initializer` and add rules for `Inflector.odataInflector`.
+- Deleted `custom-inflector-rules`. Model names for OData created by adding `s`.
 
 ## [2.6.1] - 2021-08-24
 ### Fixed
