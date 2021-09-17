@@ -6,6 +6,7 @@ import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import Condition from 'ember-flexberry-data/query/condition';
 import {
   SimplePredicate,
+  DatePredicate,
   ComplexPredicate,
   StringPredicate,
   DetailPredicate,
@@ -26,21 +27,75 @@ const adapter = new JSAdapter(moment);
 module('js-adapter-test');
 
 const filterData = [
-  { id: 1, Name: 'A', Surname: 'X', Age: 10, Email: null, Manager: { id: 1, Name: 'X' }},
-  { id: 2, Name: 'B', Surname: 'B', Age: 11, Email: 'flex@ber.ry' },
-  { id: 3, Name: 'B', Surname: 'Z', Age: 12, Email: 'flex@ber.ry', Manager: { id: 3, Name: 'Y' }},
-  { id: 4, Name: 'C', Surname: null, Age: 37, Email: 'flex@ber.ry2'}
+  { 
+    id: 1, 
+    Name: 'A', 
+    Surname: 'X', 
+    Age: 10, 
+    Email: null, 
+    Manager: { id: 1, Name: 'X' },
+    'Birth Date': 'Wed Jan 31 2018 08:30:00', 
+    employmentDate: 'Thu Jan 30 2018 08:30:00'
+  },
+  { 
+    id: 2, 
+    Name: 'B', 
+    Surname: 'B', 
+    Age: 11, 
+    Email: 'flex@ber.ry',
+    'Birth Date': 'Wed Jan 31 2018 07:30:00', 
+    employmentDate: null 
+  },
+  { 
+    id: 3, 
+    Name: 'B', 
+    Surname: 'Z', 
+    Age: 12, 
+    Email: 'flex@ber.ry', 
+    Manager: { id: 3, Name: 'Y' },
+    'Birth Date': null , 
+    employmentDate: 'Wed Jan 31 2018 08:30:00'
+  },
+  { 
+    id: 4, 
+    Name: 'C', 
+    Surname: null, 
+    Age: 37, 
+    Email: 'flex@ber.ry2',
+    'Birth Date': 'Wed Jan 31 2018 08:30:00', 
+    employmentDate: 'Wed Jan 31 2018 09:30:00'
+  }
 ];
 
 const filterDataExtended = [
-  { id: 1, Address: 'A', Text: 'X', Date: null, author: { id: 1, name: 'X', Birthday: null }, editor1: { id: 1, name: 'K', Birthday: null }},
-  { id: 2, Address: 'B', Text: 'B', Date: null },
-  { id: 3, Address: 'B', Text: 'Z', Date: null , author: { id: 3, name: 'Y', Birthday: null }, editor1: { id: 7, name: 'Y', Birthday: null }},
-  { id: 4, Address: 'C', Text: null, Date: null, author: { id: 8, name: null, Birthday: null } }
+  { 
+    id: 1, 
+    Address: 'A', 
+    Text: 'X',
+    author: { id: 1, name: 'X', birthday: 'Wed Jan 31 2018 08:30:00' }, 
+    editor1: { id: 1, name: 'K', birthday: 'Thu Jan 30 2018 08:30:00' }
+  },
+  { 
+    id: 2, 
+    Address: 'B', 
+    Text: 'B'
+  },
+  { 
+    id: 3, 
+    Address: 'B', 
+    Text: 'Z',
+    author: { id: 3, name: 'Y', birthday: 'Wed Jan 31 2018 08:30:00' }, 
+    editor1: { id: 7, name: 'Y', birthday: 'Wed Jan 31 2018 07:30:00' }
+  },
+  { 
+    id: 4, 
+    Address: 'C', 
+    Text: null, 
+    author: { id: 8, name: null, birthday: 'Wed Jan 31 2018 08:30:00' } 
+  }
 ];
 
 let filterDataTotalCount = filterData.length;
-// TODO: add tests on DatePredicate.
 
 test('adapter | js | without predicate', (assert) => {
   const data = [
@@ -1007,6 +1062,342 @@ test('adapter | js | false predicate | detail predicate all', (assert) => {
   let dp = new DetailPredicate('Tags').all(new FalsePredicate());
   let builder = new QueryBuilder(store, 'employee').where(dp);
 
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | eq | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Eq, new ConstParam('Wed Jan 31 2018 08:30:00'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 2);
+});
+
+test('adapter | js | date predicate | timeless | eq | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Eq, new ConstParam('Wed Jan 31 2018 08:30:00'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+});
+
+test('adapter | js | date predicate | eq | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Eq, new AttributeParam('employmentDate'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | date predicate | timeless | eq | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Eq, new AttributeParam('employmentDate'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | neq | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Neq, new ConstParam('Wed Jan 31 2018 08:30:00'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 2);
+});
+
+test('adapter | js | date predicate | timeless | neq | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Neq, new ConstParam('Wed Jan 31 2018 08:30:00'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | neq | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Neq, new AttributeParam('employmentDate'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 4);
+});
+
+test('adapter | js | date predicate | timeless | neq | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Neq, new AttributeParam('employmentDate'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+});
+
+test('adapter | js | date predicate | le | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Le, new ConstParam('Wed Jan 31 2018 08:30:00'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | timeless | le | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Le, new ConstParam('Wed Jan 31 2018 08:30:00'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | date predicate | le | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Le, new AttributeParam('employmentDate'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | timeless | le | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Le, new AttributeParam('employmentDate'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | date predicate | leq | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Leq, new ConstParam('Wed Jan 31 2018 08:30:00'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+});
+
+test('adapter | js | date predicate | timeless | leq | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Leq, new ConstParam('Wed Jan 31 2018 08:30:00'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+});
+
+test('adapter | js | date predicate | leq | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Leq, new AttributeParam('employmentDate'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | timeless | leq | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Leq, new AttributeParam('employmentDate'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | ge | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Ge, new ConstParam('Wed Jan 31 2018 08:30:00'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | date predicate | timeless | ge | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Ge, new ConstParam('Wed Jan 31 2018 08:30:00'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | date predicate | ge | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Ge, new AttributeParam('employmentDate'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | timeless | ge | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Ge, new AttributeParam('employmentDate'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | geq | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Geq, new ConstParam('Wed Jan 31 2018 08:30:00'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 2);
+});
+
+test('adapter | js | date predicate | timeless | geq | AttributeParam and ConstParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Geq, new ConstParam('Wed Jan 31 2018 08:30:00'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+});
+
+test('adapter | js | date predicate | geq | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Geq, new AttributeParam('employmentDate'))
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | timeless | geq | two AttributeParam', (assert) => {
+  const data = filterData;
+
+  let dp = new DatePredicate(new AttributeParam('Birth Date'), FilterOperator.Geq, new AttributeParam('employmentDate'), true)
+  let builder = new QueryBuilder(store, 'employee').select('Surname').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 2);
+});
+
+test('adapter | js | date predicate | eq with master | AttributeParam and ConstParam', (assert) => {
+  const data = filterDataExtended;
+
+  let dp = new DatePredicate(new AttributeParam('editor1.birthday'), FilterOperator.Eq, new ConstParam('Wed Jan 31 2018 08:30:00'))
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | date predicate | timeless | eq with master | AttributeParam and ConstParam', (assert) => {
+  const data = filterDataExtended;
+
+  let dp = new DatePredicate(new AttributeParam('editor1.birthday'), FilterOperator.Eq, new ConstParam('Wed Jan 31 2018 08:30:00'), true)
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 1);
+});
+
+test('adapter | js | date predicate | eq with master | two AttributeParam', (assert) => {
+  const data = filterDataExtended;
+
+  let dp = new DatePredicate(new AttributeParam('author.birthday'), FilterOperator.Eq, new AttributeParam('editor1.birthday'))
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion').where(dp);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 0);
+});
+
+test('adapter | js | date predicate | timeless | eq with master | two AttributeParam', (assert) => {
+  const data = filterDataExtended;
+
+  let dp = new DatePredicate(new AttributeParam('author.birthday'), FilterOperator.Eq, new AttributeParam('editor1.birthday'), true)
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion').where(dp);
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
