@@ -26,9 +26,17 @@ const adapter = new JSAdapter(moment);
 module('js-adapter-test');
 
 const filterData = [
-  { id: 1, Name: 'A', Surname: 'X', Age: 10, Email: null, Manager: { id: 1, Name: 'X' }, Follower: { id: 1, Name: 'T' } },
+  { id: 1, Name: 'A', Surname: 'X', Age: 10, Email: null, Manager: { id: 1, Name: 'X' }},
   { id: 2, Name: 'B', Surname: 'B', Age: 11, Email: 'flex@ber.ry' },
-  { id: 3, Name: 'B', Surname: 'Z', Age: 12, Email: 'flex@ber.ry', Manager: { id: 3, Name: 'Y' }, Follower: { id: 7, Name: 'Y' } }
+  { id: 3, Name: 'B', Surname: 'Z', Age: 12, Email: 'flex@ber.ry', Manager: { id: 3, Name: 'Y' }},
+  { id: 4, Name: 'C', Surname: null, Age: 37, Email: 'flex@ber.ry2'}
+];
+
+const filterDataExtended = [
+  { id: 1, Address: 'A', Text: 'X', Date: null, author: { id: 1, name: 'X', Birthday: null }, editor1: { id: 1, name: 'K', Birthday: null }},
+  { id: 2, Address: 'B', Text: 'B', Date: null },
+  { id: 3, Address: 'B', Text: 'Z', Date: null , author: { id: 3, name: 'Y', Birthday: null }, editor1: { id: 7, name: 'Y', Birthday: null }},
+  { id: 4, Address: 'C', Text: null, Date: null, author: { id: 8, name: null, Birthday: null } }
 ];
 
 let filterDataTotalCount = filterData.length;
@@ -128,7 +136,7 @@ test('adapter | js | simple predicate | eq | two AttributeParam', (assert) => {
   let result = filter(data);
   assert.ok(result);
   assert.equal(result.length, 1);
-  assert.equal(result[0].Surname, result[0].Name);
+  assert.equal(result[0].Surname, 'B');
 });
 
 test('adapter | js | simple predicate | eq | two same ConstParam', (assert) => {
@@ -178,7 +186,7 @@ test('adapter | js | simple predicate | eq | null | AttributeParam and ConstPara
   let result = filter(data);
   assert.ok(result);
   assert.equal(result.length, 1);
-  assert.equal(result[0].id, 1);
+  assert.equal(result[0].id, 4);
 });
 
 test('adapter | js | simple predicate | eq | master pk', function (assert) {
@@ -210,15 +218,18 @@ test('adapter | js | simple predicate | eq | master pk | AttributeParam and Cons
 });
 
 test('adapter | js | simple predicate | eq | master pk | two AttributeParam', function (assert) {
-  const data = filterData;
+  // TODO: add support of variant without id.
+  const data = filterDataExtended;
 
-  let builder = new QueryBuilder(store, 'customer').where(new AttributeParam('Manager'), FilterOperator.Eq, new AttributeParam('Follower'));
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion').where(new AttributeParam('author.id'), FilterOperator.Eq, new AttributeParam('editor1.id'));
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
   assert.ok(result);
+
+  // Null is not accepted for equal.
   assert.equal(result.length, 1);
-  assert.equal(result[0].id, 3);
+  assert.equal(result[0].id, 1);
 });
 
 test('adapter | js | simple predicate | eq | master field', function (assert) {
@@ -250,9 +261,9 @@ test('adapter | js | simple predicate | eq | master field | AttributeParam and C
 });
 
 test('adapter | js | simple predicate | eq | master field | two AttributeParam', function (assert) {
-  const data = filterData;
+  const data = filterDataExtended;
 
-  let builder = new QueryBuilder(store, 'customer').where(new AttributeParam('Manager.Name'), FilterOperator.Eq, new AttributeParam('Follower.Name'));
+  let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion').where(new AttributeParam('author.name'), FilterOperator.Eq, new AttributeParam('editor1.name'));
   let filter = adapter.buildFunc(builder.build());
 
   let result = filter(data);
@@ -286,8 +297,9 @@ test('adapter | js | simple predicate | neq | AttributeParam and ConstParam', (a
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(result.length, 1);
+  assert.equal(result.length, 2);
   assert.equal(result[0].Surname, 'X');
+  assert.equal(result[1].Surname, null);
 });
 
 test('adapter | js | simple predicate | neq | two AttributeParam', (assert) => {
@@ -298,9 +310,10 @@ test('adapter | js | simple predicate | neq | two AttributeParam', (assert) => {
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(result.length, 2);
+  assert.equal(result.length, 3);
   assert.equal(result[0].Surname, 'X');
   assert.equal(result[1].Surname, 'Z');
+  assert.equal(result[2].Surname, null);
 });
 
 test('adapter | js | simple predicate | le', (assert) => {
@@ -343,7 +356,7 @@ test('adapter | js | simple predicate | le | two AttributeParam', (assert) => {
   assert.ok(result);
   assert.equal(result.length, 2);
   assert.equal(result[0].Surname, 'X');
-  assert.equal(result[1].Surname, 'B');
+  assert.equal(result[1].Surname, 'Z');
 });
 
 test('adapter | js | simple predicate | leq', (assert) => {
@@ -412,9 +425,10 @@ test('adapter | js | simple predicate | ge | AttributeParam and ConstParam', (as
 
   let result = filter(data);
   assert.ok(result);
-  assert.equal(result.length, 2);
+  assert.equal(result.length, 3);
   assert.equal(result[0].Surname, 'B');
   assert.equal(result[1].Surname, 'Z');
+  assert.equal(result[2].Surname, null);
 });
 
 test('adapter | js | simple predicate | ge | two AttributeParam', (assert) => {

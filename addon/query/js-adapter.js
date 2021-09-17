@@ -328,9 +328,19 @@ export default class JSAdapter extends BaseAdapter {
             momentFromHash = _this._moment.moment(valueFromHash);
           }
 
+          // TODO: add support of variant without id.
+          let masterValue;
+          let isMasterPath = realPath.indexOf('.', 1) !== -1;
+          if (isMasterPath) {
+            let masterPath = realPath.slice(0, realPath.lastIndexOf('.'));
+            masterValue = _this.getValue(i, masterPath);
+          }
+          
           return {
             value: valueFromHash,
-            momentValue: momentFromHash
+            momentValue: momentFromHash,
+            isMasterPath: isMasterPath,
+            masterValue: masterValue
           };
         };
 
@@ -367,40 +377,50 @@ export default class JSAdapter extends BaseAdapter {
         let realFirstArgument = datesIsValid ? firstValue.momentValue : firstValue.value;
         let realSecondArgument = secondValue.value;
 
+        let resultPredicate = null;
+
         switch (predicate.operator) {
           case FilterOperator.Eq:
-            return datesIsValid 
+            resultPredicate = datesIsValid 
                     ? (predicate.timeless ? realFirstArgument.isSame(realSecondArgument, 'day') : realFirstArgument.isSame(realSecondArgument))
                     : realFirstArgument === realSecondArgument;
-
+            break;
           case FilterOperator.Neq:
-            return datesIsValid 
+            resultPredicate = datesIsValid 
                     ? (predicate.timeless ? !realFirstArgument.isSame(realSecondArgument, 'day') : !realFirstArgument.isSame(realSecondArgument))
                     : realFirstArgument !== realSecondArgument;
-
+            break;
           case FilterOperator.Le:
-            return datesIsValid 
+            resultPredicate = datesIsValid 
                     ? (predicate.timeless ? realFirstArgument.isBefore(realSecondArgument, 'day') : realFirstArgument.isBefore(realSecondArgument))
                     : realFirstArgument < realSecondArgument;
-
+            break;
           case FilterOperator.Leq:
-            return datesIsValid 
+            resultPredicate = datesIsValid 
                     ? (predicate.timeless ? realFirstArgument.isSameOrBefore(realSecondArgument, 'day') : realFirstArgument.isSameOrBefore(realSecondArgument))
                     : realFirstArgument <= realSecondArgument;
-
+            break;
           case FilterOperator.Ge:
-            return datesIsValid 
+            resultPredicate = datesIsValid 
                     ? (predicate.timeless ? realFirstArgument.isAfter(realSecondArgument, 'day') : realFirstArgument.isAfter(realSecondArgument))
                     : realFirstArgument > realSecondArgument;
-
+            break;
           case FilterOperator.Geq:
-            return datesIsValid 
+            resultPredicate = datesIsValid 
                     ? (predicate.timeless ? realFirstArgument.isSameOrAfter(realSecondArgument, 'day') : realFirstArgument.isSameOrAfter(realSecondArgument))
                     : realFirstArgument >= realSecondArgument;
-
+            break;
           default:
             throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
         }
+
+        if (isFirstAttribute && isSecondAttribute) {
+          resultPredicate = (!firstValue.isMasterPath || firstValue.masterValue) 
+                            && (!secondValue.isMasterPath || secondValue.masterValue)
+                            && resultPredicate;
+        }
+
+        return resultPredicate;
       };
     }
 
