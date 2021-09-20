@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Breaking changes
+- Deleted `custom-inflector-rules`. Model names for OData created by adding `s`.
 
 ## [2.6.1] - 2021-08-24
 ### Fixed

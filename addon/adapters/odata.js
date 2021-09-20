@@ -3,7 +3,7 @@ import DS from 'ember-data';
 
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
-import { capitalize, camelize } from '../utils/string-functions';
+import { capitalize, camelize, odataPluralize } from '../utils/string-functions';
 import isUUID from '../utils/is-uuid';
 import generateUniqueId from '../utils/generate-unique-id';
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
@@ -166,7 +166,7 @@ export default DS.RESTAdapter.extend({
   pathForType(modelName) {
     var camelized = camelize(modelName);
     var capitalized = capitalize(camelized);
-    return Ember.String.pluralize(capitalized);
+    return odataPluralize(capitalized);
   },
 
   /**
