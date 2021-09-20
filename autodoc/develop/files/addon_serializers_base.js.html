@@ -148,8 +148,7 @@
     <pre class="prettyprint linenums">
 import Ember from &#x27;ember&#x27;;
 import DS from &#x27;ember-data&#x27;;
-import { singularize } from &#x27;ember-inflector&#x27;;
-import { capitalize, camelize, dasherize } from &#x27;../utils/string-functions&#x27;;
+import { capitalize, camelize, dasherize, odataPluralize, odataSingularize } from &#x27;../utils/string-functions&#x27;;
 
 /**
  * Base serializer class.
@@ -198,7 +197,7 @@ export default DS.RESTSerializer.extend({
    * @returns {object} Valid {http://jsonapi.org/format/#document-top-level|@link JSON API document}.
    */
   normalizeArrayResponse(store, typeClass, payload) {
-    let rootKey = Ember.String.pluralize(typeClass.modelName);
+    let rootKey = odataPluralize(typeClass.modelName);
     payload[rootKey] = payload.value;
     delete payload.value;
 
@@ -306,7 +305,7 @@ export default DS.RESTSerializer.extend({
     let belongsTo = snapshot.belongsTo(relationship.key);
     if (belongsTo) {
       let payloadKey = this.keyForRelationship(relationship.key, relationship.kind, &#x27;serialize&#x27;);
-      json[payloadKey] = Ember.String.pluralize(this.modelNameFromRelationshipType(belongsTo.modelName)) + &#x27;(&#x27; + belongsTo.id + &#x27;)&#x27;;
+      json[payloadKey] = odataPluralize(this.modelNameFromRelationshipType(belongsTo.modelName)) + &#x27;(&#x27; + belongsTo.id + &#x27;)&#x27;;
     }
   },
 
@@ -339,7 +338,7 @@ export default DS.RESTSerializer.extend({
     @return {String}
   */
   modelNameFromPayloadKey(key) {
-    return singularize(dasherize(key.replace(/[#\.]/g, &#x27;&#x27;)));
+    return odataSingularize(dasherize(key.replace(/[#\.]/g, &#x27;&#x27;)));
   },
 
   /**
