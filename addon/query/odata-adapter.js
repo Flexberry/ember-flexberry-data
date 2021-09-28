@@ -436,7 +436,7 @@ export default class ODataAdapter extends BaseAdapter {
       attribute = `${prefix}/${attribute}`;
     }
 
-    if (predicate.timeless) { // TODO: check for timeless.
+    if (predicate.timeless) {
       attribute = `date(${attribute})`;
     }
 
@@ -489,7 +489,7 @@ export default class ODataAdapter extends BaseAdapter {
     return valueType === 'string'
             ? `'${String(predicateValue).replace(/'/g, `''`)}'`
             : ((valueType === 'date' || (valueType === 'object' && predicateValue instanceof Date))
-                ? getSerializedDateValue.call(this._store, predicateValue, predicate.timeless) // TODO: timeless?
+                ? getSerializedDateValue.call(this._store, predicateValue, predicate.timeless)
                 : predicateValue);
   }
 }
