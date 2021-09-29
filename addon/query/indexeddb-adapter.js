@@ -656,7 +656,7 @@ function updateWhereClause(store, table, query) {
 
       let realAttrType = attrType === null ? typeof realPredicateValue : attrType;
       let resultValue =  realAttrType === 'boolean' 
-                          ? (typeof realPredicateValue === 'boolean' ? `${predicate.value}` : predicate.value)
+                          ? (typeof realPredicateValue === 'boolean' ? `${realPredicateValue}` : realPredicateValue)
                           : (realAttrType === 'date' || (realAttrType === 'object' && realPredicateValue instanceof Date)
                               ? getSerializedDateValue.call(store, realPredicateValue, timeless)
                               : realPredicateValue);
@@ -799,7 +799,27 @@ function containsRelationships(query) {
   let contains = false;
 
   if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate || query.predicate instanceof DatePredicate) {
-    contains = Information.parseAttributePath(query.predicate.attributePath).length > 1;
+    // predicate.attributePath - attribute or AttributeParam or ConstParam.
+    // predicate.value - const or AttributeParam or ConstParam.
+
+    let firstParameter = query.predicate.attributePath;
+    let secondParameter = query.predicate.value;
+    let isFirstParameterAttribute = !(firstParameter instanceof ConstParam);
+    let isSecondParameterAttribute = secondParameter instanceof AttributeParam;
+
+    if (isFirstParameterAttribute) {
+      let realAttributePath = firstParameter instanceof AttributeParam
+                            ? firstParameter.attributePath
+                            : firstParameter;
+      contains = contains || Information.parseAttributePath(realAttributePath).length > 1;
+    }
+    
+    if (isSecondParameterAttribute) {
+      let realAttributePath = secondParameter instanceof AttributeParam
+                            ? secondParameter.attributePath
+                            : secondParameter;
+      contains = contains || Information.parseAttributePath(realAttributePath).length > 1;
+    }
   }
 
   if (query.predicate instanceof DetailPredicate) {
