@@ -5,7 +5,7 @@ import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
 import { ConstParam, AttributeParam } from 'ember-flexberry-data/query/parameter';
 
 export default function readingPredicatesSimplePredicatesWithMastersOperators(store, assert) {
-  assert.expect(30);
+  assert.expect(13);
   let done = assert.async();
 
   Ember.run(() => {
@@ -39,8 +39,8 @@ export default function readingPredicatesSimplePredicatesWithMastersOperators(st
 
     // Eq with master pk among two AttributeParam.
     .then(() => {
-      builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new AttributeParam('parent.id'), '==', new AttributeParam('parent.id'));
-      builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new SimplePredicate(new AttributeParam('parent.id'), FilterOperator.Eq, new AttributeParam('parent.id')));
+      builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new AttributeParam('parent'), '==', new AttributeParam('parent'));
+      builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new SimplePredicate(new AttributeParam('parent'), FilterOperator.Eq, new AttributeParam('parent')));
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Eq with master pk among two AttributeParam with operator | Data', 'Eq with master pk among two AttributeParam with operator | Length'],
@@ -53,33 +53,10 @@ export default function readingPredicatesSimplePredicatesWithMastersOperators(st
       );
     })
 
-    // Eq with two-level-master pk.
-    .then(() => {
-      let getRealIdBuilder = new QueryBuilder(store).from('ember-flexberry-dummy-suggestion-type').where('parent.parent', '!=', null).orderBy('name').selectByProjection('TwoLevelMaster').top(1);
-      return store.query('ember-flexberry-dummy-suggestion-type', getRealIdBuilder.build())
-        .then((realParents) => {
-          assert.equal(realParents.get('length'), 1);
-          let realParentId = realParents.objectAt(0).get('parent.parent.id');
-
-          builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where('parent.parent', '==', realParentId).selectByProjection('TwoLevelMaster');
-          builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new SimplePredicate(new AttributeParam('parent.parent'), FilterOperator.Eq, new ConstParam(realParentId))).selectByProjection('TwoLevelMaster');
-
-          return runTest(store, [builderStrOp, builderConstOp], [
-              ['Eq with two-level-master pk with operator | Data', 'Eq with two-level-master pk with operator | Length'],
-              ['Eq with two-level-master pk with simple predicate | Data', 'Eq with two-level-master pk with simple predicate | Length']
-            ],
-            (data, messages) => {
-              assert.ok(data.every(item => item.get('parent.parent.id') === realParentId), messages[0]);
-              assert.equal(data.get('length'), 1, messages[1]);
-            }
-          );
-        });
-    })
-
     // Eq with two-level-master pk among two AttributeParam.
     .then(() => {
-      builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new AttributeParam('parent.id'), '==', new AttributeParam('parent.parent.id')).selectByProjection('TwoLevelMaster');
-      builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new SimplePredicate(new AttributeParam('parent.id'), FilterOperator.Eq, new AttributeParam('parent.parent.id'))).selectByProjection('TwoLevelMaster');
+      builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new AttributeParam('parent'), '==', new AttributeParam('parent.parent')).selectByProjection('TwoLevelMaster');
+      builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new SimplePredicate(new AttributeParam('parent'), FilterOperator.Eq, new AttributeParam('parent.parent'))).selectByProjection('TwoLevelMaster');
 
       return runTest(store, [builderStrOp, builderConstOp], [
           ['Eq with two-level-master pk among two AttributeParam with operator | Data', 'Eq with two-level-master pk among two AttributeParam with operator | Length'],
@@ -88,54 +65,6 @@ export default function readingPredicatesSimplePredicatesWithMastersOperators(st
         (data, messages) => {
           assert.ok(data.every(item => item.get('parent') === item.get('parent.parent')), messages[0]);
           assert.equal(data.get('length'), 1, messages[1]);
-        }
-      );
-    })
-
-    // Eq with master field.
-    .then(() => {
-      builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where('parent.name', '==', 'CoolName');
-      builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new SimplePredicate(new AttributeParam('parent.name'), FilterOperator.Eq, new ConstParam('CoolName')));
-
-      return runTest(store, [builderStrOp, builderConstOp], [
-          ['Eq with master field with operator | Data', 'Eq with master field with operator | Length'],
-          ['Eq with master field with simple predicate | Data', 'Eq with master field with simple predicate | Length']
-        ],
-        (data, messages) => {
-          assert.ok(data.every(item => item.get('parent.name') === 'CoolName'), messages[0]);
-          assert.equal(data.get('length'), 2, messages[1]);
-        }
-      );
-    })
-
-    // Eq with master field among two same AttributeParam.
-    .then(() => {
-      builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new AttributeParam('parent.name'), '==', new AttributeParam('parent.name'));
-      builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new SimplePredicate(new AttributeParam('parent.name'), FilterOperator.Eq, new AttributeParam('parent.name')));
-
-      return runTest(store, [builderStrOp, builderConstOp], [
-          ['Eq with master field among two same AttributeParam with operator | Data', 'Eq with master field among two same AttributeParam with operator | Length'],
-          ['Eq with master field among two same AttributeParam with simple predicate | Data', 'Eq with master field among two same AttributeParam with simple predicate | Length']
-        ],
-        (data, messages) => {
-          assert.ok(data.every(item => item.get('parent.name') !== null), messages[0]);
-          assert.equal(data.get('length'),6, messages[1]);
-        }
-      );
-    })
-
-     // Eq with master field among two AttributeParam.
-     .then(() => {
-      builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new AttributeParam('name'), '==', new AttributeParam('parent.name'));
-      builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion-type').where(new SimplePredicate(new AttributeParam('name'), FilterOperator.Eq, new AttributeParam('parent.name')));
-
-      return runTest(store, [builderStrOp, builderConstOp], [
-          ['Eq with master field among two AttributeParam with operator | Data', 'Eq with master field among two AttributeParam with operator | Length'],
-          ['Eq with master field among two AttributeParam with simple predicate | Data', 'Eq with master field among two AttributeParam with simple predicate | Length']
-        ],
-        (data, messages) => {
-          assert.ok(data.every(item => item.get('parent.name') === item.get('name')), messages[0]);
-          assert.equal(data.get('length'), 2, messages[1]);
         }
       );
     })
