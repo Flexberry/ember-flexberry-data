@@ -734,31 +734,31 @@ function updateWhereClause(store, table, query) {
 
       case FilterOperator.Le:
         return isProperVariant ?
-                table.where(realAttributePath).below(realValue):
-                table.where(realAttributePath).aboveOrEqual(realValue);
-
-      case FilterOperator.Leq:
-        return isProperVariant ?
-              (predicate.timeless ?
-                table.where(realAttributePath).below(realNextValue) :
-                table.where(realAttributePath).belowOrEqual(realValue)) :
-              (predicate.timeless ?
+          table.where(realAttributePath).below(realValue) :
+          (predicate.timeless ?
                 table.where(realAttributePath).aboveOrEqual(realNextValue) :
                 table.where(realAttributePath).above(realValue));
 
+      case FilterOperator.Leq:
+        return isProperVariant ?
+        (predicate.timeless ?
+                table.where(realAttributePath).below(realNextValue) :
+                table.where(realAttributePath).belowOrEqual(realValue)):
+        table.where(realAttributePath).aboveOrEqual(realValue);
+
       case FilterOperator.Ge:
         return isProperVariant ?
-              (predicate.timeless ?
+        (predicate.timeless ?
                 table.where(realAttributePath).aboveOrEqual(realNextValue) :
                 table.where(realAttributePath).above(realValue)):
-              (predicate.timeless ?
-                table.where(realAttributePath).below(realNextValue) :
-                table.where(realAttributePath).belowOrEqual(realValue));
+        table.where(realAttributePath).below(realValue);
 
       case FilterOperator.Geq:
         return isProperVariant ?
-                table.where(realAttributePath).aboveOrEqual(realValue):
-                table.where(realAttributePath).below(realValue);
+        table.where(realAttributePath).aboveOrEqual(realValue) :
+        (predicate.timeless ?
+                table.where(realAttributePath).below(realNextValue) :
+                table.where(realAttributePath).belowOrEqual(realValue));
 
       default:
         throw new Error('Unknown operator');
