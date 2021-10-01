@@ -5,7 +5,7 @@ import { DatePredicate } from 'ember-flexberry-data/query/predicate';
 import { ConstParam, AttributeParam } from 'ember-flexberry-data/query/parameter';
 
 export default function readingPredicatesDatePredicatesOperators(store, assert) {
-  assert.expect(48);
+  assert.expect(60);
   let done = assert.async();
   let mainCompareDate = new Date(1974, 10, 12, 13, 14, 0);
   let mainCompareDateToString = mainCompareDate.toString();
@@ -296,6 +296,90 @@ export default function readingPredicatesDatePredicatesOperators(store, assert) 
       .then((data) => {
         assert.ok(data.every(item => item.get('birthday').toISOString().substr(0, 10) <= mainCompareDateISODate), 'Reading Date type| ConstParam Geq AttributeParam With Timeless | Data');
         assert.equal(data.get('length'), 4, 'Reading Date type| ConstParam Geq AttributeParam With Timeless | Length');
+      });
+    })
+
+    // Date. AttributeParam Eq AttributeParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion')
+        .where(new DatePredicate(new AttributeParam('date'), FilterOperator.Eq, new AttributeParam('author.birthday')));
+
+      return store.query('ember-flexberry-dummy-suggestion', builder.build())
+      .then((data) => {
+        assert.ok(
+          data.every(item => item.get('date').toString() === item.get('author.birthday').toString()), 
+          'Reading Date type| AttributeParam Eq AttributeParam | Data');
+        assert.equal(data.get('length'), 1, 'Reading Date type| AttributeParam Eq AttributeParam | Length');
+      });
+    })
+
+    // Date. AttributeParam Neq AttributeParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion')
+        .where(new DatePredicate(new AttributeParam('date'), FilterOperator.Neq, new AttributeParam('author.birthday')));
+
+      return store.query('ember-flexberry-dummy-suggestion', builder.build())
+      .then((data) => {
+        assert.ok(
+          data.every(item => item.get('date').toString() != item.get('author.birthday').toString()), 
+          'Reading Date type| AttributeParam Neq AttributeParam | Data');
+        assert.equal(data.get('length'), 4, 'Reading Date type| AttributeParam Neq AttributeParam | Length');
+      });
+    })
+
+    // Date. AttributeParam Le AttributeParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion')
+        .where(new DatePredicate(new AttributeParam('date'), FilterOperator.Le, new AttributeParam('author.birthday')));
+
+      return store.query('ember-flexberry-dummy-suggestion', builder.build())
+      .then((data) => {
+        assert.ok(
+          data.every(item => item.get('date').toISOString() < item.get('author.birthday').toISOString()), 
+          'Reading Date type| AttributeParam Le AttributeParam | Data');
+        assert.equal(data.get('length'), 2, 'Reading Date type| AttributeParam Le AttributeParam | Length');
+      });
+    })
+
+    // Date. AttributeParam Leq AttributeParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion')
+        .where(new DatePredicate(new AttributeParam('date'), FilterOperator.Leq, new AttributeParam('author.birthday')));
+
+      return store.query('ember-flexberry-dummy-suggestion', builder.build())
+      .then((data) => {
+        assert.ok(
+          data.every(item => item.get('date').toISOString() <= item.get('author.birthday').toISOString()), 
+          'Reading Date type| AttributeParam Leq AttributeParam | Data');
+        assert.equal(data.get('length'), 3, 'Reading Date type| AttributeParam Leq AttributeParam | Length');
+      });
+    })
+
+    // Date. AttributeParam Ge AttributeParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion')
+        .where(new DatePredicate(new AttributeParam('date'), FilterOperator.Ge, new AttributeParam('author.birthday')));
+
+      return store.query('ember-flexberry-dummy-suggestion', builder.build())
+      .then((data) => {
+        assert.ok(
+          data.every(item => item.get('date').toISOString() > item.get('author.birthday').toISOString()), 
+          'Reading Date type| AttributeParam Ge AttributeParam | Data');
+        assert.equal(data.get('length'), 2, 'Reading Date type| AttributeParam Ge AttributeParam | Length');
+      });
+    })
+
+    // Date. AttributeParam Geq AttributeParam.
+    .then(() => {
+      let builder = new QueryBuilder(store, 'ember-flexberry-dummy-suggestion')
+        .where(new DatePredicate(new AttributeParam('date'), FilterOperator.Geq, new AttributeParam('author.birthday')));
+
+      return store.query('ember-flexberry-dummy-suggestion', builder.build())
+      .then((data) => {
+        assert.ok(
+          data.every(item => item.get('date').toISOString() >= item.get('author.birthday').toISOString()), 
+          'Reading Date type| AttributeParam Geq AttributeParam | Data');
+        assert.equal(data.get('length'), 3, 'Reading Date type| AttributeParam Geq AttributeParam | Length');
       });
     })
 
