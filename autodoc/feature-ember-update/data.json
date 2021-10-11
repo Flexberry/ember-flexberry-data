@@ -596,7 +596,7 @@
             "module": "ember-flexberry-data",
             "namespace": "",
             "file": "addon/serializers/odata.js",
-            "line": 9,
+            "line": 8,
             "description": "Serializer class for OData."
         },
         "Offline": {
@@ -1303,7 +1303,7 @@
             "module": "ember-flexberry-data",
             "namespace": "",
             "file": "addon/serializers/base.js",
-            "line": 7,
+            "line": 5,
             "description": "Base serializer class."
         },
         "DexieService": {
@@ -1502,7 +1502,7 @@
     "classitems": [
         {
             "file": "addon/adapters/odata.js",
-            "line": 39,
+            "line": 38,
             "description": "Timeout for AJAX-requests.",
             "itemtype": "property",
             "name": "timeout",
@@ -1513,7 +1513,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 48,
+            "line": 47,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch data from the server.",
             "itemtype": "method",
             "name": "query",
@@ -1543,7 +1543,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 78,
+            "line": 77,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCustomizes ajax options for the requests.",
             "itemtype": "method",
             "name": "ajaxOptions",
@@ -1573,7 +1573,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 98,
+            "line": 97,
             "description": "Takes an ajax response, and returns the json payload or an error.",
             "itemtype": "method",
             "name": "handleResponse",
@@ -1599,7 +1599,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 114,
+            "line": 113,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch single record from the server.",
             "itemtype": "method",
             "name": "queryRecord",
@@ -1629,7 +1629,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 131,
+            "line": 130,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch single record by ID from the server.",
             "itemtype": "method",
             "name": "findRecord",
@@ -1664,7 +1664,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 151,
+            "line": 150,
             "description": "Overloaded method from `RESTAdapter` (Ember Data).\nCalled by the sore in order to fetch all records from the server.",
             "itemtype": "method",
             "name": "findAll",
@@ -1699,7 +1699,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 171,
+            "line": 170,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), that determines the pathname for a given type.\nAdditionally capitalizes the type name (requirement of Flexberry OData Server).",
             "itemtype": "method",
             "name": "pathForType",
@@ -1719,7 +1719,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 185,
+            "line": 184,
             "description": "A method to make ajax requests.",
             "itemtype": "method",
             "name": "makeRequest",
@@ -1737,7 +1737,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 197,
+            "line": 196,
             "description": "A method to generate url for ajax request to odata function.",
             "params": [
                 {
@@ -1765,7 +1765,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 246,
+            "line": 245,
             "description": "A method to generate url for ajax request to odata action.",
             "itemtype": "method",
             "name": "generateActionUrl",
@@ -1795,7 +1795,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 266,
+            "line": 265,
             "description": "A method to call OData functions that returns model records using ajax request.",
             "itemtype": "method",
             "name": "callEmberOdataFunction",
@@ -1867,7 +1867,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 296,
+            "line": 295,
             "description": "A method to call OData functions using ajax request.",
             "itemtype": "method",
             "name": "callFunction",
@@ -1939,7 +1939,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 337,
+            "line": 336,
             "description": "A method to call OData actions that returns model records using ajax request.",
             "itemtype": "method",
             "name": "callEmberOdataAction",
@@ -2006,7 +2006,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 366,
+            "line": 365,
             "description": "A method to call OData actions using ajax request.",
             "itemtype": "method",
             "name": "callAction",
@@ -2073,7 +2073,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 402,
+            "line": 401,
             "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
@@ -2098,7 +2098,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 587,
+            "line": 586,
             "description": "A method to generate url part from queryParams.",
             "itemtype": "method",
             "name": "_generateFunctionQueryString",
@@ -2125,7 +2125,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 607,
+            "line": 606,
             "description": "A method to make args object function/action call method's.",
             "itemtype": "method",
             "name": "_getODataArgs",
@@ -2157,7 +2157,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 636,
+            "line": 635,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2202,7 +2202,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 745,
+            "line": 744,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2229,7 +2229,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 785,
+            "line": 784,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2252,7 +2252,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 836,
+            "line": 835,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -5025,21 +5025,21 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 14,
+            "line": 12,
             "description": "Flag: indicates whether to use new {@link http://jsonapi.org|JSON API} serialization.",
             "class": "Base",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 19,
+            "line": 17,
             "description": "Prefix for response metadata properties names.",
             "class": "Base",
             "module": "ember-flexberry-data"
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 24,
+            "line": 22,
             "description": "Normalization method for single objects.",
             "params": [
                 {
@@ -5068,7 +5068,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 44,
+            "line": 42,
             "description": "Normalization method for arrays of objects.",
             "params": [
                 {
@@ -5093,7 +5093,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 60,
+            "line": 58,
             "description": "Normalization method for objects.",
             "params": [
                 {
@@ -5114,7 +5114,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 81,
+            "line": 79,
             "description": "Extracts metadata from received object.",
             "params": [
                 {
@@ -5139,7 +5139,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 100,
+            "line": 98,
             "description": "Returns key for a given attribute.",
             "params": [
                 {
@@ -5156,7 +5156,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 110,
+            "line": 108,
             "description": "Returns key for a given relationship.",
             "params": [
                 {
@@ -5177,7 +5177,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 123,
+            "line": 121,
             "description": "Return model name for relationship.",
             "itemtype": "method",
             "name": "modelNameFromRelationshipType",
@@ -5193,7 +5193,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 133,
+            "line": 131,
             "description": "Serialization method to serialize record into hash.",
             "params": [
                 {
@@ -5218,7 +5218,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 150,
+            "line": 148,
             "description": "You can use this method to customize how polymorphic objects are serialized.\n[More info](http://emberjs.com/api/data/classes/DS.RESTSerializer.html#method_serializePolymorphicType).",
             "itemtype": "method",
             "name": "serializePolymorphicType",
@@ -5244,7 +5244,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 167,
+            "line": 165,
             "description": "You can use this method to customize how a polymorphic relationship should be extracted.\n[More info](http://emberjs.com/api/data/classes/DS.RESTSerializer.html#method_extractPolymorphicRelationship).",
             "itemtype": "method",
             "name": "extractPolymorphicRelationship",
@@ -5269,7 +5269,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 187,
+            "line": 185,
             "description": "This method is used to convert each JSON root key in the payload into a modelName that it can use to look up the appropriate model for that part of the payload.\n[More info](http://emberjs.com/api/data/classes/DS.RESTSerializer.html#method_modelNameFromPayloadKey).",
             "itemtype": "method",
             "name": "modelNameFromPayloadKey",
@@ -5289,7 +5289,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 201,
+            "line": 197,
             "description": "Moves metadata from one object to another.",
             "params": [
                 {
@@ -5312,7 +5312,7 @@
         },
         {
             "file": "addon/serializers/odata.js",
-            "line": 16,
+            "line": 15,
             "description": "`serializeBelongsTo` can be used to customize how `DS.belongsTo` properties are serialized.\nIf there is set option `odata-id` at serializer and `DS.belongsTo` property is not null,\nthen property will be serialized like:\n```\nRelationName@odata.bind': RelationType(RelatedObjectId)\n```",
             "itemtype": "method",
             "name": "serializeBelongsTo",
@@ -5338,7 +5338,7 @@
         },
         {
             "file": "addon/serializers/odata.js",
-            "line": 54,
+            "line": 53,
             "description": "Returns key for a given relationship.",
             "params": [
                 {
@@ -5355,7 +5355,7 @@
         },
         {
             "file": "addon/serializers/odata.js",
-            "line": 69,
+            "line": 68,
             "description": "Fixes error with hasMany polymorphic relationships.\nDelete this after ember-data 3.5.0 update.",
             "itemtype": "method",
             "name": "_normalizeEmbeddedRelationship",
@@ -8320,6 +8320,46 @@
             },
             "class": "",
             "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/string-functions.js",
+            "line": 142,
+            "description": "Returns the singularized form of a string for OData",
+            "itemtype": "method",
+            "name": "odataSingularize",
+            "params": [
+                {
+                    "name": "str",
+                    "description": "The string to singularize.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The singularized string.",
+                "type": "String"
+            },
+            "class": "",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/string-functions.js",
+            "line": 153,
+            "description": "Returns the pluralized form of a string for OData",
+            "itemtype": "method",
+            "name": "odataPluralize",
+            "params": [
+                {
+                    "name": "str",
+                    "description": "The string to pluralize.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The pluralized string.",
+                "type": "String"
+            },
+            "class": "",
+            "module": "ember-flexberry-data"
         }
     ],
     "warnings": [
@@ -8389,31 +8429,31 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/serializers/base.js:24"
+            "line": " addon/serializers/base.js:22"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/serializers/base.js:44"
+            "line": " addon/serializers/base.js:42"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/serializers/base.js:60"
+            "line": " addon/serializers/base.js:58"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/serializers/base.js:81"
+            "line": " addon/serializers/base.js:79"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/serializers/base.js:100"
+            "line": " addon/serializers/base.js:98"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/serializers/base.js:110"
+            "line": " addon/serializers/base.js:108"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/serializers/odata.js:54"
+            "line": " addon/serializers/odata.js:53"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -8473,11 +8513,11 @@
         },
         {
             "message": "Missing item type\nA method to generate url for ajax request to odata function.",
-            "line": " addon/adapters/odata.js:197"
+            "line": " addon/adapters/odata.js:196"
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:636"
+            "line": " addon/adapters/odata.js:635"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
@@ -8569,47 +8609,47 @@
         },
         {
             "message": "Missing item type\nFlag: indicates whether to use new {@link http://jsonapi.org|JSON API} serialization.",
-            "line": " addon/serializers/base.js:14"
+            "line": " addon/serializers/base.js:12"
         },
         {
             "message": "Missing item type\nPrefix for response metadata properties names.",
-            "line": " addon/serializers/base.js:19"
+            "line": " addon/serializers/base.js:17"
         },
         {
             "message": "Missing item type\nNormalization method for single objects.",
-            "line": " addon/serializers/base.js:24"
+            "line": " addon/serializers/base.js:22"
         },
         {
             "message": "Missing item type\nNormalization method for arrays of objects.",
-            "line": " addon/serializers/base.js:44"
+            "line": " addon/serializers/base.js:42"
         },
         {
             "message": "Missing item type\nNormalization method for objects.",
-            "line": " addon/serializers/base.js:60"
+            "line": " addon/serializers/base.js:58"
         },
         {
             "message": "Missing item type\nExtracts metadata from received object.",
-            "line": " addon/serializers/base.js:81"
+            "line": " addon/serializers/base.js:79"
         },
         {
             "message": "Missing item type\nReturns key for a given attribute.",
-            "line": " addon/serializers/base.js:100"
+            "line": " addon/serializers/base.js:98"
         },
         {
             "message": "Missing item type\nReturns key for a given relationship.",
-            "line": " addon/serializers/base.js:110"
+            "line": " addon/serializers/base.js:108"
         },
         {
             "message": "Missing item type\nSerialization method to serialize record into hash.",
-            "line": " addon/serializers/base.js:133"
+            "line": " addon/serializers/base.js:131"
         },
         {
             "message": "Missing item type\nMoves metadata from one object to another.",
-            "line": " addon/serializers/base.js:201"
+            "line": " addon/serializers/base.js:197"
         },
         {
             "message": "Missing item type\nReturns key for a given relationship.",
-            "line": " addon/serializers/odata.js:54"
+            "line": " addon/serializers/odata.js:53"
         },
         {
             "message": "Missing item type",
