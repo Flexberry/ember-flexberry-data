@@ -139,11 +139,35 @@ function capitalize(str) {
   /* eslint-enable no-unused-vars */
 }
 
+/**
+  Returns the singularized form of a string for OData
+
+  @method odataSingularize
+  @param {String} str The string to singularize.
+  @return {String} The singularized string.
+*/
+function odataSingularize(str) {
+  return str.replace(/s$/i, '');
+}
+
+/**
+  Returns the pluralized form of a string for OData
+
+  @method odataPluralize
+  @param {String} str The string to pluralize.
+  @return {String} The pluralized string.
+*/
+function odataPluralize(str) {
+  return str + 's';
+}
+
 export {
   decamelize,
   dasherize,
   camelize,
   classify,
   underscore,
-  capitalize
+  capitalize,
+  odataSingularize,
+  odataPluralize
 };

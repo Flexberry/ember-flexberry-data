@@ -3,8 +3,7 @@ import { get } from '@ember/object';
 import DS from 'ember-data';
 
 import BaseSerializer from './base';
-import { capitalize, camelize } from '../utils/string-functions';
-import { pluralize } from 'ember-inflector';
+import { capitalize, camelize, odataPluralize } from '../utils/string-functions';
 
 /**
  * Serializer class for OData.
@@ -43,7 +42,7 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
     if (isNone(belongsToId)) {
       json[payloadKey] = null;
     } else {
-      json[payloadKey] = pluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';
+      json[payloadKey] = odataPluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';
     }
 
     if (relationship.options.polymorphic) {
