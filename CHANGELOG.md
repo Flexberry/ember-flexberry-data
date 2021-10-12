@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [3.7.0-beta.0] - 2021-10-11
+## [3.7.0-beta.1] - 2021-10-12
 ### Added
 - Changes from `2.7.0-beta.0` version.
 
