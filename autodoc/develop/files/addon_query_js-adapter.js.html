@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.ModelWithoutValidation", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Query.TruePredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.ModelWithoutValidation", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.AttributeParam", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BaseParam", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.ConstParam", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Query.TruePredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -71,12 +71,15 @@
 	                            <li><a href="../classes/Projection.ModelWithoutValidation.html">Projection.ModelWithoutValidation</a></li>
 	                            <li><a href="../classes/Projection.StoreMixin.html">Projection.StoreMixin</a></li>
 	                            <li><a href="../classes/Query.html">Query</a></li>
+	                            <li><a href="../classes/Query.AttributeParam.html">Query.AttributeParam</a></li>
 	                            <li><a href="../classes/Query.BaseAdapter.html">Query.BaseAdapter</a></li>
 	                            <li><a href="../classes/Query.BaseBuilder.html">Query.BaseBuilder</a></li>
+	                            <li><a href="../classes/Query.BaseParam.html">Query.BaseParam</a></li>
 	                            <li><a href="../classes/Query.BasePredicate.html">Query.BasePredicate</a></li>
 	                            <li><a href="../classes/Query.Builder.html">Query.Builder</a></li>
 	                            <li><a href="../classes/Query.ComplexPredicate.html">Query.ComplexPredicate</a></li>
 	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.ConstParam.html">Query.ConstParam</a></li>
 	                            <li><a href="../classes/Query.DatePredicate.html">Query.DatePredicate</a></li>
 	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
 	                            <li><a href="../classes/Query.FalsePredicate.html">Query.FalsePredicate</a></li>
@@ -159,6 +162,7 @@ import {
   TruePredicate,
   FalsePredicate
 } from &#x27;./predicate&#x27;;
+import { ConstParam, AttributeParam } from &#x27;./parameter&#x27;;
 import FilterOperator from &#x27;./filter-operator&#x27;;
 import Condition from &#x27;./condition&#x27;;
 import Information from &#x27;../utils/information&#x27;;
@@ -456,61 +460,118 @@ export default class JSAdapter extends BaseAdapter {
     }
 
     if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
-      let value = predicate.value;
-      if (options &amp;&amp; options.booleanAsString &amp;&amp; typeof value === &#x27;boolean&#x27;) {
-        value = &#x60;${value}&#x60;;
-      }
+      // predicate.attributePath - attribute or AttributeParam or ConstParam.
+      // predicate.value - const or AttributeParam or ConstParam.
 
       return (i) =&gt; {
-        let datesIsValid = false;
-        let valueFromHash = _this.getValue(i, predicate.attributePath);
-        let momentFromHash;
-        if (predicate instanceof DatePredicate) {
-          momentFromHash = _this._moment.moment(valueFromHash);
-          let momentFromValue = _this._moment.moment(value);
-          datesIsValid = momentFromHash.isValid() &amp;&amp; momentFromValue.isValid();
-        }
+        let firstOperand = predicate.attributePath;
+        let secondOperand = predicate.value;
+        let isFirstAttribute = !(firstOperand instanceof ConstParam);
+        let isSecondAttribute = secondOperand instanceof AttributeParam;
+
+        let processAttributeFunction = function (attributeOperand, predicate) {
+          let realPath = attributeOperand instanceof AttributeParam
+                          ? attributeOperand.attributePath
+                          : attributeOperand;
+          let valueFromHash = _this.getValue(i, realPath);
+          let momentFromHash;
+          if (predicate instanceof DatePredicate) {
+            momentFromHash = _this._moment.moment(valueFromHash);
+          }
+
+          // TODO: add support of variant without id.
+          let masterValue;
+          let isMasterPath = realPath.indexOf(&#x27;.&#x27;, 1) !== -1;
+          if (isMasterPath) {
+            let masterPath = realPath.slice(0, realPath.lastIndexOf(&#x27;.&#x27;));
+            masterValue = _this.getValue(i, masterPath);
+          }
+          
+          return {
+            value: valueFromHash,
+            momentValue: momentFromHash,
+            isMasterPath: isMasterPath,
+            masterValue: masterValue
+          };
+        };
+
+        let processValueFunction = function (constOperand, predicate) {
+          let realValue = constOperand instanceof ConstParam
+                            ? constOperand.constValue
+                            : constOperand;
+          let momentValue;
+          if (options &amp;&amp; options.booleanAsString &amp;&amp; typeof realValue === &#x27;boolean&#x27;) {
+            realValue = &#x60;${realValue}&#x60;;
+          }
+
+          if (predicate instanceof DatePredicate) {
+            momentValue = _this._moment.moment(realValue);
+          }
+
+          return {
+            value: realValue,
+            momentValue: momentValue
+          };
+        };
+
+        let firstValue = isFirstAttribute
+                          ? processAttributeFunction(firstOperand, predicate)
+                          : processValueFunction(firstOperand, predicate);
+        
+        let secondValue = isSecondAttribute
+                          ? processAttributeFunction(secondOperand, predicate)
+                          : processValueFunction(secondOperand, predicate);
+        
+        let datesIsValid = (predicate instanceof DatePredicate) 
+                            &amp;&amp; firstValue.momentValue.isValid() &amp;&amp; secondValue.momentValue.isValid();
+
+        let realFirstArgument = datesIsValid ? firstValue.momentValue : firstValue.value;
+        let realSecondArgument = secondValue.value;
+
+        let resultPredicate = null;
 
         switch (predicate.operator) {
           case FilterOperator.Eq:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isSame(value, &#x27;day&#x27;) : momentFromHash.isSame(value);
-            }
-
-            return valueFromHash === value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isSame(realSecondArgument, &#x27;day&#x27;) : realFirstArgument.isSame(realSecondArgument))
+                    : realFirstArgument === realSecondArgument;
+            break;
           case FilterOperator.Neq:
-            if (datesIsValid) {
-              return predicate.timeless ? !momentFromHash.isSame(value, &#x27;day&#x27;) : !momentFromHash.isSame(value);
-            }
-
-            return valueFromHash !== value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? !realFirstArgument.isSame(realSecondArgument, &#x27;day&#x27;) : !realFirstArgument.isSame(realSecondArgument))
+                    : realFirstArgument !== realSecondArgument;
+            break;
           case FilterOperator.Le:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isBefore(value, &#x27;day&#x27;) : momentFromHash.isBefore(value);
-            }
-
-            return valueFromHash &lt; value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isBefore(realSecondArgument, &#x27;day&#x27;) : realFirstArgument.isBefore(realSecondArgument))
+                    : realFirstArgument &lt; realSecondArgument;
+            break;
           case FilterOperator.Leq:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isSameOrBefore(value, &#x27;day&#x27;) : momentFromHash.isSameOrBefore(value);
-            }
-
-            return valueFromHash &lt;= value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isSameOrBefore(realSecondArgument, &#x27;day&#x27;) : realFirstArgument.isSameOrBefore(realSecondArgument))
+                    : realFirstArgument &lt;= realSecondArgument;
+            break;
           case FilterOperator.Ge:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isAfter(value, &#x27;day&#x27;) : momentFromHash.isAfter(value);
-            }
-
-            return valueFromHash &gt; value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isAfter(realSecondArgument, &#x27;day&#x27;) : realFirstArgument.isAfter(realSecondArgument))
+                    : realFirstArgument &gt; realSecondArgument;
+            break;
           case FilterOperator.Geq:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isSameOrAfter(value, &#x27;day&#x27;) : momentFromHash.isSameOrAfter(value);
-            }
-
-            return valueFromHash &gt;= value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isSameOrAfter(realSecondArgument, &#x27;day&#x27;) : realFirstArgument.isSameOrAfter(realSecondArgument))
+                    : realFirstArgument &gt;= realSecondArgument;
+            break;
           default:
             throw new Error(&#x60;Unsupported filter operator &#x27;${predicate.operator}&#x27;.&#x60;);
         }
+
+        if (isFirstAttribute &amp;&amp; isSecondAttribute) {
+          resultPredicate = (!firstValue.isMasterPath || firstValue.masterValue) 
+                            &amp;&amp; (!secondValue.isMasterPath || secondValue.masterValue)
+                            &amp;&amp; resultPredicate;
+        }
+
+        return resultPredicate;
       };
     }
 

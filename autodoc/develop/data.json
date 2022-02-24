@@ -261,6 +261,19 @@
                 "Query": 1
             }
         },
+        "addon/query/parameter.js": {
+            "name": "addon/query/parameter.js",
+            "modules": {},
+            "classes": {
+                "Query.BaseParam": 1,
+                "Query.ConstParam": 1,
+                "Query.AttributeParam": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "Query": 1
+            }
+        },
         "addon/query/predicate.js": {
             "name": "addon/query/predicate.js",
             "modules": {},
@@ -578,6 +591,9 @@
                 "Query.JsAdapter": 1,
                 "Query.ODataAdapter": 1,
                 "Query.OrderByClause": 1,
+                "Query.BaseParam": 1,
+                "Query.ConstParam": 1,
+                "Query.AttributeParam": 1,
                 "Query.BasePredicate": 1,
                 "Query.SimplePredicate": 1,
                 "Query.DatePredicate": 1,
@@ -859,7 +875,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/builder.js",
-            "line": 21,
+            "line": 22,
             "params": [
                 {
                     "name": "store",
@@ -913,7 +929,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/js-adapter.js",
-            "line": 44,
+            "line": 45,
             "params": [
                 {
                     "name": "moment",
@@ -934,7 +950,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/js-adapter.js",
-            "line": 18,
+            "line": 19,
             "description": "Class of query language adapter that translates query object into JS function which\nfilters native JS array of objects by specified logic.\n\n```js\nconst data = [\n  { Name: 'A', Surname: 'X', Age: 10 },\n  { Name: 'B', Surname: 'Y', Age: 11 },\n  { Name: 'B', Surname: 'Z', Age: 12 }\n];\n\nlet adapter = new JSAdapter(moment);\nlet builder = new QueryBuilder(store, 'AnyUnknownModel').where('Name', FilterOperator.Eq, 'B');\nlet filter = adapter.buildFunc(builder.build());\n\nlet result = filter(data); // Y and Z\n```\n\nAll filters uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation))."
         },
         "Query.ODataAdapter": {
@@ -948,7 +964,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/odata-adapter.js",
-            "line": 32,
+            "line": 33,
             "params": [
                 {
                     "name": "baseUrl",
@@ -980,6 +996,66 @@
                 {
                     "name": "clause",
                     "description": ""
+                }
+            ],
+            "is_constructor": 1
+        },
+        "Query.BaseParam": {
+            "name": "Query.BaseParam",
+            "shortname": "Query.BaseParam",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember-flexberry-data",
+            "namespace": "Query",
+            "file": "addon/query/parameter.js",
+            "line": 1,
+            "description": "The base class of parameters for logical predicate."
+        },
+        "Query.ConstParam": {
+            "name": "Query.ConstParam",
+            "shortname": "Query.ConstParam",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember-flexberry-data",
+            "namespace": "Query",
+            "file": "addon/query/parameter.js",
+            "line": 13,
+            "description": "The class of const parameter for logical predicate.",
+            "extends": "BaseParam",
+            "params": [
+                {
+                    "name": "constValue",
+                    "description": "The value of parameter.",
+                    "type": "String|Number"
+                }
+            ],
+            "is_constructor": 1
+        },
+        "Query.AttributeParam": {
+            "name": "Query.AttributeParam",
+            "shortname": "Query.AttributeParam",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "ember-flexberry-data",
+            "namespace": "Query",
+            "file": "addon/query/parameter.js",
+            "line": 53,
+            "description": "The class of attribute parameter for logical predicate.",
+            "extends": "BaseParam",
+            "params": [
+                {
+                    "name": "attributePath",
+                    "description": "The path to the attribute for filtering.",
+                    "type": "String"
                 }
             ],
             "is_constructor": 1
@@ -4030,7 +4106,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 50,
+            "line": 51,
             "description": "Sets the id of the requested entity.",
             "itemtype": "method",
             "name": "byId",
@@ -4054,7 +4130,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 64,
+            "line": 65,
             "description": "Sets the name of the requested entity.",
             "itemtype": "method",
             "name": "from",
@@ -4078,7 +4154,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 78,
+            "line": 79,
             "description": "Restricts the selectable objects to the specified type.",
             "itemtype": "method",
             "name": "isOf",
@@ -4102,7 +4178,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 99,
+            "line": 100,
             "itemtype": "method",
             "name": "where",
             "params": [
@@ -4125,7 +4201,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 112,
+            "line": 113,
             "itemtype": "method",
             "name": "orderBy",
             "params": [
@@ -4148,7 +4224,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 129,
+            "line": 130,
             "itemtype": "method",
             "name": "top",
             "params": [
@@ -4171,7 +4247,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 142,
+            "line": 143,
             "itemtype": "method",
             "name": "skip",
             "params": [
@@ -4194,7 +4270,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 155,
+            "line": 156,
             "itemtype": "method",
             "name": "count",
             "return": {
@@ -4210,7 +4286,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 167,
+            "line": 168,
             "description": "Adds attributes for selection.\nAutomatically checks duplications.",
             "itemtype": "method",
             "name": "select",
@@ -4234,7 +4310,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 182,
+            "line": 183,
             "description": "Adds attributes for selection from specified projection.\nMerges attributes with added using `select`.",
             "itemtype": "method",
             "name": "selectByProjection",
@@ -4263,7 +4339,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 199,
+            "line": 200,
             "itemtype": "method",
             "name": "ofDataType",
             "params": [
@@ -4286,7 +4362,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 212,
+            "line": 213,
             "itemtype": "method",
             "name": "withCustomParams",
             "params": [
@@ -4309,7 +4385,7 @@
         },
         {
             "file": "addon/query/builder.js",
-            "line": 225,
+            "line": 226,
             "description": "Builds query instance using all provided data.",
             "itemtype": "method",
             "name": "build",
@@ -4473,7 +4549,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 48,
+            "line": 49,
             "description": "Loads data from IndexedDB.",
             "itemtype": "method",
             "name": "query",
@@ -4499,7 +4575,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 592,
+            "line": 594,
             "description": "Builds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
             "params": [
                 {
@@ -4528,7 +4604,7 @@
         },
         {
             "file": "addon/query/indexeddb-adapter.js",
-            "line": 714,
+            "line": 791,
             "description": "Checks query on contains restrictions by relationships.",
             "itemtype": "method",
             "name": "containsRelationships",
@@ -4549,7 +4625,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 57,
+            "line": 58,
             "description": "Builds JS function for filtering JS array of objects by specified logic from query.",
             "itemtype": "method",
             "name": "buildFunc",
@@ -4569,7 +4645,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 74,
+            "line": 75,
             "description": "Builds function for windowing array of objects using data from the query.",
             "params": [
                 {
@@ -4588,7 +4664,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 103,
+            "line": 104,
             "description": "Builds function for ordering array of objects using data from the query.",
             "params": [
                 {
@@ -4607,7 +4683,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 155,
+            "line": 156,
             "description": "Builds function for selecting subset of properties from array of objects using data from the query.",
             "params": [
                 {
@@ -4626,7 +4702,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 244,
+            "line": 245,
             "description": "Builds function for filtering array of objects using predicate.",
             "params": [
                 {
@@ -4651,7 +4727,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 296,
+            "line": 297,
             "description": "Returns function for checkign single object using predicate.",
             "params": [
                 {
@@ -4684,7 +4760,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 445,
+            "line": 503,
             "description": "Loads value from object by specified attribute path.",
             "params": [
                 {
@@ -4708,7 +4784,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 471,
+            "line": 529,
             "description": "Returns complex filter function for `and` condition.\nResult function filters array of objects and returns those, for which\nall attribute filter functions returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
             "params": [
                 {
@@ -4727,7 +4803,7 @@
         },
         {
             "file": "addon/query/js-adapter.js",
-            "line": 501,
+            "line": 559,
             "description": "Returns complex filter function for `or` condition.\nResult function filters array of objects and returns those, for which\nat least one attribute filter function returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
             "params": [
                 {
@@ -4746,7 +4822,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 54,
+            "line": 55,
             "description": "Returns query data for querying OData feed (for query part).",
             "itemtype": "method",
             "name": "getODataQuery",
@@ -4769,7 +4845,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 94,
+            "line": 95,
             "description": "Returns select and expand query data for OData function.",
             "itemtype": "method",
             "name": "getODataFunctionQuery",
@@ -4790,7 +4866,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 120,
+            "line": 121,
             "description": "Returns full URL for querying OData feed (base part and query part).",
             "itemtype": "method",
             "name": "getODataFullUrl",
@@ -4811,7 +4887,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 235,
+            "line": 236,
             "description": "Converts specified predicate into OData filter part.",
             "params": [
                 {
@@ -4840,7 +4916,7 @@
         },
         {
             "file": "addon/query/odata-adapter.js",
-            "line": 327,
+            "line": 328,
             "description": "Converts filter operator to OData representation.",
             "params": [
                 {
@@ -4888,6 +4964,64 @@
                 "type": "Object"
             },
             "class": "Query.OrderByClause",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
+            "file": "addon/query/parameter.js",
+            "line": 30,
+            "description": "The value of parameter for logical predicate.",
+            "itemtype": "property",
+            "name": "constValue",
+            "type": "String|Number",
+            "access": "public",
+            "tagname": "",
+            "class": "Query.ConstParam",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
+            "file": "addon/query/parameter.js",
+            "line": 41,
+            "description": "Converts this instance to string.",
+            "itemtype": "method",
+            "name": "toString",
+            "return": {
+                "description": "Text representation of the parameter.",
+                "type": "String"
+            },
+            "access": "public",
+            "tagname": "",
+            "class": "Query.ConstParam",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
+            "file": "addon/query/parameter.js",
+            "line": 70,
+            "description": "The path to the attribute.",
+            "itemtype": "property",
+            "name": "attributePath",
+            "type": "String",
+            "access": "public",
+            "tagname": "",
+            "class": "Query.AttributeParam",
+            "module": "ember-flexberry-data",
+            "namespace": "Query"
+        },
+        {
+            "file": "addon/query/parameter.js",
+            "line": 82,
+            "description": "Converts this instance to string.",
+            "itemtype": "method",
+            "name": "toString",
+            "return": {
+                "description": "Text representation of the parameter.",
+                "type": "String"
+            },
+            "access": "public",
+            "tagname": "",
+            "class": "Query.AttributeParam",
             "module": "ember-flexberry-data",
             "namespace": "Query"
         },
@@ -8956,43 +9090,43 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/indexeddb-adapter.js:592"
+            "line": " addon/query/indexeddb-adapter.js:594"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:57"
+            "line": " addon/query/js-adapter.js:58"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:74"
+            "line": " addon/query/js-adapter.js:75"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:103"
+            "line": " addon/query/js-adapter.js:104"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:155"
+            "line": " addon/query/js-adapter.js:156"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:296"
+            "line": " addon/query/js-adapter.js:297"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:445"
+            "line": " addon/query/js-adapter.js:503"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:471"
+            "line": " addon/query/js-adapter.js:529"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/js-adapter.js:501"
+            "line": " addon/query/js-adapter.js:559"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/odata-adapter.js:327"
+            "line": " addon/query/odata-adapter.js:328"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -9144,47 +9278,47 @@
         },
         {
             "message": "Missing item type\nBuilds Dexie `WhereClause` for filtering data.\nFiltering only with Dexie can applied only for simple cases (for `SimplePredicate`).\nFor complex cases all logic implemened programmatically.",
-            "line": " addon/query/indexeddb-adapter.js:592"
+            "line": " addon/query/indexeddb-adapter.js:594"
         },
         {
             "message": "Missing item type\nBuilds function for windowing array of objects using data from the query.",
-            "line": " addon/query/js-adapter.js:74"
+            "line": " addon/query/js-adapter.js:75"
         },
         {
             "message": "Missing item type\nBuilds function for ordering array of objects using data from the query.",
-            "line": " addon/query/js-adapter.js:103"
+            "line": " addon/query/js-adapter.js:104"
         },
         {
             "message": "Missing item type\nBuilds function for selecting subset of properties from array of objects using data from the query.",
-            "line": " addon/query/js-adapter.js:155"
+            "line": " addon/query/js-adapter.js:156"
         },
         {
             "message": "Missing item type\nBuilds function for filtering array of objects using predicate.",
-            "line": " addon/query/js-adapter.js:244"
+            "line": " addon/query/js-adapter.js:245"
         },
         {
             "message": "Missing item type\nReturns function for checkign single object using predicate.",
-            "line": " addon/query/js-adapter.js:296"
+            "line": " addon/query/js-adapter.js:297"
         },
         {
             "message": "Missing item type\nLoads value from object by specified attribute path.",
-            "line": " addon/query/js-adapter.js:445"
+            "line": " addon/query/js-adapter.js:503"
         },
         {
             "message": "Missing item type\nReturns complex filter function for `and` condition.\nResult function filters array of objects and returns those, for which\nall attribute filter functions returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
-            "line": " addon/query/js-adapter.js:471"
+            "line": " addon/query/js-adapter.js:529"
         },
         {
             "message": "Missing item type\nReturns complex filter function for `or` condition.\nResult function filters array of objects and returns those, for which\nat least one attribute filter function returned `true`.\nResult function uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).",
-            "line": " addon/query/js-adapter.js:501"
+            "line": " addon/query/js-adapter.js:559"
         },
         {
             "message": "Missing item type\nConverts specified predicate into OData filter part.",
-            "line": " addon/query/odata-adapter.js:235"
+            "line": " addon/query/odata-adapter.js:236"
         },
         {
             "message": "Missing item type\nConverts filter operator to OData representation.",
-            "line": " addon/query/odata-adapter.js:327"
+            "line": " addon/query/odata-adapter.js:328"
         },
         {
             "message": "Missing item type\nThe path to the detail for predicate.",

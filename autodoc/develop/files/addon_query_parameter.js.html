@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>addon/utils/information.js - Flexberry Documentation</title>
+    <title>addon/query/parameter.js - Flexberry Documentation</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -144,246 +144,103 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>addon/utils/information.js <small>File</small></h1>
+    <h1>addon/query/parameter.js <small>File</small></h1>
 </div>
 
 <div class="file">
     <pre class="prettyprint linenums">
-import Ember from &#x27;ember&#x27;;
-import DS from &#x27;ember-data&#x27;;
-
-import FlexberryEnum from &#x27;../transforms/flexberry-enum&#x27;;
-
 /**
- * Class for loading metadata about models.
+ * The base class of parameters for logical predicate.
  *
  * @module ember-flexberry-data
- * @namespace Utils
- * @class Information
- *
- * @param {DS.Store} store Store for loading metadata.
- * @constructor
+ * @namespace Query
+ * @class BaseParam
  */
-class Information {
-  constructor(store) {
-    if (!store || !(store instanceof DS.Store)) {
-      throw new Error(&#x27;Store is required.&#x27;);
-    }
-
-    this._store = store;
-  }
-
-  /**
-   Checks if the specified attribute path is exist.
-
-   @method isExist
-   @param {String} modelName The name of the model.
-   @param {String} attributePath The path to the attribute.
-   @returns {Boolean} True if the specified attribute path is exist.
-   @public
-   */
-  isExist(modelName, attributePath) {
-    try {
-      // TODO: won&#x27;t work with cache
-      this.getMeta(modelName, attributePath);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  /**
-   Checks if the specified attribute path is an attribute.
-
-   @method isAttribute
-   @param {String} modelName The name of the model.
-   @param {String} attributePath The path to the attribute.
-   @returns {Boolean} True if the specified attribute path is an attribute.
-   @public
-   */
-  isAttribute(modelName, attributePath) {
-    let meta = this.getMeta(modelName, attributePath);
-    return !meta.isMaster &amp;&amp; !meta.isDetail;
-  }
-
-  /**
-   Checks if the specified attribute path is a key (i.e. it is an id or belongsTo relationship).
-
-   @method isKey
-   @param {String} modelName The name of the model.
-   @param {String} attributePath The path to the attribute.
-   @returns {Boolean} True if the specified attribute path is a key.
-   @public
-   */
-  isKey(modelName, attributePath) {
-    let meta = this.getMeta(modelName, attributePath);
-    return meta.isKey;
-  }
-
-  /**
-   Checks if the specified attribute path is a relationship.
-
-   @method isRelationship
-   @param {String} modelName The name of the model.
-   @param {String} attributePath The path to the attribute.
-   @returns {Boolean} True if the specified attribute path is a relationship.
-   @public
-   */
-  isRelationship(modelName, attributePath) {
-    let meta = this.getMeta(modelName, attributePath);
-    return meta.isMaster || meta.isDetail;
-  }
-
-  /**
-   Checks if the specified attribute path is a master field.
-
-   @method isMaster
-   @param {String} modelName The name of the model.
-   @param {String} attributePath The path to the attribute.
-   @returns {Boolean} True if the specified attribute path is a master field.
-   @public
-   */
-  isMaster(modelName, attributePath) {
-    let meta = this.getMeta(modelName, attributePath);
-    return meta.isMaster;
-  }
-
-  /**
-   Checks if the specified attribute path is a detail field.
-
-   @method isDetail
-   @param {String} modelName The name of the model.
-   @param {String} attributePath The path to the attribute.
-   @returns {Boolean} True if the specified attribute path is a detail field.
-   @public
-   */
-  isDetail(modelName, attributePath) {
-    let meta = this.getMeta(modelName, attributePath);
-    return meta.isDetail;
-  }
-
-  /**
-   Checks if the specified attribute path is a ordered field.
-
-   @method isOrdered
-   @param {String} modelName The name of the model.
-   @param {String} attributePath The path to the attribute.
-   @returns {Boolean} True if the specified attribute path is a detail field.
-   @public
-   */
-  isOrdered(modelName, attributePath) {
-    let meta = this.getMeta(modelName, attributePath);
-    return meta.isOrdered;
-  }
-
-  /**
-   Returns the type of the specified attribute path.
-
-   @method getType
-   @param {String} modelName The name of the model.
-   @param {String} attributePath The path to the attribute.
-   @returns {String} The type of the specified attribute path.
-   @public
-   */
-  getType(modelName, attributePath) {
-    let meta = this.getMeta(modelName, attributePath);
-    return meta.type;
-  }
-
-  _loadModel(modelName) {
-    let model = this._store.modelFor(modelName);
-    if (!model) {
-      throw new Error(&#x60;Undefined model &#x27;${modelName}&#x27;.&#x60;);
-    }
-
-    return model;
-  }
-
-  getMeta(modelName, attributePath) {
-    let model = this._loadModel(modelName);
-    let fields = Information.parseAttributePath(attributePath);
-
-    for (let i = 0; i &lt; fields.length; i++) {
-      if (fields.length - 1 === i) {
-        let attributes = Ember.get(model, &#x27;attributes&#x27;);
-        if (!attributes) {
-          throw new Error(&#x60;Attributes not found at model &#x27;${modelName}&#x27;.&#x60;);
-        }
-
-        let attribute = attributes.get(fields[i]);
-        if (attribute) {
-          let transform = Ember.getOwner(this._store).lookup(&#x27;transform:&#x27; + attribute.type);
-          let ordered = Ember.isNone(attribute.options) ? false : attribute.options.ordered;
-          return {
-            isMaster: false,
-            isDetail: false,
-            isKey: false,
-            isEnum: transform instanceof FlexberryEnum,
-            isOrdered: ordered || false,
-            sourceType: transform.get(&#x27;sourceType&#x27;),
-            type: attribute.type
-          };
-        }
-
-        let relationships = Ember.get(model, &#x27;relationshipsByName&#x27;);
-        let relationship = relationships.get(fields[i]);
-        if (relationship) {
-          let isMaster = relationship.kind === &#x27;belongsTo&#x27;;
-          let isDetail = relationship.kind === &#x27;hasMany&#x27;;
-          return {
-            isMaster: isMaster,
-            isDetail: isDetail,
-            isKey: isMaster,
-            isEnum: false,
-            isOrdered: false,
-            type: relationship.type,
-            keyType: model.idType || &#x27;guid&#x27;
-          };
-        }
-
-        if (fields[i] === &#x27;id&#x27;) {
-          return {
-            isMaster: false,
-            isDetail: false,
-            isKey: true,
-            isEnum: false,
-            isOrdered: false,
-            type: &#x27;string&#x27;,
-            keyType: model.idType || &#x27;guid&#x27;
-          };
-        }
-
-        throw new Error(&#x60;Field &#x27;${attributePath}&#x27; not found at model &#x27;${modelName}&#x27;.&#x60;);
-      } else {
-        let relationships = Ember.get(model, &#x27;relationshipsByName&#x27;);
-        let relationship = relationships.get(fields[i]);
-        if (relationship) {
-          model = this._store.modelFor(relationship.type);
-          if (!model) {
-            throw new Error(&#x60;Undefined model &#x27;${modelName}&#x27;.&#x60;);
-          }
-
-          continue;
-        } else {
-          throw new Error(&#x60;Field &#x27;${attributePath}&#x27; not found at model &#x27;${modelName}&#x27;.&#x60;);
-        }
-      }
-    }
+export class BaseParam {
+  constructor() {
   }
 }
 
 /**
- Parses the specified attribute paths and returns list of separate attributes.
-
- @method parseAttributePath
- @param {String} attributePath The path to the attribute.
- @returns {Array} List of separate attributes.
- @public
- @static
+ * The class of const parameter for logical predicate.
+ *
+ * @namespace Query
+ * @class ConstParam
+ * @extends BaseParam
+ *
+ * @param constValue {String|Number} The value of parameter.
+ * @constructor
  */
-Information.parseAttributePath = (attributePath) =&gt; attributePath.split(&#x27;.&#x27;);
+export class ConstParam extends BaseParam {
+  constructor(constValue) {
+    super();
 
-export default Information;
+    this._constValue = constValue;
+  }
+
+  /**
+   * The value of parameter for logical predicate.
+   *
+   * @property constValue
+   * @type String|Number
+   * @public
+   */
+  get constValue() {
+    return this._constValue;
+  }
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the parameter.
+   * @public
+   */
+  toString() {
+    return &#x60;${this._constValue}&#x60;;
+  }
+}
+
+/**
+ * The class of attribute parameter for logical predicate.
+ *
+ * @namespace Query
+ * @class AttributeParam
+ * @extends BaseParam
+ *
+ * @param attributePath {String} The path to the attribute for filtering.
+ * @constructor
+ */
+export class AttributeParam extends BaseParam {
+  constructor(attributePath) {
+    super();
+
+    this._attributePath = attributePath;
+  }
+
+  /**
+   * The path to the attribute.
+   *
+   * @property attributePath
+   * @type String
+   * @public
+   */
+  get attributePath() {
+    return this._attributePath;
+  }
+
+
+  /**
+   * Converts this instance to string.
+   *
+   * @method toString
+   * @return {String} Text representation of the parameter.
+   * @public
+   */
+  toString() {
+    return &#x60;${this._attributePath}&#x60;;
+  }
+}
 
     </pre>
 </div>

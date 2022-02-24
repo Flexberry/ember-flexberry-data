@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.ModelWithoutValidation", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Query.TruePredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.ModelWithoutValidation", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.AttributeParam", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BaseParam", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.ConstParam", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Query.TruePredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -71,12 +71,15 @@
 	                            <li><a href="../classes/Projection.ModelWithoutValidation.html">Projection.ModelWithoutValidation</a></li>
 	                            <li><a href="../classes/Projection.StoreMixin.html">Projection.StoreMixin</a></li>
 	                            <li><a href="../classes/Query.html">Query</a></li>
+	                            <li><a href="../classes/Query.AttributeParam.html">Query.AttributeParam</a></li>
 	                            <li><a href="../classes/Query.BaseAdapter.html">Query.BaseAdapter</a></li>
 	                            <li><a href="../classes/Query.BaseBuilder.html">Query.BaseBuilder</a></li>
+	                            <li><a href="../classes/Query.BaseParam.html">Query.BaseParam</a></li>
 	                            <li><a href="../classes/Query.BasePredicate.html">Query.BasePredicate</a></li>
 	                            <li><a href="../classes/Query.Builder.html">Query.Builder</a></li>
 	                            <li><a href="../classes/Query.ComplexPredicate.html">Query.ComplexPredicate</a></li>
 	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.ConstParam.html">Query.ConstParam</a></li>
 	                            <li><a href="../classes/Query.DatePredicate.html">Query.DatePredicate</a></li>
 	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
 	                            <li><a href="../classes/Query.FalsePredicate.html">Query.FalsePredicate</a></li>
@@ -155,6 +158,7 @@ import QueryObject from &#x27;./query-object&#x27;;
 import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, IsOfPredicate } from &#x27;./predicate&#x27;;
 import Information from &#x27;../utils/information&#x27;;
 import isEmbedded from &#x27;../utils/is-embedded&#x27;;
+import { ConstParam, AttributeParam } from &#x27;./parameter&#x27;;
 
 /**
  * Class of builder for query.
@@ -547,14 +551,28 @@ export default class Builder extends BaseBuilder {
     let existKeys = Object.keys(this._select);
     let scanPredicates = function(predicate, detailPath) {
       if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate || predicate instanceof DatePredicate) {
-        let path = detailPath ? detailPath + &#x27;.&#x27; : &#x27;&#x27;;
-        Information.parseAttributePath(predicate.attributePath).forEach((attribute) =&gt; {
-          let key = &#x60;${path}${attribute}&#x60;;
-          if (existKeys.indexOf(key) === -1) {
-            extend[key.trim()] = true;
-          }
+        let attributesPaths = [];
+        let pathOfFirstArgument = predicate.attributePath;
+        if (!(pathOfFirstArgument instanceof ConstParam)) {
+          attributesPaths.push(pathOfFirstArgument instanceof AttributeParam 
+                                ? pathOfFirstArgument.attributePath
+                                : pathOfFirstArgument);
+        }
 
-          path += &#x60;${attribute}.&#x60;;
+        if (predicate.value instanceof AttributeParam) {
+          attributesPaths.push(predicate.value.attributePath);
+        }
+
+        attributesPaths.forEach((attributesPath) =&gt; {
+          let path = detailPath ? detailPath + &#x27;.&#x27; : &#x27;&#x27;;
+          Information.parseAttributePath(attributesPath).forEach((attribute) =&gt; {
+            let key = &#x60;${path}${attribute}&#x60;;
+            if (existKeys.indexOf(key) === -1) {
+              extend[key.trim()] = true;
+            }
+  
+            path += &#x60;${attribute}.&#x60;;
+          });
         });
       }
 

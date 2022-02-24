@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.ModelWithoutValidation", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Query.TruePredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/Adapter", "classes/Adapter.OData", "classes/Adapter.Offline", "classes/ApplicationInitializer", "classes/Audit", "classes/CopyableMixin", "classes/DecimalTransform", "classes/FileTransform", "classes/FlexberryEnumTransform", "classes/GuidTransform", "classes/OData.OnlineStore", "classes/Offline", "classes/Offline.DexieService", "classes/Offline.GlobalsService", "classes/Offline.LocalStore", "classes/Offline.Model", "classes/Offline.ModelMixin", "classes/Offline.Store", "classes/Offline.Syncer", "classes/Projection", "classes/Projection.AdapterMixin", "classes/Projection.Model", "classes/Projection.ModelWithoutValidation", "classes/Projection.StoreMixin", "classes/Query", "classes/Query.AttributeParam", "classes/Query.BaseAdapter", "classes/Query.BaseBuilder", "classes/Query.BaseParam", "classes/Query.BasePredicate", "classes/Query.Builder", "classes/Query.ComplexPredicate", "classes/Query.Condition", "classes/Query.ConstParam", "classes/Query.DatePredicate", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IndexedDBAdapter", "classes/Query.IsOfPredicate", "classes/Query.JsAdapter", "classes/Query.NotPredicate", "classes/Query.ODataAdapter", "classes/Query.OrderByClause", "classes/Query.QueryObject", "classes/Query.SimplePredicate", "classes/Query.StringPredicate", "classes/Query.TruePredicate", "classes/Security", "classes/Serializer", "classes/Serializer.Base", "classes/Serializer.OData", "classes/Serializer.Offline", "classes/Utils", "classes/Utils.Information", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -71,12 +71,15 @@
 	                            <li><a href="../classes/Projection.ModelWithoutValidation.html">Projection.ModelWithoutValidation</a></li>
 	                            <li><a href="../classes/Projection.StoreMixin.html">Projection.StoreMixin</a></li>
 	                            <li><a href="../classes/Query.html">Query</a></li>
+	                            <li><a href="../classes/Query.AttributeParam.html">Query.AttributeParam</a></li>
 	                            <li><a href="../classes/Query.BaseAdapter.html">Query.BaseAdapter</a></li>
 	                            <li><a href="../classes/Query.BaseBuilder.html">Query.BaseBuilder</a></li>
+	                            <li><a href="../classes/Query.BaseParam.html">Query.BaseParam</a></li>
 	                            <li><a href="../classes/Query.BasePredicate.html">Query.BasePredicate</a></li>
 	                            <li><a href="../classes/Query.Builder.html">Query.Builder</a></li>
 	                            <li><a href="../classes/Query.ComplexPredicate.html">Query.ComplexPredicate</a></li>
 	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.ConstParam.html">Query.ConstParam</a></li>
 	                            <li><a href="../classes/Query.DatePredicate.html">Query.DatePredicate</a></li>
 	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
 	                            <li><a href="../classes/Query.FalsePredicate.html">Query.FalsePredicate</a></li>
@@ -167,6 +170,7 @@ import FilterOperator from &#x27;./filter-operator&#x27;;
 import Information from &#x27;../utils/information&#x27;;
 import getSerializedDateValue from &#x27;../utils/get-serialized-date-value&#x27;;
 import { capitalize, camelize } from &#x27;../utils/string-functions&#x27;;
+import { ConstParam, AttributeParam } from &#x27;./parameter&#x27;;
 
 /**
  * Class of query adapter that translates query object into OData URL.
@@ -535,7 +539,50 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataSimplePredicate(predicate, modelName, prefix) {
-    let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+    // predicate.attributePath - attribute or AttributeParam or ConstParam.
+    // predicate.value - const or AttributeParam or ConstParam.
+
+    let attributePath = predicate.attributePath;
+    let predicateValue = predicate.value;
+    let attributeObject = null;
+    let valueObject = null;
+    let isFirstParameterAttribute = !(attributePath instanceof ConstParam);
+    let isSecondParameterAttribute = predicateValue instanceof AttributeParam;
+
+    if (isFirstParameterAttribute) {
+      attributeObject = this._processAttributeForODataSimplePredicate(predicate, modelName, prefix, attributePath);
+    }
+
+    if (isSecondParameterAttribute) {
+      valueObject = this._processAttributeForODataSimplePredicate(predicate, modelName, prefix, predicateValue);
+    }
+
+    if (!isFirstParameterAttribute) {
+      attributeObject = this._processConstForODataSimplePredicate(
+                            predicate,
+                            modelName,
+                            attributePath,
+                            isSecondParameterAttribute ? valueObject.attributePath : null);
+    }
+
+    if (!isSecondParameterAttribute) {
+      valueObject = this._processConstForODataSimplePredicate(
+                            predicate, 
+                            modelName, 
+                            predicateValue, 
+                            isFirstParameterAttribute ? attributeObject.attributePath : null);
+    }
+
+    let operator = this._getODataFilterOperator(predicate.operator);
+    return &#x60;${attributeObject.value} ${operator} ${valueObject.value}&#x60;;
+  }
+
+  _processAttributeForODataSimplePredicate(predicate, modelName, prefix, attributePathParameter)
+  {
+    let realAttributePath = attributePathParameter instanceof AttributeParam
+                            ? attributePathParameter.attributePath
+                            : attributePathParameter;
+    let attribute = this._getODataAttributeName(modelName, realAttributePath);
     if (prefix) {
       attribute = &#x60;${prefix}/${attribute}&#x60;;
     }
@@ -544,40 +591,57 @@ export default class ODataAdapter extends BaseAdapter {
       attribute = &#x60;date(${attribute})&#x60;;
     }
 
+    return { 
+      value: attribute,
+      attributePath: realAttributePath
+    };
+  }
+
+  _processConstForODataSimplePredicate(predicate, modelName, predicateValue, predicateAttribute)
+  {
     let value;
-    if (predicate.value === null) {
+    let realPredicateValue = predicateValue instanceof ConstParam
+                              ? predicateValue.constValue
+                              : predicateValue;
+
+    if (realPredicateValue === null) {
       value = &#x27;null&#x27;;
+    } else if (predicateAttribute === null) {
+      value = this._processConstForODataSimplePredicateByType(predicate, realPredicateValue, typeof realPredicateValue);
     } else {
-      let meta = this._info.getMeta(modelName, predicate.attributePath);
+      let meta = this._info.getMeta(modelName, predicateAttribute);
       if (meta.isKey) {
         if ((meta.keyType === &#x27;guid&#x27;) || (meta.keyType === &#x27;number&#x27;)) {
-          value = predicate.value;
+          value = realPredicateValue;
         } else if (meta.keyType === &#x27;string&#x27;) {
-          value = &#x60;&#x27;${predicate.value}&#x27;&#x60;;
+          value = &#x60;&#x27;${realPredicateValue}&#x27;&#x60;;
         } else {
           throw new Error(&#x60;Unsupported key type &#x27;${meta.keyType}&#x27;.&#x60;);
         }
       } else if (meta.isEnum) {
         let type = meta.sourceType;
         if (!type) {
-          Ember.warn(&#x60;Source type is not specified for the enum &#x27;${meta.type}&#x27; (${modelName}.${predicate.attributePath}).&#x60;,
+          Ember.warn(&#x60;Source type is not specified for the enum &#x27;${meta.type}&#x27; (${modelName}.${predicateAttribute}).&#x60;,
           false,
           { id: &#x27;ember-flexberry-data-debug.odata-adapter.source-type-is-not-specified-for-enum&#x27; });
           type = capitalize(camelize(meta.type));
         }
 
-        value = &#x60;${type}&#x27;${predicate.value}&#x27;&#x60;;
-      } else if (meta.type === &#x27;string&#x27;) {
-        value = &#x60;&#x27;${String(predicate.value).replace(/&#x27;/g, &#x60;&#x27;&#x27;&#x60;)}&#x27;&#x60;;
-      } else if (meta.type === &#x27;date&#x27;) {
-        value = getSerializedDateValue.call(this._store, predicate.value, predicate.timeless);
+        value = &#x60;${type}&#x27;${realPredicateValue}&#x27;&#x60;;
       } else {
-        value = predicate.value;
+        value = this._processConstForODataSimplePredicateByType(predicate, realPredicateValue, meta.type);
       }
     }
 
-    let operator = this._getODataFilterOperator(predicate.operator);
-    return &#x60;${attribute} ${operator} ${value}&#x60;;
+    return { value: value };
+  }
+
+  _processConstForODataSimplePredicateByType(predicate, predicateValue, valueType){
+    return valueType === &#x27;string&#x27;
+            ? &#x60;&#x27;${String(predicateValue).replace(/&#x27;/g, &#x60;&#x27;&#x27;&#x60;)}&#x27;&#x60;
+            : ((valueType === &#x27;date&#x27; || (valueType === &#x27;object&#x27; &amp;&amp; predicateValue instanceof Date))
+                ? getSerializedDateValue.call(this._store, predicateValue, predicate.timeless)
+                : predicateValue);
   }
 }
 
