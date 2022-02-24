@@ -11,6 +11,7 @@ import {
   TruePredicate,
   FalsePredicate
 } from './predicate';
+import { ConstParam, AttributeParam } from './parameter';
 import FilterOperator from './filter-operator';
 import Condition from './condition';
 import Information from '../utils/information';
@@ -308,61 +309,118 @@ export default class JSAdapter extends BaseAdapter {
     }
 
     if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
-      let value = predicate.value;
-      if (options && options.booleanAsString && typeof value === 'boolean') {
-        value = `${value}`;
-      }
+      // predicate.attributePath - attribute or AttributeParam or ConstParam.
+      // predicate.value - const or AttributeParam or ConstParam.
 
       return (i) => {
-        let datesIsValid = false;
-        let valueFromHash = _this.getValue(i, predicate.attributePath);
-        let momentFromHash;
-        if (predicate instanceof DatePredicate) {
-          momentFromHash = _this._moment.moment(valueFromHash);
-          let momentFromValue = _this._moment.moment(value);
-          datesIsValid = momentFromHash.isValid() && momentFromValue.isValid();
-        }
+        let firstOperand = predicate.attributePath;
+        let secondOperand = predicate.value;
+        let isFirstAttribute = !(firstOperand instanceof ConstParam);
+        let isSecondAttribute = secondOperand instanceof AttributeParam;
+
+        let processAttributeFunction = function (attributeOperand, predicate) {
+          let realPath = attributeOperand instanceof AttributeParam
+                          ? attributeOperand.attributePath
+                          : attributeOperand;
+          let valueFromHash = _this.getValue(i, realPath);
+          let momentFromHash;
+          if (predicate instanceof DatePredicate) {
+            momentFromHash = _this._moment.moment(valueFromHash);
+          }
+
+          // TODO: add support of variant without id.
+          let masterValue;
+          let isMasterPath = realPath.indexOf('.', 1) !== -1;
+          if (isMasterPath) {
+            let masterPath = realPath.slice(0, realPath.lastIndexOf('.'));
+            masterValue = _this.getValue(i, masterPath);
+          }
+          
+          return {
+            value: valueFromHash,
+            momentValue: momentFromHash,
+            isMasterPath: isMasterPath,
+            masterValue: masterValue
+          };
+        };
+
+        let processValueFunction = function (constOperand, predicate) {
+          let realValue = constOperand instanceof ConstParam
+                            ? constOperand.constValue
+                            : constOperand;
+          let momentValue;
+          if (options && options.booleanAsString && typeof realValue === 'boolean') {
+            realValue = `${realValue}`;
+          }
+
+          if (predicate instanceof DatePredicate) {
+            momentValue = _this._moment.moment(realValue);
+          }
+
+          return {
+            value: realValue,
+            momentValue: momentValue
+          };
+        };
+
+        let firstValue = isFirstAttribute
+                          ? processAttributeFunction(firstOperand, predicate)
+                          : processValueFunction(firstOperand, predicate);
+        
+        let secondValue = isSecondAttribute
+                          ? processAttributeFunction(secondOperand, predicate)
+                          : processValueFunction(secondOperand, predicate);
+        
+        let datesIsValid = (predicate instanceof DatePredicate) 
+                            && firstValue.momentValue.isValid() && secondValue.momentValue.isValid();
+
+        let realFirstArgument = datesIsValid ? firstValue.momentValue : firstValue.value;
+        let realSecondArgument = secondValue.value;
+
+        let resultPredicate = null;
 
         switch (predicate.operator) {
           case FilterOperator.Eq:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isSame(value, 'day') : momentFromHash.isSame(value);
-            }
-
-            return valueFromHash === value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isSame(realSecondArgument, 'day') : realFirstArgument.isSame(realSecondArgument))
+                    : realFirstArgument === realSecondArgument;
+            break;
           case FilterOperator.Neq:
-            if (datesIsValid) {
-              return predicate.timeless ? !momentFromHash.isSame(value, 'day') : !momentFromHash.isSame(value);
-            }
-
-            return valueFromHash !== value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? !realFirstArgument.isSame(realSecondArgument, 'day') : !realFirstArgument.isSame(realSecondArgument))
+                    : realFirstArgument !== realSecondArgument;
+            break;
           case FilterOperator.Le:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isBefore(value, 'day') : momentFromHash.isBefore(value);
-            }
-
-            return valueFromHash < value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isBefore(realSecondArgument, 'day') : realFirstArgument.isBefore(realSecondArgument))
+                    : realFirstArgument < realSecondArgument;
+            break;
           case FilterOperator.Leq:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isSameOrBefore(value, 'day') : momentFromHash.isSameOrBefore(value);
-            }
-
-            return valueFromHash <= value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isSameOrBefore(realSecondArgument, 'day') : realFirstArgument.isSameOrBefore(realSecondArgument))
+                    : realFirstArgument <= realSecondArgument;
+            break;
           case FilterOperator.Ge:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isAfter(value, 'day') : momentFromHash.isAfter(value);
-            }
-
-            return valueFromHash > value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isAfter(realSecondArgument, 'day') : realFirstArgument.isAfter(realSecondArgument))
+                    : realFirstArgument > realSecondArgument;
+            break;
           case FilterOperator.Geq:
-            if (datesIsValid) {
-              return predicate.timeless ? momentFromHash.isSameOrAfter(value, 'day') : momentFromHash.isSameOrAfter(value);
-            }
-
-            return valueFromHash >= value;
+            resultPredicate = datesIsValid 
+                    ? (predicate.timeless ? realFirstArgument.isSameOrAfter(realSecondArgument, 'day') : realFirstArgument.isSameOrAfter(realSecondArgument))
+                    : realFirstArgument >= realSecondArgument;
+            break;
           default:
             throw new Error(`Unsupported filter operator '${predicate.operator}'.`);
         }
+
+        if (isFirstAttribute && isSecondAttribute) {
+          resultPredicate = (!firstValue.isMasterPath || firstValue.masterValue) 
+                            && (!secondValue.isMasterPath || secondValue.masterValue)
+                            && resultPredicate;
+        }
+
+        return resultPredicate;
       };
     }
 

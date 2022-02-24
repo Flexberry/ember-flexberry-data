@@ -7,6 +7,7 @@ import QueryObject from './query-object';
 import { createPredicate, SimplePredicate, ComplexPredicate, StringPredicate, DetailPredicate, DatePredicate, IsOfPredicate } from './predicate';
 import Information from '../utils/information';
 import isEmbedded from '../utils/is-embedded';
+import { ConstParam, AttributeParam } from './parameter';
 
 /**
  * Class of builder for query.
@@ -399,14 +400,28 @@ export default class Builder extends BaseBuilder {
     let existKeys = Object.keys(this._select);
     let scanPredicates = function(predicate, detailPath) {
       if (predicate instanceof SimplePredicate || predicate instanceof StringPredicate || predicate instanceof DatePredicate) {
-        let path = detailPath ? detailPath + '.' : '';
-        Information.parseAttributePath(predicate.attributePath).forEach((attribute) => {
-          let key = `${path}${attribute}`;
-          if (existKeys.indexOf(key) === -1) {
-            extend[key.trim()] = true;
-          }
+        let attributesPaths = [];
+        let pathOfFirstArgument = predicate.attributePath;
+        if (!(pathOfFirstArgument instanceof ConstParam)) {
+          attributesPaths.push(pathOfFirstArgument instanceof AttributeParam 
+                                ? pathOfFirstArgument.attributePath
+                                : pathOfFirstArgument);
+        }
 
-          path += `${attribute}.`;
+        if (predicate.value instanceof AttributeParam) {
+          attributesPaths.push(predicate.value.attributePath);
+        }
+
+        attributesPaths.forEach((attributesPath) => {
+          let path = detailPath ? detailPath + '.' : '';
+          Information.parseAttributePath(attributesPath).forEach((attribute) => {
+            let key = `${path}${attribute}`;
+            if (existKeys.indexOf(key) === -1) {
+              extend[key.trim()] = true;
+            }
+  
+            path += `${attribute}.`;
+          });
         });
       }
 
