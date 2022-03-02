@@ -95,7 +95,7 @@ tests/unit/CRUD/base/association-batch-updating-test.js
 tests/unit/CRUD/base/base-batch-updating-test.js
 tests/unit/CRUD/base/base-creating-test.js
 tests/unit/CRUD/base/base-deleting-test.js
-tests/unit/CRUD/base/base-deleting-with-detail-test.js
+tests/unit/CRUD/base/base-deleting-with-details-test.js
 tests/unit/CRUD/base/base-reading-builder-test.js
 tests/unit/CRUD/base/base-reading-comparsion-with-null-test.js
 tests/unit/CRUD/base/base-reading-complex-predicates-test.js
