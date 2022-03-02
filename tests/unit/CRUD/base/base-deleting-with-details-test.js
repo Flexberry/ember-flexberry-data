@@ -2,7 +2,7 @@ import Ember from 'ember';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 export default function deletingWithDetails(store, assert) {
-  assert.expect(4);
+  assert.expect(3);
   let done = assert.async();
 
   Ember.run(() => {
