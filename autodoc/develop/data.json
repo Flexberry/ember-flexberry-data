@@ -2919,7 +2919,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 278,
+            "line": 283,
             "description": "Create record if it does not exist, or update changed fields of record.",
             "itemtype": "method",
             "name": "updateOrCreate",
@@ -2955,7 +2955,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 316,
+            "line": 321,
             "description": "Stores record's hash for performing bulk operaion with {{#crossLink \"Adapter.Offline/bulkUpdateOrCreate:method\"}} method.",
             "itemtype": "method",
             "name": "addHashForBulkUpdateOrCreate",
@@ -2996,7 +2996,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 380,
+            "line": 385,
             "description": "Performing bulk operaion with previously stored hashes.",
             "itemtype": "method",
             "name": "bulkUpdateOrCreate",
@@ -3027,7 +3027,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 431,
+            "line": 436,
             "description": "This method is not implemented.",
             "itemtype": "method",
             "name": "batchUpdate",
@@ -3037,7 +3037,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 440,
+            "line": 445,
             "description": "Stores hash for performing bulk operaion into map.",
             "itemtype": "method",
             "name": "_storeHashForBulkOperation",
@@ -3061,7 +3061,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 458,
+            "line": 463,
             "description": "Makes {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} out of queries that look like this:\n {\n   <property to query>: <value to match>,\n   ...\n }.",
             "itemtype": "method",
             "name": "_makeQueryObject",
@@ -3099,7 +3099,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 509,
+            "line": 514,
             "description": "Retrieves projection from query and returns it.\nRetrieved projection removes from the query.",
             "itemtype": "method",
             "name": "_extractProjectionFromQuery",
@@ -3133,6 +3133,40 @@
                 "description": "Extracted projection from query or null\n                 if projection is not set in query.",
                 "type": "Object"
             },
+            "access": "private",
+            "tagname": "",
+            "class": "Adapter.Offline",
+            "module": "ember-flexberry-data",
+            "namespace": "Adapter"
+        },
+        {
+            "file": "addon/adapters/offline.js",
+            "line": 585,
+            "description": "Forming promises for deleting current record and its details.",
+            "itemtype": "method",
+            "name": "_deleteDetailModels",
+            "params": [
+                {
+                    "name": "dexieService",
+                    "description": "Instance of dexie service.",
+                    "type": "Offline.DexieService"
+                },
+                {
+                    "name": "db",
+                    "description": "Instance of current IndexedDB database.",
+                    "type": "IndexedDB"
+                },
+                {
+                    "name": "promises",
+                    "description": "Promises on deleting records.",
+                    "type": "Promise"
+                },
+                {
+                    "name": "record",
+                    "description": "Current record that should be deleted with details.",
+                    "type": "DS.Model"
+                }
+            ],
             "access": "private",
             "tagname": "",
             "class": "Adapter.Offline",

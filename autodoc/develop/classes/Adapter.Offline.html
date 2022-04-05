@@ -185,6 +185,10 @@
 
                     <ul class="index-list methods extends">
                             <li class="index-item method private">
+                                <a href="#" data-tabid="#methods" data-anchor="#method__deleteDetailModels" data-tablink="_deleteDetailModels">_deleteDetailModels</a>
+
+                            </li>
+                            <li class="index-item method private">
                                 <a href="#" data-tabid="#methods" data-anchor="#method__extractProjectionFromQuery" data-tablink="_extractProjectionFromQuery">_extractProjectionFromQuery</a>
 
                             </li>
@@ -284,6 +288,102 @@
             <div id="methods" class="tab-pane">
                 <h2 class="off-left">Methods</h2>
 
+                    <div id="method__deleteDetailModels" class="method item private">
+                        <h3 class="name"><code>_deleteDetailModels</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>dexieService</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>db</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>promises</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>record</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_adapters_offline.js.html#l585"><code>addon&#x2F;adapters&#x2F;offline.js:585</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Forming promises for deleting current record and its details.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">dexieService</code>
+                                            <span class="type"><a href="../classes/Offline.DexieService.html" class="crosslink">Offline.DexieService</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Instance of dexie service.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">db</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API" class="crosslink external" target="_blank">IndexedDB</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Instance of current IndexedDB database.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">promises</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Promises on deleting records.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">record</code>
+                                            <span class="type"><a href="http://emberjs.com/api/data/classes/DS.Model.html" class="crosslink external" target="_blank">DS.Model</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Current record that should be deleted with details.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="method__extractProjectionFromQuery" class="method item private">
                         <h3 class="name"><code>_extractProjectionFromQuery</code></h3>
                     
@@ -315,7 +415,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l509"><code>addon&#x2F;adapters&#x2F;offline.js:509</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l514"><code>addon&#x2F;adapters&#x2F;offline.js:514</code></a>
                             </p>
                     
                     
@@ -428,7 +528,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l458"><code>addon&#x2F;adapters&#x2F;offline.js:458</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l463"><code>addon&#x2F;adapters&#x2F;offline.js:463</code></a>
                             </p>
                     
                     
@@ -532,7 +632,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l440"><code>addon&#x2F;adapters&#x2F;offline.js:440</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l445"><code>addon&#x2F;adapters&#x2F;offline.js:445</code></a>
                             </p>
                     
                     
@@ -609,7 +709,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l316"><code>addon&#x2F;adapters&#x2F;offline.js:316</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l321"><code>addon&#x2F;adapters&#x2F;offline.js:321</code></a>
                             </p>
                     
                     
@@ -702,7 +802,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l431"><code>addon&#x2F;adapters&#x2F;offline.js:431</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l436"><code>addon&#x2F;adapters&#x2F;offline.js:436</code></a>
                             </p>
                     
                     
@@ -747,7 +847,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l380"><code>addon&#x2F;adapters&#x2F;offline.js:380</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l385"><code>addon&#x2F;adapters&#x2F;offline.js:385</code></a>
                             </p>
                     
                     
@@ -1651,7 +1751,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l278"><code>addon&#x2F;adapters&#x2F;offline.js:278</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l283"><code>addon&#x2F;adapters&#x2F;offline.js:283</code></a>
                             </p>
                     
                     
