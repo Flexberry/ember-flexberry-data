@@ -95,6 +95,7 @@ tests/unit/CRUD/base/association-batch-updating-test.js
 tests/unit/CRUD/base/base-batch-updating-test.js
 tests/unit/CRUD/base/base-creating-test.js
 tests/unit/CRUD/base/base-deleting-test.js
+tests/unit/CRUD/base/base-deleting-with-details-test.js
 tests/unit/CRUD/base/base-reading-builder-test.js
 tests/unit/CRUD/base/base-reading-comparsion-with-null-test.js
 tests/unit/CRUD/base/base-reading-complex-predicates-test.js
@@ -117,6 +118,7 @@ tests/unit/CRUD/odata/odata-association-batch-updating-test.js
 tests/unit/CRUD/odata/odata-batch-updating-test.js
 tests/unit/CRUD/odata/odata-creating-test.js
 tests/unit/CRUD/odata/odata-deleting-test.js
+tests/unit/CRUD/odata/odata-deleting-with-details-test.js
 tests/unit/CRUD/odata/odata-reading-builder-test.js
 tests/unit/CRUD/odata/odata-reading-comparsion-with-null-test.js
 tests/unit/CRUD/odata/odata-reading-complex-predicates-test.js
@@ -139,6 +141,7 @@ tests/unit/CRUD/offline/offline-association-batch-updating-test.js
 tests/unit/CRUD/offline/offline-batch-updating-test.js
 tests/unit/CRUD/offline/offline-creating-test.js
 tests/unit/CRUD/offline/offline-deleting-test.js
+tests/unit/CRUD/offline/offline-deleting-with-details-test.js
 tests/unit/CRUD/offline/offline-reading-builder-test.js
 tests/unit/CRUD/offline/offline-reading-comparsion-with-null-test.js
 tests/unit/CRUD/offline/offline-reading-complex-predicates-test.js
