@@ -1,6 +1,6 @@
 {
   "name": "ember-flexberry-data",
-  "version": "2.7.0-beta.1",
+  "version": "2.7.0-beta.2",
   "description": "Support of database projections, JavaScript Query Language and working with several kinds of backends",
   "license": "MIT",
   "author": {
