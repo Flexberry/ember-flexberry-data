@@ -80,4 +80,16 @@ Model.defineProjection('DropDownLookupExampleView', 'ember-flexberry-dummy-sugge
   moderated: attr('Moderated')
 });
 
+// Two-level-masters.
+Model.defineProjection('TwoLevelMaster', 'ember-flexberry-dummy-suggestion-type', {
+  name: Projection.attr('Name'),
+  moderated: Projection.attr('Moderated'),
+  parent: Projection.belongsTo('ember-flexberry-dummy-suggestion-type', 'Parent', {
+    name: Projection.attr('Name'),
+    parent: Projection.belongsTo('ember-flexberry-dummy-suggestion-type', 'Parent', {
+      name: Projection.attr('Name')
+    })
+  })
+});
+
 export default Model;

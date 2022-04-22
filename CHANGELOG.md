@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [2.7.0-beta.1] - 2022-04-05
+### Added
+- Support of `SimplePredicate` and `DatePredicate` with two attributes.
+
+### Changed
+- Now during deleting record in offline mode detail records are deleted too.
+
 ## [3.7.0-beta.1] - 2021-10-12
 ### Added
 - Changes from `2.7.0-beta.0` version.

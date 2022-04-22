@@ -267,10 +267,15 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   deleteRecord(store, type, snapshot) {
+    let promises = Ember.A();
     let dexieService = this.get('dexieService');
     let db = dexieService.dexie(this.get('dbName'), store);
-    return dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id)).then(() =>
-      this._deleteParentModels(store, type, snapshot.id));
+    this._deleteDetailModels(dexieService, db, promises, snapshot.record);
+
+    promises.pushObject(dexieService.performQueueOperation(db, (db) => db.table(type.modelName).delete(snapshot.id)));
+    return Ember.RSVP.all(promises).then(() => {
+      return this._deleteParentModels(store, type, snapshot.id);
+    });
   },
 
   /* jshint unused:vars */
@@ -576,10 +581,33 @@ export default DS.Adapter.extend({
     if (parentModelName) {
       let dexieService = _this.get('dexieService');
       let db = dexieService.dexie(_this.get('dbName'), store);
-      return dexieService.performQueueOperation(db, (db) => db.table(parentModelName).delete(id)).then(() =>
-        _this._deleteParentModels(store, store.modelFor(parentModelName), id));
+      return dexieService.performQueueOperation(db, (db) => db.table(parentModelName).delete(id)).then(() => {
+          return _this._deleteParentModels(store, store.modelFor(parentModelName), id);
+        });
     } else {
       return RSVP.resolve();
     }
+  },
+
+  /**
+    Forming promises for deleting current record and its details.
+
+    @method _deleteDetailModels
+    @param {Offline.DexieService} dexieService Instance of dexie service.
+    @param {IndexedDB} db Instance of current IndexedDB database.
+    @param {Promise} promises Promises on deleting records.
+    @param {DS.Model} record Current record that should be deleted with details.
+    @private
+  */
+  _deleteDetailModels(dexieService, db, promises, record) {
+    let _this = this;
+    record.eachRelationship((name, desc) => {
+      if (desc.kind === 'hasMany') {
+        record.get(name).forEach((relRecord) => {
+          _this._deleteDetailModels(dexieService, db, promises, relRecord);
+          promises.pushObject(dexieService.performQueueOperation(db, (db) => db.table(desc.type).delete(relRecord.id)));
+        });
+      }
+    });
   }
 });
