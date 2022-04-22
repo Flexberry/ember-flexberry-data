@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Projection.ModelWithoutValidation", "classes/Query.Condition", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/Query.TruePredicate", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Projection.ModelWithoutValidation", "classes/Query.AttributeParam", "classes/Query.BaseParam", "classes/Query.Condition", "classes/Query.ConstParam", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/Query.TruePredicate", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -77,7 +77,10 @@
 	                            <li><a href="../classes/OrderByClause.html">OrderByClause</a></li>
 	                            <li><a href="../classes/Projection.html">Projection</a></li>
 	                            <li><a href="../classes/Projection.ModelWithoutValidation.html">Projection.ModelWithoutValidation</a></li>
+	                            <li><a href="../classes/Query.AttributeParam.html">Query.AttributeParam</a></li>
+	                            <li><a href="../classes/Query.BaseParam.html">Query.BaseParam</a></li>
 	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.ConstParam.html">Query.ConstParam</a></li>
 	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
 	                            <li><a href="../classes/Query.FalsePredicate.html">Query.FalsePredicate</a></li>
 	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
@@ -159,6 +162,7 @@ import {
   TruePredicate,
   FalsePredicate
 } from &#x27;./predicate&#x27;;
+import { ConstParam, AttributeParam } from &#x27;./parameter&#x27;;
 import BaseAdapter from &#x27;./base-adapter&#x27;;
 import JSAdapter from &#x27;ember-flexberry-data/query/js-adapter&#x27;;
 import Information from &#x27;../utils/information&#x27;;
@@ -201,6 +205,7 @@ export default class extends BaseAdapter {
       let _this = this;
       let jsAdapter;
       let datePredicates = [];
+
       if (query.predicate instanceof ComplexPredicate) {
         datePredicates = query.predicate.predicates.filter(predicate =&gt; predicate instanceof DatePredicate);
       }
@@ -771,64 +776,139 @@ function updateWhereClause(store, table, query) {
     return table;
   }
 
+
   if (predicate instanceof SimplePredicate || predicate instanceof DatePredicate) {
+    // predicate.attributePath - attribute or AttributeParam or ConstParam.
+    // predicate.value - const or AttributeParam or ConstParam.
+
     let information = new Information(store);
-    let attrType = information.getType(query.modelName, predicate.attributePath);
-    let value;
-    switch (attrType) {
-      case &#x27;boolean&#x27;:
-        value = typeof predicate.value === &#x27;boolean&#x27; ? &#x60;${predicate.value}&#x60; : predicate.value;
-        break;
+    let firstParameter = predicate.attributePath;
+    let secondParameter = predicate.value;
+    let firstObject = null;
+    let secondObject = null;
+    let isFirstParameterAttribute = !(firstParameter instanceof ConstParam);
+    let isSecondParameterAttribute = secondParameter instanceof AttributeParam;
 
-      case &#x27;date&#x27;:
-        value = getSerializedDateValue.call(store, predicate.value, predicate.timeless);
-        break;
+    let processAttributeParam = function(attributePathParameter) {
+      let realAttributePath = attributePathParameter instanceof AttributeParam
+                            ? attributePathParameter.attributePath
+                            : attributePathParameter;
 
-      default:
-        value = predicate.value;
+      return {
+        attributePath: realAttributePath
+      };
+    };
+
+    let processConstParam = function(valueParameter, attrType, timeless, store) {
+      let realPredicateValue = valueParameter instanceof ConstParam
+                              ? valueParameter.constValue
+                              : valueParameter;
+
+      let realAttrType = attrType === null ? typeof realPredicateValue : attrType;
+      let resultValue =  realAttrType === &#x27;boolean&#x27;
+                          ? (typeof realPredicateValue === &#x27;boolean&#x27; ? &#x60;${realPredicateValue}&#x60; : realPredicateValue)
+                          : (realAttrType === &#x27;date&#x27; || (realAttrType === &#x27;object&#x27; &amp;&amp; realPredicateValue instanceof Date)
+                              ? getSerializedDateValue.call(store, realPredicateValue, timeless)
+                              : realPredicateValue);
+
+      let nextValue;
+      if (predicate.timeless) {
+        let moment = Ember.getOwner(store).lookup(&#x27;service:moment&#x27;);
+        nextValue = moment.moment(resultValue, &#x27;YYYY-MM-DD&#x27;).add(1, &#x27;d&#x27;).format(&#x27;YYYY-MM-DD&#x27;);
+      }
+
+      return {
+        value: resultValue,
+        nextValue: nextValue
+      };
     }
 
-    if (value === null) {
+    if (isFirstParameterAttribute) {
+      firstObject = processAttributeParam(firstParameter);
+    }
+
+    if (isSecondParameterAttribute) {
+      secondObject = processAttributeParam(secondParameter);
+    }
+
+    if (!isFirstParameterAttribute) {
+      firstObject = processConstParam(
+        firstParameter,
+        isSecondParameterAttribute ? information.getType(query.modelName, secondObject.attributePath) : null,
+        predicate.timeless,
+        store);
+    }
+
+    if (!isSecondParameterAttribute) {
+      secondObject = processConstParam(
+        secondParameter,
+        isFirstParameterAttribute ? information.getType(query.modelName, firstObject.attributePath) : null,
+        predicate.timeless,
+        store);
+    }
+
+    if ((!isFirstParameterAttribute &amp;&amp; firstObject.value === null)
+        || (!isSecondParameterAttribute &amp;&amp; secondObject.value === null)
+        || (isFirstParameterAttribute &amp;&amp; isSecondParameterAttribute)
+        || (!isFirstParameterAttribute &amp;&amp; !isSecondParameterAttribute)) {
       // IndexedDB (and Dexie) doesn&#x27;t support null - use JS filter instead.
       // https://github.com/dfahlander/Dexie.js/issues/153
+
+      // Also use JS filter for two consts or two attributes.
       let jsAdapter = predicate instanceof DatePredicate ? new JSAdapter(getOwner(store).lookup(&#x27;service:moment&#x27;)) : new JSAdapter();
 
       return table.filter(jsAdapter.getAttributeFilterFunction(predicate));
     }
 
-    let moment;
-    let nextValue;
-    if (predicate.timeless) {
-      moment = getOwner(store).lookup(&#x27;service:moment&#x27;);
-      nextValue = moment.moment(value, &#x27;YYYY-MM-DD&#x27;).add(1, &#x27;d&#x27;).format(&#x27;YYYY-MM-DD&#x27;);
-    }
+    let isProperVariant = isFirstParameterAttribute &amp;&amp; !isSecondParameterAttribute;
+    let realAttributePath = isProperVariant
+                            ? firstObject.attributePath
+                            : secondObject.attributePath;
+    let realValue = isProperVariant
+                    ? secondObject.value
+                    : firstObject.value;
+    let realNextValue = isProperVariant
+                        ? secondObject.nextValue
+                        : firstObject.nextValue;
 
     switch (predicate.operator) {
       case FilterOperator.Eq:
         return predicate.timeless ?
-          table.where(predicate.attributePath).between(value, nextValue, false) :
-          table.where(predicate.attributePath).equals(value);
+          table.where(realAttributePath).between(realValue, realNextValue, false) :
+          table.where(realAttributePath).equals(realValue);
 
       case FilterOperator.Neq:
         return predicate.timeless ?
-          table.where(predicate.attributePath).below(value).or(predicate.attributePath).aboveOrEqual(nextValue) :
-          table.where(predicate.attributePath).notEqual(value);
+          table.where(realAttributePath).below(realValue).or(realAttributePath).aboveOrEqual(realNextValue) :
+          table.where(realAttributePath).notEqual(realValue);
 
       case FilterOperator.Le:
-        return table.where(predicate.attributePath).below(value);
+        return isProperVariant ?
+          table.where(realAttributePath).below(realValue) :
+          (predicate.timeless ?
+                table.where(realAttributePath).aboveOrEqual(realNextValue) :
+                table.where(realAttributePath).above(realValue));
 
       case FilterOperator.Leq:
-        return predicate.timeless ?
-          table.where(predicate.attributePath).below(nextValue) :
-          table.where(predicate.attributePath).belowOrEqual(value);
+        return isProperVariant ?
+        (predicate.timeless ?
+                table.where(realAttributePath).below(realNextValue) :
+                table.where(realAttributePath).belowOrEqual(realValue)):
+        table.where(realAttributePath).aboveOrEqual(realValue);
 
       case FilterOperator.Ge:
-        return predicate.timeless ?
-          table.where(predicate.attributePath).aboveOrEqual(nextValue) :
-          table.where(predicate.attributePath).above(value);
+        return isProperVariant ?
+        (predicate.timeless ?
+                table.where(realAttributePath).aboveOrEqual(realNextValue) :
+                table.where(realAttributePath).above(realValue)):
+        table.where(realAttributePath).below(realValue);
 
       case FilterOperator.Geq:
-        return table.where(predicate.attributePath).aboveOrEqual(value);
+        return isProperVariant ?
+        table.where(realAttributePath).aboveOrEqual(realValue) :
+        (predicate.timeless ?
+                table.where(realAttributePath).below(realNextValue) :
+                table.where(realAttributePath).belowOrEqual(realValue));
 
       default:
         throw new Error(&#x27;Unknown operator&#x27;);
@@ -867,8 +947,29 @@ function updateWhereClause(store, table, query) {
 */
 function containsRelationships(query) {
   let contains = false;
+
   if (query.predicate instanceof SimplePredicate || query.predicate instanceof StringPredicate || query.predicate instanceof DatePredicate) {
-    contains = Information.parseAttributePath(query.predicate.attributePath).length &gt; 1;
+    // predicate.attributePath - attribute or AttributeParam or ConstParam.
+    // predicate.value - const or AttributeParam or ConstParam.
+
+    let firstParameter = query.predicate.attributePath;
+    let secondParameter = query.predicate.value;
+    let isFirstParameterAttribute = !(firstParameter instanceof ConstParam);
+    let isSecondParameterAttribute = secondParameter instanceof AttributeParam;
+
+    if (isFirstParameterAttribute) {
+      let realAttributePath = firstParameter instanceof AttributeParam
+                            ? firstParameter.attributePath
+                            : firstParameter;
+      contains = contains || Information.parseAttributePath(realAttributePath).length &gt; 1;
+    }
+
+    if (isSecondParameterAttribute) {
+      let realAttributePath = secondParameter instanceof AttributeParam
+                            ? secondParameter.attributePath
+                            : secondParameter;
+      contains = contains || Information.parseAttributePath(realAttributePath).length &gt; 1;
+    }
   }
 
   if (query.predicate instanceof DetailPredicate) {

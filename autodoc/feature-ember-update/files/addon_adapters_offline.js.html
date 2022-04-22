@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Projection.ModelWithoutValidation", "classes/Query.Condition", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/Query.TruePredicate", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Projection.ModelWithoutValidation", "classes/Query.AttributeParam", "classes/Query.BaseParam", "classes/Query.Condition", "classes/Query.ConstParam", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/Query.TruePredicate", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -77,7 +77,10 @@
 	                            <li><a href="../classes/OrderByClause.html">OrderByClause</a></li>
 	                            <li><a href="../classes/Projection.html">Projection</a></li>
 	                            <li><a href="../classes/Projection.ModelWithoutValidation.html">Projection.ModelWithoutValidation</a></li>
+	                            <li><a href="../classes/Query.AttributeParam.html">Query.AttributeParam</a></li>
+	                            <li><a href="../classes/Query.BaseParam.html">Query.BaseParam</a></li>
 	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.ConstParam.html">Query.ConstParam</a></li>
 	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
 	                            <li><a href="../classes/Query.FalsePredicate.html">Query.FalsePredicate</a></li>
 	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
@@ -408,10 +411,15 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   deleteRecord(store, type, snapshot) {
+    let promises = Ember.A();
     let dexieService = this.get(&#x27;dexieService&#x27;);
     let db = dexieService.dexie(this.get(&#x27;dbName&#x27;), store);
-    return dexieService.performQueueOperation(db, (db) =&gt; db.table(type.modelName).delete(snapshot.id)).then(() =&gt;
-      this._deleteParentModels(store, type, snapshot.id));
+    this._deleteDetailModels(dexieService, db, promises, snapshot.record);
+
+    promises.pushObject(dexieService.performQueueOperation(db, (db) =&gt; db.table(type.modelName).delete(snapshot.id)));
+    return Ember.RSVP.all(promises).then(() =&gt; {
+      return this._deleteParentModels(store, type, snapshot.id);
+    });
   },
 
   /* jshint unused:vars */
@@ -717,11 +725,34 @@ export default DS.Adapter.extend({
     if (parentModelName) {
       let dexieService = _this.get(&#x27;dexieService&#x27;);
       let db = dexieService.dexie(_this.get(&#x27;dbName&#x27;), store);
-      return dexieService.performQueueOperation(db, (db) =&gt; db.table(parentModelName).delete(id)).then(() =&gt;
-        _this._deleteParentModels(store, store.modelFor(parentModelName), id));
+      return dexieService.performQueueOperation(db, (db) =&gt; db.table(parentModelName).delete(id)).then(() =&gt; {
+          return _this._deleteParentModels(store, store.modelFor(parentModelName), id);
+        });
     } else {
       return RSVP.resolve();
     }
+  },
+
+  /**
+    Forming promises for deleting current record and its details.
+
+    @method _deleteDetailModels
+    @param {Offline.DexieService} dexieService Instance of dexie service.
+    @param {IndexedDB} db Instance of current IndexedDB database.
+    @param {Promise} promises Promises on deleting records.
+    @param {DS.Model} record Current record that should be deleted with details.
+    @private
+  */
+  _deleteDetailModels(dexieService, db, promises, record) {
+    let _this = this;
+    record.eachRelationship((name, desc) =&gt; {
+      if (desc.kind === &#x27;hasMany&#x27;) {
+        record.get(name).forEach((relRecord) =&gt; {
+          _this._deleteDetailModels(dexieService, db, promises, relRecord);
+          promises.pushObject(dexieService.performQueueOperation(db, (db) =&gt; db.table(desc.type).delete(relRecord.id)));
+        });
+      }
+    });
   }
 });
 

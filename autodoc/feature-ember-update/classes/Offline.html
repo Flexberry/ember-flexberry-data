@@ -26,7 +26,7 @@
             </li>
         </div>
         <form class="navbar-form pull-right" style="line-height: 40px; height: 40px;">
-            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Projection.ModelWithoutValidation", "classes/Query.Condition", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/Query.TruePredicate", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
+            <input style="margin-top: 0;" type="text" class="search-query" placeholder="Search for classes/modules..." data-obj='["classes/AdapterMixin", "classes/ApplicationInitializer", "classes/Base", "classes/BaseAdapter", "classes/BaseBuilder", "classes/BasePredicate", "classes/Builder", "classes/ComplexPredicate", "classes/Condition", "classes/CopyableMixin", "classes/DatePredicate", "classes/DecimalTransform", "classes/DexieService", "classes/FileTransform", "classes/FilterOperator", "classes/FlexberryEnumTransform", "classes/GlobalsService", "classes/GuidTransform", "classes/IndexedDBAdapter", "classes/Information", "classes/JsAdapter", "classes/LocalStore", "classes/Model", "classes/ModelMixin", "classes/OData", "classes/OData.OnlineStore", "classes/ODataAdapter", "classes/Offline", "classes/OrderByClause", "classes/Projection", "classes/Projection.ModelWithoutValidation", "classes/Query.AttributeParam", "classes/Query.BaseParam", "classes/Query.Condition", "classes/Query.ConstParam", "classes/Query.DetailPredicate", "classes/Query.FalsePredicate", "classes/Query.FilterOperator", "classes/Query.GeographyPredicate", "classes/Query.GeometryPredicate", "classes/Query.IsOfPredicate", "classes/Query.NotPredicate", "classes/Query.OrderByClause", "classes/Query.TruePredicate", "classes/QueryObject", "classes/SimplePredicate", "classes/Store", "classes/StoreMixin", "classes/StringPredicate", "classes/Syncer", "modules/ember-flexberry", "modules/ember-flexberry-data"]'>
         </form>
     </div>
 </div>
@@ -77,7 +77,10 @@
 	                            <li><a href="../classes/OrderByClause.html">OrderByClause</a></li>
 	                            <li><a href="../classes/Projection.html">Projection</a></li>
 	                            <li><a href="../classes/Projection.ModelWithoutValidation.html">Projection.ModelWithoutValidation</a></li>
+	                            <li><a href="../classes/Query.AttributeParam.html">Query.AttributeParam</a></li>
+	                            <li><a href="../classes/Query.BaseParam.html">Query.BaseParam</a></li>
 	                            <li><a href="../classes/Query.Condition.html">Query.Condition</a></li>
+	                            <li><a href="../classes/Query.ConstParam.html">Query.ConstParam</a></li>
 	                            <li><a href="../classes/Query.DetailPredicate.html">Query.DetailPredicate</a></li>
 	                            <li><a href="../classes/Query.FalsePredicate.html">Query.FalsePredicate</a></li>
 	                            <li><a href="../classes/Query.FilterOperator.html">Query.FilterOperator</a></li>
@@ -174,6 +177,10 @@
                     <h3>Methods</h3>
 
                     <ul class="index-list methods extends">
+                            <li class="index-item method private">
+                                <a href="#" data-tabid="#methods" data-anchor="#method__deleteDetailModels" data-tablink="_deleteDetailModels">_deleteDetailModels</a>
+
+                            </li>
                             <li class="index-item method private">
                                 <a href="#" data-tabid="#methods" data-anchor="#method__extractProjectionFromQuery" data-tablink="_extractProjectionFromQuery">_extractProjectionFromQuery</a>
 
@@ -286,6 +293,102 @@
             <div id="methods" class="tab-pane">
                 <h2 class="off-left">Methods</h2>
 
+                    <div id="method__deleteDetailModels" class="method item private">
+                        <h3 class="name"><code>_deleteDetailModels</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>dexieService</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>db</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>promises</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>record</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                    
+                    
+                            <span class="flag private">private</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_adapters_offline.js.html#l592"><code>addon&#x2F;adapters&#x2F;offline.js:592</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Forming promises for deleting current record and its details.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">dexieService</code>
+                                            <span class="type">Offline.DexieService</span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Instance of dexie service.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">db</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API" class="crosslink external" target="_blank">IndexedDB</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Instance of current IndexedDB database.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">promises</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Promises on deleting records.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">record</code>
+                                            <span class="type"><a href="http://emberjs.com/api/data/classes/DS.Model.html" class="crosslink external" target="_blank">DS.Model</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Current record that should be deleted with details.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                    
+                    </div>
                     <div id="method__extractProjectionFromQuery" class="method item private">
                         <h3 class="name"><code>_extractProjectionFromQuery</code></h3>
                     
@@ -317,7 +420,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l516"><code>addon&#x2F;adapters&#x2F;offline.js:516</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l521"><code>addon&#x2F;adapters&#x2F;offline.js:521</code></a>
                             </p>
                     
                     
@@ -430,7 +533,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l465"><code>addon&#x2F;adapters&#x2F;offline.js:465</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l470"><code>addon&#x2F;adapters&#x2F;offline.js:470</code></a>
                             </p>
                     
                     
@@ -534,7 +637,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l447"><code>addon&#x2F;adapters&#x2F;offline.js:447</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l452"><code>addon&#x2F;adapters&#x2F;offline.js:452</code></a>
                             </p>
                     
                     
@@ -611,7 +714,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l323"><code>addon&#x2F;adapters&#x2F;offline.js:323</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l328"><code>addon&#x2F;adapters&#x2F;offline.js:328</code></a>
                             </p>
                     
                     
@@ -704,7 +807,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l438"><code>addon&#x2F;adapters&#x2F;offline.js:438</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l443"><code>addon&#x2F;adapters&#x2F;offline.js:443</code></a>
                             </p>
                     
                     
@@ -749,7 +852,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l387"><code>addon&#x2F;adapters&#x2F;offline.js:387</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l392"><code>addon&#x2F;adapters&#x2F;offline.js:392</code></a>
                             </p>
                     
                     
@@ -1910,7 +2013,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_offline.js.html#l285"><code>addon&#x2F;adapters&#x2F;offline.js:285</code></a>
+                            <a href="../files/addon_adapters_offline.js.html#l290"><code>addon&#x2F;adapters&#x2F;offline.js:290</code></a>
                             </p>
                     
                     

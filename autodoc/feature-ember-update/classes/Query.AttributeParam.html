@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>addon/utils/string-functions.js - Flexberry Documentation</title>
+    <title>Query.AttributeParam - Flexberry Documentation</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -137,186 +137,203 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>addon/utils/string-functions.js <small>File</small></h1>
+    <h1>Query.AttributeParam <small>Class</small></h1>
 </div>
 
-<div class="file">
-    <pre class="prettyprint linenums">
-/**
-  @module ember-flexberry-data
-*/
+<div class="well well-small">
 
-/* eslint-disable no-useless-escape */
-const STRING_DASHERIZE_REGEXP = (/[ _]/g);
+        <div class="extends">
+            Extends BaseParam
+        </div>
 
-const STRING_CAMELIZE_REGEXP_1 = (/(\-|\_|\.|\s)+(.)?/g);
-const STRING_CAMELIZE_REGEXP_2 = (/(^|\/)([A-ZА-ЯЁ])/g);
+        <div class="foundat">
+            Defined in: <a href="../files/addon_query_parameter.js.html#l53"><code>addon&#x2F;query&#x2F;parameter.js:53</code></a>
+        </div>
 
-const STRING_CLASSIFY_REGEXP_1 = (/^(\-|_)+(.)?/);
-const STRING_CLASSIFY_REGEXP_2 = (/(.)(\-|\_|\.|\s)+(.)?/g);
-const STRING_CLASSIFY_REGEXP_3 = (/(^|\/|\.)([a-zа-яё])/g);
+            Module: <a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a>
 
-const STRING_UNDERSCORE_REGEXP_1 = (/([a-zа-яё\d])([A-ZА-ЯЁ]+)/g);
-const STRING_UNDERSCORE_REGEXP_2 = (/\-|\s+/g);
+</div>
 
-const STRING_CAPITALIZE_REGEXP = (/(^|\/)([a-zа-яё])/g);
 
-const STRING_DECAMELIZE_REGEXP = (/([a-zа-яё\d])([A-ZА-ЯЁ])/g);
-/* eslint-enable no-useless-escape */
+<div class="well well-small">
+    <p>The class of attribute parameter for logical predicate.</p>
 
-/**
-  Converts a camelized string into all lower case separated by underscores.
-  &#x60;&#x60;&#x60;javascript
-  &#x27;innerHTML&#x27;.decamelize();           // &#x27;inner_html&#x27;
-  &#x27;action_name&#x27;.decamelize();        // &#x27;action_name&#x27;
-  &#x27;css-class-name&#x27;.decamelize();     // &#x27;css-class-name&#x27;
-  &#x27;my favorite items&#x27;.decamelize();  // &#x27;my favorite items&#x27;
-  &#x60;&#x60;&#x60;
-  @method decamelize
-  @param {String} str The string to decamelize.
-  @return {String} the decamelized string.
-*/
-function decamelize(str) {
-  return str.replace(STRING_DECAMELIZE_REGEXP, &#x27;$1_$2&#x27;).toLowerCase();
-}
+</div>
 
-/**
-  Replaces underscores, spaces, or camelCase with dashes.
-  &#x60;&#x60;&#x60;javascript
-  &#x27;innerHTML&#x27;.dasherize();          // &#x27;inner-html&#x27;
-  &#x27;action_name&#x27;.dasherize();        // &#x27;action-name&#x27;
-  &#x27;css-class-name&#x27;.dasherize();     // &#x27;css-class-name&#x27;
-  &#x27;my favorite items&#x27;.dasherize();  // &#x27;my-favorite-items&#x27;
-  &#x27;privateDocs/ownerInvoice&#x27;.dasherize(); // &#x27;private-docs/owner-invoice&#x27;
-  &#x60;&#x60;&#x60;
-  @method dasherize
-  @param {String} str The string to dasherize.
-  @return {String} the dasherized string.
-*/
-function dasherize(str) {
-  return decamelize(str).replace(STRING_DASHERIZE_REGEXP, &#x27;-&#x27;);
-}
+    <div class="constructor">
+        <h2>Constructor</h2>
+        <div id="method_Query.AttributeParam" class="method item">
+            <h3 class="name"><code>Query.AttributeParam</code></h3>
+        
+                <div class="args">
+                    <span class="paren">(</span><ul class="args-list inline commas">
+                        <li class="arg">
+                                <code>attributePath</code>
+                        </li>
+                    </ul><span class="paren">)</span>
+                </div>
+        
+        
+        
+        
+        
+        
+        
+        
+            <div class="meta">
+                        <p>
+                        Defined in
+                <a href="../files/addon_query_parameter.js.html#l53"><code>addon&#x2F;query&#x2F;parameter.js:53</code></a>
+                </p>
+        
+        
+        
+            </div>
+        
+            <div class="description">
+                
+            </div>
+        
+                <div class="params">
+                    <h4>Parameters:</h4>
+        
+                    <ul class="params-list">
+                        <li class="param">
+                                <code class="param-name">attributePath</code>
+                                <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+        
+        
+                            <div class="param-description">
+                                <p>The path to the attribute for filtering.</p>
+        
+                            </div>
+        
+                        </li>
+                    </ul>
+                </div>
+        
+        
+        </div>
+    </div>
 
-/**
-  Returns the lowerCamelCase form of a string.
-  &#x60;&#x60;&#x60;javascript
-  &#x27;innerHTML&#x27;.camelize();          // &#x27;innerHTML&#x27;
-  &#x27;action_name&#x27;.camelize();        // &#x27;actionName&#x27;
-  &#x27;css-class-name&#x27;.camelize();     // &#x27;cssClassName&#x27;
-  &#x27;my favorite items&#x27;.camelize();  // &#x27;myFavoriteItems&#x27;
-  &#x27;My Favorite Items&#x27;.camelize();  // &#x27;myFavoriteItems&#x27;
-  &#x27;private-docs/owner-invoice&#x27;.camelize(); // &#x27;privateDocs/ownerInvoice&#x27;
-  &#x60;&#x60;&#x60;
-  @method camelize
-  @param {String} str The string to camelize.
-  @return {String} the camelized string.
-*/
-function camelize(str) {
-  /* eslint-disable no-unused-vars */
-  return str.replace(STRING_CAMELIZE_REGEXP_1, (match, separator, chr) =&gt; chr ? chr.toUpperCase() : &#x27;&#x27;)
-    .replace(STRING_CAMELIZE_REGEXP_2, (match, separator, chr) =&gt; match.toLowerCase());
-  /* eslint-enable no-unused-vars */
-}
+<div>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#index">Index</a></li>
 
-/**
-  Returns the UpperCamelCase form of a string.
-  &#x60;&#x60;&#x60;javascript
-  &#x27;innerHTML&#x27;.classify();          // &#x27;InnerHTML&#x27;
-  &#x27;action_name&#x27;.classify();        // &#x27;ActionName&#x27;
-  &#x27;css-class-name&#x27;.classify();     // &#x27;CssClassName&#x27;
-  &#x27;my favorite items&#x27;.classify();  // &#x27;MyFavoriteItems&#x27;
-  &#x27;private-docs/owner-invoice&#x27;.classify(); // &#x27;PrivateDocs/OwnerInvoice&#x27;
-  &#x60;&#x60;&#x60;
-  @method classify
-  @param {String} str the string to classify
-  @return {String} the classified string
-*/
-function classify(str) {
-  let replace1 = (match, separator, chr) =&gt; chr ? (&#x60;_${chr.toUpperCase()}&#x60;) : &#x27;&#x27;;
-  let replace2 = (match, initialChar, separator, chr) =&gt; initialChar + (chr ? chr.toUpperCase() : &#x27;&#x27;);
-  let parts = str.split(&#x27;/&#x27;);
-  for (let i = 0; i &lt; parts.length; i++) {
-    parts[i] = parts[i]
-      .replace(STRING_CLASSIFY_REGEXP_1, replace1)
-      .replace(STRING_CLASSIFY_REGEXP_2, replace2);
-  }
+            <li><a data-toggle="tab" href="#methods">Methods</a></li>
+            <li><a data-toggle="tab" href="#properties">Properties</a></li>
+    </ul>
 
-  /* eslint-disable no-unused-vars */
-  return parts.join(&#x27;/&#x27;).replace(STRING_CLASSIFY_REGEXP_3, (match, separator, chr) =&gt; match.toUpperCase());
-  /* eslint-enable no-unused-vars */
-}
+    <div class="tab-content">
+        <div id="index" class="tab-pane active">
+            <h2 class="off-left">Item Index</h2>
 
-/**
-  More general than decamelize. Returns the lower\_case\_and\_underscored
-  form of a string.
-  &#x60;&#x60;&#x60;javascript
-  &#x27;innerHTML&#x27;.underscore();          // &#x27;inner_html&#x27;
-  &#x27;action_name&#x27;.underscore();        // &#x27;action_name&#x27;
-  &#x27;css-class-name&#x27;.underscore();     // &#x27;css_class_name&#x27;
-  &#x27;my favorite items&#x27;.underscore();  // &#x27;my_favorite_items&#x27;
-  &#x27;privateDocs/ownerInvoice&#x27;.underscore(); // &#x27;private_docs/owner_invoice&#x27;
-  &#x60;&#x60;&#x60;
-  @method underscore
-  @param {String} str The string to underscore.
-  @return {String} the underscored string.
-*/
-function underscore(str) {
-  return str.replace(STRING_UNDERSCORE_REGEXP_1, &#x27;$1_$2&#x27;).replace(STRING_UNDERSCORE_REGEXP_2, &#x27;_&#x27;).toLowerCase();
-}
+                <div class="index-section methods">
+                    <h3>Methods</h3>
 
-/**
-  Returns the Capitalized form of a string
-  &#x60;&#x60;&#x60;javascript
-  &#x27;innerHTML&#x27;.capitalize()         // &#x27;InnerHTML&#x27;
-  &#x27;action_name&#x27;.capitalize()       // &#x27;Action_name&#x27;
-  &#x27;css-class-name&#x27;.capitalize()    // &#x27;Css-class-name&#x27;
-  &#x27;my favorite items&#x27;.capitalize() // &#x27;My favorite items&#x27;
-  &#x27;privateDocs/ownerInvoice&#x27;.capitalize(); // &#x27;PrivateDocs/ownerInvoice&#x27;
-  &#x60;&#x60;&#x60;
-  @method capitalize
-  @param {String} str The string to capitalize.
-  @return {String} The capitalized string.
-*/
-function capitalize(str) {
-  /* eslint-disable no-unused-vars */
-  return str.replace(STRING_CAPITALIZE_REGEXP, (match, separator, chr) =&gt; match.toUpperCase());
-  /* eslint-enable no-unused-vars */
-}
+                    <ul class="index-list methods extends">
+                            <li class="index-item method public">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_toString" data-tablink="toString">toString</a>
 
-/**
-  Returns the singularized form of a string for OData
+                            </li>
+                    </ul>
+                </div>
 
-  @method odataSingularize
-  @param {String} str The string to singularize.
-  @return {String} The singularized string.
-*/
-function odataSingularize(str) {
-  return str.replace(/s$/i, &#x27;&#x27;);
-}
+                <div class="index-section properties">
+                    <h3>Properties</h3>
 
-/**
-  Returns the pluralized form of a string for OData
+                    <ul class="index-list properties extends">
+                            <li class="index-item property public">
+                                <a href="#" data-tabid="#properties" data-anchor="#property_attributePath" data-tablink="attributePath">attributePath</a>
 
-  @method odataPluralize
-  @param {String} str The string to pluralize.
-  @return {String} The pluralized string.
-*/
-function odataPluralize(str) {
-  return str + &#x27;s&#x27;;
-}
+                            </li>
+                    </ul>
+                </div>
 
-export {
-  decamelize,
-  dasherize,
-  camelize,
-  classify,
-  underscore,
-  capitalize,
-  odataSingularize,
-  odataPluralize
-};
 
-    </pre>
+        </div>
+
+            <div id="methods" class="tab-pane">
+                <h2 class="off-left">Methods</h2>
+
+                    <div id="method_toString" class="method item public">
+                        <h3 class="name"><code>toString</code></h3>
+                    
+                            <span class="paren">()</span>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                            </span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_parameter.js.html#l82"><code>addon&#x2F;query&#x2F;parameter.js:82</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>Converts this instance to string.</p>
+                    
+                        </div>
+                    
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>:
+                                        <p>Text representation of the parameter.</p>
+                    
+                                </div>
+                            </div>
+                    
+                    </div>
+            </div>
+
+            <div id="properties" class="tab-pane">
+                <h2 class="off-left">Properties</h2>
+
+                    <div id="property_attributePath" class="property item public">
+                        <h3 class="name"><code>attributePath</code></h3>
+                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
+                    
+                    
+                            <span class="flag public">public</span>
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_query_parameter.js.html#l70"><code>addon&#x2F;query&#x2F;parameter.js:70</code></a>
+                            </p>
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>The path to the attribute.</p>
+                    
+                        </div>
+                    
+                    
+                    
+                    </div>
+            </div>
+
+
+    </div>
 </div>
                     </div>
                 </div>
