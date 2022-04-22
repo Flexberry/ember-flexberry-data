@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.7.0-beta.2] - 2022-04-23
+### Added
+- Changes from `2.7.0-beta.1` version.
+
 ## [2.7.0-beta.1] - 2022-04-05
 ### Added
 - Support of `SimplePredicate` and `DatePredicate` with two attributes.
