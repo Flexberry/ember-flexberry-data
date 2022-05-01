@@ -8,8 +8,7 @@ import {
   StringPredicate,
   DetailPredicate,
   DatePredicate,
-  GeographyPredicate,
-  GeometryPredicate,
+  SpatialPredicate,
   NotPredicate,
   IsOfPredicate,
   TruePredicate,
@@ -269,22 +268,29 @@ export default class ODataAdapter extends BaseAdapter {
       return `isof(${expression},'${namespace}.${className}')`;
     }
 
-    if (predicate instanceof GeographyPredicate) {
+    if (predicate instanceof SpatialPredicate) {
       let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
       if (prefix) {
         attribute = `${prefix}/${attribute}`;
       }
 
-      return `geo.intersects(geography1=${attribute},geography2=geography'${predicate.intersectsValue}')`;
-    }
+      let ns = predicate.spatialNamespace;
+      let fn = predicate.spatialFunction;
+      let tp = predicate.spatialType;
+      let sp = predicate.spatial;
 
-    if (predicate instanceof GeometryPredicate) {
-      let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
-      if (prefix) {
-        attribute = `${prefix}/${attribute}`;
+      let expression = `${ns}.${fn}(${tp}1=${attribute},${tp}2=${tp}'${sp}')`;
+      switch (fn) {
+        case 'distance': {
+          let operator = this._getODataFilterOperator(predicate.operator);
+          let value = predicate.value;
+          return `${expression} ${operator} ${value}`;
+        }
+        case 'intersects':
+          return expression;
       }
 
-      return `geom.intersects(geometry1=${attribute},geometry2=geometry'${predicate.intersectsValue}')`;
+      throw new Error(`Unsupported '${fn}' spatial function.`);
     }
 
     if (predicate instanceof DetailPredicate) {

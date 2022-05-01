@@ -871,6 +871,26 @@ test('adapter | js | skip-top', (assert) => {
   assert.equal(result[0].Name, 'B');
 });
 
+test('adapter | js | geography predicate | distance', (assert) => {
+  const data = [
+    { id: 1, Coordinates: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+    { id: 2, Coordinates: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+    { id: 3, Coordinates: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' }
+  ];
+
+  let sp1 = new GeographyPredicate('Coordinates').
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0);
+  let builder = new QueryBuilder(store, 'employee').where(sp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+  assert.equal(result[0].id, 1);
+  assert.equal(result[1].id, 2);
+  assert.equal(result[2].id, 3);
+});
+
 test('adapter | js | geography predicate | intersects', (assert) => {
   const data = [
     { id: 1, Coordinates: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
@@ -879,7 +899,27 @@ test('adapter | js | geography predicate | intersects', (assert) => {
   ];
 
   let sp1 = new GeographyPredicate('Coordinates').
-    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  let builder = new QueryBuilder(store, 'employee').where(sp1);
+  let filter = adapter.buildFunc(builder.build());
+
+  let result = filter(data);
+  assert.ok(result);
+  assert.equal(result.length, 3);
+  assert.equal(result[0].id, 1);
+  assert.equal(result[1].id, 2);
+  assert.equal(result[2].id, 3);
+});
+
+test('adapter | js | geometry predicate | distance', (assert) => {
+  const data = [
+    { id: 1, Coordinates: 'SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+    { id: 2, Coordinates: 'SRID=12346;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' },
+    { id: 3, Coordinates: 'SRID=12347;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))' }
+  ];
+
+  let sp1 = new GeometryPredicate('Coordinates').
+  distance('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))', FilterOperator.Eq, 0);
   let builder = new QueryBuilder(store, 'employee').where(sp1);
   let filter = adapter.buildFunc(builder.build());
 
@@ -899,7 +939,7 @@ test('adapter | js | geometry predicate | intersects', (assert) => {
   ];
 
   let sp1 = new GeometryPredicate('Coordinates').
-    intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
+  intersects('SRID=12345;POLYGON((-127.89734578345 45.234534534,-127.89734578345 45.234534534))');
   let builder = new QueryBuilder(store, 'employee').where(sp1);
   let filter = adapter.buildFunc(builder.build());
 
