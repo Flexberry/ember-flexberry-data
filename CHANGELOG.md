@@ -2,14 +2,13 @@
 
 ## [Unreleased]
 
-## [2.7.0-beta.1] - 2022-04-05
+## [2.7.0] - 2022-05-17
 ### Added
 - Support of `SimplePredicate` and `DatePredicate` with two attributes.
 
 ### Changed
 - Now during deleting record in offline mode detail records are deleted too.
 
-## [2.7.0-beta.0] - 2021-09-20
 ### Breaking changes
 - Deleted `custom-inflector-rules`. Model names for OData created by adding `s`.
 
