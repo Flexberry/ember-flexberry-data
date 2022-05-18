@@ -74,9 +74,7 @@ export default Ember.Mixin.create({
       if (this.get('isNew')) {
         this.set('createTime', currentDate);
         this.set('creator', currentUser);
-      }
-
-      if (this.get('hasDirtyAttributes') && !this.get('isDeleted')) {
+      } else if (this.get('hasDirtyAttributes') && !this.get('isDeleted')) {
         this.set('editTime', currentDate);
         this.set('editor', currentUser);
       }

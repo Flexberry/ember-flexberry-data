@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Audit fields creator and editor set.
 
 ## [2.7.0] - 2022-05-17
 ### Added
