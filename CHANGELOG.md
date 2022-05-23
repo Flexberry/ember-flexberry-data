@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Set new record id on `preSave`.
 
 ## [3.7.0] - 2022-05-17
 ### Added
