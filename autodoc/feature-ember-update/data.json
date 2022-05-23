@@ -711,7 +711,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Projection",
             "file": "addon/models/model-without-validation.js",
-            "line": 10,
+            "line": 12,
             "description": "Base model that supports projections and copying."
         },
         "Model": {
@@ -3288,7 +3288,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 27,
+            "line": 29,
             "description": "Stored canonical `belongsTo` relationships.",
             "itemtype": "property",
             "name": "_canonicalBelongsTo",
@@ -3301,7 +3301,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 36,
+            "line": 38,
             "description": "Flag that indicates sync up process of model is processing.",
             "itemtype": "property",
             "name": "isSyncingUp",
@@ -3313,7 +3313,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 45,
+            "line": 47,
             "description": "Flag that indicates model is created during sync up process.",
             "itemtype": "property",
             "name": "isCreatedDuringSyncUp",
@@ -3325,7 +3325,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 54,
+            "line": 56,
             "description": "Flag that indicates model is updated last time during sync up process.",
             "itemtype": "property",
             "name": "isCreatedDuringSyncUp",
@@ -3337,7 +3337,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 63,
+            "line": 65,
             "description": "Flag that indicates model is destroyed during sync up process.",
             "itemtype": "property",
             "name": "isCreatedDuringSyncUp",
@@ -3349,7 +3349,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 72,
+            "line": 74,
             "description": "Triggers model's 'preSave' event & allows to execute some additional async logic before model will be saved.",
             "itemtype": "method",
             "name": "beforeSave",
@@ -3386,7 +3386,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 105,
+            "line": 107,
             "description": "Triggers 'preSave' event, and finally saves model.",
             "itemtype": "method",
             "name": "save",
@@ -3417,7 +3417,17 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 143,
+            "line": 146,
+            "description": "Sets Id on preSave.",
+            "itemtype": "method",
+            "name": "preSaveSetId",
+            "class": "Projection.ModelWithoutValidation",
+            "module": "ember-flexberry-data",
+            "namespace": "Projection"
+        },
+        {
+            "file": "addon/models/model-without-validation.js",
+            "line": 157,
             "description": "Turns model into 'updated.uncommitted' state.\n\nTransition into the `updated.uncommitted` state\nif the model in the `saved` state (no local changes).\nAlternative: this.get('currentState').becomeDirty();",
             "itemtype": "method",
             "name": "makeDirty",
@@ -3427,7 +3437,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 156,
+            "line": 170,
             "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two array, array with index `0` this old values, array with index `1` this new values.",
             "example": [
                 "\n  ```javascript\n  {\n    key: [\n      [oldValues],\n      [newValues],\n    ],\n  }\n  ```"
@@ -3444,7 +3454,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 192,
+            "line": 206,
             "description": "Сheck whether there is a changed `hasMany` relationships.",
             "itemtype": "method",
             "name": "hasChangedHasMany",
@@ -3458,7 +3468,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 204,
+            "line": 218,
             "description": "Rollback changes for `hasMany` relationships.",
             "itemtype": "method",
             "name": "rollbackHasMany",
@@ -3476,7 +3486,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 228,
+            "line": 242,
             "description": "Сheck whether there is a changed `belongsTo` relationships.",
             "itemtype": "method",
             "name": "hasChangedBelongsTo",
@@ -3490,7 +3500,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 252,
+            "line": 266,
             "description": "Return object with changes.\n\nObject will have structure:\n* key - is name relationships that has changed\n  * array - include two items, old value, with index `0`, and new value, with index `1`.",
             "example": [
                 "\n  ```javascript\n  {\n    key: [oldValue, newValue],\n  }\n  ```"
@@ -3507,7 +3517,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 283,
+            "line": 297,
             "description": "Rollback changes for `belongsTo` relationships.",
             "itemtype": "method",
             "name": "rollbackBelongsTo",
@@ -3525,7 +3535,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 311,
+            "line": 325,
             "description": "Rollback changes for all relationships.",
             "itemtype": "method",
             "name": "rollbackRelationships",
@@ -3535,7 +3545,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 321,
+            "line": 335,
             "description": "Rollback all changes.",
             "itemtype": "method",
             "name": "rollbackAll",
@@ -3545,7 +3555,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 331,
+            "line": 345,
             "description": "Fired when the record is loaded from the server.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didLoad).",
             "itemtype": "method",
             "name": "didLoad",
@@ -3555,7 +3565,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 342,
+            "line": 356,
             "description": "Fired when the record is updated.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didUpdate).",
             "itemtype": "method",
             "name": "didUpdate",
@@ -3565,7 +3575,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 353,
+            "line": 367,
             "description": "Fired when the record is created.\n[More info](http://emberjs.com/api/data/classes/DS.Model.html#event_didCreate).",
             "itemtype": "method",
             "name": "didCreate",
@@ -3575,7 +3585,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 364,
+            "line": 378,
             "description": "Set each `belongsTo` relationship, observer, that save canonical state.",
             "itemtype": "method",
             "name": "_saveCanonicalBelongsTo",
@@ -3587,7 +3597,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 390,
+            "line": 404,
             "description": "Save canonical state for `belongsTo` relationships.",
             "itemtype": "method",
             "name": "_saveBelongsToObserver",
@@ -3611,7 +3621,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 406,
+            "line": 420,
             "description": "Defined projections for current model type.",
             "itemtype": "property",
             "name": "projections",
@@ -3626,7 +3636,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 417,
+            "line": 431,
             "description": "Flag that indicates model id type.",
             "itemtype": "property",
             "name": "isType",
@@ -3638,7 +3648,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 426,
+            "line": 440,
             "description": "The namespace in which this model is defined.",
             "itemtype": "property",
             "name": "namespace",
@@ -3651,7 +3661,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 436,
+            "line": 450,
             "description": "Defines idType for specified model type.",
             "itemtype": "method",
             "name": "defineIdType",
@@ -3671,7 +3681,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 450,
+            "line": 464,
             "description": "Defines projection for specified model type.",
             "itemtype": "method",
             "name": "defineProjection",
@@ -3705,7 +3715,7 @@
         },
         {
             "file": "addon/models/model-without-validation.js",
-            "line": 479,
+            "line": 493,
             "description": "Parent model type name.",
             "itemtype": "property",
             "name": "_parentModelName",
