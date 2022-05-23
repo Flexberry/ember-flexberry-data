@@ -3,9 +3,11 @@ import Evented from '@ember/object/evented';
 import EmberObject, { computed } from '@ember/object';
 import { merge } from '@ember/polyfills';
 import { isArray } from '@ember/array';
+import { isNone } from '@ember/utils';
 import DS from 'ember-data';
 import createProj from '../utils/create';
 import Copyable from '../mixins/copyable';
+import generateUniqueId from '../utils/generate-unique-id';
 
 /**
   Base model that supports projections and copying.
@@ -114,6 +116,7 @@ var ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
   */
   save(options) {
     options = merge({ softSave: false }, options || {});
+    this.preSaveSetId();
 
     return new Promise((resolve, reject) => {
       this.beforeSave(options).then(() => {
@@ -138,6 +141,17 @@ var ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
         reject(reason);
       });
     });
+  },
+
+  /**
+    Sets Id on preSave.
+
+    @method preSaveSetId
+  */
+  preSaveSetId() {
+    if (isNone(this.get('id'))) {
+      this.set('id', generateUniqueId());
+    }
   },
 
   /**
