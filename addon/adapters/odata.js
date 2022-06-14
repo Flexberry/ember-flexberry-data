@@ -481,7 +481,11 @@ export default DS.RESTAdapter.extend({
 
         requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
         requestBody += 'Content-Type: application/json;type=entry\r\n';
-        requestBody += 'Prefer: return=representation\r\n\r\n';
+        if (modelHttpMethod !== 'DELETE') {
+          requestBody += 'Prefer: return=representation\r\n';
+        }
+
+        requestBody += '\r\n';
 
         // Don't need to send any data for deleting.
         if (modelDirtyType !== 'deleted') {
@@ -517,7 +521,6 @@ export default DS.RESTAdapter.extend({
 
           getQuery += '\r\nGET ' + getUrl + (expand ? '?$expand=' + expand : '') + ' HTTP/1.1\r\n';
           getQuery += 'Content-Type: application/json;type=entry\r\n';
-          getQuery += 'Prefer: return=representation\r\n';
           getQueries.push(getQuery);
         }
       });
