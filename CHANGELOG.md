@@ -1,8 +1,13 @@
 # Change Log
 
 ## [Unreleased]
+
+## [3.8.0-beta.0]
 ### Added
 - Set new record id on `preSave`.
+
+### Changed
+- `SimplePredicate` replace undefined value with null.
 
 ## [3.7.0] - 2022-05-17
 ### Added
