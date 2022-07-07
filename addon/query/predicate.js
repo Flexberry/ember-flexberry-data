@@ -28,6 +28,10 @@ export class SimplePredicate extends BasePredicate {
   constructor(attributePath, operator, value) {
     super();
 
+    if (value === undefined) {
+      value = null;
+    }
+
     this._attributePath = attributePath;
     this._operator = FilterOperator.tryCreate(operator);
     this._value = value;
