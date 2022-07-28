@@ -1,9 +1,7 @@
 import Ember from 'ember';
 import { module, test } from 'qunit';
 
-module('reading-non-existent-test', {
-
-});
+module('reading-non-existent-test');
 
 test('reading non-existent entry ', function(assert) {
   let done = assert.async();
