@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default function batchUpdateWithFail(store, assert) {
-  assert.expect(3);
+  assert.expect(1);
   let done = assert.async();
 
   Ember.run(() => {
@@ -43,31 +43,21 @@ export default function batchUpdateWithFail(store, assert) {
 
         let done2 = assert.async();
         return store.batchUpdate(Ember.A([recordUser, recordSuggestion, recordComment, recordType]))
-        .then((result) => {
+        .then(() => {
           // There should be an error on batch update.
           assert.ok(false, "There should be an error on batch update. This update should not be executed.");
         })
         .catch((e2) => {
           console.log(e2, "Batch update failed as expected. " + e2.message);
           assert.ok(true);
+          recordSuggestion.destroyRecord();
+          throw e2;
         })
-        .finally(() => {
-          let done3 = assert.async();
-          recordSuggestion.deleteRecord();
-          store.batchUpdate(Ember.A([recordSuggestion]))
-          .catch((e3) => {
-            console.log(e3, "Error during deleting test data." + e3.message);
-            assert.ok(true);
-            throw e3;
-          })
-          .finally(done3);
-          done2;
-        });
+        .finally(done2);
       })  
     })
     .catch((e) => {
       console.log(e, "Global error." + e.message);
-      throw e;
     })
     .finally(done);
   });
