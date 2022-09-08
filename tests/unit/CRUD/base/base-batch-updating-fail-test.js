@@ -45,11 +45,16 @@ export default function batchUpdateWithFail(store, assert) {
         return store.batchUpdate(Ember.A([recordUser, recordSuggestion, recordComment, recordType]))
         .then(() => {
           // There should be an error on batch update.
-          assert.ok(false, "There should be an error on batch update. This update should not be executed.");
+          console.log("There should be an error on batch update. This update should not be executed.");
+        },
+        (rejectResult) => {
+          if (rejectResult instanceof DS.AdapterError) {
+            assert.ok(true, "Reject was executed as expected.");
+            console.log("Reject was executed as expected. " + Ember.get(rejectResult, "errors"));
+          } 
         })
         .catch((e2) => {
-          console.log(e2, "Batch update failed as expected. " + e2.message);
-          assert.ok(true);
+          console.log(e2, "Batch update should be rejected, not catched. " + e2.message);
           recordSuggestion.destroyRecord();
           throw e2;
         })

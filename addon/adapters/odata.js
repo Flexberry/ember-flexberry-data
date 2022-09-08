@@ -533,7 +533,15 @@ export default DS.RESTAdapter.extend({
           return reject(new DS.AdapterError('Invalid response type.'));
         }
 
-        const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+        let batchResponses;
+
+        try {
+          batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+        } catch (error) {
+          // If an error is thrown then this situation is not processed and user will get not understandable result.
+          return reject(new DS.AdapterError(error));
+        }
+
         const getResponses = batchResponses.filter(r => r.contentType === 'application/http');
         const updateResponse = batchResponses.find(r => r.contentType === 'multipart/mixed');
 
