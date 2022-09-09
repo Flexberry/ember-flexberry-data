@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 
 export default function batchUpdateWithFail(store, assert) {
   assert.expect(1);
@@ -27,7 +28,7 @@ export default function batchUpdateWithFail(store, assert) {
           }),
         store.findRecord('ember-flexberry-dummy-comment', commentId)
           .then((returned3Record) => {
-            Ember.set(returned3Record, 'text', 'Test');
+            Ember.set(returned3Record, 'text', 'Test 11111111-1111-1111-1111-111111111111');
             return returned3Record;
           }),
         store.findRecord('ember-flexberry-dummy-suggestion', suggestionId)
@@ -109,7 +110,6 @@ function initTestData(store) {
     // Creating comments.
     .then((sug) =>
       store.createRecord('ember-flexberry-dummy-comment', {
-        id: "11111111-1111-1111-1111-111111111111",
         author: sugAttrs[0],
         text: 'No exception',
         suggestion: sug[0],

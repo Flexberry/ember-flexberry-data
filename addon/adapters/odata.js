@@ -528,52 +528,51 @@ export default DS.RESTAdapter.extend({
       };
 
       return new Ember.RSVP.Promise((resolve, reject) => Ember.$.ajax(url, options).done((response, statusText, xhr) => {
-        const meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
-        if (meta.contentType !== 'multipart/mixed') {
-          return reject(new DS.AdapterError('Invalid response type.'));
-        }
-
-        let batchResponses;
-
         try {
-          batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+          const meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
+          if (meta.contentType !== 'multipart/mixed') {
+            return reject(new DS.AdapterError('Invalid response type.'));
+          }
+
+          let batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+          
+
+          const getResponses = batchResponses.filter(r => r.contentType === 'application/http');
+          const updateResponse = batchResponses.find(r => r.contentType === 'multipart/mixed');
+
+          const errorsChangesets = updateResponse.changesets.filter(c => !this.isSuccess(c.meta.status));
+          if (errorsChangesets.length) {
+            return reject(errorsChangesets.map(c => new DS.AdapterError(c.body)));
+          }
+
+          const errors = [];
+          const result = [];
+          models.forEach((model) => {
+            const modelDirtyType = model.get('dirtyType');
+            if (modelDirtyType === 'deleted') {
+              Ember.run(store, store.unloadRecord, model);
+            } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
+              const { response } = getResponses.shift();
+              if (this.isSuccess(response.meta.status)) {
+                const modelName = model.constructor.modelName;
+                const payload = { [modelName]: response.body };
+                Ember.run(() => {
+                  store.pushPayload(modelName, payload);
+                  model.rollbackAttributes(); // forced adjustment of model state
+                });
+              } else {
+                errors.push(new DS.AdapterError(response.body));
+              }
+            }
+
+            result.push(modelDirtyType === 'deleted' ? null : model);
+          });
+
+          return errors.length ? reject(errors) : resolve(result);
         } catch (error) {
           // If an error is thrown then this situation is not processed and user will get not understandable result.
           return reject(new DS.AdapterError(error));
         }
-
-        const getResponses = batchResponses.filter(r => r.contentType === 'application/http');
-        const updateResponse = batchResponses.find(r => r.contentType === 'multipart/mixed');
-
-        const errorsChangesets = updateResponse.changesets.filter(c => !this.isSuccess(c.meta.status));
-        if (errorsChangesets.length) {
-          return reject(errorsChangesets.map(c => new DS.AdapterError(c.body)));
-        }
-
-        const errors = [];
-        const result = [];
-        models.forEach((model) => {
-          const modelDirtyType = model.get('dirtyType');
-          if (modelDirtyType === 'deleted') {
-            Ember.run(store, store.unloadRecord, model);
-          } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
-            const { response } = getResponses.shift();
-            if (this.isSuccess(response.meta.status)) {
-              const modelName = model.constructor.modelName;
-              const payload = { [modelName]: response.body };
-              Ember.run(() => {
-                store.pushPayload(modelName, payload);
-                model.rollbackAttributes(); // forced adjustment of model state
-              });
-            } else {
-              errors.push(new DS.AdapterError(response.body));
-            }
-          }
-
-          result.push(modelDirtyType === 'deleted' ? null : model);
-        });
-
-        return errors.length ? reject(errors) : resolve(result);
       }).fail(reject));
     });
   },
