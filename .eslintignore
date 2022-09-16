@@ -93,7 +93,7 @@ tests/integration/services/syncer-test.js
 tests/integration/transforms/decimal-test.js
 tests/unit/CRUD/base/association-batch-updating-test.js
 tests/unit/CRUD/base/base-batch-updating-test.js
-tests/unit/CRUD/base/base-updating-fail-test.js
+tests/unit/CRUD/base/base-batch-updating-fail-test.js
 tests/unit/CRUD/base/base-creating-test.js
 tests/unit/CRUD/base/base-deleting-test.js
 tests/unit/CRUD/base/base-deleting-with-details-test.js
@@ -117,7 +117,7 @@ tests/unit/CRUD/base/base-updating-test.js
 tests/unit/CRUD/odata/execute-odata-test.js
 tests/unit/CRUD/odata/odata-association-batch-updating-test.js
 tests/unit/CRUD/odata/odata-batch-updating-test.js
-tests/unit/CRUD/odata/odata-updating-fail-test.js
+tests/unit/CRUD/odata/odata-batch-updating-fail-test.js
 tests/unit/CRUD/odata/odata-creating-test.js
 tests/unit/CRUD/odata/odata-deleting-test.js
 tests/unit/CRUD/odata/odata-deleting-with-details-test.js
