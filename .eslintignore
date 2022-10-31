@@ -176,6 +176,7 @@ tests/unit/models/offline-model-test.js
 tests/unit/models/validations-test.js
 tests/unit/odata/odata-ajax-requests-test.js
 tests/unit/odata/odata-reading-decimal-test.js
+tests/unit/odata/odata-void-request-test.js
 tests/unit/offline/offline-CRUD-test.js
 tests/unit/query/builder-test.js
 tests/unit/query/indexeddb-adapter-test.js

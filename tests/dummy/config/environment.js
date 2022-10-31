@@ -54,6 +54,9 @@ module.exports = function(environment) {
 
     ENV.APP.testODataService = !!testODataServiceURL;
     ENV.APP.testODataServiceURL = testODataServiceURL;
+
+    ENV.APP.backendUrls = {};
+    ENV.APP.backendUrls.api = testODataServiceURL;
   }
 
   if (environment === 'production') {
