@@ -1,19 +1,32 @@
 # Change Log
 
 ## [Unreleased]
-
-## [2.6.0-beta.2] - 2021-03-29
 ### Fixed
-- Error unloading record with deleted dirty type in batch update.
+- Audit fields creator and editor set.
 
-## [2.6.0-beta.1] - 2020-02-18
-No functionality was added, changed or fixed.
-Just technical release for testing. 
+## [2.7.0] - 2022-05-17
+### Added
+- Support of `SimplePredicate` and `DatePredicate` with two attributes.
 
-## [2.6.0-beta.0] - 2020-10-06
+### Changed
+- Now during deleting record in offline mode detail records are deleted too.
+
+### Breaking changes
+- Deleted `custom-inflector-rules`. Model names for OData created by adding `s`.
+
+## [2.6.1] - 2021-08-24
+### Fixed
+- `classify` doesn't work in odata-adapter. Replace with two functions `camelize` and `capitalize`.
+
+## [2.6.0] - 2021-07-02
 ### Added
 - The `ModelWithoutValidation` model without validation.
 - The `TruePredicate` and `FalsePredicate` predicates with implementations for the `IndexedDBAdapter`, `JsAdapter`, and `ODataAdapter` adapters.
+
+### Fixed
+- Batch details save with unchanged aggregator.
+- Resolving Promise on sync up with no jobs.
+- Error unloading record with deleted dirty type in batch update.
 
 ## [2.5.0] - 2020-09-10
 ### Added
