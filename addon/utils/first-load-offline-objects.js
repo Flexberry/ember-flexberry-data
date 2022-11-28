@@ -38,7 +38,7 @@ export function firstLoadOfflineObjects(dexieDB, odataPath, functionName, modelN
         objArray.push(objs);
       }
 
-      objArray.map(record => {
+      objArray.forEach(record => {
         if (idPath) {
           record.id =  record.id[idPath];
         }

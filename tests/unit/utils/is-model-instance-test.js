@@ -12,7 +12,10 @@ let CustomerModel = DS.Model.extend({
 module('Unit | Utility | is model instance', {
   beforeEach() {
     App = startApp();
-    App.register('model:customer', CustomerModel);
+
+    if (App) {
+      App.register('model:customer', CustomerModel);
+    }
   },
 
   afterEach() {

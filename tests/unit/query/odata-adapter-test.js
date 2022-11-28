@@ -28,7 +28,10 @@ let store;
 module('query', {
   beforeEach() {
     app = startApp();
-    store = app.__container__.lookup('service:store');
+
+    if (app) {
+      store = app.__container__.lookup('service:store');
+    }
   },
 
   afterEach() {

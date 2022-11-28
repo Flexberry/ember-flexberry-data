@@ -32,7 +32,7 @@ export default function decorateAPICall(finderType, superFunc) {
       }
 
       if (getOwner(_this).lookup('service:offline-globals').get('isSyncDownWhenOnlineEnabled')) {
-        return syncDown(result, false, projectionName, { unloadSyncedRecords: false });
+        return syncDown(result, false, projectionName);
       } else {
         return result;
       }
