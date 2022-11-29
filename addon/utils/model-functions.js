@@ -16,10 +16,10 @@ import { assert, warn } from '@ember/debug';
  */
 export function getRelationType(model, relationName) {
   // Get ember static function to get relation by name.
-  var relationshipsByName = get(model.constructor, 'relationshipsByName');
+  let relationshipsByName = get(model.constructor, 'relationshipsByName');
 
   // Get relation property from model.
-  var relation = relationshipsByName.get(relationName);
+  let relation = relationshipsByName.get(relationName);
   if (!relation) {
     throw new Error(`No relation with '${relationName}' name defined in '${model.constructor.modelName}' model.`);
   }

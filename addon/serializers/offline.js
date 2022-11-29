@@ -157,7 +157,7 @@ export default DS.JSONSerializer.extend({
     if (isObject(relationshipHash) && isNone(relationshipHash.type)) {
       relationshipHash.type = relationshipModelName;
     } else if (!isObject(relationshipHash) && !isNone(relationshipHash)) {
-      var hash = {
+      let hash = {
         id: relationshipHash,
         type: relationshipModelName
       };

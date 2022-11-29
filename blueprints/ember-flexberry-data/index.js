@@ -1,7 +1,7 @@
 /* globals module */
 module.exports = {
   afterInstall: function() {
-    var _this = this;
+    let _this = this;
     return _this.addAddonsToProject({
       packages: [
         { name: 'ember-browserify', target: '1.1.9' }

@@ -13,7 +13,7 @@ export default function decorateAdapter(adapter, modelName) {
 
   adapter.set('flexberry', {});
 
-  var localAdapter = getOwner(this).lookup('store:local').adapterFor(modelName);
+  let localAdapter = getOwner(this).lookup('store:local').adapterFor(modelName);
 
   // findRecord()
   // findAll()
@@ -22,12 +22,12 @@ export default function decorateAdapter(adapter, modelName) {
   // createRecord()
   // updateRecord()
   // deleteRecord()
-  var methods = [
+  let methods = [
     'findRecord', 'findAll', 'query', 'findMany',
     'createRecord', 'updateRecord', 'deleteRecord'
   ];
 
-  var _this = this;
+  let _this = this;
   methods.forEach(function(methodName) {
     decorateAdapterMethod.call(_this, adapter, localAdapter, methodName);
   });
@@ -36,11 +36,11 @@ export default function decorateAdapter(adapter, modelName) {
 }
 
 function decorateAdapterMethod(adapter, localAdapter, methodName) {
-  var originMethod = adapter[methodName];
-  var backupMethod = createBackupMethod(localAdapter, methodName);
+  let originMethod = adapter[methodName];
+  let backupMethod = createBackupMethod(localAdapter, methodName);
 
   adapter[methodName] = function() {
-    var offlineGlobals = getOwner(this).lookup('service:offline-globals');
+    let offlineGlobals = getOwner(this).lookup('service:offline-globals');
     return originMethod.apply(adapter, arguments)
       .catch(backup(offlineGlobals.get('isModeSwitchOnErrorsEnabled'), backupMethod, arguments));
   };
@@ -49,17 +49,17 @@ function decorateAdapterMethod(adapter, localAdapter, methodName) {
 }
 
 function createBackupMethod(localAdapter, methodName) {
-  var crudMethods = ['createRecord', 'updateRecord', 'deleteRecord'];
-  var isCRUD = crudMethods.indexOf(methodName) !== -1;
-  var isCreate = methodName === 'createRecord';
+  let crudMethods = ['createRecord', 'updateRecord', 'deleteRecord'];
+  let isCRUD = crudMethods.indexOf(methodName) !== -1;
+  let isCreate = methodName === 'createRecord';
 
   return function backupMethod() {
     //TODO: replace with ...args
-    var args = Array.prototype.slice.call(arguments);
+    let args = Array.prototype.slice.call(arguments);
 
     // ---------- CRUD specific
     if (isCRUD) {
-      var snapshot = args[2];
+      let snapshot = args[2];
 
       if (isCreate) {
         snapshot = addIdToSnapshot(snapshot);
@@ -89,13 +89,13 @@ function createBackupMethod(localAdapter, methodName) {
 
 // Add an id to record before create in local
 function addIdToSnapshot(snapshot) {
-  var record = snapshot.record;
+  let record = snapshot.record;
   record.get('store').updateId(record, { id: generateUniqueId() });
   return record._createSnapshot();
 }
 /*
 function createJobInSyncer(container, methodName, snapshot) {
-  var syncer = getOwner(this).lookup('syncer:main');
+  let syncer = getOwner(this).lookup('syncer:main');
   syncer.createJob(methodName, snapshot);
 }
 */

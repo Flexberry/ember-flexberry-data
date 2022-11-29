@@ -206,9 +206,9 @@ export default DS.RESTSerializer.extend({
     let prefix = this.get('metaPropertiesPrefix');
     let prefixLength = prefix.length;
 
-    for (var srcKey in src) {
+    for (let srcKey in src) {
       if (src.hasOwnProperty(srcKey) && srcKey.indexOf(prefix) === 0) {
-        var destKey = withPrefix ? srcKey : srcKey.substring(prefixLength);
+        let destKey = withPrefix ? srcKey : srcKey.substring(prefixLength);
         dest[destKey] = src[srcKey];
         delete src[srcKey];
       }

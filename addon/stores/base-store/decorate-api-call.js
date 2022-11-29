@@ -10,14 +10,14 @@ import isObject from '../../utils/is-object';
 */
 export default function decorateAPICall(finderType, superFunc) {
   return function apiCall() {
-    var _this = this;
-    var args = arguments;
-    var syncer = getOwner(_this).lookup('service:syncer');
-    var _superFinder = superFunc;
+    let _this = this;
+    let args = arguments;
+    let syncer = getOwner(_this).lookup('service:syncer');
+    let _superFinder = superFunc;
 
     if (args.length > 0) {
-      var options = args[args.length - 1];
-      var bypass = (typeof options === 'object') && options.bypass;
+      let options = args[args.length - 1];
+      let bypass = (typeof options === 'object') && options.bypass;
       if (bypass) {
         return _superFinder.apply(_this, args);
       }
@@ -40,7 +40,7 @@ export default function decorateAPICall(finderType, superFunc) {
 
     function syncDown(result, reload, projectionName) {
       if (finderType === 'all') {
-        var modelName = result.get('type.modelName');
+        let modelName = result.get('type.modelName');
         syncer.syncDown(modelName, reload, projectionName);
 
       } else if (finderType === 'single') {

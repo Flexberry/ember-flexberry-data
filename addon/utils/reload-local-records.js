@@ -24,19 +24,19 @@ import isEmbedded from './is-embedded';
 */
 export function reloadLocalRecords(type, reload, projectionName, params) {
   let _this = this;
-  var store = getOwner(this).lookup('service:store');
-  var modelType = store.modelFor(type);
+  let store = getOwner(this).lookup('service:store');
+  let modelType = store.modelFor(type);
   let modelName = modelType.modelName;
 
-  var localStore = getOwner(this).lookup('store:local');
-  var localAdapter = localStore.adapterFor(modelName);
+  let localStore = getOwner(this).lookup('store:local');
+  let localAdapter = localStore.adapterFor(modelName);
 
-  var reloadedRecords = localAdapter.clear(modelName).then(createAll);
+  let reloadedRecords = localAdapter.clear(modelName).then(createAll);
 
   return reloadedRecords;
 
   function createAll() {
-    var projection = isNone(projectionName) ? null : modelType.projections[projectionName];
+    let projection = isNone(projectionName) ? null : modelType.projections[projectionName];
     if (reload) {
       if (params && params.queryObject) {
         params.queryObject = $.extend(true, params.queryObject, { useOnlineStore: true });
@@ -54,7 +54,7 @@ export function reloadLocalRecords(type, reload, projectionName, params) {
         });
       }
     } else {
-      var records = store.peekAll(type);
+      let records = store.peekAll(type);
       return createLocalRecords.call(_this, store, localAdapter, localStore, modelType, records, projection, params);
     }
   }
@@ -69,7 +69,7 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
 
   dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') + 1);
   if (record.get('id')) {
-    var snapshot = record._createSnapshot();
+    let snapshot = record._createSnapshot();
     let fieldsToUpdate = projection ? projection.attributes : null;
     return new RSVP.Promise((resolve, reject) => localAdapter.addHashForBulkUpdateOrCreate(localStore, modelType, snapshot, fieldsToUpdate, true)
     .then(() => {
@@ -89,10 +89,10 @@ export function createLocalRecord(store, localAdapter, localStore, modelType, re
       reject(reason);
     }));
   } else {
-    var recordName = record.constructor && record.constructor.modelName;
-    var warnMessage = 'Record ' + recordName + ' does not have an id, therefor we can not create it locally: ';
+    let recordName = record.constructor && record.constructor.modelName;
+    let warnMessage = 'Record ' + recordName + ' does not have an id, therefor we can not create it locally: ';
 
-    var recordData = record.toJSON && record.toJSON();
+    let recordData = record.toJSON && record.toJSON();
 
     warn(warnMessage + recordData,
       false,
@@ -146,18 +146,18 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
   }
 
   function createRelatedRecords(store, mainRecord, localAdapter, localStore, projection) {
-    var promises = A();
-    var modelType = store.modelFor(mainRecord.constructor.modelName);
-    var attrs = isNone(projection) ? null : projection.attributes;
-    var relationshipNames = get(modelType, 'relationshipNames');
-    var createRelatedBelongsToRecordFunction = (relatedRecord) => {
+    let promises = A();
+    let modelType = store.modelFor(mainRecord.constructor.modelName);
+    let attrs = isNone(projection) ? null : projection.attributes;
+    let relationshipNames = get(modelType, 'relationshipNames');
+    let createRelatedBelongsToRecordFunction = (relatedRecord) => {
       if (!isNone(relatedRecord)) {
         promises.pushObject(createRelatedBelongsToRecord(store, relatedRecord, localAdapter, localStore, isNone(attrs) ? null : attrs[belongToName]));
       }
     };
 
     for (let i = 0; i < relationshipNames.belongsTo.length; i++) {
-      var belongToName = relationshipNames.belongsTo[i];
+      let belongToName = relationshipNames.belongsTo[i];
 
       // Save related record into local store only if relationship included into projection (if projection is set).
       if (isNone(projection) || (attrs && attrs.hasOwnProperty(belongToName))) {
@@ -166,18 +166,18 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
           mainRecord.get(belongToName).then(createRelatedBelongsToRecordFunction);
         } else {
           if (isEmbedded(store, modelType, belongToName)) {
-            var relatedRecord = mainRecord.get(belongToName);
+            let relatedRecord = mainRecord.get(belongToName);
             createRelatedBelongsToRecordFunction(relatedRecord);
           }
         }
       }
     }
 
-    var createRelatedHasManyRecordsFunction = (relatedRecords) =>
+    let createRelatedHasManyRecordsFunction = (relatedRecords) =>
       promises.pushObjects(createRelatedHasManyRecords(store, relatedRecords, localAdapter, localStore, isNone(attrs) ? null : attrs[hasManyName]));
 
     for (let i = 0; i < relationshipNames.hasMany.length; i++) {
-      var hasManyName = relationshipNames.hasMany[i];
+      let hasManyName = relationshipNames.hasMany[i];
 
       // Save related records into local store only if relationship included into projection (if projection is set).
       if (isNone(projection) || (attrs && attrs.hasOwnProperty(hasManyName))) {
@@ -186,7 +186,7 @@ export function syncDownRelatedRecords(store, mainRecord, localAdapter, localSto
           mainRecord.get(hasManyName).then(createRelatedHasManyRecordsFunction);
         } else {
           if (isEmbedded(store, modelType, hasManyName)) {
-            var relatedRecords = mainRecord.get(hasManyName);
+            let relatedRecords = mainRecord.get(hasManyName);
             createRelatedHasManyRecordsFunction(relatedRecords);
           }
         }

@@ -25,7 +25,7 @@ import generateUniqueId from '../utils/generate-unique-id';
 
   @public
  */
-var ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
+let ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
   /**
     Stored canonical `belongsTo` relationships.
 
