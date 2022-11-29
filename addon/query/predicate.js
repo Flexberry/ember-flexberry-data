@@ -750,7 +750,7 @@ export function stringToPredicate(stringPredicate) {
   let predicate;
   try {
     predicate = eval('function fromString() { return ' + stringPredicate + '; } fromString;')();
-  } finally {  };
+  } catch (e) {  };
 
   return predicate;
 }

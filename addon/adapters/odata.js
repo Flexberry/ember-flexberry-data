@@ -209,9 +209,9 @@ export default DS.RESTAdapter.extend({
 
     let resultUrl = `${url}/${functionName}(`;
     let counter = 0;
-    for (let key in params) {
+    params.forEach(() => {
       counter++;
-    }
+    });
 
     let resultParams = {};
     if (!isNone(params)) {
