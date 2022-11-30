@@ -173,7 +173,7 @@ function initTestData(store) {
         .then(() => all(store._isOnline() ? [] : comments.map(comment => comment.save())))
 
         .then(() =>
-          new Promise.resolve({
+          Promise.resolve({
             people: sugAttrs.slice(0, 4).map(item => item.get('id')),
             comments: comments.map(item => item.get('id'))
           })
