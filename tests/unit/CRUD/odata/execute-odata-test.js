@@ -18,7 +18,7 @@ export default function executeTest(testName, callback, skipTest) {
     if (config.APP.testODataServiceURL.indexOf('http') >= 0) {
       baseUrl = config.APP.testODataServiceURL;
     } else {
-      baseUrl = 'http://localhost:6500/odata';
+      baseUrl = 'http://localhost:80/odata';
     }
 
     const app = startApp();
