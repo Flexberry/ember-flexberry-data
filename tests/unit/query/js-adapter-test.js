@@ -28,12 +28,9 @@ let adapter;
 module('js-adapter-test', {
   beforeEach() {
     app = startApp();
-
-    if (app) {
-      store = app.__container__.lookup('service:store');
-      moment = app.__container__.lookup('service:moment');
-      adapter = new JSAdapter(moment);
-    }
+    store = app.__container__.lookup('service:store');
+    moment = app.__container__.lookup('service:moment');
+    adapter = new JSAdapter(moment);
   },
 
   afterEach() {

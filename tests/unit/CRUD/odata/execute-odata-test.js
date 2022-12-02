@@ -23,34 +23,32 @@ export default function executeTest(testName, callback, skipTest) {
 
     const app = startApp();
 
-    if (app) {
-      app.__container__.registry.register('store:local', OfflineStore);
-      const store = app.__container__.lookup('service:store');
-      let onlineStore = OnlineStore.reopen(StoreMixin).create(app.__container__.ownerInjection());
-      store.set('onlineStore', onlineStore);
+    app.__container__.registry.register('store:local', OfflineStore);
+    const store = app.__container__.lookup('service:store');
+    let onlineStore = OnlineStore.reopen(StoreMixin).create(app.__container__.ownerInjection());
+    store.set('onlineStore', onlineStore);
 
-      // Override store.unloadAll method.
-      const originalUnloadAll = store.unloadAll;
-      store.unloadAll = function() {
-        originalUnloadAll.apply(store, arguments);
+    // Override store.unloadAll method.
+    const originalUnloadAll = store.unloadAll;
+    store.unloadAll = function() {
+      originalUnloadAll.apply(store, arguments);
 
-        // Clean up type maps otherwise internal models won't be cleaned from stores,
-        // and it will cause some exceptions related to store's internal-models statuses.
-        A([store, store.get('onlineStore'), store.get('offlineStore')]).forEach((s) => {
-          set(s, 'typeMaps', {});
-        });
-      };
-
-      // Define OData-adapter as default adapter for online store.
-      const adapter = OdataAdapter.create(app.__container__.ownerInjection());
-      set(adapter, 'host', baseUrl);
-      store.get('onlineStore').reopen({
-        adapterFor() {
-
-          return adapter;
-        }
+      // Clean up type maps otherwise internal models won't be cleaned from stores,
+      // and it will cause some exceptions related to store's internal-models statuses.
+      A([store, store.get('onlineStore'), store.get('offlineStore')]).forEach((s) => {
+        set(s, 'typeMaps', {});
       });
-    }
+    };
+
+    // Define OData-adapter as default adapter for online store.
+    const adapter = OdataAdapter.create(app.__container__.ownerInjection());
+    set(adapter, 'host', baseUrl);
+    store.get('onlineStore').reopen({
+      adapterFor() {
+
+        return adapter;
+      }
+    });
 
     module('CRUD | odata-' + testName);
 

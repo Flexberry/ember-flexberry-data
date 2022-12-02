@@ -30,29 +30,26 @@ let schemaIndexedbAdapterTest;
 
 function initTests () {
   appIndexedbAdapterTest = startApp();
-
-  if (appIndexedbAdapterTest) {
-    storeIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:store');
-    dexieIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:dexie');
-    offlineGlobalsIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:offline-globals');
-    offlineGlobalsIndexedbAdapterTest.setOnlineAvailable(false);
-    databasePrefixIndexedbAdapterTest = 'testDBIAT';
-    modelNameIndexedbAdapterTest = 'employee';
-    schemaIndexedbAdapterTest = (dbName) => {
-      let object = {};
-      object[dbName] = {
-        1: {
-          employee: 'id,Age,Name,Surname,employmentDate,CountryName,Price,Active,Country,Creator,Manager,*Tags',
-          creator: 'id,Name,Age,Country',
-          man: 'id,Name,Age,Country,EyesColor',
-          bot: 'id,Name,Age,Country,IsClever',
-          country: 'id,Name',
-          tag: 'id,Name,Creator'
-        }
-      };
-      return object;
+  storeIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:store');
+  dexieIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:dexie');
+  offlineGlobalsIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:offline-globals');
+  offlineGlobalsIndexedbAdapterTest.setOnlineAvailable(false);
+  databasePrefixIndexedbAdapterTest = 'testDBIAT';
+  modelNameIndexedbAdapterTest = 'employee';
+  schemaIndexedbAdapterTest = (dbName) => {
+    let object = {};
+    object[dbName] = {
+      1: {
+        employee: 'id,Age,Name,Surname,employmentDate,CountryName,Price,Active,Country,Creator,Manager,*Tags',
+        creator: 'id,Name,Age,Country',
+        man: 'id,Name,Age,Country,EyesColor',
+        bot: 'id,Name,Age,Country,IsClever',
+        country: 'id,Name',
+        tag: 'id,Name,Creator'
+      }
     };
-  }
+    return object;
+  };
 }
 
 module('indexeddb-adapter-test query', {

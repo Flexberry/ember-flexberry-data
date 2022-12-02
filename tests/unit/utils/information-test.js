@@ -12,11 +12,8 @@ let information;
 module('utils', {
   beforeEach() {
     app = startApp();
-
-    if (app) {
-      store = app.__container__.lookup('service:store');
-      information = new Information(store);
-    }
+    store = app.__container__.lookup('service:store');
+    information = new Information(store);
   },
 
   afterEach() {
