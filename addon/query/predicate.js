@@ -750,8 +750,7 @@ export function stringToPredicate(stringPredicate) {
   let predicate;
   try {
     predicate = eval('function fromString() { return ' + stringPredicate + '; } fromString;')();
-  } finally {
-    // eslint-disable-next-line no-unsafe-finally
-    return predicate;
-  }
+  } catch (e) {  };
+
+  return predicate;
 }

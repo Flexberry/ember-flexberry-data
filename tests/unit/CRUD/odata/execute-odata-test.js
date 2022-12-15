@@ -18,10 +18,11 @@ export default function executeTest(testName, callback, skipTest) {
     if (config.APP.testODataServiceURL.indexOf('http') >= 0) {
       baseUrl = config.APP.testODataServiceURL;
     } else {
-      baseUrl = 'http://localhost:6500/odata';
+      baseUrl = 'http://localhost:80/odata';
     }
 
     const app = startApp();
+
     app.__container__.registry.register('store:local', OfflineStore);
     const store = app.__container__.lookup('service:store');
     let onlineStore = OnlineStore.reopen(StoreMixin).create(app.__container__.ownerInjection());

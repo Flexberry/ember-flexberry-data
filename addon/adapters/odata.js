@@ -176,8 +176,8 @@ export default DS.RESTAdapter.extend({
    * @return {String} The path for a given type.
    */
   pathForType(modelName) {
-    var camelized = camelize(modelName);
-    var capitalized = capitalize(camelized);
+    let camelized = camelize(modelName);
+    let capitalized = capitalize(camelized);
     return odataPluralize(capitalized);
   },
 
@@ -752,10 +752,10 @@ export default DS.RESTAdapter.extend({
    * @private
    */
   _buildURL(modelName, id) {
-    var url = [];
-    var host = get(this, 'host');
-    var prefix = this.urlPrefix();
-    var path;
+    let url = [];
+    let host = get(this, 'host');
+    let prefix = this.urlPrefix();
+    let path;
 
     if (modelName) {
       path = this.pathForType(modelName);

@@ -151,7 +151,7 @@ export default Service.extend({
    * @private
    */
   _syncDownRecord: function (store, record, reload, projectionName, params) {
-    var _this = this;
+    let _this = this;
 
     function saveRecordToLocalStore(store, record, projectionName) {
       let modelName = record.constructor.modelName;

@@ -138,11 +138,9 @@ function initTestData(store) {
         }).save()
       ])
     ).then((createdRecords) =>
-      new Promise((resolve) =>
-        resolve({
-          people: createdRecords.slice(0, 3).map(item => item.get('id')),
-          suggestionTypes: createdRecords.slice(3, 4).map(item => item.get('id'))
-        })
-      )
+      Promise.resolve({
+        people: createdRecords.slice(0, 3).map(item => item.get('id')),
+        suggestionTypes: createdRecords.slice(3, 4).map(item => item.get('id'))
+      })
     );
 }

@@ -1,8 +1,8 @@
 "use strict";
 
 // var RSVP = require('rsvp');
-var path = require('path');
-var fs = require('fs');
+let path = require('path');
+let fs = require('fs');
 
 function updateVersion(project, versions, fileWithVersionPath) {
   let filePath = path.join(project.root, fileWithVersionPath);
