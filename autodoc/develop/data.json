@@ -2403,7 +2403,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 573,
+            "line": 580,
             "description": "A method to generate url part from queryParams.",
             "itemtype": "method",
             "name": "_generateFunctionQueryString",
@@ -2431,7 +2431,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 593,
+            "line": 600,
             "description": "A method to make args object function/action call method's.",
             "itemtype": "method",
             "name": "_getODataArgs",
@@ -2464,7 +2464,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 622,
+            "line": 629,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2510,7 +2510,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 731,
+            "line": 738,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2538,7 +2538,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 771,
+            "line": 778,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2562,7 +2562,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 822,
+            "line": 829,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -8375,7 +8375,7 @@
         },
         {
             "file": "addon/utils/batch-queries.js",
-            "line": 118,
+            "line": 131,
             "access": "private",
             "tagname": "",
             "itemtype": "method",
@@ -8396,7 +8396,7 @@
         },
         {
             "file": "addon/utils/batch-queries.js",
-            "line": 137,
+            "line": 150,
             "access": "private",
             "tagname": "",
             "itemtype": "method",
@@ -9276,7 +9276,7 @@
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:622"
+            "line": " addon/adapters/odata.js:629"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",

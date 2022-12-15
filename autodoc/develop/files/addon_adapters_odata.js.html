@@ -679,44 +679,51 @@ export default DS.RESTAdapter.extend({
       };
 
       return new Ember.RSVP.Promise((resolve, reject) =&gt; Ember.$.ajax(url, options).done((response, statusText, xhr) =&gt; {
-        const meta = getResponseMeta(xhr.getResponseHeader(&#x27;Content-Type&#x27;));
-        if (meta.contentType !== &#x27;multipart/mixed&#x27;) {
-          return reject(new DS.AdapterError(&#x27;Invalid response type.&#x27;));
-        }
-
-        const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
-        const getResponses = batchResponses.filter(r =&gt; r.contentType === &#x27;application/http&#x27;);
-        const updateResponse = batchResponses.find(r =&gt; r.contentType === &#x27;multipart/mixed&#x27;);
-
-        const errorsChangesets = updateResponse.changesets.filter(c =&gt; !this.isSuccess(c.meta.status));
-        if (errorsChangesets.length) {
-          return reject(errorsChangesets.map(c =&gt; new DS.AdapterError(c.body)));
-        }
-
-        const errors = [];
-        const result = [];
-        models.forEach((model) =&gt; {
-          const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
-          if (modelDirtyType === &#x27;deleted&#x27;) {
-            Ember.run(store, store.unloadRecord, model);
-          } else if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27; || model.hasChangedBelongsTo()) {
-            const { response } = getResponses.shift();
-            if (this.isSuccess(response.meta.status)) {
-              const modelName = model.constructor.modelName;
-              const payload = { [modelName]: response.body };
-              Ember.run(() =&gt; {
-                store.pushPayload(modelName, payload);
-                model.rollbackAttributes(); // forced adjustment of model state
-              });
-            } else {
-              errors.push(new DS.AdapterError(response.body));
-            }
+        try {
+          const meta = getResponseMeta(xhr.getResponseHeader(&#x27;Content-Type&#x27;));
+          if (meta.contentType !== &#x27;multipart/mixed&#x27;) {
+            return reject(new DS.AdapterError(&#x27;Invalid response type.&#x27;));
           }
 
-          result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
-        });
+          let batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+          
 
-        return errors.length ? reject(errors) : resolve(result);
+          const getResponses = batchResponses.filter(r =&gt; r.contentType === &#x27;application/http&#x27;);
+          const updateResponse = batchResponses.find(r =&gt; r.contentType === &#x27;multipart/mixed&#x27;);
+
+          const errorsChangesets = updateResponse.changesets.filter(c =&gt; !this.isSuccess(c.meta.status));
+          if (errorsChangesets.length) {
+            return reject(errorsChangesets.map(c =&gt; new DS.AdapterError(c.body)));
+          }
+
+          const errors = [];
+          const result = [];
+          models.forEach((model) =&gt; {
+            const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
+            if (modelDirtyType === &#x27;deleted&#x27;) {
+              Ember.run(store, store.unloadRecord, model);
+            } else if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27; || model.hasChangedBelongsTo()) {
+              const { response } = getResponses.shift();
+              if (this.isSuccess(response.meta.status)) {
+                const modelName = model.constructor.modelName;
+                const payload = { [modelName]: response.body };
+                Ember.run(() =&gt; {
+                  store.pushPayload(modelName, payload);
+                  model.rollbackAttributes(); // forced adjustment of model state
+                });
+              } else {
+                errors.push(new DS.AdapterError(response.body));
+              }
+            }
+
+            result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
+          });
+
+          return errors.length ? reject(errors) : resolve(result);
+        } catch (error) {
+          // If an error is thrown then this situation is not processed and user will get not understandable result.
+          return reject(new DS.AdapterError(error));
+        }
       }).fail(reject));
     });
   },
