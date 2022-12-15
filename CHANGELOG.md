@@ -3,6 +3,10 @@
 ## [Unreleased]
 ### Fixed
 - Audit fields creator and editor set.
+- Processing errors of batch requests.
+
+### Breaking changes
+- Use `jquery-mockjax` from npm instead of bower.
 
 ## [2.7.0] - 2022-05-17
 ### Added
