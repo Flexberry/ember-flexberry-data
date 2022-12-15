@@ -170,19 +170,19 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
    * @param {Object} relationship
    */
   serializeBelongsTo(snapshot, json, relationship) {
-    var option = this.attrsOption(relationship.key);
+    let option = this.attrsOption(relationship.key);
     if (!option || option.serialize !== &#x27;odata-id&#x27;) {
       this._super(snapshot, json, relationship);
       return;
     }
 
-    var key = relationship.key;
-    var belongsToId = snapshot.belongsTo(key, { id: true });
+    let key = relationship.key;
+    let belongsToId = snapshot.belongsTo(key, { id: true });
     if (belongsToId === undefined) {
       return;
     }
 
-    var payloadKey = this.keyForRelationship(key, relationship.kind, &#x27;serialize&#x27;);
+    let payloadKey = this.keyForRelationship(key, relationship.kind, &#x27;serialize&#x27;);
     if (isNone(belongsToId)) {
       json[payloadKey] = null;
     } else {

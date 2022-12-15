@@ -172,6 +172,10 @@ export class SimplePredicate extends BasePredicate {
   constructor(attributePath, operator, value) {
     super();
 
+    if (value === undefined) {
+      value = null;
+    }
+
     this._attributePath = attributePath;
     this._operator = FilterOperator.tryCreate(operator);
     this._value = value;
@@ -890,10 +894,9 @@ export function stringToPredicate(stringPredicate) {
   let predicate;
   try {
     predicate = eval(&#x27;function fromString() { return &#x27; + stringPredicate + &#x27;; } fromString;&#x27;)();
-  } finally {
-    // eslint-disable-next-line no-unsafe-finally
-    return predicate;
-  }
+  } catch (e) {  };
+
+  return predicate;
 }
 
     </pre>

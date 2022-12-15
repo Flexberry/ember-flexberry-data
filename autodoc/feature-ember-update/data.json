@@ -1055,7 +1055,7 @@
             "module": "ember-flexberry-data",
             "namespace": "",
             "file": "addon/query/predicate.js",
-            "line": 81,
+            "line": 85,
             "description": "The class of date predicate for filtering attribute by value and filter operator.",
             "extends": "BasePredicate",
             "params": [
@@ -1093,7 +1093,7 @@
             "module": "ember-flexberry-data",
             "namespace": "",
             "file": "addon/query/predicate.js",
-            "line": 165,
+            "line": 169,
             "description": "The class of complex predicate which include multiple predicates unioned with logical condition.",
             "extends": "BasePredicate",
             "params": [
@@ -1122,7 +1122,7 @@
             "module": "ember-flexberry-data",
             "namespace": "",
             "file": "addon/query/predicate.js",
-            "line": 233,
+            "line": 237,
             "description": "The predicate class for string attributes.",
             "extends": "BasePredicate",
             "params": [
@@ -1145,7 +1145,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/predicate.js",
-            "line": 290,
+            "line": 294,
             "description": "The predicate class for geography attributes.",
             "extends": "BasePredicate",
             "params": [
@@ -1168,7 +1168,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/predicate.js",
-            "line": 347,
+            "line": 351,
             "description": "The predicate class for geometry attributes.",
             "extends": "BasePredicate",
             "params": [
@@ -1191,7 +1191,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/predicate.js",
-            "line": 405,
+            "line": 409,
             "description": "The predicate class for details.",
             "extends": "BasePredicate",
             "params": [
@@ -1214,7 +1214,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/predicate.js",
-            "line": 515,
+            "line": 519,
             "description": "The class of not predicate.",
             "extends": "BasePredicate",
             "params": [
@@ -1237,7 +1237,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/predicate.js",
-            "line": 558,
+            "line": 562,
             "description": "The predicate class that implements the isof function.\n\nIts constructor implements the following signatures:\n  - `new IsOfPredicate(typeName)`\n  - `new IsOfPredicate(expression, typeName)`\n\nWhere:\n  - `typeName` - type name to which the current instance will be assigned.\n  - `expression` - an expression relative to the current instance that must point to an object for assigning a type.",
             "extends": "BasePredicate",
             "params": [
@@ -1260,7 +1260,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/predicate.js",
-            "line": 629,
+            "line": 633,
             "description": "The class of true predicate.",
             "extends": "BasePredicate",
             "is_constructor": 1
@@ -1276,7 +1276,7 @@
             "module": "ember-flexberry-data",
             "namespace": "Query",
             "file": "addon/query/predicate.js",
-            "line": 654,
+            "line": 658,
             "description": "The class of false predicate.",
             "extends": "BasePredicate",
             "is_constructor": 1
@@ -4624,7 +4624,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 36,
+            "line": 40,
             "description": "The path to the attribute for filtering.",
             "itemtype": "property",
             "name": "attributePath",
@@ -4636,7 +4636,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 47,
+            "line": 51,
             "description": "The filter operator.",
             "itemtype": "property",
             "name": "operator",
@@ -4648,7 +4648,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 58,
+            "line": 62,
             "description": "The value for filtering.",
             "itemtype": "property",
             "name": "value",
@@ -4660,7 +4660,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 69,
+            "line": 73,
             "description": "Converts this instance to string.",
             "itemtype": "method",
             "name": "toString",
@@ -4675,7 +4675,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 108,
+            "line": 112,
             "description": "The path to the attribute for filtering.",
             "itemtype": "property",
             "name": "attributePath",
@@ -4687,7 +4687,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 119,
+            "line": 123,
             "description": "The filter operator.",
             "itemtype": "property",
             "name": "operator",
@@ -4699,7 +4699,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 130,
+            "line": 134,
             "description": "The value for filtering.",
             "itemtype": "property",
             "name": "value",
@@ -4711,7 +4711,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 141,
+            "line": 145,
             "description": "Flag for dates.",
             "itemtype": "property",
             "name": "timeless",
@@ -4723,7 +4723,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 152,
+            "line": 156,
             "description": "Converts this instance to string.",
             "itemtype": "method",
             "name": "toString",
@@ -4738,7 +4738,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 221,
+            "line": 225,
             "description": "Converts this instance to string.",
             "itemtype": "method",
             "name": "toString",
@@ -4753,7 +4753,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 254,
+            "line": 258,
             "description": "The path to the attribute for predicate.",
             "itemtype": "property",
             "name": "attributePath",
@@ -4765,7 +4765,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 265,
+            "line": 269,
             "description": "The value that has to be contained in the attribute.",
             "itemtype": "property",
             "name": "containsValue",
@@ -4777,7 +4777,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 276,
+            "line": 280,
             "description": "Sets the value that the attribute has to contain.",
             "itemtype": "method",
             "name": "contains",
@@ -4798,7 +4798,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 311,
+            "line": 315,
             "description": "The path to the attribute for predicate.",
             "itemtype": "property",
             "name": "attributePath",
@@ -4810,7 +4810,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 322,
+            "line": 326,
             "description": "The geography value that has to intersect with the attribute.",
             "itemtype": "property",
             "name": "intersectsValue",
@@ -4822,7 +4822,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 333,
+            "line": 337,
             "description": "Sets the value that the attribute has to contain.",
             "itemtype": "method",
             "name": "contains",
@@ -4843,7 +4843,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 369,
+            "line": 373,
             "description": "The path to the attribute for predicate.",
             "itemtype": "property",
             "name": "attributePath",
@@ -4856,7 +4856,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 380,
+            "line": 384,
             "description": "The geometry value that has to intersect with the attribute.",
             "itemtype": "property",
             "name": "intersectsValue",
@@ -4869,7 +4869,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 391,
+            "line": 395,
             "description": "Sets the value that the attribute has to contain.",
             "itemtype": "method",
             "name": "contains",
@@ -4891,7 +4891,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 428,
+            "line": 432,
             "description": "The path to the detail for predicate.",
             "return": {
                 "description": "",
@@ -4903,7 +4903,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 437,
+            "line": 441,
             "description": "The predicate for details.",
             "return": {
                 "description": "",
@@ -4915,7 +4915,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 446,
+            "line": 450,
             "description": "Is need to use predicate for all details.",
             "return": {
                 "description": "",
@@ -4927,7 +4927,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 455,
+            "line": 459,
             "description": "Is need to use predicate for any detail.",
             "return": {
                 "description": "",
@@ -4939,7 +4939,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 464,
+            "line": 468,
             "description": "Adds predicate for all details.",
             "itemtype": "method",
             "name": "all",
@@ -4962,7 +4962,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 480,
+            "line": 484,
             "description": "Adds predicate for any detail.",
             "itemtype": "method",
             "name": "any",
@@ -4985,7 +4985,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 496,
+            "line": 500,
             "description": "Converts this instance to string.",
             "itemtype": "method",
             "name": "toString",
@@ -5001,7 +5001,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 535,
+            "line": 539,
             "description": "Predicate getter.",
             "itemtype": "property",
             "name": "predicate",
@@ -5014,7 +5014,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 546,
+            "line": 550,
             "description": "Converts this instance to string.",
             "itemtype": "method",
             "name": "toString",
@@ -5030,7 +5030,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 595,
+            "line": 599,
             "description": "Expression getter.",
             "itemtype": "property",
             "name": "expression",
@@ -5043,7 +5043,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 606,
+            "line": 610,
             "description": "Type name getter.",
             "itemtype": "property",
             "name": "typeName",
@@ -5056,7 +5056,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 617,
+            "line": 621,
             "description": "Converts this instance to string.",
             "itemtype": "method",
             "name": "toString",
@@ -5072,7 +5072,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 642,
+            "line": 646,
             "description": "Converts this instance to string.",
             "itemtype": "method",
             "name": "toString",
@@ -5088,7 +5088,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 664,
+            "line": 668,
             "description": "Converts this instance to string.",
             "itemtype": "method",
             "name": "toString",
@@ -5104,7 +5104,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 676,
+            "line": 680,
             "description": "Combines specified predicates using `and` logic condition.",
             "itemtype": "method",
             "name": "and",
@@ -5127,7 +5127,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 690,
+            "line": 694,
             "description": "Combines specified predicates using `or` logic condition.",
             "itemtype": "method",
             "name": "or",
@@ -5150,7 +5150,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 704,
+            "line": 708,
             "description": "Throws error if specified argument is not a predicate.",
             "params": [
                 {
@@ -5164,7 +5164,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 715,
+            "line": 719,
             "description": "Creates predicate by various parameters.",
             "itemtype": "method",
             "name": "createPredicate",
@@ -5183,7 +5183,7 @@
         },
         {
             "file": "addon/query/predicate.js",
-            "line": 738,
+            "line": 742,
             "description": "Convert string to predicate.",
             "itemtype": "method",
             "name": "stringToPredicate",
@@ -8582,27 +8582,27 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/predicate.js:428"
+            "line": " addon/query/predicate.js:432"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/predicate.js:437"
+            "line": " addon/query/predicate.js:441"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/predicate.js:446"
+            "line": " addon/query/predicate.js:450"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/predicate.js:455"
+            "line": " addon/query/predicate.js:459"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/predicate.js:464"
+            "line": " addon/query/predicate.js:468"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " addon/query/predicate.js:480"
+            "line": " addon/query/predicate.js:484"
         },
         {
             "message": "replacing incorrect tag: returns with return",
@@ -8766,23 +8766,23 @@
         },
         {
             "message": "Missing item type\nThe path to the detail for predicate.",
-            "line": " addon/query/predicate.js:428"
+            "line": " addon/query/predicate.js:432"
         },
         {
             "message": "Missing item type\nThe predicate for details.",
-            "line": " addon/query/predicate.js:437"
+            "line": " addon/query/predicate.js:441"
         },
         {
             "message": "Missing item type\nIs need to use predicate for all details.",
-            "line": " addon/query/predicate.js:446"
+            "line": " addon/query/predicate.js:450"
         },
         {
             "message": "Missing item type\nIs need to use predicate for any detail.",
-            "line": " addon/query/predicate.js:455"
+            "line": " addon/query/predicate.js:459"
         },
         {
             "message": "Missing item type\nThrows error if specified argument is not a predicate.",
-            "line": " addon/query/predicate.js:704"
+            "line": " addon/query/predicate.js:708"
         },
         {
             "message": "Missing item type\nFlag: indicates whether to use new {@link http://jsonapi.org|JSON API} serialization.",
