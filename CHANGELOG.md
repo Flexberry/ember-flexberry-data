@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Fix query body in batch update.
 
 ## [3.8.0-beta.0]
 ### Added
