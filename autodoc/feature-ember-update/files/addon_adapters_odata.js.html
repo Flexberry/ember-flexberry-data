@@ -666,9 +666,9 @@ export default DS.RESTAdapter.extend({
         }
       });
 
-      requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;--&#x27;;
-      requestBody += getQueries.join(&#x27;&#x27;);
-      requestBody += &#x27;\r\n--&#x27; + boundary + &#x27;--&#x27;;
+      requestBody += &#x27;--&#x27; + changeSetBoundary + &#x27;--&#x27; + &#x27;\r\n\r\n&#x27;;
+      requestBody += getQueries.join(&#x27;\r\n&#x27;);
+      requestBody += &#x27;\r\n\r\n--&#x27; + boundary + &#x27;--&#x27;;
 
       const url = &#x60;${this._buildURL()}/$batch&#x60;;
 
