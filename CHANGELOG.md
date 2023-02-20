@@ -4,6 +4,7 @@
 ### Fixed
 - Audit fields creator and editor set.
 - Processing errors of batch requests.
+- Fix query body in batch update.
 
 ### Breaking changes
 - Use `jquery-mockjax` from npm instead of bower.

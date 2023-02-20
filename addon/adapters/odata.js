@@ -510,9 +510,9 @@ export default DS.RESTAdapter.extend({
         }
       });
 
-      requestBody += '--' + changeSetBoundary + '--';
-      requestBody += getQueries.join('');
-      requestBody += '\r\n--' + boundary + '--';
+      requestBody += '--' + changeSetBoundary + '--' + '\r\n\r\n';
+      requestBody += getQueries.join('\r\n');
+      requestBody += '\r\n\r\n--' + boundary + '--';
 
       const url = `${this._buildURL()}/$batch`;
 
