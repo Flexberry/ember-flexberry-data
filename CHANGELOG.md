@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [2.8.0-beta.0] - 2023-03-01
+## [2.8.0] - 2023-03-13
 ### Fixed
 - Audit fields creator and editor set.
 - Processing errors of batch requests.
