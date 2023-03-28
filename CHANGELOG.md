@@ -1,6 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+
+## [3.8.0-beta.1] - 2023-03-28
+### Added
+- Changes from `2.8.0` version.
+
 ### Fixed
 - Fix query body in batch update.
 
