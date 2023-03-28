@@ -411,13 +411,13 @@ export default DS.Adapter.extend({
     @return {Promise}
   */
   deleteRecord(store, type, snapshot) {
-    let promises = Ember.A();
+    let promises = A();
     let dexieService = this.get(&#x27;dexieService&#x27;);
     let db = dexieService.dexie(this.get(&#x27;dbName&#x27;), store);
     this._deleteDetailModels(dexieService, db, promises, snapshot.record);
 
     promises.pushObject(dexieService.performQueueOperation(db, (db) =&gt; db.table(type.modelName).delete(snapshot.id)));
-    return Ember.RSVP.all(promises).then(() =&gt; {
+    return RSVP.all(promises).then(() =&gt; {
       return this._deleteParentModels(store, type, snapshot.id);
     });
   },

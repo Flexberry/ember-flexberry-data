@@ -249,7 +249,20 @@ function parseResponse(response) {
       break;
 
     case &#x27;application/json&#x27;:
-      body = JSON.parse(response.substring(startBody));
+      let parsedString = response.substring(startBody);
+      body = JSON.parse(parsedString);
+
+      /* There can be an error on server so result will be parsed but will not be applied and will lead to not understandable error.
+        {&quot;error&quot;:{&quot;code&quot;:&quot;500&quot;,&quot;message&quot;:&quot;An error has occured.&quot;}}
+      */
+      if (parsedString.replace(&#x27;\n&#x27;, &#x27;&#x27;).startsWith(&#x27;{&quot;error&quot;&#x27;)
+          &amp;&amp; body.hasOwnProperty(&#x27;error&#x27;)
+          &amp;&amp; body[&#x27;error&#x27;].hasOwnProperty(&#x27;code&#x27;)
+          &amp;&amp; body[&#x27;error&#x27;].hasOwnProperty(&#x27;message&#x27;)){
+        let errorCode = body[&#x27;error&#x27;][&#x27;code&#x27;];
+        let errorMessage = body[&#x27;error&#x27;][&#x27;message&#x27;];
+        throw new Error(&#x60;Request failed, error ${errorCode}: ${errorMessage}&#x60;);
+      }
       break;
 
     default:

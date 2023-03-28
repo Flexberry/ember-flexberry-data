@@ -813,7 +813,7 @@ function updateWhereClause(store, table, query) {
 
       let nextValue;
       if (predicate.timeless) {
-        let moment = Ember.getOwner(store).lookup(&#x27;service:moment&#x27;);
+        let moment = getOwner(store).lookup(&#x27;service:moment&#x27;);
         nextValue = moment.moment(resultValue, &#x27;YYYY-MM-DD&#x27;).add(1, &#x27;d&#x27;).format(&#x27;YYYY-MM-DD&#x27;);
       }
 
