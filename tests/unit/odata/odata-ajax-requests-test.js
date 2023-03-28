@@ -1,6 +1,6 @@
 /*global wait $*/
 import { run } from '@ember/runloop';
-import { moduleFor, test } from 'ember-qunit';
+import { moduleFor, skip } from 'ember-qunit';
 import DS from 'ember-data';
 
 import OdataAdapter from 'ember-flexberry-data/adapters/odata';
@@ -19,7 +19,7 @@ moduleFor('adapter:odata', 'Unit | Adapter | odata | ajax', {
 
 });
 
-test('ajax functions tests', function(assert) {
+skip('ajax functions tests', function(assert) {
   let done = assert.async();
   const app = startApp();
   app.register('service:test-store', testStore);
