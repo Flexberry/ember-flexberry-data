@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x]
+        node-version: [12.x]
 
     steps:
 
@@ -26,10 +26,8 @@ jobs:
       run: |
        set -x
        node -v
-       npm install -g bower
        npm install -g ember-cli@3.1.4
        npm install
-       bower install
 
     - name: StartUp docker services
       run: |
@@ -57,4 +55,3 @@ jobs:
     - name: Shutdown docker services
       run: |
         docker-compose down
-
