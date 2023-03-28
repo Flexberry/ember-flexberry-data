@@ -15,6 +15,15 @@
 ### Added
 - Changes from `2.7.0` version.
 
+## [2.8.0] - 2023-03-13
+### Fixed
+- Audit fields creator and editor set.
+- Processing errors of batch requests.
+- Fix query body in batch update.
+
+### Breaking changes
+- Use `jquery-mockjax` from npm instead of bower.
+
 ## [2.7.0] - 2022-05-17
 ### Added
 - Support of `SimplePredicate` and `DatePredicate` with two attributes.

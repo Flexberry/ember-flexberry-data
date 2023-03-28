@@ -68,7 +68,6 @@ addon/utils/string-functions.js
 app/browserify.js
 blueprints/ember-flexberry-data/index.js
 config/release.js
-ember-cli-build.js
 mini-formatter.js
 tests/dummy/app/controllers/suggestion.js
 tests/dummy/app/models/ember-flexberry-dummy-application-user.js
@@ -88,11 +87,13 @@ tests/dummy/app/app.js
 tests/dummy/config/environment.js
 tests/helpers/clear-data.js
 tests/integration/display-deep-model-test.js
+tests/integration/adapters/odata-test.js
 tests/integration/services/store-test.js
 tests/integration/services/syncer-test.js
 tests/integration/transforms/decimal-test.js
 tests/unit/CRUD/base/association-batch-updating-test.js
 tests/unit/CRUD/base/base-batch-updating-test.js
+tests/unit/CRUD/base/base-batch-updating-fail-test.js
 tests/unit/CRUD/base/base-creating-test.js
 tests/unit/CRUD/base/base-deleting-test.js
 tests/unit/CRUD/base/base-deleting-with-details-test.js
@@ -116,6 +117,7 @@ tests/unit/CRUD/base/base-updating-test.js
 tests/unit/CRUD/odata/execute-odata-test.js
 tests/unit/CRUD/odata/odata-association-batch-updating-test.js
 tests/unit/CRUD/odata/odata-batch-updating-test.js
+tests/unit/CRUD/odata/odata-batch-updating-fail-test.js
 tests/unit/CRUD/odata/odata-creating-test.js
 tests/unit/CRUD/odata/odata-deleting-test.js
 tests/unit/CRUD/odata/odata-deleting-with-details-test.js
@@ -176,6 +178,7 @@ tests/unit/models/offline-model-test.js
 tests/unit/models/validations-test.js
 tests/unit/odata/odata-ajax-requests-test.js
 tests/unit/odata/odata-reading-decimal-test.js
+tests/unit/odata/odata-void-request-test.js
 tests/unit/offline/offline-CRUD-test.js
 tests/unit/query/builder-test.js
 tests/unit/query/indexeddb-adapter-test.js
