@@ -2,7 +2,12 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import { computed } from '@ember/object';
+import { getOwner } from '@ember/application';
+import { isArray } from '@ember/array';
+import { assert, debug } from '@ember/debug';
+import { isNone, isBlank } from '@ember/utils';
+import RSVP from 'rsvp';
 import DS from 'ember-data';
 import OfflineAdapter from '../adapters/offline';
 import QueryBuilder from '../query/builder';
@@ -11,7 +16,6 @@ import QueryBuilder from '../query/builder';
   Store that used in offline mode by default.
 
   @class LocalStore
-  @namespace Offline
   @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
   @private
 */
@@ -23,7 +27,7 @@ export default DS.Store.extend({
     @type String
     @default 'ember-flexberry-data'
   */
-  dbName: Ember.computed({
+  dbName: computed({
     get() {
       return this.get('adapter.dbName');
     },
@@ -41,7 +45,7 @@ export default DS.Store.extend({
   init() {
     this._super(...arguments);
     let dbName = this.get('dbName');
-    let owner = Ember.getOwner(this);
+    let owner = getOwner(this);
     this.set('adapter', OfflineAdapter.create(owner.ownerInjection(), dbName ? { dbName } : {}));
   },
 
@@ -54,7 +58,7 @@ export default DS.Store.extend({
    * @public
    */
   serializerFor: function(modelName) {
-    let owner = Ember.getOwner(this);
+    let owner = getOwner(this);
     let serializer = owner.lookup(`serializer:${modelName}-offline`);
     if (!serializer) {
       serializer = owner.lookup(`serializer:application-offline`);
@@ -75,7 +79,7 @@ export default DS.Store.extend({
    * @public
    */
   adapterFor: function(modelName) {
-    let owner = Ember.getOwner(this);
+    let owner = getOwner(this);
     let adapter = owner.lookup(`adapter:${modelName}-offline`);
     if (!adapter) {
       adapter = owner.lookup(`adapter:application-offline`);
@@ -101,11 +105,11 @@ export default DS.Store.extend({
    * @return {DS.AdapterPopulatedRecordArray} Records promise.
    */
   findAll: function(modelName, options) {
-    Ember.debug(`Flexberry Local Store::findAll ${modelName}`);
+    debug(`Flexberry Local Store::findAll ${modelName}`);
 
     let builder = new QueryBuilder(this, modelName);
     if (options && options.projection) {
-      Ember.debug(`Flexberry Local Store::findAll using projection '${options.projection}'`);
+      debug(`Flexberry Local Store::findAll using projection '${options.projection}'`);
 
       builder.selectByProjection(options.projection);
       return this.query(modelName, builder.build());
@@ -134,11 +138,11 @@ export default DS.Store.extend({
    */
   findRecord: function(modelName, id, options) {
     // TODO: case of options.reload === false.
-    Ember.debug(`Flexberry Local Store::findRecord ${modelName}(${id})`);
+    debug(`Flexberry Local Store::findRecord ${modelName}(${id})`);
 
     let builder = new QueryBuilder(this, modelName).byId(id);
     if (options && options.projection) {
-      Ember.debug(`Flexberry Local Store::findRecord using projection '${options.projection}'`);
+      debug(`Flexberry Local Store::findRecord using projection '${options.projection}'`);
 
       builder.selectByProjection(options.projection);
       return this.queryRecord(modelName, builder.build());
@@ -167,12 +171,12 @@ export default DS.Store.extend({
    *                   once the server returns.
    */
   query: function(modelName, query) {
-    Ember.debug(`Flexberry Local Store::query ${modelName}`, query);
+    debug(`Flexberry Local Store::query ${modelName}`, query);
 
     let promise = this._super(...arguments);
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new RSVP.Promise((resolve, reject) => {
       promise.then((results) => {
-        if (results && Ember.isArray(results)) {
+        if (results && isArray(results)) {
           results.forEach((result) => {
             result.didLoad();
           });
@@ -199,10 +203,10 @@ export default DS.Store.extend({
    *                   once the server returns.
    */
   queryRecord: function(modelName, query) {
-    Ember.debug(`Flexberry Local Store::queryRecord ${modelName}`, query);
+    debug(`Flexberry Local Store::queryRecord ${modelName}`, query);
 
     let promise = this._super(...arguments);
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new RSVP.Promise((resolve, reject) => {
       promise.then((result) => {
         if (result) {
           result.didLoad();
@@ -221,8 +225,8 @@ export default DS.Store.extend({
   */
   deleteAllRecords: function(modelName, filter) {
     let adapter = this.adapterFor(modelName);
-    if (Ember.isNone(adapter.deleteAllRecords)) {
-      Ember.assert('Method \'deleteAllRecords\' is missing');
+    if (isNone(adapter.deleteAllRecords)) {
+      assert('Method \'deleteAllRecords\' is missing');
     }
 
     return adapter.deleteAllRecords(adapter.store, modelName, filter);
@@ -240,7 +244,7 @@ export default DS.Store.extend({
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate(models) {
-    return Ember.RSVP.all(Ember.isArray(models) ? models.map((model) => {
+    return RSVP.all(isArray(models) ? models.map((model) => {
       if (model.get('dirtyType') === 'deleted') {
         return model.save().then(() => null);
       }
@@ -255,8 +259,8 @@ export default DS.Store.extend({
    * @param {String} primaryKey Primery key of the model to push into store.
    */
   createExistingRecord(modelName, primaryKey) {
-    Ember.assert('Model name for store.createExistingRecord() method must not be blank.', !Ember.isBlank(modelName));
-    Ember.assert('Model primary key for store.createExistingRecord() method must not be blank.', !Ember.isBlank(primaryKey));
+    assert('Model name for store.createExistingRecord() method must not be blank.', !isBlank(modelName));
+    assert('Model primary key for store.createExistingRecord() method must not be blank.', !isBlank(primaryKey));
 
     return this.push({
       data: {

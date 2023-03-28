@@ -2,7 +2,7 @@ import Ember from 'ember';
 import { module, test } from 'qunit';
 import config from 'dummy/config/environment';
 import startApp from 'dummy/tests/helpers/start-app';
-import { Adapter } from 'ember-flexberry-data';
+import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 
 if (config.APP.testODataService) {
   let App;
@@ -22,7 +22,7 @@ if (config.APP.testODataService) {
   module('Integration | Adapter | odata', {
     beforeEach() {
       App = startApp();
-      App.register('adapter:application', Adapter.Odata.extend({ host: baseUrl }));
+      App.register('adapter:application', OdataAdapter.extend({ host: baseUrl }));
 
       store = App.__container__.lookup('service:store');
       odataAdapter = store.adapterFor('application');
@@ -56,7 +56,7 @@ if (config.APP.testODataService) {
         assert.equal(Ember.get(records[2], 'name'), 'TestName3');
         assert.equal(Ember.get(records[2], 'eMail'), 'TestEmail3');
       })
-      .finally(done);     
+      .finally(done);
     });
   });
 
@@ -83,7 +83,7 @@ if (config.APP.testODataService) {
         assert.equal(Ember.get(records[2], 'name'), 'TestName3');
         assert.equal(Ember.get(records[2], 'eMail'), 'TestEmail3');
       })
-      .finally(done);     
+      .finally(done);
     });
   });
 
@@ -111,7 +111,7 @@ if (config.APP.testODataService) {
         assert.equal(records[2].constructor.modelName, 'ember-flexberry-dummy-suggestion-type');
         assert.equal(Ember.get(records[2], 'name'), 'TestSuggestionTypeName');
       })
-      .finally(done);     
+      .finally(done);
     });
   });
 
@@ -138,7 +138,7 @@ if (config.APP.testODataService) {
         assert.equal(Ember.get(records[1], 'address'), 'TestSuggestionAddress');
         assert.equal(Ember.get(records[1], 'text'), 'TestSuggestionText');
       })
-      .finally(done);     
+      .finally(done);
     });
   });
 
@@ -151,7 +151,7 @@ if (config.APP.testODataService) {
         store: store,
         modelName: null,
         url: baseUrl
-      }));     
+      }));
     });
   });
 }

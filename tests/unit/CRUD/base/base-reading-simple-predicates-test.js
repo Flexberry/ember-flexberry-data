@@ -1,14 +1,16 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 import { SimplePredicate } from 'ember-flexberry-data/query/predicate';
 import { ConstParam, AttributeParam } from 'ember-flexberry-data/query/parameter';
+import { isEmpty } from '@ember/utils';
 
 export default function readingPredicatesSimplePredicatesOperators(store, assert) {
-  assert.expect(72);
+  assert.expect(76);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     let builderStrOp = null;
     let builderConstOp = null;
 
@@ -64,6 +66,24 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
         (data, messages) => {
           assert.ok(data.every(item => item.get('name') === item.get('eMail')), messages[0]);
           assert.equal(data.get('length'), 1, messages[1]);
+        }
+      );
+    })
+
+    // Eq with undefined.
+    .then(() => {
+      builderStrOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where('karma', '==', undefined);
+      builderConstOp = new QueryBuilder(store, 'ember-flexberry-dummy-application-user')
+        .where(new SimplePredicate('karma', FilterOperator.Eq, undefined));
+
+      return runTest(store, [builderStrOp, builderConstOp], [
+          ['Eq with undefined | Data', 'Eq with undefined | Length'],
+          ['Eq with undefined predicate | Data', 'Eq with undefined predicate | Length']
+        ],
+        (data, messages) => {
+          assert.ok(data.every(item => isEmpty(item.get('karma'))), messages[0]);
+          assert.equal(data.get('length'), 0, messages[1]);
         }
       );
     })
@@ -339,6 +359,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
     })
 
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })
@@ -347,7 +368,7 @@ export default function readingPredicatesSimplePredicatesOperators(store, assert
 }
 
 function initTestData(store) {
-  return Ember.RSVP.Promise.all([
+  return RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Vasya',
       eMail: '1@mail.ru',
@@ -376,7 +397,7 @@ function initTestData(store) {
       name: 'SameData',
       eMail: 'SameData',
       karma: 7
-    }).save()
+    }).save(),
   ]);
 }
 

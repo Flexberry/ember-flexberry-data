@@ -1,5 +1,13 @@
-import Ember from 'ember';
+import { assert, debug } from '@ember/debug';
+import { deprecate } from '@ember/application/deprecations';
+import { isNone, isEmpty } from '@ember/utils';
+import { get, computed } from '@ember/object';
+import { getOwner } from '@ember/application';
+import { Promise, all, resolve } from 'rsvp';
+import $ from 'jquery';
 import DS from 'ember-data';
+import { run } from '@ember/runloop';
+import { A, isArray } from '@ember/array';
 
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
@@ -9,23 +17,23 @@ import generateUniqueId from '../utils/generate-unique-id';
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
 import Builder from '../query/builder';
 
-const { getOwner } = Ember;
 
 /**
  * The OData adapter class.
  * Uses Flexberry Query as a language for requesting server.
  *
  * @module ember-flexberry-data
- * @namespace Adapter
  * @class OData
  * @extends DS.RESTAdapter
  * @public
  */
 export default DS.RESTAdapter.extend({
-  headers: {
-    'OData-Version': '4.0',
-    Prefer: 'return=representation'
-  },
+  headers: computed(function() {
+    return {
+      'OData-Version': '4.0',
+      'Prefer': 'return=representation'
+    };
+  }),
 
   /**
     Timeout for AJAX-requests.
@@ -60,7 +68,7 @@ export default DS.RESTAdapter.extend({
       data = this.sortQueryParams(data);
     }
 
-    Ember.debug(`Flexberry ODataAdapter::query '${type}'`, data);
+    debug(`Flexberry ODataAdapter::query '${type}'`, data);
 
     //f TODO: think about moving request execution into query adapter
     return this.ajax(url, 'GET', { data: data, timeout: timeout, dataType: query.dataType || 'json' });
@@ -113,7 +121,7 @@ export default DS.RESTAdapter.extend({
    * @return {Promise} promise
    */
   queryRecord(store, type, query) {
-    Ember.debug(`Flexberry ODataAdapter::queryRecord '${type}'`, query);
+    debug(`Flexberry ODataAdapter::queryRecord '${type}'`, query);
 
     // TODO: query support for direct calls
     return this._super.apply(this, arguments);
@@ -130,12 +138,14 @@ export default DS.RESTAdapter.extend({
    * @param {DS.Snapshot} snapshot
    * @return {Promise} promise
   */
+  /* eslint-disable no-unused-vars */
   findRecord(store, type, id, snapshot) {
-    Ember.debug(`Flexberry ODataAdapter::findRecord '${type}(${id})'`);
+    debug(`Flexberry ODataAdapter::findRecord '${type}(${id})'`);
 
     // TODO: query support for direct calls
     return this._super.apply(this, arguments);
   },
+  /* eslint-enable no-unused-vars */
 
   /**
    * Overloaded method from `RESTAdapter` (Ember Data).
@@ -148,12 +158,14 @@ export default DS.RESTAdapter.extend({
    * @param {DS.SnapshotRecordArray} snapshotRecordArray
    * @return {Promise} promise
    */
+  /* eslint-disable no-unused-vars */
   findAll(store, type, sinceToken, snapshotRecordArray) {
-    Ember.debug(`Flexberry ODataAdapter::findAll '${type}'`);
+    debug(`Flexberry ODataAdapter::findAll '${type}'`);
 
     // TODO: query support for direct calls
     return this._super.apply(this, arguments);
   },
+  /* eslint-enable no-unused-vars */
 
   /**
    * Overloaded method from `build-url-mixin` (Ember Data), that determines the pathname for a given type.
@@ -164,8 +176,8 @@ export default DS.RESTAdapter.extend({
    * @return {String} The path for a given type.
    */
   pathForType(modelName) {
-    var camelized = camelize(modelName);
-    var capitalized = capitalize(camelized);
+    let camelized = camelize(modelName);
+    let capitalized = capitalize(camelized);
     return odataPluralize(capitalized);
   },
 
@@ -177,8 +189,8 @@ export default DS.RESTAdapter.extend({
    * @public
    */
   makeRequest(params) {
-    Ember.assert('You should specify both method and url', params.method || params.url);
-    return Ember.$.ajax(params);
+    assert('You should specify both method and url', params.method || params.url);
+    return $.ajax(params);
   },
 
   /**
@@ -190,8 +202,8 @@ export default DS.RESTAdapter.extend({
    * @return {String}
    */
   generateFunctionUrl(functionName, params, url) {
-    const config = getOwner(this)._lookupFactory('config:environment');
-    if (Ember.isNone(url)) {
+    const config = getOwner(this).factoryFor('config:environment').class;
+    if (isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
     }
 
@@ -202,7 +214,7 @@ export default DS.RESTAdapter.extend({
     }
 
     let resultParams = {};
-    if (!Ember.isNone(params)) {
+    if (!isNone(params)) {
       resultParams = params;
     }
 
@@ -240,8 +252,8 @@ export default DS.RESTAdapter.extend({
     @return {String}
   */
   generateActionUrl(actionName, data, url) {
-    const config = getOwner(this)._lookupFactory('config:environment');
-    if (Ember.isNone(url)) {
+    const config = getOwner(this).factoryFor('config:environment').class;
+    if (isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
     }
 
@@ -268,7 +280,7 @@ export default DS.RESTAdapter.extend({
     @return {Promise}
   */
   callEmberOdataFunction(args) {
-    Ember.deprecate('callEmberOdataFunction is deprecated. Use callFunction with single args argument instead.', false, {
+    deprecate('callEmberOdataFunction is deprecated. Use callFunction with single args argument instead.', false, {
       id: 'adapter.odata.callEmberOdataFunction',
       until: '3.5.0',
     });
@@ -314,7 +326,7 @@ export default DS.RESTAdapter.extend({
       resultUrl += queryParamsForUrl;
     }
 
-    const headers = Ember.$.extend({}, this.get('headers'));
+    const headers = $.extend({}, this.get('headers'));
 
     return this._callAjax(
       { url: resultUrl, method: 'GET', headers, xhrFields: args.fields ? args.fields : {} },
@@ -338,7 +350,7 @@ export default DS.RESTAdapter.extend({
     @return {Promise}
   */
   callEmberOdataAction(args) {
-    Ember.deprecate('callEmberOdataAction is deprecated. Use callAction with single args argument instead.', false, {
+    deprecate('callEmberOdataAction is deprecated. Use callAction with single args argument instead.', false, {
       id: 'adapter.odata.callEmberOdataAction',
       until: '3.5.0',
     });
@@ -372,7 +384,7 @@ export default DS.RESTAdapter.extend({
     }
 
     const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);
-    const headers = Ember.$.extend({}, this.get('headers'));
+    const headers = $.extend({}, this.get('headers'));
 
     return this._callAjax(
       {
@@ -401,13 +413,13 @@ export default DS.RESTAdapter.extend({
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate(store, models) {
-    if (Ember.isEmpty(models)) {
-      return Ember.RSVP.resolve(models);
+    if (isEmpty(models)) {
+      return resolve(models);
     }
 
-    models = Ember.isArray(models) ? models : Ember.A([models]);
+    models = isArray(models) ? models : A([models]);
 
-    return Ember.RSVP.all(models.map((m) => m.save({ softSave: true }))).then(() => {
+    return all(models.map((m) => m.save({ softSave: true }))).then(() => {
       const boundary = `batch_${generateUniqueId()}`;
 
       let requestBody = '--' + boundary + '\r\n';
@@ -516,7 +528,7 @@ export default DS.RESTAdapter.extend({
 
       const url = `${this._buildURL()}/$batch`;
 
-      const headers = Ember.$.extend({}, this.get('headers'));
+      const headers = $.extend({}, this.get('headers'));
       headers['Content-Type'] = `multipart/mixed;boundary=${boundary}`;
       const httpMethod = 'POST';
 
@@ -527,7 +539,7 @@ export default DS.RESTAdapter.extend({
         data: requestBody,
       };
 
-      return new Ember.RSVP.Promise((resolve, reject) => Ember.$.ajax(url, options).done((response, statusText, xhr) => {
+      return new Promise((resolve, reject) => $.ajax(url, options).done((response, statusText, xhr) => {
         try {
           const meta = getResponseMeta(xhr.getResponseHeader('Content-Type'));
           if (meta.contentType !== 'multipart/mixed') {
@@ -535,7 +547,7 @@ export default DS.RESTAdapter.extend({
           }
 
           let batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
-          
+
 
           const getResponses = batchResponses.filter(r => r.contentType === 'application/http');
           const updateResponse = batchResponses.find(r => r.contentType === 'multipart/mixed');
@@ -550,13 +562,13 @@ export default DS.RESTAdapter.extend({
           models.forEach((model) => {
             const modelDirtyType = model.get('dirtyType');
             if (modelDirtyType === 'deleted') {
-              Ember.run(store, store.unloadRecord, model);
+              run(store, store.unloadRecord, model);
             } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
               const { response } = getResponses.shift();
               if (this.isSuccess(response.meta.status)) {
                 const modelName = model.constructor.modelName;
                 const payload = { [modelName]: response.body };
-                Ember.run(() => {
+                run(() => {
                   store.pushPayload(modelName, payload);
                   model.rollbackAttributes(); // forced adjustment of model state
                 });
@@ -639,13 +651,13 @@ export default DS.RESTAdapter.extend({
    * @private
    */
   _callAjax(params, store, modelname, successCallback, failCallback, alwaysCallback) {
-    Ember.assert('Params must be Object!', typeof params === 'object');
-    Ember.assert('params.method or params.url is not defined.', !(Ember.isNone(params.method) || Ember.isNone(params.url)));
+    assert('Params must be Object!', typeof params === 'object');
+    assert('params.method or params.url is not defined.', !(isNone(params.method) || isNone(params.url)));
 
-    return new Ember.RSVP.Promise(function (resolve, reject) {
-      Ember.$.ajax(params).done((msg) => {
-        if (!Ember.isNone(store) && !Ember.isNone(modelname)) {
-          const normalizedRecords = { data: Ember.A(), included: Ember.A() };
+    return new Promise(function (resolve, reject) {
+      $.ajax(params).done((msg) => {
+        if (!isNone(store) && !isNone(modelname)) {
+          const normalizedRecords = { data: A(), included: A() };
           Object.values(msg.value).forEach(record => {
             const normalized = store.normalize(modelname, record);
             normalizedRecords.data.addObject(normalized.data);
@@ -653,12 +665,12 @@ export default DS.RESTAdapter.extend({
               normalizedRecords.included.addObjects(normalized.included);
             }
           });
-          Ember.run.join(() => { msg = store.push(normalizedRecords); });
+          run.join(() => { msg = store.push(normalizedRecords); });
         }
 
-        if (!Ember.isNone(successCallback)) {
+        if (!isNone(successCallback)) {
           if (typeof successCallback.then === 'function') {
-            if (!Ember.isNone(alwaysCallback)) {
+            if (!isNone(alwaysCallback)) {
               if (typeof alwaysCallback.then === 'function') {
                 successCallback(msg).then(() => { alwaysCallback(msg).then(resolve(msg)); });
               } else {
@@ -669,7 +681,7 @@ export default DS.RESTAdapter.extend({
             }
           } else {
             successCallback(msg);
-            if (!Ember.isNone(alwaysCallback)) {
+            if (!isNone(alwaysCallback)) {
               if (typeof alwaysCallback.then === 'function') {
                 alwaysCallback(msg).then(resolve(msg));
               } else {
@@ -681,7 +693,7 @@ export default DS.RESTAdapter.extend({
             }
           }
         } else {
-          if (!Ember.isNone(alwaysCallback)) {
+          if (!isNone(alwaysCallback)) {
             if (typeof alwaysCallback.then === 'function') {
               alwaysCallback(msg).then(resolve(msg));
             } else {
@@ -692,10 +704,10 @@ export default DS.RESTAdapter.extend({
             resolve(msg);
           }
         }
-      }).fail((msg) => {
-        if (!Ember.isNone(failCallback)) {
+      }).fail((msg)=> {
+        if (!isNone(failCallback)) {
           if (typeof failCallback.then === 'function') {
-            if (!Ember.isNone(alwaysCallback)) {
+            if (!isNone(alwaysCallback)) {
               if (typeof alwaysCallback.then === 'function') {
                 failCallback(msg).then(() => { alwaysCallback(msg).then(reject(msg)); });
               } else {
@@ -708,7 +720,7 @@ export default DS.RESTAdapter.extend({
 
           } else {
             failCallback(msg);
-            if (!Ember.isNone(alwaysCallback)) {
+            if (!isNone(alwaysCallback)) {
               if (typeof alwaysCallback === 'function') {
                 alwaysCallback(msg).then(reject(msg));
               } else {
@@ -720,7 +732,7 @@ export default DS.RESTAdapter.extend({
             }
           }
         } else {
-          if (!Ember.isNone(alwaysCallback)) {
+          if (!isNone(alwaysCallback)) {
             if (typeof alwaysCallback.then === 'function') {
               alwaysCallback(msg).then(reject(msg));
             } else {
@@ -746,10 +758,10 @@ export default DS.RESTAdapter.extend({
    * @private
    */
   _buildURL(modelName, id) {
-    var url = [];
-    var host = Ember.get(this, 'host');
-    var prefix = this.urlPrefix();
-    var path;
+    let url = [];
+    let host = get(this, 'host');
+    let prefix = this.urlPrefix();
+    let path;
 
     if (modelName) {
       path = this.pathForType(modelName);
@@ -820,7 +832,7 @@ export default DS.RESTAdapter.extend({
     let pathName = this.pathForType(modelName);
     let builder = new ODataQueryAdapter(url, store);
     let filterVelue = builder._buildODataFilters(filter);
-    let filterQuery = !Ember.isNone(filterVelue) ? '$filter=' + filterVelue : '';
+    let filterQuery = !isNone(filterVelue) ? '$filter=' + filterVelue : '';
     let data = { pathName: pathName, filterQuery: filterQuery };
 
     return this.callAction('DeleteAllSelect', data, null, { withCredentials: true });

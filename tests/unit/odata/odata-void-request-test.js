@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import { moduleFor, test } from 'ember-qunit';
-import { Adapter } from 'ember-flexberry-data';
+import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 import startApp from '../../helpers/start-app';
 
 
@@ -13,7 +13,7 @@ moduleFor('adapter:odata', 'Unit | Adapter | odata | void request', {
 test('void functions test', function(assert) {
   let done = assert.async();
   const app = startApp();
-  const adapter = Adapter.Odata.create(app.__container__.ownerInjection());
+  const adapter = OdataAdapter.create(app.__container__.ownerInjection());
 
   Ember.run(() => {
     return adapter.callAction('ExecuteVoidAction', { }, null)

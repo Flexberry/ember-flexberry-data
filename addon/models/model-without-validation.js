@@ -1,7 +1,13 @@
-import Ember from 'ember';
+import { Promise, all } from 'rsvp';
+import Evented from '@ember/object/evented';
+import EmberObject, { computed } from '@ember/object';
+import { merge } from '@ember/polyfills';
+import { isArray } from '@ember/array';
+import { isNone } from '@ember/utils';
 import DS from 'ember-data';
 import createProj from '../utils/create';
 import Copyable from '../mixins/copyable';
+import generateUniqueId from '../utils/generate-unique-id';
 
 /**
   Base model that supports projections and copying.
@@ -19,7 +25,7 @@ import Copyable from '../mixins/copyable';
 
   @public
  */
-var ModelWithoutValidation = DS.Model.extend(Ember.Evented, Copyable, {
+let ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
   /**
     Stored canonical `belongsTo` relationships.
 
@@ -27,7 +33,7 @@ var ModelWithoutValidation = DS.Model.extend(Ember.Evented, Copyable, {
     @type Object
     @private
   */
-  _canonicalBelongsTo: Ember.computed(() => ({})),
+  _canonicalBelongsTo: computed(() => ({})),
 
   /**
     Flag that indicates sync up process of model is processing.
@@ -77,20 +83,20 @@ var ModelWithoutValidation = DS.Model.extend(Ember.Evented, Copyable, {
     @return {Promise} A promise that will be resolved after all 'preSave' event handlers promises will be resolved
   */
   beforeSave(options) {
-    options = Ember.merge({ softSave: false, promises: [] }, options || {});
+    options = merge({ softSave: false, promises: [] }, options || {});
 
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       // Trigger 'preSave' event, and  give its handlers possibility to run some 'preSave' asynchronous logic,
       // by adding it's promises to options.promises array.
       this.trigger('preSave', options);
 
       // Promises array could be totally changed in 'preSave' event handlers, we should prevent possible errors.
-      options.promises = Ember.isArray(options.promises) ? options.promises : [];
+      options.promises = isArray(options.promises) ? options.promises : [];
       options.promises = options.promises.filter(function(item) {
-        return item instanceof Ember.RSVP.Promise;
+        return item instanceof Promise;
       });
 
-      Ember.RSVP.all(options.promises).then(values => {
+      all(options.promises).then(values => {
         resolve(values);
       }).catch(reason => {
         reject(reason);
@@ -109,9 +115,10 @@ var ModelWithoutValidation = DS.Model.extend(Ember.Evented, Copyable, {
     @return {Promise} A promise that will be resolved after model will be successfully saved
   */
   save(options) {
-    options = Ember.merge({ softSave: false }, options || {});
+    options = merge({ softSave: false }, options || {});
+    this.preSaveSetId();
 
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       this.beforeSave(options).then(() => {
         // Call to base class 'save' method with right context.
         // The problem is that call to current save method will be already finished,
@@ -134,6 +141,17 @@ var ModelWithoutValidation = DS.Model.extend(Ember.Evented, Copyable, {
         reject(reason);
       });
     });
+  },
+
+  /**
+    Sets Id on preSave.
+
+    @method preSaveSetId
+  */
+  preSaveSetId() {
+    if (isNone(this.get('id'))) {
+      this.set('id', generateUniqueId());
+    }
   },
 
   /**
@@ -176,8 +194,8 @@ var ModelWithoutValidation = DS.Model.extend(Ember.Evented, Copyable, {
       if (kind === 'hasMany') {
         if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           changedHasMany[key] = [
-            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel.record : undefined),
-            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel.record : undefined),
+            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel.getRecord() : undefined),
+            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel.getRecord() : undefined),
           ];
         }
       }
@@ -208,7 +226,7 @@ var ModelWithoutValidation = DS.Model.extend(Ember.Evented, Copyable, {
       if (kind === 'hasMany' && (!forOnlyKey || forOnlyKey === key)) {
         if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
           [this.get(`${key}.canonicalState`), this.get(`${key}.currentState`)].forEach((state, i) => {
-            let records = state.map(internalModel => internalModel.record);
+            let records = state.map(internalModel => internalModel.getRecord());
             records.forEach((record) => {
               record.rollbackAll();
             });
@@ -459,12 +477,12 @@ ModelWithoutValidation.reopenClass({
 
     if (!this.projections) {
       this.reopenClass({
-        projections: Ember.Object.create({ modelName }),
+        projections: EmberObject.create({ modelName }),
       });
     } else if (this.projections.get('modelName') !== modelName) {
-      let baseProjections = Ember.merge({}, this.projections);
+      let baseProjections = merge({}, this.projections);
       this.reopenClass({
-        projections: Ember.Object.create(Ember.merge(baseProjections, { modelName })),
+        projections: EmberObject.create(merge(baseProjections, { modelName })),
       });
     }
 

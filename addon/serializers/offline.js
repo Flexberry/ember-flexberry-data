@@ -2,14 +2,15 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import { isNone } from '@ember/utils';
+import { isArray } from '@ember/array';
+import { getOwner } from '@ember/application';
 import DS from 'ember-data';
 import isObject from '../utils/is-object';
 
 /**
   Base serializer for {{#crossLink "Offline.LocalStore"}}{{/crossLink}}.
 
-  @namespace Serializer
   @class Offline
   @extends <a href="http://emberjs.com/api/data/classes/DS.JSONSerializer.html">JSONSerializer</a>
 */
@@ -19,7 +20,7 @@ export default DS.JSONSerializer.extend({
   */
   init: function() {
     this._super(...arguments);
-    let owner = Ember.getOwner(this);
+    let owner = getOwner(this);
     let localStore = owner.lookup('store:local');
     this.set('store', localStore);
   },
@@ -114,7 +115,7 @@ export default DS.JSONSerializer.extend({
     let belongsTo = snapshot.belongsTo(key);
     key = this.keyForAttribute ? this.keyForAttribute(key, 'serialize') : key;
 
-    if (Ember.isNone(belongsTo)) {
+    if (isNone(belongsTo)) {
       json['_' + key + '_type'] = null;
     } else {
       json['_' + key + '_type'] = belongsTo.modelName;
@@ -132,7 +133,7 @@ export default DS.JSONSerializer.extend({
     @return {Object}
   */
   normalizeArrayResponse(store, type, payload) {
-    if (Ember.isArray(payload)) {
+    if (isArray(payload)) {
       payload = { data: payload };
     }
 
@@ -153,10 +154,10 @@ export default DS.JSONSerializer.extend({
     See http://jsonapi.org/format/#document-resource-object-relationships
   */
   extractRelationship(relationshipModelName, relationshipHash) {
-    if (isObject(relationshipHash) && Ember.isNone(relationshipHash.type)) {
+    if (isObject(relationshipHash) && isNone(relationshipHash.type)) {
       relationshipHash.type = relationshipModelName;
-    } else if (!isObject(relationshipHash) && !Ember.isNone(relationshipHash)) {
-      var hash = {
+    } else if (!isObject(relationshipHash) && !isNone(relationshipHash)) {
+      let hash = {
         id: relationshipHash,
         type: relationshipModelName
       };

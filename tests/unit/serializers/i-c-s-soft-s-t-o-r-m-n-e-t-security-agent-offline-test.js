@@ -1,6 +1,9 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { moduleForModel, test } from 'ember-qunit';
-import { Offline, Serializer } from 'ember-flexberry-data';
+import BaseStore from 'ember-flexberry-data/stores/base-store';
+import LocalStore from 'ember-flexberry-data/stores/local-store';
+import OfflineSerializer from 'ember-flexberry-data/serializers/offline';
+import OdataSerializer from 'ember-flexberry-data/serializers/odata';
 import startApp from 'dummy/tests/helpers/start-app';
 
 let App;
@@ -13,12 +16,12 @@ moduleForModel('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', 'Unit | Serializer |
   beforeEach() {
     App = startApp();
     App.unregister('service:store');
-    App.register('service:store', Offline.Store);
-    App.register('store:local', Offline.LocalStore);
+    App.register('service:store', BaseStore);
+    App.register('store:local', LocalStore);
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   },
 });
 
@@ -27,6 +30,6 @@ test('this is a sure serializer', function(assert) {
   let store = App.resolveRegistration('service:store').create(App.__container__.ownerInjection());
   let onlineSerializer = store.serializerFor(record._createSnapshot().modelName, true);
   let offlineSerializer = store.serializerFor(record._createSnapshot().modelName, false);
-  assert.ok(onlineSerializer instanceof Serializer.Odata);
-  assert.ok(offlineSerializer instanceof Serializer.Offline);
+  assert.ok(onlineSerializer instanceof OdataSerializer);
+  assert.ok(offlineSerializer instanceof OfflineSerializer);
 });

@@ -1,11 +1,12 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 export default function readingDataTypes(store, assert) {
   assert.expect(7);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
     // String.
@@ -32,6 +33,7 @@ export default function readingDataTypes(store, assert) {
     })
 
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })
@@ -40,8 +42,8 @@ export default function readingDataTypes(store, assert) {
 }
 
 function initTestData(store) {
-  return Ember.RSVP.Promise.all([
-    new Ember.RSVP.Promise((resolve, reject) =>
+  return RSVP.Promise.all([
+    new RSVP.Promise((resolve, reject) =>
       store.createRecord('ember-flexberry-dummy-test-poly-another-child', {
         pole: 'Base pole another child',
         childAnotherPole: true,
@@ -54,7 +56,7 @@ function initTestData(store) {
         }).save().then(resolve, reject), reject)
     ),
 
-    new Ember.RSVP.Promise((resolve, reject) =>
+    new RSVP.Promise((resolve, reject) =>
       store.createRecord('ember-flexberry-dummy-test-poly-child', {
         pole: 'Base pole child',
         childPole: 10,

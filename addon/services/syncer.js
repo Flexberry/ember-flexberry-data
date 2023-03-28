@@ -1,4 +1,11 @@
-import Ember from 'ember';
+import RSVP from 'rsvp';
+import $ from 'jquery';
+import Service from '@ember/service';
+import { debug } from '@ember/debug';
+import { getOwner } from '@ember/application';
+import { isNone } from '@ember/utils';
+import { get } from '@ember/object';
+import { isArray } from '@ember/array';
 import Builder from '../query/builder';
 import { SimplePredicate } from '../query/predicate';
 import { reloadLocalRecords, createLocalRecord } from '../utils/reload-local-records';
@@ -6,14 +13,11 @@ import isModelInstance from '../utils/is-model-instance';
 import Queue from '../utils/queue';
 import { camelize, capitalize } from '../utils/string-functions';
 
-const { RSVP, isNone, isArray, getOwner, get } = Ember;
-
 /**
   @class Syncer
-  @namespace Offline
   @extends Ember.Object
 */
-export default Ember.Service.extend({
+export default Service.extend({
   /* Queue of promises for syncDown */
   _syncDownQueue: Queue.create(),
 
@@ -58,6 +62,7 @@ export default Ember.Service.extend({
    * @private
    */
   init: function () {
+    this._super(...arguments);
     let _this = this;
 
     let localStore = getOwner(this).lookup('store:local');
@@ -146,7 +151,7 @@ export default Ember.Service.extend({
    * @private
    */
   _syncDownRecord: function (store, record, reload, projectionName, params) {
-    var _this = this;
+    let _this = this;
 
     function saveRecordToLocalStore(store, record, projectionName) {
       let modelName = record.constructor.modelName;
@@ -162,7 +167,7 @@ export default Ember.Service.extend({
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
           return record;
         }).catch((reason) => {
-          return Ember.RSVP.reject(reason);
+          return RSVP.reject(reason);
         });
       } else {
         return createLocalRecord.call(_this, store, localAdapter, localStore, modelType, record, projection, params);
@@ -175,8 +180,8 @@ export default Ember.Service.extend({
         reload: true,
         useOnlineStore: true
       };
-      options = isNone(projectionName) ? options : Ember.$.extend(true, options, { projection: projectionName });
-      return new Ember.RSVP.Promise((resolve, reject) => {
+      options = isNone(projectionName) ? options : $.extend(true, options, { projection: projectionName });
+      return new RSVP.Promise((resolve, reject) => {
         store.findRecord(modelName, record.id, options).then(function (reloadedRecord) {
 
           // TODO: Uncomment this after fix bug with load unloaded models.
@@ -237,18 +242,18 @@ export default Ember.Service.extend({
     @example
       ```javascript
       // app/services/syncer.js
-      import { Offline } from 'ember-flexberry-data';
+      import Syncer from 'ember-flexberry-data/services/syncer';
 
-      export default Offline.Syncer.extend({
+      export default Syncer.extend({
         ...
         resolveServerError(job, error) {
           let _this = this;
-          return new Ember.RSVP.Promise((resolve, reject) => {
+          return new RSVP.Promise((resolve, reject) => {
             // Here `error.status` as example, as if user not authorized on server.
             if (error.status === 401) {
               // As if `auth` function authorize user.
               auth().then(() => {
-                _this.syncUp(Ember.A([job])).then(() => {
+                _this.syncUp(A([job])).then(() => {
                   job.set('executionResult', 'Выполнено');
                   resolve(job.save());
                 }, reject);
@@ -270,7 +275,7 @@ export default Ember.Service.extend({
     @return {Promise} Promise that resolves updated job.
   */
   resolveServerError(job, error) {
-    Ember.debug(`Error sync up:'${job.get('operationType')}' - '${job.get('objectType.name')}:${job.get('objectPrimaryKey')}'.`, error);
+    debug(`Error sync up:'${job.get('operationType')}' - '${job.get('objectType.name')}:${job.get('objectPrimaryKey')}'.`, error);
     job.set('executionResult', 'Ошибка');
     return job.save();
   },
@@ -282,9 +287,9 @@ export default Ember.Service.extend({
     @example
       ```javascript
       // app/services/syncer.js
-      import { Offline } from 'ember-flexberry-data';
+      import Syncer from 'ember-flexberry-data/services/syncer';
 
-      export default Offline.Syncer.extend({
+      export default Syncer.extend({
         ...
         resolveNotFoundRecord(job) {
           if (job.get('operationType') === 'UPDATE') {
@@ -787,7 +792,7 @@ export default Ember.Service.extend({
       this.set('_recordsToUnload', []);
     }
 
-    return Ember.RSVP.resolve();
+    return RSVP.resolve();
   },
 
   _getBooleanValue(value) {

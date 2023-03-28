@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { isNone } from '@ember/utils';
+import { warn } from '@ember/debug';
 import BaseAdapter from './base-adapter';
 import {
   SimplePredicate,
@@ -37,7 +38,6 @@ import Information from '../utils/information';
  * All filters uses short circuit logic ([wiki](https://en.wikipedia.org/wiki/Short-circuit_evaluation)).
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class JsAdapter
  * @extends Query.BaseAdapter
  */
@@ -222,7 +222,7 @@ export default class JSAdapter extends BaseAdapter {
               }
             } else {
               r[expandKey] = [];
-              let detailsCount = Ember.isNone(item[expandKey]) ? 0 : item[expandKey].length;
+              let detailsCount = isNone(item[expandKey]) ? 0 : item[expandKey].length;
               for (let j = 0; j < detailsCount; j++) {
                 let itemValue = item[expandKey][j];
                 if (itemValue) {
@@ -264,14 +264,18 @@ export default class JSAdapter extends BaseAdapter {
     }
 
     if (b5) {
-      Ember.warn('GeographyPredicate is not supported in js-adapter');
+      warn('GeographyPredicate is not supported in js-adapter',
+      false,
+      { id: 'ember-flexberry-data-debug.js-adapter.geography-predicate-is-not-supported' });
       return function (data) {
         return data;
       };
     }
 
     if (b6) {
-      Ember.warn('GeometryPredicate is not supported in js-adapter');
+      warn('GeometryPredicate is not supported in js-adapter',
+      false,
+      { id: 'ember-flexberry-data-debug.js-adapter.geometry-predicate-is-not-supported' });
       return function (data) {
         return data;
       };

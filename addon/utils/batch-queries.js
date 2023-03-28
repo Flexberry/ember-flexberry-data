@@ -59,12 +59,12 @@ export function parseBatchResponse(response) {
   const contentTypeHeader = getResponseHeader('Content-Type', response);
   const { contentType, boundary } = getResponseMeta(contentTypeHeader);
   switch (contentType) {
-    case 'multipart/mixed':
+    case 'multipart/mixed': {
       const bodyStart = response.indexOf(`--${boundary}`);
       const changesets = getBatchResponses(response.substring(bodyStart), boundary).map(parseСhangeset);
 
       return { contentType, changesets };
-
+    }
     case 'application/http':
       return { contentType, response: parseResponse(response) };
 

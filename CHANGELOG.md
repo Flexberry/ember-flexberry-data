@@ -1,6 +1,19 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Fix query body in batch update.
+
+## [3.8.0-beta.0]
+### Added
+- Set new record id on `preSave`.
+
+### Changed
+- `SimplePredicate` replace undefined value with null.
+
+## [3.7.0] - 2022-05-17
+### Added
+- Changes from `2.7.0` version.
 
 ## [2.8.0] - 2023-03-13
 ### Fixed
@@ -21,9 +34,17 @@
 ### Breaking changes
 - Deleted `custom-inflector-rules`. Model names for OData created by adding `s`.
 
+## [3.6.1] - 2021-08-31
+### Added
+- Changes from [`2.6.1`](#261---2021-08-24) version.
+
 ## [2.6.1] - 2021-08-24
 ### Fixed
 - `classify` doesn't work in odata-adapter. Replace with two functions `camelize` and `capitalize`.
+
+## [3.6.0] - 2021-08-16
+### Added
+- Changes from [`2.6.0`](#260---2021-07-02) version.
 
 ## [2.6.0] - 2021-07-02
 ### Added
@@ -34,6 +55,9 @@
 - Batch details save with unchanged aggregator.
 - Resolving Promise on sync up with no jobs.
 - Error unloading record with deleted dirty type in batch update.
+
+## [3.5.0] - 2020-09-17
+- Changes from [`2.5.0`](#250---2020-09-10) version.
 
 ## [2.5.0] - 2020-09-10
 ### Added
@@ -76,6 +100,10 @@
 ### Breaking changes
 - Now, when saving using batch update methods, the `save` method with the `softSave` option is called for all models.
 
+## [3.3.0] - 2020-03-23
+### Added
+- Changes from [`2.3.0`](#230---2020-03-10) version.
+
 ## [2.3.0] - 2020-03-10
 ### Added
 - `Adapter.Offline`:
@@ -84,6 +112,18 @@
 ### Fixed
 - Building `OData` queries when using quotes (') in the `SimplePredicate` and `StringPredicate` predicates.
 - Now the `DS.AdapterError` class is used for errors in the `batchUpdate` method of the `OData` adapter.
+
+## [3.2.0] - 2019-12-26
+### Added
+- Add changes from 2.2.0.
+
+## [3.1.0] - 2018-04-30
+### Added
+- Add changes from 2.1.0.
+
+## [3.0.0] - 2018-12-13
+### Breaking changes
+- From `Projection.Model` removed the validation mechanism provided by the [`ember-validations`](https://github.com/DockYard/ember-validations) addon.
 
 ## [2.2.0] - 2019-12-26
 ### Added

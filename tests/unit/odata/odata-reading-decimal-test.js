@@ -1,10 +1,11 @@
-import Ember from 'ember';
+import RSVP from 'rsvp';
+import { run } from '@ember/runloop';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import executeTest from '../CRUD/odata/execute-odata-test';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 
 function initTestData(store) {
-  return Ember.RSVP.Promise.all([
+  return RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Vasya',
       eMail: '1@mail.ru',
@@ -46,7 +47,7 @@ function initTestData(store) {
 executeTest('reading | decimal', (store, assert) => {
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
       .then(() => {
@@ -109,8 +110,8 @@ executeTest('reading | decimal', (store, assert) => {
           });
       })
 
+      // eslint-disable-next-line no-console
       .catch(e => console.log(e, e.message))
       .finally(done);
   });
-  wait();
 });

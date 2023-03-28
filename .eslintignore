@@ -36,7 +36,6 @@ addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-gr
 addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js
 addon/mixins/store.js
 addon/models/model-without-validation.js
-addon/models/model.js
 addon/models/offline-model.js
 addon/query/builder.js
 addon/query/indexeddb-adapter.js
@@ -84,6 +83,7 @@ tests/dummy/app/models/ember-flexberry-dummy-vote.js
 tests/dummy/app/models/validations/base.js
 tests/dummy/app/models/validations/detail.js
 tests/dummy/app/services/store.js
+tests/dummy/app/app.js
 tests/dummy/config/environment.js
 tests/helpers/clear-data.js
 tests/integration/display-deep-model-test.js

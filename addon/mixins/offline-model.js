@@ -2,7 +2,9 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
+import RSVP from 'rsvp';
+import { inject as service } from '@ember/service';
 import DS from 'ember-data';
 import AuditModelMixin from './audit-model';
 
@@ -17,11 +19,10 @@ import AuditModelMixin from './audit-model';
   then it's recommended to extend model class from {{#crossLink "Offline.Model"}}{{/crossLink}}.
 
   @class ModelMixin
-  @namespace Offline
   @extends <a href="http://emberjs.com/api/classes/Ember.Mixin.html">Ember.Mixin</a>
   @public
 */
-export default Ember.Mixin.create({
+export default Mixin.create({
   /**
     Date and time of last sync down of model.
 
@@ -47,7 +48,7 @@ export default Ember.Mixin.create({
     @type Syncer
     @readOnly
   */
-  syncer: Ember.inject.service('syncer'),
+  syncer: service('syncer'),
 
   /**
     Save the record and persist any changes to the record to an external source via the adapter.
@@ -60,7 +61,7 @@ export default Ember.Mixin.create({
   save() {
     let _this = this;
     let __super = _this._super;
-    return new Ember.RSVP.Promise((resolve, reject) => {
+    return new RSVP.Promise((resolve, reject) => {
       if (_this.get('readOnly')) {
         reject(new Error('Attempt to save readonly model instance.'));
       } else if (!_this.get('offlineGlobals.isOnline') && (_this.get('hasDirtyAttributes') || _this.hasChangedBelongsTo())) {

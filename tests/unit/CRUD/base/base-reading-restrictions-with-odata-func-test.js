@@ -1,11 +1,12 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 export default function readingRestrictionsOdataFunctions(store, assert) {
   assert.expect(4);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
     // User has a birthday tommorow.
@@ -32,6 +33,7 @@ export default function readingRestrictionsOdataFunctions(store, assert) {
       });
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })
@@ -45,7 +47,7 @@ function initTestData(store) {
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
   yesterdayDate.setDate(yesterdayDate.getDate() - 1);
 
-  return Ember.RSVP.Promise.all([
+  return RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'User 1',
       eMail: '1',

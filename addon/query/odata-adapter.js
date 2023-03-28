@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { warn } from '@ember/debug';
+import { get } from '@ember/object';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
@@ -25,7 +26,6 @@ import { ConstParam, AttributeParam } from './parameter';
  * Class of query adapter that translates query object into OData URL.
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class ODataAdapter
  * @extends Query.BaseAdapter
  */
@@ -261,8 +261,8 @@ export default class ODataAdapter extends BaseAdapter {
 
     if (predicate instanceof IsOfPredicate) {
       let type = this._store.modelFor(predicate.typeName);
-      let typeName = Ember.get(type, 'modelName');
-      let namespace = Ember.get(type, 'namespace');
+      let typeName = get(type, 'modelName');
+      let namespace = get(type, 'namespace');
       let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : '$it';
       let className = capitalize(camelize(typeName)).replace(namespace.split('.').join(''), '');
 
@@ -416,9 +416,9 @@ export default class ODataAdapter extends BaseAdapter {
 
     if (!isSecondParameterAttribute) {
       valueObject = this._processConstForODataSimplePredicate(
-                            predicate, 
-                            modelName, 
-                            predicateValue, 
+                            predicate,
+                            modelName,
+                            predicateValue,
                             isFirstParameterAttribute ? attributeObject.attributePath : null);
     }
 
@@ -440,7 +440,7 @@ export default class ODataAdapter extends BaseAdapter {
       attribute = `date(${attribute})`;
     }
 
-    return { 
+    return {
       value: attribute,
       attributePath: realAttributePath
     };
@@ -470,7 +470,7 @@ export default class ODataAdapter extends BaseAdapter {
       } else if (meta.isEnum) {
         let type = meta.sourceType;
         if (!type) {
-          Ember.warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicateAttribute}).`,
+          warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`,
           false,
           { id: 'ember-flexberry-data-debug.odata-adapter.source-type-is-not-specified-for-enum' });
           type = capitalize(camelize(meta.type));

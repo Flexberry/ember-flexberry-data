@@ -2,7 +2,8 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import { merge } from '@ember/polyfills';
+import { isArray } from '@ember/array';
 
 /**
   Returns friezed object without prototype with own properties of parameter.
@@ -13,13 +14,13 @@ import Ember from 'ember';
 */
 export function createEnum(dictionary) {
   let local = {};
-  if (Ember.isArray(dictionary)) {
+  if (isArray(dictionary)) {
     dictionary.forEach(element => local[element] = element);
   } else {
     local = dictionary;
   }
 
-  return Object.freeze(Ember.merge(Object.create(null), local));
+  return Object.freeze(merge(Object.create(null), local));
 }
 
 /**

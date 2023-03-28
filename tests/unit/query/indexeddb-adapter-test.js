@@ -1,3 +1,4 @@
+import { run } from '@ember/runloop';
 import Dexie from 'npm:dexie';
 import { module, test } from 'qunit';
 
@@ -19,29 +20,47 @@ import Condition from 'ember-flexberry-data/query/condition';
 
 import startApp from '../../helpers/start-app';
 
-const appIndexedbAdapterTest = startApp();
-const storeIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:store');
-const dexieIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:dexie');
-const offlineGlobalsIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:offline-globals');
-offlineGlobalsIndexedbAdapterTest.setOnlineAvailable(false);
-const databasePrefixIndexedbAdapterTest = 'testDBIAT';
-const modelNameIndexedbAdapterTest = 'employee';
-const schemaIndexedbAdapterTest = (dbName) => {
-  let object = {};
-  object[dbName] = {
-    1: {
-      employee: 'id,Age,Name,Surname,employmentDate,CountryName,Price,Active,Country,Creator,Manager,*Tags',
-      creator: 'id,Name,Age,Country',
-      man: 'id,Name,Age,Country,EyesColor',
-      bot: 'id,Name,Age,Country,IsClever',
-      country: 'id,Name',
-      tag: 'id,Name,Creator'
-    },
-  };
-  return object;
-};
+let appIndexedbAdapterTest;
+let storeIndexedbAdapterTest;
+let dexieIndexedbAdapterTest;
+let offlineGlobalsIndexedbAdapterTest;
+let databasePrefixIndexedbAdapterTest;
+let modelNameIndexedbAdapterTest;
+let schemaIndexedbAdapterTest;
 
-module('indexeddb-adapter-test query');
+function initTests () {
+  appIndexedbAdapterTest = startApp();
+  storeIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:store');
+  dexieIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:dexie');
+  offlineGlobalsIndexedbAdapterTest = appIndexedbAdapterTest.__container__.lookup('service:offline-globals');
+  offlineGlobalsIndexedbAdapterTest.setOnlineAvailable(false);
+  databasePrefixIndexedbAdapterTest = 'testDBIAT';
+  modelNameIndexedbAdapterTest = 'employee';
+  schemaIndexedbAdapterTest = (dbName) => {
+    let object = {};
+    object[dbName] = {
+      1: {
+        employee: 'id,Age,Name,Surname,employmentDate,CountryName,Price,Active,Country,Creator,Manager,*Tags',
+        creator: 'id,Name,Age,Country',
+        man: 'id,Name,Age,Country,EyesColor',
+        bot: 'id,Name,Age,Country,IsClever',
+        country: 'id,Name',
+        tag: 'id,Name,Creator'
+      }
+    };
+    return object;
+  };
+}
+
+module('indexeddb-adapter-test query', {
+  beforeEach() {
+    initTests();
+  },
+
+  afterEach() {
+    run(appIndexedbAdapterTest, 'destroy');
+  },
+});
 
 test('adapter | indexeddb | without predicate', (assert) => {
   let data = {
@@ -1148,7 +1167,15 @@ test('adapter | indexeddb | polymorphic relationships', (assert) => {
   });
 });
 
-module('indexeddb-adapter-test performance');
+module('indexeddb-adapter-test performance', {
+  beforeEach() {
+    initTests();
+  },
+
+  afterEach() {
+    run(appIndexedbAdapterTest, 'destroy');
+  },
+});
 
 test('adapter | indexeddb | no filter, no order, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
@@ -1219,7 +1246,7 @@ test('adapter | indexeddb | filter, no order, skip, top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .skip(1000)
     .top(20)
     .select('id,Price');
@@ -1237,7 +1264,7 @@ test('adapter | indexeddb | filter, order asc, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Name asc')
     .select('id,Price,Name');
 
@@ -1254,7 +1281,7 @@ test('adapter | indexeddb | filter, order desc, no skip, no top', (assert) => {
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Name desc')
     .select('id,Price,Name');
 
@@ -1271,7 +1298,7 @@ test('adapter | indexeddb | filter, many order asc desc, no skip, no top', (asse
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Age asc,Name desc')
     .select('id,Age,Name,Price');
 
@@ -1289,7 +1316,7 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
   let data = getPerformanceTestData(15000, assert);
 
   let builder = new QueryBuilder(storeIndexedbAdapterTest, modelNameIndexedbAdapterTest)
-    .where('Price', FilterOperator.Geq, 7500)
+    .where('Price', FilterOperator.Geq, 7500)
     .orderBy('Age asc,Name desc')
     .skip(1000)
     .top(20)
@@ -1306,7 +1333,15 @@ test('adapter | indexeddb | filter, many order asc desc, skip, top', (assert) =>
   });
 });
 
-module('indexeddb-adapter-test joins performance');
+module('indexeddb-adapter-test joins performance', {
+  beforeEach() {
+    initTests();
+  },
+
+  afterEach() {
+    run(appIndexedbAdapterTest, 'destroy');
+  },
+});
 
 test('adapter | indexeddb | joins, no filter, many order asc desc, skip, top', (assert) => {
   let count = 5000;
@@ -1373,7 +1408,15 @@ test('adapter | indexeddb | by id with joins select', (assert) => {
   });
 });
 
-module('performance query masters');
+module('performance query masters', {
+  beforeEach() {
+    initTests();
+  },
+
+  afterEach() {
+    run(appIndexedbAdapterTest, 'destroy');
+  },
+});
 
 test('adapter | indexeddb | order | master field', (assert) => {
   let data = {

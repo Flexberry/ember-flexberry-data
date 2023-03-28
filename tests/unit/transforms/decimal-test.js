@@ -1,40 +1,19 @@
 import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('transform:decimal', 'Unit | Transform | decimal', {
+moduleFor('transform:decimal', 'Unit | Transform | decimal');
+
+test('serialize', function(assert) {
+  let transform = this.subject();
+
+  assert.strictEqual(transform.serialize(555.5), 555.5);
+  assert.strictEqual(transform.serialize('555.5'), 555.5);
+  assert.strictEqual(transform.serialize('555,5'), 555.5);
 });
 
-test('decimal | deserialize | number', function (assert) {
+test('deserialize', function(assert) {
   let transform = this.subject();
-  let deserialized = transform.deserialize(555.5);
-  assert.equal(deserialized, 555.5);
-});
 
-test('decimal | deserialize | string with \'.\'', function (assert) {
-  let transform = this.subject();
-  let deserialized = transform.deserialize('555.5');
-  assert.equal(deserialized, 555.5);
-});
-
-test('decimal | deserialize | string with \',\'', function (assert) {
-  let transform = this.subject();
-  let deserialized = transform.deserialize('555,5');
-  assert.equal(deserialized, 555.5);
-});
-
-test('decimal | serialize | number', function (assert) {
-  let transform = this.subject();
-  let serialized = transform.serialize(555.5);
-  assert.equal(serialized, 555.5);
-});
-
-test('decimal | serialize | string with \'.\'', function (assert) {
-  let transform = this.subject();
-  let serialized = transform.serialize('555.5');
-  assert.equal(serialized, 555.5);
-});
-
-test('decimal | serialize | string with \',\'', function (assert) {
-  let transform = this.subject();
-  let serialized = transform.serialize('555,5');
-  assert.equal(serialized, 555.5);
+  assert.strictEqual(transform.deserialize(555.5), 555.5);
+  assert.strictEqual(transform.deserialize('555.5'), 555.5);
+  assert.strictEqual(transform.deserialize('555,5'), 555.5);
 });

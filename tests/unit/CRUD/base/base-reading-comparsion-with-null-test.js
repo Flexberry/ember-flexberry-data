@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 import { ConstParam, AttributeParam } from 'ember-flexberry-data/query/parameter';
 
@@ -6,7 +7,7 @@ export default function readingComparsionWithNull(store, assert) {
   assert.expect(13);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
     // Eq null for own field.
@@ -101,6 +102,7 @@ export default function readingComparsionWithNull(store, assert) {
       });
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })
@@ -109,7 +111,7 @@ export default function readingComparsionWithNull(store, assert) {
 }
 
 function initTestData(store) {
-  return Ember.RSVP.Promise.all([
+  return RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Vasya',
       eMail: '1@mail.ru',
@@ -143,7 +145,7 @@ function initTestData(store) {
 
     // Creating comments.
     .then((sug) =>
-      Ember.RSVP.Promise.all([
+      RSVP.Promise.all([
         store.createRecord('ember-flexberry-dummy-comment', {
           author: sugAttrsValues[0],
           text: 'Comment 1',

@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { merge } from '@ember/polyfills';
 import DS from 'ember-data';
 import { capitalize, camelize, dasherize, odataPluralize, odataSingularize } from '../utils/string-functions';
 
@@ -6,7 +6,6 @@ import { capitalize, camelize, dasherize, odataPluralize, odataSingularize } fro
  * Base serializer class.
  *
  * @module ember-flexberry-data
- * @namespace Serializer
  * @class Base
  */
 export default DS.RESTSerializer.extend({
@@ -113,9 +112,11 @@ export default DS.RESTSerializer.extend({
    * @param relationship Relationship.
    * @returns {string} Key for a given relationship.
    */
+  /* eslint-disable no-unused-vars */
   keyForRelationship(key, relationship) {
     return capitalize(key) + '@odata.bind';
   },
+  /* eslint-enable no-unused-vars */
 
   /**
     Return model name for relationship.
@@ -141,7 +142,7 @@ export default DS.RESTSerializer.extend({
     options.includeId = true;
 
     // {...} instead of {"application": {...}}
-    Ember.merge(hash, this.serialize(record, options));
+    merge(hash, this.serialize(record, options));
   },
 
   /**
@@ -205,9 +206,9 @@ export default DS.RESTSerializer.extend({
     let prefix = this.get('metaPropertiesPrefix');
     let prefixLength = prefix.length;
 
-    for (var srcKey in src) {
+    for (let srcKey in src) {
       if (src.hasOwnProperty(srcKey) && srcKey.indexOf(prefix) === 0) {
-        var destKey = withPrefix ? srcKey : srcKey.substring(prefixLength);
+        let destKey = withPrefix ? srcKey : srcKey.substring(prefixLength);
         dest[destKey] = src[srcKey];
         delete src[srcKey];
       }

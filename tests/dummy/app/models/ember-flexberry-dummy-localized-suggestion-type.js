@@ -1,7 +1,8 @@
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
+import EmberFlexberryDataModel from 'ember-flexberry-data/models/model';
+import { attr, belongsTo } from 'ember-flexberry-data/utils/attributes';
 
-var Model = Projection.Model.extend({
+let Model = EmberFlexberryDataModel.extend({
   // Inversed relationship for ember-flexberry-dummy-suggestion-type.localizedTypes.
   // It's not a property for flexberry-lookup component.
   suggestionType: DS.belongsTo('ember-flexberry-dummy-suggestion-type', {
@@ -15,22 +16,13 @@ var Model = Projection.Model.extend({
     inverse: null,
     async: false
   }),
-
-  // Model validation rules.
-  validations: {
-    name: {
-      presence: {
-        message: 'Name is required'
-      }
-    }
-  }
 });
 
 // Edit form projection.
 Model.defineProjection('LocalizedSuggestionTypeE', 'ember-flexberry-dummy-localized-suggestion-type', {
-  name: Projection.attr('Name'),
-  localization: Projection.belongsTo('ember-flexberry-dummy-localization', 'Localization', {
-    name: Projection.attr('Name', {
+  name: attr('Name'),
+  localization: belongsTo('ember-flexberry-dummy-localization', 'Localization', {
+    name: attr('Name', {
       hidden: true
     })
   }, {

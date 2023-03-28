@@ -1,3 +1,4 @@
+import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 
 import QueryBuilder from 'ember-flexberry-data/query/builder';
@@ -21,10 +22,19 @@ import ODataAdapter from 'ember-flexberry-data/query/odata-adapter';
 import startApp from '../../helpers/start-app';
 
 const baseUrl = 'http://services.odata.org/Northwind/Northwind.svc';
-const app = startApp();
-const store = app.__container__.lookup('service:store');
+let app;
+let store;
 
-module('query');
+module('query', {
+  beforeEach() {
+    app = startApp();
+    store = app.__container__.lookup('service:store');
+  },
+
+  afterEach() {
+    run(app, 'destroy');
+  },
+});
 
 // TODO: add tests on master fields, on master ids.
 test('adapter | odata | id', function (assert) {

@@ -1,11 +1,12 @@
-import Ember from 'ember';
+import Controller from '@ember/controller';
+import { computed } from '@ember/object';
 
-export default Ember.Controller.extend({
-  firstComment: Ember.computed('model.comments.[]', function() {
+export default Controller.extend({
+  firstComment: computed('model.comments.[]', function() {
     return this.get('model.comments.firstObject');
   }),
 
-  firstCommentVote: Ember.computed('firstComment.userVotes.[]', function() {
+  firstCommentVote: computed('firstComment.userVotes.[]', function() {
     return this.get('firstComment.userVotes.firstObject');
   })
 });

@@ -2,21 +2,20 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import { merge } from '@ember/polyfills';
+import Evented from '@ember/object/evented';
+import Service from '@ember/service';
 import Dexie from 'npm:dexie';
 import Queue from '../utils/queue';
-
-const { merge } = Ember;
 
 /**
   Service for storing [Dexie](https://github.com/dfahlander/Dexie.js) instance for application.
 
   @class DexieService
-  @namespace Offline
   @extends Ember.Service
   @public
 */
-export default Ember.Service.extend(Ember.Evented, {
+export default Service.extend(Evented, {
   /* Queue for requests to Dexie */
   _queue: Queue.create(),
 
@@ -26,7 +25,7 @@ export default Ember.Service.extend(Ember.Evented, {
     @property _dexie
     @type Object
   */
-  _dexie: {},
+  _dexie: undefined,
 
   /**
     Count of objects that should be synced down.
@@ -74,6 +73,8 @@ export default Ember.Service.extend(Ember.Evented, {
   queueContinueOnError: true,
 
   init() {
+    this._super(...arguments);
+    this.set('_dexie', {});
     this.get('_queue').set('continueOnError', this.get('queueContinueOnError'));
   },
 

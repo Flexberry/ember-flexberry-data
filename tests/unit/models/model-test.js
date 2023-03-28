@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { moduleForModel, test } from 'ember-qunit';
 
 moduleForModel('model', 'Unit | Model | model', {
@@ -10,7 +10,8 @@ moduleForModel('model', 'Unit | Model | model', {
     'model:ember-flexberry-dummy-suggestion-file',
     'model:ember-flexberry-dummy-comment',
     'model:ember-flexberry-dummy-comment-vote',
-    'model:ember-flexberry-dummy-localized-suggestion-type'
+    'model:ember-flexberry-dummy-localized-suggestion-type',
+    'service:syncer',
   ],
 });
 
@@ -22,7 +23,7 @@ test('it exists', function(assert) {
 });
 
 test('rollback hasMany relationships', function(assert) {
-  Ember.run(() => {
+  run(() => {
     let store = this.store();
 
     let suggestion = store.createRecord('ember-flexberry-dummy-suggestion');
@@ -66,7 +67,7 @@ test('rollback hasMany relationships', function(assert) {
 });
 
 test('rollback belongsTo relationships', function(assert) {
-  Ember.run(() => {
+  run(() => {
     let store = this.store();
 
     let type1 = store.createRecord('ember-flexberry-dummy-suggestion-type');
@@ -123,7 +124,7 @@ test('rollback belongsTo relationships', function(assert) {
 });
 
 test('changedBelongsTo after saving the created model', function(assert) {
-  Ember.run(() => {
+  run(() => {
     let store = this.store();
 
     let type1 = store.createRecord('ember-flexberry-dummy-suggestion-type');

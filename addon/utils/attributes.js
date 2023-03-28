@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { merge } from '@ember/polyfills';
 import createProj from './create';
 
 /**
@@ -36,7 +36,7 @@ export function attr(caption, options) {
 export function belongsTo(modelName, caption, attributes, options) {
   let attr = createAttr('belongsTo', caption, options);
   let proj = createProj(modelName, attributes);
-  attr = Ember.merge(attr, proj);
+  attr = merge(attr, proj);
   return attr;
 }
 
@@ -56,7 +56,7 @@ export function belongsTo(modelName, caption, attributes, options) {
 export function hasMany(modelName, caption, attributes, options) {
   let attr = createAttr('hasMany', caption, options);
   let proj = createProj(modelName, attributes);
-  attr = Ember.merge(attr, proj);
+  attr = merge(attr, proj);
   return attr;
 }
 
