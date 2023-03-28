@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Query.IsOfPredicate - Flexberry Documentation</title>
+    <title>ComplexPredicate - Flexberry Documentation</title>
     <link rel="stylesheet" href="">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -137,7 +137,7 @@
                 <div id="docs-main">
                     <div class="content">
 <div class="page-header">
-    <h1>Query.IsOfPredicate <small>Class</small></h1>
+    <h1>ComplexPredicate <small>Class</small></h1>
 </div>
 
 <div class="well well-small">
@@ -147,7 +147,7 @@
         </div>
 
         <div class="foundat">
-            Defined in: <a href="../files/addon_query_predicate.js.html#l562"><code>addon&#x2F;query&#x2F;predicate.js:562</code></a>
+            Defined in: <a href="../files/addon_query_predicate.js.html#l169"><code>addon&#x2F;query&#x2F;predicate.js:169</code></a>
         </div>
 
             Module: <a href="../modules/ember-flexberry-data.html">ember-flexberry-data</a>
@@ -156,29 +156,22 @@
 
 
 <div class="well well-small">
-    <p>The predicate class that implements the isof function.</p>
-<p>Its constructor implements the following signatures:</p>
-<ul>
-<li><code>new IsOfPredicate(typeName)</code></li>
-<li><code>new IsOfPredicate(expression, typeName)</code></li>
-</ul>
-<p>Where:</p>
-<ul>
-<li><code>typeName</code> - type name to which the current instance will be assigned.</li>
-<li><code>expression</code> - an expression relative to the current instance that must point to an object for assigning a type.</li>
-</ul>
+    <p>The class of complex predicate which include multiple predicates unioned with logical condition.</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_Query.IsOfPredicate" class="method item">
-            <h3 class="name"><code>Query.IsOfPredicate</code></h3>
+        <div id="method_ComplexPredicate" class="method item">
+            <h3 class="name"><code>ComplexPredicate</code></h3>
         
                 <div class="args">
                     <span class="paren">(</span><ul class="args-list inline commas">
                         <li class="arg">
-                                <code>args</code>
+                                <code>condition</code>
+                        </li>
+                        <li class="arg">
+                                <code>predicates</code>
                         </li>
                     </ul><span class="paren">)</span>
                 </div>
@@ -193,7 +186,7 @@
             <div class="meta">
                         <p>
                         Defined in
-                <a href="../files/addon_query_predicate.js.html#l562"><code>addon&#x2F;query&#x2F;predicate.js:562</code></a>
+                <a href="../files/addon_query_predicate.js.html#l169"><code>addon&#x2F;query&#x2F;predicate.js:169</code></a>
                 </p>
         
         
@@ -209,13 +202,25 @@
         
                     <ul class="params-list">
                         <li class="param">
-                                <code class="param-name">args</code>
-                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                                <code class="param-name">condition</code>
+                                <span class="type"><a href="../classes/Query.Condition.html" class="crosslink">Query.Condition</a></span>
+        
+        
+                            <div class="param-description">
+                                <p>Logical condition for predicates.</p>
+        
+                            </div>
+        
+                        </li>
+                        <li class="param">
+                                <code class="param-name">predicates</code>
+                                <span class="type">Query.BasePredicate</span>
         
                                 <span class="flag multiple" title="This argument may occur one or more times.">multiple</span>
         
                             <div class="param-description">
-                                 
+                                <p>List of predicates for combining.</p>
+        
                             </div>
         
                         </li>
@@ -231,7 +236,6 @@
         <li class="active"><a data-toggle="tab" href="#index">Index</a></li>
 
             <li><a data-toggle="tab" href="#methods">Methods</a></li>
-            <li><a data-toggle="tab" href="#properties">Properties</a></li>
     </ul>
 
     <div class="tab-content">
@@ -265,20 +269,6 @@
                     </ul>
                 </div>
 
-                <div class="index-section properties">
-                    <h3>Properties</h3>
-
-                    <ul class="index-list properties extends">
-                            <li class="index-item property public">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_expression" data-tablink="expression">expression</a>
-
-                            </li>
-                            <li class="index-item property public">
-                                <a href="#" data-tabid="#properties" data-anchor="#property_typeName" data-tablink="typeName">typeName</a>
-
-                            </li>
-                    </ul>
-                </div>
 
 
         </div>
@@ -564,7 +554,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_query_predicate.js.html#l621"><code>addon&#x2F;query&#x2F;predicate.js:621</code></a>
+                            <a href="../files/addon_query_predicate.js.html#l225"><code>addon&#x2F;query&#x2F;predicate.js:225</code></a>
                             </p>
                     
                     
@@ -582,7 +572,7 @@
                     
                                 <div class="returns-description">
                                             <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>:
-                                        <p>Text representation of result predicate.</p>
+                                        <p>Text representation of the predicate.</p>
                     
                                 </div>
                             </div>
@@ -590,62 +580,6 @@
                     </div>
             </div>
 
-            <div id="properties" class="tab-pane">
-                <h2 class="off-left">Properties</h2>
-
-                    <div id="property_expression" class="property item public">
-                        <h3 class="name"><code>expression</code></h3>
-                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                            <span class="flag public">public</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/addon_query_predicate.js.html#l599"><code>addon&#x2F;query&#x2F;predicate.js:599</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Expression getter.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-                    <div id="property_typeName" class="property item public">
-                        <h3 class="name"><code>typeName</code></h3>
-                        <span class="type"><a href="http://emberjs.com/api/classes/String.html" class="crosslink external" target="_blank">String</a></span>
-                    
-                    
-                            <span class="flag public">public</span>
-                    
-                    
-                    
-                        <div class="meta">
-                                    <p>
-                                    Defined in
-                            <a href="../files/addon_query_predicate.js.html#l610"><code>addon&#x2F;query&#x2F;predicate.js:610</code></a>
-                            </p>
-                    
-                    
-                        </div>
-                    
-                        <div class="description">
-                            <p>Type name getter.</p>
-                    
-                        </div>
-                    
-                    
-                    
-                    </div>
-            </div>
 
 
     </div>
