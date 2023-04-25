@@ -2,19 +2,16 @@
 
 ## [Unreleased]
 
-## [3.8.0-beta.1] - 2023-03-28
+## [3.8.0] - 2023-04-25
 ### Added
 - Changes from `2.8.0` version.
-
-### Fixed
-- Fix query body in batch update.
-
-## [3.8.0-beta.0]
-### Added
 - Set new record id on `preSave`.
 
 ### Changed
 - `SimplePredicate` replace undefined value with null.
+
+### Fixed
+- Fix query body in batch update.
 
 ## [3.7.0] - 2022-05-17
 ### Added
