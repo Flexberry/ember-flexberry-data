@@ -2,7 +2,8 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import RSVP from 'rsvp';
+import $ from 'jquery';
 
 /**
   Load and save offline objects provided by odata function or returns objects count.
@@ -20,8 +21,8 @@ import Ember from 'ember';
   @return {Promise}
 */
 export function firstLoadOfflineObjects(dexieDB, odataPath, functionName, modelName, count = false, top = 0, skip = 0, idPath = 'guid') {
-  return new Ember.RSVP.Promise(function(resolve, reject) {
-    Ember.$.ajax({
+  return new RSVP.Promise(function(resolve, reject) {
+    $.ajax({
       method: 'GET',
       url: `${odataPath}/${functionName}(objToLoad='${modelName}',top=${top},skip=${skip},count=${count})`,
     }).done(function(msg) {
@@ -37,7 +38,7 @@ export function firstLoadOfflineObjects(dexieDB, odataPath, functionName, modelN
         objArray.push(objs);
       }
 
-      objArray.map(record => {
+      objArray.forEach(record => {
         if (idPath) {
           record.id =  record.id[idPath];
         }

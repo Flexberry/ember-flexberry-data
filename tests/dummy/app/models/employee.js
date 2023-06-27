@@ -1,18 +1,18 @@
 import DS from 'ember-data';
-import attr from 'ember-data/attr';
-import { Projection } from 'ember-flexberry-data';
+import EmberFlexberryDataModel from 'ember-flexberry-data/models/model';
+import { attr, belongsTo, hasMany } from 'ember-flexberry-data/utils/attributes';
 
-let Employee = Projection.Model.extend({
-  'First Name': attr('string'),
-  'Last Name': attr('string'),
-  'Birth Date': attr('date'),
-  Age: attr('number'),
-  Name: attr('string'),
-  Surname: attr('string'),
-  employmentDate: attr('date'),
-  CountryName: attr('string'),
-  Price: attr('decimal'),
-  Active: attr('boolean'),
+let Employee = EmberFlexberryDataModel.extend({
+  'First Name': DS.attr('string'),
+  'Last Name': DS.attr('string'),
+  'Birth Date': DS.attr('date'),
+  Age: DS.attr('number'),
+  Name: DS.attr('string'),
+  Surname: DS.attr('string'),
+  employmentDate: DS.attr('date'),
+  CountryName: DS.attr('string'),
+  Price: DS.attr('decimal'),
+  Active: DS.attr('boolean'),
   Country: DS.belongsTo('country', {
     inverse: null,
     async: false
@@ -30,38 +30,38 @@ let Employee = Projection.Model.extend({
     inverse: 'Creator',
     async: false
   }),
-  externalId: attr('guid')
+  externalId: DS.attr('guid')
 });
 
 Employee.defineProjection('EmployeeTestProjection', 'employee', {
-  firstName: Projection.attr('First Name'),
-  lastName: Projection.attr('Last Name'),
-  birthDate: Projection.attr('Birth Date'),
-  employee1: Projection.belongsTo('employee', 'Reports To', {
-    firstName: Projection.attr('Reports To - First Name')
+  firstName: attr('First Name'),
+  lastName: attr('Last Name'),
+  birthDate: attr('Birth Date'),
+  employee1: belongsTo('employee', 'Reports To', {
+    firstName: attr('Reports To - First Name')
   }),
-  tmpChildren: Projection.hasMany('employee', 'Tmp Children', {
-    lastName: Projection.attr('Tmp Children - Last Name')
+  tmpChildren: hasMany('employee', 'Tmp Children', {
+    lastName: attr('Tmp Children - Last Name')
   })
 });
 
 Employee.defineProjection('TestJoins', 'employee', {
-  Age: Projection.attr('Age'),
-  Name: Projection.attr('Name'),
-  Price: Projection.attr('Price'),
-  Country: Projection.belongsTo('country', 'Country', {
-    Name: Projection.attr('Name')
+  Age: attr('Age'),
+  Name: attr('Name'),
+  Price: attr('Price'),
+  Country: belongsTo('country', 'Country', {
+    Name: attr('Name')
   }),
-  Creator: Projection.belongsTo('creator', 'Creator', {
-    Name: Projection.attr('Name'),
-    Country: Projection.belongsTo('country', 'Country', {
-      Name: Projection.attr('Name')
+  Creator: belongsTo('creator', 'Creator', {
+    Name: attr('Name'),
+    Country: belongsTo('country', 'Country', {
+      Name: attr('Name')
     }),
   }),
-  Tags: Projection.hasMany('tag', 'Tags', {
-    Name: Projection.attr('Name'),
-    Creator: Projection.belongsTo('creator', 'Creator', {
-      Name: Projection.attr('Name')
+  Tags: hasMany('tag', 'Tags', {
+    Name: attr('Name'),
+    Creator: belongsTo('creator', 'Creator', {
+      Name: attr('Name')
     }),
   }),
 });

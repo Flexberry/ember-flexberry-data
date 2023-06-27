@@ -2,7 +2,7 @@
   @module ember-flexberry-data
 */
 
-import StringTransform from 'ember-data/-private/transforms/string';
+import StringTransform from 'ember-data/transforms/string';
 
 /**
   Transformation for model's attributes defined as <a href="http://emberjs.com/api/data/#method_attr">DS.attr</a> with type 'file'.
@@ -25,16 +25,16 @@ export default StringTransform.extend({
   /**
     Deserializes serialized attribute value.
   */
-  deserialize(serialized) {
-    /* jshint unused:vars */
+  /* eslint-disable no-unused-vars */
+    deserialize(serialized) {
     return this._super(...arguments);
   },
 
   /**
     Serializes deserialized attribute value.
   */
-  serialize(deserialized) {
-    /* jshint unused:vars */
+    serialize(deserialized) {
     return this._super(...arguments);
   }
+  /* eslint-enable no-unused-vars */
 });

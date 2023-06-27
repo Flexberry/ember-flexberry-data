@@ -1,11 +1,12 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 export default function readingBuilderFunctions(store, assert) {
   assert.expect(10);
   let done = assert.async();
 
-  Ember.run(() => {
+  run(() => {
     initTestData(store)
 
     // byId.
@@ -104,6 +105,7 @@ export default function readingBuilderFunctions(store, assert) {
 
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e, e.message);
       throw e;
     })
@@ -112,7 +114,7 @@ export default function readingBuilderFunctions(store, assert) {
 }
 
 function initTestData(store) {
-  return Ember.RSVP.Promise.all([
+  return RSVP.Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'Vasya',
       eMail: '1@mail.ru',
@@ -134,7 +136,7 @@ function initTestData(store) {
   ])
 
   .then((people) =>
-    new Ember.RSVP.Promise((resolve) =>
+    new RSVP.Promise((resolve) =>
       resolve({
         people: people.map(item => item.get('id'))
       })

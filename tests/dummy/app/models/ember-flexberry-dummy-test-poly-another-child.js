@@ -1,6 +1,6 @@
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
 import TestPolyBaseModel from './ember-flexberry-dummy-test-poly-base';
+import { attr } from 'ember-flexberry-data/utils/attributes';
 
 let Model = TestPolyBaseModel.extend({
   childAnotherPole: DS.attr('boolean')
@@ -11,13 +11,13 @@ Model.reopenClass({
 });
 
 Model.defineProjection('TestPolyAnotherChildEdit', 'ember-flexberry-dummy-test-poly-another-child', {
-  pole: Projection.attr('Pole'),
-  childAnotherPole: Projection.attr('ChildAnotherPole')
+  pole: attr('Pole'),
+  childAnotherPole: attr('ChildAnotherPole')
 });
 
 Model.defineProjection('TestPolyAnotherChildList', 'ember-flexberry-dummy-test-poly-another-child', {
-  pole: Projection.attr('Pole'),
-  childAnotherPole: Projection.attr('ChildAnotherPole')
+  pole: attr('Pole'),
+  childAnotherPole: attr('ChildAnotherPole')
 });
 
 export default Model;

@@ -2,7 +2,7 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import { isNone } from '@ember/utils';
 import DS from 'ember-data';
 import { inverseEnum, enumCaptions } from '../utils/enum-functions';
 
@@ -73,7 +73,7 @@ let FlexberryEnum = DS.Transform.extend({
   */
   init() {
     let enumDictionary = this.get('enum');
-    if (Ember.isNone(enumDictionary)) {
+    if (isNone(enumDictionary)) {
       throw new Error('Enum property is undefined');
     }
 
@@ -96,7 +96,7 @@ let FlexberryEnum = DS.Transform.extend({
 
     let deserialize = this.get('enum')[serialized];
 
-    if (Ember.isNone(deserialize)) {
+    if (isNone(deserialize)) {
       throw new Error(`Unable to find serialized enumeration field: '${serialized}'.`);
     }
 
@@ -117,7 +117,7 @@ let FlexberryEnum = DS.Transform.extend({
     }
 
     let serialized = this.get('inverse')[deserialized];
-    if (Ember.isNone(serialized)) {
+    if (isNone(serialized)) {
       throw new Error(`Unable to find deserialized enumeration field: '${deserialized}.'`);
     }
 

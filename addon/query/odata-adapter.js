@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { warn } from '@ember/debug';
+import { get } from '@ember/object';
 import DS from 'ember-data';
 
 import BaseAdapter from './base-adapter';
@@ -12,17 +13,19 @@ import {
   GeometryPredicate,
   NotPredicate,
   IsOfPredicate,
+  TruePredicate,
+  FalsePredicate,
 } from './predicate';
 import FilterOperator from './filter-operator';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
-import { classify } from '../utils/string-functions';
+import { capitalize, camelize } from '../utils/string-functions';
+import { ConstParam, AttributeParam } from './parameter';
 
 /**
  * Class of query adapter that translates query object into OData URL.
  *
  * @module ember-flexberry-data
- * @namespace Query
  * @class ODataAdapter
  * @extends Query.BaseAdapter
  */
@@ -258,10 +261,10 @@ export default class ODataAdapter extends BaseAdapter {
 
     if (predicate instanceof IsOfPredicate) {
       let type = this._store.modelFor(predicate.typeName);
-      let typeName = Ember.get(type, 'modelName');
-      let namespace = Ember.get(type, 'namespace');
+      let typeName = get(type, 'modelName');
+      let namespace = get(type, 'namespace');
       let expression = predicate.expression ? this._getODataAttributeName(modelName, predicate.expression, true) : '$it';
-      let className = classify(typeName).replace(namespace.split('.').join(''), '');
+      let className = capitalize(camelize(typeName)).replace(namespace.split('.').join(''), '');
 
       return `isof(${expression},'${namespace}.${className}')`;
     }
@@ -309,6 +312,14 @@ export default class ODataAdapter extends BaseAdapter {
       let lp = level > 0 ? '(' : '';
       let rp = level > 0 ? ')' : '';
       return lp + result + rp;
+    }
+
+    if (predicate instanceof TruePredicate) {
+      return 'true';
+    }
+
+    if (predicate instanceof FalsePredicate) {
+      return 'false';
     }
 
     throw new Error(`Unknown predicate '${predicate}'`);
@@ -377,7 +388,50 @@ export default class ODataAdapter extends BaseAdapter {
   }
 
   _buildODataSimplePredicate(predicate, modelName, prefix) {
-    let attribute = this._getODataAttributeName(modelName, predicate.attributePath);
+    // predicate.attributePath - attribute or AttributeParam or ConstParam.
+    // predicate.value - const or AttributeParam or ConstParam.
+
+    let attributePath = predicate.attributePath;
+    let predicateValue = predicate.value;
+    let attributeObject = null;
+    let valueObject = null;
+    let isFirstParameterAttribute = !(attributePath instanceof ConstParam);
+    let isSecondParameterAttribute = predicateValue instanceof AttributeParam;
+
+    if (isFirstParameterAttribute) {
+      attributeObject = this._processAttributeForODataSimplePredicate(predicate, modelName, prefix, attributePath);
+    }
+
+    if (isSecondParameterAttribute) {
+      valueObject = this._processAttributeForODataSimplePredicate(predicate, modelName, prefix, predicateValue);
+    }
+
+    if (!isFirstParameterAttribute) {
+      attributeObject = this._processConstForODataSimplePredicate(
+                            predicate,
+                            modelName,
+                            attributePath,
+                            isSecondParameterAttribute ? valueObject.attributePath : null);
+    }
+
+    if (!isSecondParameterAttribute) {
+      valueObject = this._processConstForODataSimplePredicate(
+                            predicate,
+                            modelName,
+                            predicateValue,
+                            isFirstParameterAttribute ? attributeObject.attributePath : null);
+    }
+
+    let operator = this._getODataFilterOperator(predicate.operator);
+    return `${attributeObject.value} ${operator} ${valueObject.value}`;
+  }
+
+  _processAttributeForODataSimplePredicate(predicate, modelName, prefix, attributePathParameter)
+  {
+    let realAttributePath = attributePathParameter instanceof AttributeParam
+                            ? attributePathParameter.attributePath
+                            : attributePathParameter;
+    let attribute = this._getODataAttributeName(modelName, realAttributePath);
     if (prefix) {
       attribute = `${prefix}/${attribute}`;
     }
@@ -386,39 +440,56 @@ export default class ODataAdapter extends BaseAdapter {
       attribute = `date(${attribute})`;
     }
 
+    return {
+      value: attribute,
+      attributePath: realAttributePath
+    };
+  }
+
+  _processConstForODataSimplePredicate(predicate, modelName, predicateValue, predicateAttribute)
+  {
     let value;
-    if (predicate.value === null) {
+    let realPredicateValue = predicateValue instanceof ConstParam
+                              ? predicateValue.constValue
+                              : predicateValue;
+
+    if (realPredicateValue === null) {
       value = 'null';
+    } else if (predicateAttribute === null) {
+      value = this._processConstForODataSimplePredicateByType(predicate, realPredicateValue, typeof realPredicateValue);
     } else {
-      let meta = this._info.getMeta(modelName, predicate.attributePath);
+      let meta = this._info.getMeta(modelName, predicateAttribute);
       if (meta.isKey) {
         if ((meta.keyType === 'guid') || (meta.keyType === 'number')) {
-          value = predicate.value;
+          value = realPredicateValue;
         } else if (meta.keyType === 'string') {
-          value = `'${predicate.value}'`;
+          value = `'${realPredicateValue}'`;
         } else {
           throw new Error(`Unsupported key type '${meta.keyType}'.`);
         }
       } else if (meta.isEnum) {
         let type = meta.sourceType;
         if (!type) {
-          Ember.warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`,
+          warn(`Source type is not specified for the enum '${meta.type}' (${modelName}.${predicate.attributePath}).`,
           false,
           { id: 'ember-flexberry-data-debug.odata-adapter.source-type-is-not-specified-for-enum' });
-          type = classify(meta.type);
+          type = capitalize(camelize(meta.type));
         }
 
-        value = `${type}'${predicate.value}'`;
-      } else if (meta.type === 'string') {
-        value = `'${String(predicate.value).replace(/'/g, `''`)}'`;
-      } else if (meta.type === 'date') {
-        value = getSerializedDateValue.call(this._store, predicate.value, predicate.timeless);
+        value = `${type}'${realPredicateValue}'`;
       } else {
-        value = predicate.value;
+        value = this._processConstForODataSimplePredicateByType(predicate, realPredicateValue, meta.type);
       }
     }
 
-    let operator = this._getODataFilterOperator(predicate.operator);
-    return `${attribute} ${operator} ${value}`;
+    return { value: value };
+  }
+
+  _processConstForODataSimplePredicateByType(predicate, predicateValue, valueType){
+    return valueType === 'string'
+            ? `'${String(predicateValue).replace(/'/g, `''`)}'`
+            : ((valueType === 'date' || (valueType === 'object' && predicateValue instanceof Date))
+                ? getSerializedDateValue.call(this._store, predicateValue, predicate.timeless)
+                : predicateValue);
   }
 }

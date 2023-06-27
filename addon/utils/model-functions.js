@@ -2,7 +2,8 @@
  * @module ember-flexberry
  */
 
-import Ember from 'ember';
+import { get } from '@ember/object';
+import { assert, warn } from '@ember/debug';
 
 /**
  * Gets related object type by relation name from specified model.
@@ -15,10 +16,10 @@ import Ember from 'ember';
  */
 export function getRelationType(model, relationName) {
   // Get ember static function to get relation by name.
-  var relationshipsByName = Ember.get(model.constructor, 'relationshipsByName');
+  let relationshipsByName = get(model.constructor, 'relationshipsByName');
 
   // Get relation property from model.
-  var relation = relationshipsByName.get(relationName);
+  let relation = relationshipsByName.get(relationName);
   if (!relation) {
     throw new Error(`No relation with '${relationName}' name defined in '${model.constructor.modelName}' model.`);
   }
@@ -36,12 +37,12 @@ export function getRelationType(model, relationName) {
   @return {String} Value from locales. Returns `null` if key will not be found.
 */
 export function getValueFromLocales(i18n, key) {
-  Ember.assert('key should be defined', key);
+  assert('key should be defined', key);
 
   if (i18n.exists(key)) {
     return i18n.t(key);
   } else {
-    Ember.warn(`The ${key} is not found in locales.`,
+    warn(`The ${key} is not found in locales.`,
       false,
       { id: 'ember-flexberry-data-debug.locales.key-is-not-found' });
     return null;

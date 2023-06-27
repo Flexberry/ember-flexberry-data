@@ -59,12 +59,12 @@ export function parseBatchResponse(response) {
   const contentTypeHeader = getResponseHeader('Content-Type', response);
   const { contentType, boundary } = getResponseMeta(contentTypeHeader);
   switch (contentType) {
-    case 'multipart/mixed':
+    case 'multipart/mixed': {
       const bodyStart = response.indexOf(`--${boundary}`);
       const changesets = getBatchResponses(response.substring(bodyStart), boundary).map(parseСhangeset);
 
       return { contentType, changesets };
-
+    }
     case 'application/http':
       return { contentType, response: parseResponse(response) };
 
@@ -105,7 +105,20 @@ function parseResponse(response) {
       break;
 
     case 'application/json':
-      body = JSON.parse(response.substring(startBody));
+      let parsedString = response.substring(startBody);
+      body = JSON.parse(parsedString);
+
+      /* There can be an error on server so result will be parsed but will not be applied and will lead to not understandable error.
+        {"error":{"code":"500","message":"An error has occured."}}
+      */
+      if (parsedString.replace('\n', '').startsWith('{"error"')
+          && body.hasOwnProperty('error')
+          && body['error'].hasOwnProperty('code')
+          && body['error'].hasOwnProperty('message')){
+        let errorCode = body['error']['code'];
+        let errorMessage = body['error']['message'];
+        throw new Error(`Request failed, error ${errorCode}: ${errorMessage}`);
+      }
       break;
 
     default:

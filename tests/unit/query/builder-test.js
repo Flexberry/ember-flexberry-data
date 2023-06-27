@@ -1,22 +1,21 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
+import Builder from 'ember-flexberry-data/query/builder';
+import startApp from 'dummy/tests/helpers/start-app';
+import { IsOfPredicate, ComplexPredicate } from 'ember-flexberry-data/query/predicate';
 
-import { Query } from 'ember-flexberry-data';
-
-import startApp from '../../helpers/start-app';
-
-const { Builder } = Query;
 let app;
 let store;
 
 module('query', {
-  setup: function () {
+  beforeEach() {
     app = startApp();
     store = app.__container__.lookup('service:store');
   },
-  teardown: function () {
-    Ember.run(app, 'destroy');
-  }
+
+  afterEach() {
+    run(app, 'destroy');
+  },
 });
 
 test('query builder | constructor', assert => {
@@ -31,8 +30,8 @@ test('query builder | isOf method', (assert) => {
   let builder2 = new Builder(store, 'creator').where('Age', 'ge', 0).isOf('bot');
 
   assert.throws(() => new Builder(store, 'creator').isOf('inavlid-model-name'));
-  assert.ok(builder1._predicate instanceof Query.IsOfPredicate);
-  assert.ok(builder2._predicate instanceof Query.ComplexPredicate);
+  assert.ok(builder1._predicate instanceof IsOfPredicate);
+  assert.ok(builder2._predicate instanceof ComplexPredicate);
 });
 
 test('query builder | select by projection', assert => {

@@ -1,15 +1,19 @@
-/* jshint node: true */
+'use strict';
 
 module.exports = function(environment) {
-  var ENV = {
+  let ENV = {
     modulePrefix: 'dummy',
-    environment: environment,
-    baseURL: '/',
+    environment,
+    rootURL: '/',
     locationType: 'auto',
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
         // e.g. 'with-controller': true
+      },
+      EXTEND_PROTOTYPES: {
+        // Prevent Ember Data from overriding Date.parse.
+        Date: false
       }
     },
 
@@ -42,7 +46,6 @@ module.exports = function(environment) {
 
   if (environment === 'test') {
     // Testem prefers this...
-    ENV.baseURL = '/';
     ENV.locationType = 'none';
 
     // keep test console output quieter
@@ -52,14 +55,20 @@ module.exports = function(environment) {
     ENV.APP.rootElement = '#ember-testing';
 
     // URL of the backend running in docker
-    var testODataServiceURL = 'http://localhost:6500/odata';
+    var testODataServiceURL = 'http://localhost:80/odata';
 
     ENV.APP.testODataService = !!testODataServiceURL;
     ENV.APP.testODataServiceURL = testODataServiceURL;
+
+    ENV.APP.backendUrls = {};
+    ENV.APP.backendUrls.api = testODataServiceURL;
+
+    ENV.APP.autoboot = false;
   }
 
   if (environment === 'production') {
 
+    // here you can enable a production-specific feature
   }
 
   return ENV;

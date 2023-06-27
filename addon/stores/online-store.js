@@ -2,7 +2,9 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import { assert } from '@ember/debug';
+import { isNone, isBlank } from '@ember/utils';
+
 import DS from 'ember-data';
 
 /**
@@ -23,8 +25,8 @@ export default DS.Store.extend({
   */
   deleteAllRecords: function(modelName, filter) {
     let adapter = this.adapterFor(modelName);
-    if (Ember.isNone(adapter.deleteAllRecords)) {
-      Ember.assert('Method \'deleteAllRecords\' is missing');
+    if (isNone(adapter.deleteAllRecords)) {
+      assert('Method \'deleteAllRecords\' is missing');
     }
 
     return adapter.deleteAllRecords(adapter.store, modelName, filter);
@@ -86,8 +88,8 @@ export default DS.Store.extend({
    * @param {String} primaryKey Primery key of the model to push into store.
    */
   createExistingRecord(modelName, primaryKey) {
-    Ember.assert('Model name for store.createExistingRecord() method must not be blank.', !Ember.isBlank(modelName));
-    Ember.assert('Model primary key for store.createExistingRecord() method must not be blank.', !Ember.isBlank(primaryKey));
+    assert('Model name for store.createExistingRecord() method must not be blank.', !isBlank(modelName));
+    assert('Model primary key for store.createExistingRecord() method must not be blank.', !isBlank(primaryKey));
 
     return this.push({
       data: {

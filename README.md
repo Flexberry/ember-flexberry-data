@@ -1,4 +1,5 @@
 # Ember Flexberry Data
+
 [![Build Status Master](https://img.shields.io/travis/Flexberry/ember-flexberry-data/master.svg?label=master%20build%20)](https://travis-ci.org/Flexberry/ember-flexberry-data)
 [![Build Status Develop](https://img.shields.io/travis/Flexberry/ember-flexberry-data/develop.svg?label=develop%20build)](https://travis-ci.org/Flexberry/ember-flexberry-data/branches)
 [![NPM Version](https://badge.fury.io/js/ember-flexberry-data.svg)](https://badge.fury.io/js/ember-flexberry-data)
@@ -25,34 +26,39 @@ Ember [Flexberry](http://flexberry.ru/) Data addon - Support of database project
 
 Information on how to contribute to the project you can find [here](https://github.com/Flexberry/Home/blob/master/CONTRIBUTING.md).
 
-#### Prerequisites
+## Prerequisites
 
 You will need the following things properly installed on your computer.
 
 * [Git](http://git-scm.com/)
 * [Node.js](http://nodejs.org/) (with NPM)
-* [Bower](http://bower.io/)
 * [Ember CLI](http://www.ember-cli.com/)
 * [PhantomJS](http://phantomjs.org/)
 
 ## Running
 
-* `ember server`
-* Visit your app at http://localhost:4201.
+* `ember serve`
+* Visit your app at [http://localhost:4201](http://localhost:4201).
 
 ## Running Tests
 
-* `npm test` (Runs `ember try:testall` to test your addon against multiple Ember versions)
-* `ember test`
-* `ember test --server`
-* `ember test --testODataSerivce` (Also runs integration tests for OData service, needs corresponding backend)
+* `ember test` – Runs the test suite on the current Ember version
+* `ember test --server` – Runs the test suite in "watch mode"
+* `ember try:each` – Runs the test suite against multiple Ember versions
+
+If `TEST_ODATA_SERVICE_URL` variable is declared in environment of process then integration tests for OData service are also run (needs corresponding backend).
+
+## Linting
+
+* `yarn lint:js`
+* `yarn lint:js --fix`
 
 ## Building
 
 * `ember build` (development)
 * `ember build --environment production` (production)
 
-#### Releasing
+## Releasing
 
 * Merge develop branch with master branch
   * `git checkout master`
@@ -68,7 +74,7 @@ You will need the following things properly installed on your computer.
   * `git merge --no-ff master`
   * `git push`
 
-#### Documenting
+## Documenting
 
 * Document your code using [YUIDoc Syntax Reference](http://yui.github.io/yuidoc/syntax/index.html). For examples, you can look at the documented code in the ember.js repository.
 * After pushing into master or develop branch, documentation will be automatically generated and updated in [Flexberry/Documentation repository](https://github.com/Flexberry/flexberry.github.io), which is available via http://flexberry.github.io.
@@ -82,3 +88,7 @@ You will need the following things properly installed on your computer.
 * Development Browser Extensions
   * [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
   * [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE.md).

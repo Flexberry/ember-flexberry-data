@@ -2,6 +2,7 @@
   @module ember-flexberry-data
 */
 
+/* eslint-disable no-useless-escape */
 const STRING_DASHERIZE_REGEXP = (/[ _]/g);
 
 const STRING_CAMELIZE_REGEXP_1 = (/(\-|\_|\.|\s)+(.)?/g);
@@ -17,6 +18,7 @@ const STRING_UNDERSCORE_REGEXP_2 = (/\-|\s+/g);
 const STRING_CAPITALIZE_REGEXP = (/(^|\/)([a-zа-яё])/g);
 
 const STRING_DECAMELIZE_REGEXP = (/([a-zа-яё\d])([A-ZА-ЯЁ])/g);
+/* eslint-enable no-useless-escape */
 
 /**
   Converts a camelized string into all lower case separated by underscores.
@@ -66,8 +68,10 @@ function dasherize(str) {
   @return {String} the camelized string.
 */
 function camelize(str) {
+  /* eslint-disable no-unused-vars */
   return str.replace(STRING_CAMELIZE_REGEXP_1, (match, separator, chr) => chr ? chr.toUpperCase() : '')
     .replace(STRING_CAMELIZE_REGEXP_2, (match, separator, chr) => match.toLowerCase());
+  /* eslint-enable no-unused-vars */
 }
 
 /**
@@ -93,7 +97,9 @@ function classify(str) {
       .replace(STRING_CLASSIFY_REGEXP_2, replace2);
   }
 
+  /* eslint-disable no-unused-vars */
   return parts.join('/').replace(STRING_CLASSIFY_REGEXP_3, (match, separator, chr) => match.toUpperCase());
+  /* eslint-enable no-unused-vars */
 }
 
 /**
@@ -128,7 +134,31 @@ function underscore(str) {
   @return {String} The capitalized string.
 */
 function capitalize(str) {
+  /* eslint-disable no-unused-vars */
   return str.replace(STRING_CAPITALIZE_REGEXP, (match, separator, chr) => match.toUpperCase());
+  /* eslint-enable no-unused-vars */
+}
+
+/**
+  Returns the singularized form of a string for OData
+
+  @method odataSingularize
+  @param {String} str The string to singularize.
+  @return {String} The singularized string.
+*/
+function odataSingularize(str) {
+  return str.replace(/s$/i, '');
+}
+
+/**
+  Returns the pluralized form of a string for OData
+
+  @method odataPluralize
+  @param {String} str The string to pluralize.
+  @return {String} The pluralized string.
+*/
+function odataPluralize(str) {
+  return str + 's';
 }
 
 export {
@@ -137,5 +167,7 @@ export {
   camelize,
   classify,
   underscore,
-  capitalize
+  capitalize,
+  odataSingularize,
+  odataPluralize
 };

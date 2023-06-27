@@ -1,4 +1,4 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
 import DS from 'ember-data';
 import { module, test } from 'qunit';
 import startApp from 'dummy/tests/helpers/start-app';
@@ -24,7 +24,7 @@ module('Unit | Utility | is embedded', {
   },
 
   afterEach() {
-    Ember.run(App, 'destroy');
+    run(App, 'destroy');
   },
 });
 

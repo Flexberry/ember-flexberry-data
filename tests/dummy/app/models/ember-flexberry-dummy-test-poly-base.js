@@ -1,7 +1,7 @@
 import DS from 'ember-data';
-import { Projection } from 'ember-flexberry-data';
+import EmberFlexberryDataModel from 'ember-flexberry-data/models/model';
 
-let Model = Projection.Model.extend({
+let Model = EmberFlexberryDataModel.extend({
   pole: DS.attr('string')
 });
 

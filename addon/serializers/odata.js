@@ -1,14 +1,14 @@
-import Ember from 'ember';
+import { isNone } from '@ember/utils';
+import { get } from '@ember/object';
 import DS from 'ember-data';
 
 import BaseSerializer from './base';
-import { capitalize, camelize } from '../utils/string-functions';
+import { capitalize, camelize, odataPluralize } from '../utils/string-functions';
 
 /**
  * Serializer class for OData.
  *
  * @module ember-flexberry-data
- * @namespace Serializer
  * @class OData
  */
 export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
@@ -26,23 +26,23 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
    * @param {Object} relationship
    */
   serializeBelongsTo(snapshot, json, relationship) {
-    var option = this.attrsOption(relationship.key);
+    let option = this.attrsOption(relationship.key);
     if (!option || option.serialize !== 'odata-id') {
       this._super(snapshot, json, relationship);
       return;
     }
 
-    var key = relationship.key;
-    var belongsToId = snapshot.belongsTo(key, { id: true });
+    let key = relationship.key;
+    let belongsToId = snapshot.belongsTo(key, { id: true });
     if (belongsToId === undefined) {
       return;
     }
 
-    var payloadKey = this.keyForRelationship(key, relationship.kind, 'serialize');
-    if (Ember.isNone(belongsToId)) {
+    let payloadKey = this.keyForRelationship(key, relationship.kind, 'serialize');
+    if (isNone(belongsToId)) {
       json[payloadKey] = null;
     } else {
-      json[payloadKey] = Ember.String.pluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';
+      json[payloadKey] = odataPluralize(capitalize(camelize(relationship.type))) + '(' + belongsToId + ')';
     }
 
     if (relationship.options.polymorphic) {
@@ -72,11 +72,13 @@ export default BaseSerializer.extend(DS.EmbeddedRecordsMixin, {
     @method _normalizeEmbeddedRelationship
     @private
   */
+  /* eslint-disable no-unused-vars */
   _normalizeEmbeddedRelationship(store, relationshipMeta, relationshipHash) {
-    if (relationshipMeta.kind === 'hasMany' && Ember.get(relationshipMeta, 'options.polymorphic')) {
+    if (relationshipMeta.kind === 'hasMany' && get(relationshipMeta, 'options.polymorphic')) {
       relationshipHash = this.extractPolymorphicRelationship(undefined, relationshipHash);
     }
 
     return this._super(...arguments);
   }
+  /* eslint-enable no-unused-vars */
 });

@@ -2,10 +2,13 @@
   @module ember-flexberry-data
 */
 
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin';
+import RSVP from 'rsvp';
+import { getOwner } from '@ember/application';
+import { computed } from '@ember/object';
 import DS from 'ember-data';
 
-export default Ember.Mixin.create({
+export default Mixin.create({
   /**
     Creation date and time of model.
 
@@ -44,8 +47,8 @@ export default Ember.Mixin.create({
     @property currentUserName
     @readOnly
   */
-  currentUserName: Ember.computed(function() {
-    let userService = Ember.getOwner(this).lookup('service:user');
+  currentUserName: computed(function() {
+    let userService = getOwner(this).lookup('service:user');
     return userService.getCurrentUserName();
   }).readOnly(),
 
@@ -61,9 +64,9 @@ export default Ember.Mixin.create({
     const _super = this._super;
 
     const currentDate = new Date();
-    const currentUserPromise = new Ember.RSVP.Promise((resolve, reject) => {
+    const currentUserPromise = new RSVP.Promise((resolve, reject) => {
       const userName = this.get('currentUserName');
-      if (userName instanceof Ember.RSVP.Promise) {
+      if (userName instanceof RSVP.Promise) {
         userName.then(resolve, reject);
       } else {
         resolve(userName);
@@ -74,19 +77,17 @@ export default Ember.Mixin.create({
       if (this.get('isNew')) {
         this.set('createTime', currentDate);
         this.set('creator', currentUser);
-      }
-
-      if (this.get('hasDirtyAttributes') && !this.get('isDeleted')) {
+      } else if (this.get('hasDirtyAttributes') && !this.get('isDeleted')) {
         this.set('editTime', currentDate);
         this.set('editor', currentUser);
       }
 
       const result = _super.apply(this, arguments);
-      if (result instanceof Ember.RSVP.Promise) {
+      if (result instanceof RSVP.Promise) {
         return result;
       }
 
-      return Ember.RSVP.resolve(result);
+      return RSVP.resolve(result);
     });
   },
 });

@@ -1,4 +1,8 @@
-import Ember from 'ember';
+import Mixin from '@ember/object/mixin'
+import { typeOf, isNone } from '@ember/utils';
+import { assert } from '@ember/debug';
+import { get } from '@ember/object';
+import { isArray } from '@ember/array';
 import generateUniqueId from '../utils/generate-unique-id';
 
 /**
@@ -8,7 +12,7 @@ import generateUniqueId from '../utils/generate-unique-id';
   @class CopyableMixin
   @extends Ember.Mixin
 */
-export default Ember.Mixin.create({
+export default Mixin.create({
   /**
     The default projection name to be used when creating record by prototype.
 
@@ -26,18 +30,18 @@ export default Ember.Mixin.create({
     @return {Promise} promise
   */
   copy(prototypeProjection) {
-    if (Ember.isNone(prototypeProjection)) {
+    if (isNone(prototypeProjection)) {
       prototypeProjection = this.get('prototypeProjection');
     }
 
-    Ember.assert('Prototype projection is undefined.', prototypeProjection);
+    assert('Prototype projection is undefined.', prototypeProjection);
 
-    let argumentType = Ember.typeOf(prototypeProjection);
-    Ember.assert(`Wrong type of \`prototypeProjection\` argument: actual type is ${argumentType}, but string is expected.`,
+    let argumentType = typeOf(prototypeProjection);
+    assert(`Wrong type of \`prototypeProjection\` argument: actual type is ${argumentType}, but string is expected.`,
     argumentType === 'string');
 
-    Ember.assert(`Projection with \`${prototypeProjection}\` name is not found in the model.`,
-    !Ember.isNone(this.get('constructor.projections')[prototypeProjection]));
+    assert(`Projection with \`${prototypeProjection}\` name is not found in the model.`,
+    !isNone(this.get('constructor.projections')[prototypeProjection]));
 
     let store = this.get('store');
     let modelName = this.get('constructor.modelName');
@@ -65,7 +69,7 @@ export default Ember.Mixin.create({
 
       if (meta.kind === 'belongsTo') {
         // Skip copying the aggregator value for the nested detail.
-        let inverse = Ember.get(meta, 'options.inverse');
+        let inverse = get(meta, 'options.inverse');
         if (aggregatorMeta && aggregatorMeta.type === meta.type && aggregatorMeta.key === inverse) {
           return;
         }
@@ -77,7 +81,7 @@ export default Ember.Mixin.create({
       }
 
       let values = this.get(key);
-      if (Ember.isArray(values)) {
+      if (isArray(values)) {
         values.forEach(prototype => {
           let m = { key: key, type: modelName };
           let detail = prototype._getCopy(m);

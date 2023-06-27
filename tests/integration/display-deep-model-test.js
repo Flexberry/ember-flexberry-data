@@ -1,17 +1,16 @@
-import Ember from 'ember';
-import {module, test} from 'qunit';
+import { run } from '@ember/runloop';
+import { module, test } from 'qunit';
 import startApp from '../helpers/start-app';
 import destroyApp from '../helpers/destroy-app';
 import Dexie from 'npm:dexie';
 
-var AppDisplayDeepModel;
-var storeDisplayDeepModel;
-var run = Ember.run;
+let AppDisplayDeepModel;
+let storeDisplayDeepModel;
 const dbNameDisplayDeepModel = 'TestDbDDM';
 
 module('Display deep model', {
   beforeEach: function (assert) {
-    var done = assert.async();
+    let done = assert.async();
 
     run(function () {
       AppDisplayDeepModel = startApp();
@@ -26,7 +25,7 @@ module('Display deep model', {
       offlineGlobals.setOnlineAvailable(false);
 
       let dexieService = AppDisplayDeepModel.__container__.lookup('service:dexie');
-      var db = dexieService.dexie(dbNameDisplayDeepModel, storeDisplayDeepModel);
+      let db = dexieService.dexie(dbNameDisplayDeepModel, storeDisplayDeepModel);
       Dexie.delete(dbNameDisplayDeepModel).then(() => {
         db.open().then((db) => {
           let promises = [];
@@ -120,7 +119,7 @@ test('find suggestion', function (assert) {
 
   visit('/suggestion/fea5b275-cb9b-4584-ba04-26122bc8cbd3');
   andThen(function () {
-    var done = assert.async();
+    let done = assert.async();
     run.later(function() {
       assert.equal(find('div.address').text(), 'Street, 20');
       assert.equal(find('div.votes').text(), '1');

@@ -1,4 +1,7 @@
-import Ember from 'ember';
+import Evented from '@ember/object/evented';
+import Service from '@ember/service';
+import { getOwner } from '@ember/application';
+import { isNone } from '@ember/utils';
 
 /**
   @module ember-flexberry-data
@@ -8,11 +11,10 @@ import Ember from 'ember';
   Service for operate with global online and offline properties and events.
 
   @class GlobalsService
-  @namespace Offline
   @extends Ember.Service
   @public
 */
-export default Ember.Service.extend(Ember.Evented, {
+export default Service.extend(Evented, {
   /**
     Availability of the backend.
     @property isOnline
@@ -97,7 +99,7 @@ export default Ember.Service.extend(Ember.Evented, {
   */
   init() {
     this._super(...arguments);
-    let app = Ember.getOwner(this).application;
+    let app = getOwner(this).application;
 
     if (app.offline) {
       //Reading offline settings from application seetings in `environment.js`.
@@ -142,7 +144,7 @@ export default Ember.Service.extend(Ember.Evented, {
     Helper method for setting class properties with offline options.
   */
   _setOption: function(optionName, optionValue) {
-    if (!Ember.isNone(optionValue)) {
+    if (!isNone(optionValue)) {
       this.set(optionName, optionValue);
     }
   }

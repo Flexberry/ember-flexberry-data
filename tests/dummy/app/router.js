@@ -1,12 +1,15 @@
-import Ember from 'ember';
+import EmberRouter from '@ember/routing/router';
 import config from './config/environment';
 
-const Router = Ember.Router.extend({
-  location: config.locationType
-});
+export default class Router extends EmberRouter {
+  constructor() {
+    super(...arguments);
 
-Router.map(function () {
+    this.location = config.locationType;
+    this.rootURL = config.rootURL;
+  }
+}
+
+Router.map(function() {
   this.route('suggestion', { path: 'suggestion/:id' });
 });
-
-export default Router;

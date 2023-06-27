@@ -1,19 +1,19 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import { get } from '@ember/object';
 import { module, test } from 'qunit';
 import startApp from '../../helpers/start-app';
 import destroyApp from '../../helpers/destroy-app';
 import Dexie from 'npm:dexie';
-import { Query } from 'ember-flexberry-data';
+import Builder from 'ember-flexberry-data/query/builder';
+import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 
-var AppOfflineCrudTest;
-var storeOfflineCrudTest;
-var run = Ember.run;
-var get = Ember.get;
+let AppOfflineCrudTest;
+let storeOfflineCrudTest;
 const dbNameOfflineCrudTest = 'TestDbOCT';
 
 module('offline-CRUD', {
   beforeEach: function (assert) {
-    var done = assert.async();
+    let done = assert.async();
     run(function () {
       AppOfflineCrudTest = startApp();
       storeOfflineCrudTest = AppOfflineCrudTest.__container__.lookup('service:store');
@@ -27,7 +27,7 @@ module('offline-CRUD', {
       offlineGlobals.setOnlineAvailable(false);
 
       let dexieService = AppOfflineCrudTest.__container__.lookup('service:dexie');
-      var db = dexieService.dexie(dbNameOfflineCrudTest, storeOfflineCrudTest.get('offlineStore'));
+      let db = dexieService.dexie(dbNameOfflineCrudTest, storeOfflineCrudTest.get('offlineStore'));
       Dexie.delete(dbNameOfflineCrudTest).then(() => {
         db.open().then((db) => {
           let promises = [];
@@ -118,7 +118,7 @@ module('offline-CRUD', {
 
 test('find record', function (assert) {
   assert.expect(13);
-  var done1 = assert.async();
+  let done1 = assert.async();
   run(function () {
     storeOfflineCrudTest.findRecord('ember-flexberry-dummy-suggestion', 'fea5b275-cb9b-4584-ba04-26122bc8cbd3').then(function(records) {
       assert.equal(get(records, 'address'), 'Street, 20', 'record address = Street, 20');
@@ -127,14 +127,14 @@ test('find record', function (assert) {
       assert.equal(get(records, 'moderated'), false, '1 record was found');
     }).finally(done1);
   });
-  var done2 = assert.async();
+  let done2 = assert.async();
   run(function () {
     storeOfflineCrudTest.findRecord('ember-flexberry-dummy-suggestion-type', 'de627522-47c3-428f-99be-fdac2e8f5618').then(function(records) {
       assert.equal(get(records, 'name'), '123', '1 record was found');
       assert.equal(get(records, 'moderated'), false, '1 record was found');
     }).finally(done2);
   });
-  var done3 = assert.async();
+  let done3 = assert.async();
   run(function () {
     storeOfflineCrudTest.findRecord('ember-flexberry-dummy-application-user', '555a6d25-ac76-417c-bcc5-25bc260fc3ae').then(function(records) {
       assert.equal(get(records, 'name'), 'Васиииилий', '1 record was found');
@@ -142,13 +142,13 @@ test('find record', function (assert) {
       assert.equal(get(records, 'activated'), true, '1 record was found');
     }).finally(done3);
   });
-  var done4 = assert.async();
+  let done4 = assert.async();
   run(function () {
     storeOfflineCrudTest.findRecord('ember-flexberry-dummy-vote', '8be0d89b-8cab-4b0b-b029-356c59809163').then(function(records) {
       assert.equal(get(records, 'voteType'), 'Like', '1 record was found');
     }).finally(done4);
   });
-  var done5 = assert.async();
+  let done5 = assert.async();
   run(function () {
     storeOfflineCrudTest.findRecord('ember-flexberry-dummy-comment', '7e5d3b63-eb5e-446e-84da-26865f87c1c5').then(function(records) {
       assert.equal(get(records, 'text'), 'Not ok', '1 record was found');
@@ -160,10 +160,10 @@ test('find record', function (assert) {
 
 test('find all records', function (assert) {
   assert.expect(1);
-  var done = assert.async();
+  let done = assert.async();
   run(function () {
     storeOfflineCrudTest.findAll('ember-flexberry-dummy-suggestion').then(function(records) {
-      var firstRecord = records.objectAt(0);
+      let firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found');
     }).finally(done);
   });
@@ -171,20 +171,20 @@ test('find all records', function (assert) {
 
 test('query record via query', function (assert) {
   assert.expect(2);
-  var done1 = assert.async();
+  let done1 = assert.async();
   run(function () {
     storeOfflineCrudTest.query('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(records) {
-      var firstRecord = records.objectAt(0);
+      let firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found without query language');
     }).finally(done1);
   });
 
-  var done2 = assert.async();
+  let done2 = assert.async();
   run(function () {
     let modelName = 'ember-flexberry-dummy-suggestion';
-    let builder = new Query.Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
+    let builder = new Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', FilterOperator.Eq, 'Street, 20');
     storeOfflineCrudTest.query(modelName, builder.build()).then(function(records) {
-      var firstRecord = records.objectAt(0);
+      let firstRecord = records.objectAt(0);
       assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found with query language');
     }).finally(done2);
   });
@@ -192,17 +192,17 @@ test('query record via query', function (assert) {
 
 test('query record via queryRecord', function (assert) {
   assert.expect(2);
-  var done1 = assert.async();
+  let done1 = assert.async();
   run(function () {
     storeOfflineCrudTest.queryRecord('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(record) {
       assert.equal(get(record, 'address'), 'Street, 20', '1 record was found without query language');
     }).finally(done1);
   });
 
-  var done2 = assert.async();
+  let done2 = assert.async();
   run(function () {
     let modelName = 'ember-flexberry-dummy-suggestion';
-    let builder = new Query.Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', Query.FilterOperator.Eq, 'Street, 20');
+    let builder = new Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', FilterOperator.Eq, 'Street, 20');
     storeOfflineCrudTest.queryRecord(modelName, builder.build()).then(function(record) {
       assert.equal(get(record, 'address'), 'Street, 20', '1 record was found with query language');
     }).finally(done2);
@@ -214,7 +214,7 @@ test('create record', function(assert) {
   let done = assert.async();
 
   run(function() {
-    var list = storeOfflineCrudTest.createRecord('ember-flexberry-dummy-application-user', {
+    let list = storeOfflineCrudTest.createRecord('ember-flexberry-dummy-application-user', {
       name: 'чел',
       eMail: 'pupkin1@mail.ru',
       phone1: '+790356568933',
@@ -235,7 +235,7 @@ test('create record', function(assert) {
         name: 'чел'
       });
     }).then(function(records) {
-      var record = records.objectAt(0);
+      let record = records.objectAt(0);
       assert.equal(get(records, 'length'), 1, 'Only чел was found');
       assert.equal(get(record, 'name'), 'чел', 'Correct name');
       assert.equal(get(record, 'id'), list.id, 'Correct, original id');
@@ -248,7 +248,7 @@ test('delete record', function(assert) {
   let done = assert.async();
 
   run(function() {
-    var AssertListIsDeleted = function() {
+    let AssertListIsDeleted = function() {
       return storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
         name: 'Васиииилий'
       }).then(function(records) {
@@ -259,7 +259,7 @@ test('delete record', function(assert) {
     storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
       name: 'Васиииилий'
     }).then(function(records) {
-      var record = records.objectAt(0);
+      let record = records.objectAt(0);
       assert.equal(get(record, 'id'), '555a6d25-ac76-417c-bcc5-25bc260fc3ae', 'Item exists');
       record.destroyRecord().then(AssertListIsDeleted);
     });
