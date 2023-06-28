@@ -1,9 +1,10 @@
-import Ember from 'ember';
+import { run } from '@ember/runloop';
+import { Promise } from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
 export default function batchReadingFunctions(store, assert) {
-  Ember.run(() => {
-    assert.expect(20);
+  run(() => {
+    assert.expect(19);
     const done = assert.async();
 
     let userId;
@@ -30,19 +31,11 @@ export default function batchReadingFunctions(store, assert) {
       });
     })
 
-    // find record.
-    .then(() => {
-      const modelName = 'ember-flexberry-dummy-application-user';
-      const modelProjection = 'ApplicationUserL';
-      return store.batchFindRecord(modelName, userId, modelProjection).then((record) => {
-        assert.equal(record.get('id'), userId, 'find record | Data');
-      });
-    })
-
     // where.
     .then(() => {
       const builder = new QueryBuilder(store)
         .from('ember-flexberry-dummy-application-user')
+        .select('id, name')
         .where('name', '==', 'VasyaBatch');
       const builder2 = new QueryBuilder(store)
         .from('ember-flexberry-dummy-application-user')
@@ -59,6 +52,7 @@ export default function batchReadingFunctions(store, assert) {
     .then(() => {
       const builder = new QueryBuilder(store)
         .from('ember-flexberry-dummy-application-user')
+        .select('id, karma')
         .orderBy('karma');
       const queries = [builder.build()];
       return runTest(store, queries, (data) => {
@@ -91,6 +85,7 @@ export default function batchReadingFunctions(store, assert) {
     .then(() => {
       const builder = new QueryBuilder(store)
         .from('ember-flexberry-dummy-application-user')
+        .select('id, karma')
         .orderBy('karma')
         .skip(1);
       const queries = [builder.build()];
@@ -127,7 +122,7 @@ export default function batchReadingFunctions(store, assert) {
 }
 
 function initTestData(store) {
-  return Ember.RSVP.Promise.all([
+  return Promise.all([
     store.createRecord('ember-flexberry-dummy-application-user', {
       name: 'VasyaBatch',
       eMail: '1@mail.ru',

@@ -4,6 +4,7 @@
 
 import { assert } from '@ember/debug';
 import { isNone, isBlank } from '@ember/utils';
+import { A } from '@ember/array';
 
 import DS from 'ember-data';
 
@@ -58,28 +59,16 @@ export default DS.Store.extend({
   */
   batchSelect(queries) {
     return this.adapterFor('application').batchSelect(this, queries).then(result => {
-      const batchResult = Ember.A();
-      result.forEach((records, index) => {
-        const array = this.recordArrayManager.createAdapterPopulatedRecordArray(queries[index].modelName, queries[index]);
-        array.loadRecords(this.push(records), records);
+      const batchResult = A();
+      result.forEach((records) => {
+        const array = A();
+        array.addObjects(this.push(records));
+        array.meta = records.meta;
         batchResult.addObject(array);
       });
 
       return batchResult;
     });
-  },
-
-  /**
-    A method to get single record with batch request.
-
-    @method batchFindRecord
-    @param {String} modelName Model name.
-    @param {String} modelId Record id.
-    @param {String} projectionName Projection name.
-    @return {Promise} A promise that fulfilled with single record.
-  */
-  batchFindRecord(modelName, modelId, projectionName) {
-    return this.adapterFor('application').batchFindRecord(this, modelName, modelId, projectionName);
   },
 
   /**
