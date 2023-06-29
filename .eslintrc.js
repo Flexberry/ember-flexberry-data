@@ -27,11 +27,11 @@ module.exports = {
   rules: {
     'ember/new-module-imports': 'off',
     'ember/no-get': 'off',
+    'ember/use-ember-get-and-set': ['error', { ignoreThisExpressions: true, }],
     'ember/no-jquery': 'warn',
     'ember/no-mixins': 'warn',
     'ember/no-observers': 'warn',
-    'ember/use-ember-data-rfc-395-imports': 'off',
-    'ember/use-ember-get-and-set': 'error'
+    'ember/use-ember-data-rfc-395-imports': 'off'
   },
   reportUnusedDisableDirectives: true,
   overrides: [
