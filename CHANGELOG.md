@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Store
+    - `batchSelect` method for loading data with batch.
 
 ## [3.8.0] - 2023-04-25
 ### Added

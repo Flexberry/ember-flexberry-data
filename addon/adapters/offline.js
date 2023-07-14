@@ -450,6 +450,19 @@ export default DS.Adapter.extend({
   },
 
   /**
+    A method to get array of models.
+
+    @method batchSelect
+    @param {DS.Store} store The store.
+    @param {Query} queries Array of Flexberry Query objects.
+    @return {Promise} A promise that fulfilled with an array of query responses.
+  */
+  batchSelect(store, queries) {
+    const promises = queries.map(query => store.query(query.modelName, query));
+    return RSVP.all(promises).then(result => A(result));
+  },
+
+  /**
     Stores hash for performing bulk operaion into map.
 
     @method _storeHashForBulkOperation

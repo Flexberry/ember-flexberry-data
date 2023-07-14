@@ -254,6 +254,17 @@ export default DS.Store.extend({
   },
 
   /**
+    A method to get array of models with batch request.
+
+    @method batchSelect
+    @param {Query} queries Array of Flexberry Query objects.
+    @return {Promise} A promise that fulfilled with an array of query responses.
+  */
+  batchSelect(queries) {
+    return this.adapterFor('application').batchSelect(this, queries);
+  },
+
+  /**
    * Pushes into store the model that exists in backend without a request to it.
    * @param {String} modelName Name of the model to push into store.
    * @param {String} primaryKey Primery key of the model to push into store.
