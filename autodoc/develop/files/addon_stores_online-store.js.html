@@ -148,6 +148,7 @@
 
 import { assert } from &#x27;@ember/debug&#x27;;
 import { isNone, isBlank } from &#x27;@ember/utils&#x27;;
+import { A } from &#x27;@ember/array&#x27;;
 
 import DS from &#x27;ember-data&#x27;;
 
@@ -191,6 +192,27 @@ export default DS.Store.extend({
   */
   batchUpdate(models) {
     return this.adapterFor(&#x27;application&#x27;).batchUpdate(this, models);
+  },
+
+  /**
+    A method to get array of models.
+
+    @method batchSelect
+    @param {Array} queries Array of Flexberry Query objects.
+    @return {Promise} A promise that fulfilled with an array of query responses.
+  */
+  batchSelect(queries) {
+    return this.adapterFor(&#x27;application&#x27;).batchSelect(this, queries).then(result =&gt; {
+      const batchResult = A();
+      result.forEach((records) =&gt; {
+        const array = A();
+        array.addObjects(this.push(records));
+        array.meta = records.meta;
+        batchResult.addObject(array);
+      });
+
+      return batchResult;
+    });
   },
 
   /**

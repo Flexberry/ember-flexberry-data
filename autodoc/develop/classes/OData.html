@@ -203,6 +203,10 @@
 
                             </li>
                             <li class="index-item method">
+                                <a href="#" data-tabid="#methods" data-anchor="#method_batchSelect" data-tablink="batchSelect">batchSelect</a>
+
+                            </li>
+                            <li class="index-item method">
                                 <a href="#" data-tabid="#methods" data-anchor="#method_batchUpdate" data-tablink="batchUpdate">batchUpdate</a>
 
                             </li>
@@ -303,7 +307,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_odata.js.html#l790"><code>addon&#x2F;adapters&#x2F;odata.js:790</code></a>
+                            <a href="../files/addon_adapters_odata.js.html#l867"><code>addon&#x2F;adapters&#x2F;odata.js:867</code></a>
                             </p>
                     
                     
@@ -372,7 +376,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_odata.js.html#l750"><code>addon&#x2F;adapters&#x2F;odata.js:750</code></a>
+                            <a href="../files/addon_adapters_odata.js.html#l827"><code>addon&#x2F;adapters&#x2F;odata.js:827</code></a>
                             </p>
                     
                     
@@ -449,7 +453,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_odata.js.html#l592"><code>addon&#x2F;adapters&#x2F;odata.js:592</code></a>
+                            <a href="../files/addon_adapters_odata.js.html#l669"><code>addon&#x2F;adapters&#x2F;odata.js:669</code></a>
                             </p>
                     
                     
@@ -528,7 +532,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_odata.js.html#l612"><code>addon&#x2F;adapters&#x2F;odata.js:612</code></a>
+                            <a href="../files/addon_adapters_odata.js.html#l689"><code>addon&#x2F;adapters&#x2F;odata.js:689</code></a>
                             </p>
                     
                     
@@ -634,7 +638,7 @@
                         <div class="meta">
                                     <p>
                                     Defined in
-                            <a href="../files/addon_adapters_odata.js.html#l841"><code>addon&#x2F;adapters&#x2F;odata.js:841</code></a>
+                            <a href="../files/addon_adapters_odata.js.html#l918"><code>addon&#x2F;adapters&#x2F;odata.js:918</code></a>
                             </p>
                     
                     
@@ -734,6 +738,85 @@
                     
                                 <div class="returns-description">
                                             <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>:
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div id="method_batchSelect" class="method item">
+                        <h3 class="name"><code>batchSelect</code></h3>
+                    
+                            <div class="args">
+                                <span class="paren">(</span><ul class="args-list inline commas">
+                                    <li class="arg">
+                                            <code>store</code>
+                                    </li>
+                                    <li class="arg">
+                                            <code>queries</code>
+                                    </li>
+                                </ul><span class="paren">)</span>
+                            </div>
+                    
+                            <span class="returns-inline">
+                                <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>
+                            </span>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                        <div class="meta">
+                                    <p>
+                                    Defined in
+                            <a href="../files/addon_adapters_odata.js.html#l592"><code>addon&#x2F;adapters&#x2F;odata.js:592</code></a>
+                            </p>
+                    
+                    
+                    
+                        </div>
+                    
+                        <div class="description">
+                            <p>A method to get array of models with batch request.</p>
+                    
+                        </div>
+                    
+                            <div class="params">
+                                <h4>Parameters:</h4>
+                    
+                                <ul class="params-list">
+                                    <li class="param">
+                                            <code class="param-name">store</code>
+                                            <span class="type"><a href="http://emberjs.com/api/data/classes/DS.Store.html" class="crosslink external" target="_blank">DS.Store</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>The store.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                    <li class="param">
+                                            <code class="param-name">queries</code>
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+                    
+                                        <div class="param-description">
+                                            <p>Array of Flexberry Query objects.</p>
+                    
+                                        </div>
+                    
+                                    </li>
+                                </ul>
+                            </div>
+                    
+                            <div class="returns">
+                                <h4>Returns:</h4>
+                    
+                                <div class="returns-description">
+                                            <span class="type"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise" class="crosslink external" target="_blank">Promise</a></span>:
+                                        <p>A promise that fulfilled with an array of query responses.</p>
+                    
                                 </div>
                             </div>
                     

@@ -734,6 +734,83 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
+    A method to get array of models with batch request.
+
+    @method batchSelect
+    @param {DS.Store} store The store.
+    @param {Array} queries Array of Flexberry Query objects.
+    @return {Promise} A promise that fulfilled with an array of query responses.
+  */
+  batchSelect(store, queries) {
+    const boundary = &#x60;batch_${generateUniqueId()}&#x60;;
+    let requestBody = &#x27;&#x27;;
+    queries.forEach(query =&gt; {
+      requestBody += &#x60;--${boundary}\r\n&#x60;;
+      requestBody += &#x27;Content-Type: application/http\r\n&#x27;;
+      requestBody += &#x27;Content-Transfer-Encoding: binary\r\n&#x27;;
+
+      const getUrl = this._buildURL(query.modelName);
+
+      const queryAdapter = new ODataQueryAdapter(getUrl, store);
+      const fullUrl = queryAdapter.getODataFullUrl(query);
+
+      requestBody += &#x27;\r\nGET &#x27; + fullUrl + &#x27; HTTP/1.1\r\n&#x27;;
+      requestBody += &#x27;Content-Type: application/json;type=entry\r\n&#x27;;
+      requestBody += &#x27;Prefer: return=representation\r\n\r\n&#x27;;
+    });
+
+    const url = &#x60;${this._buildURL()}/$batch&#x60;;
+
+    const headers = $.extend({}, this.get(&#x27;headers&#x27;));
+    headers[&#x27;Content-Type&#x27;] = &#x60;multipart/mixed;boundary=${boundary}&#x60;;
+    const httpMethod = &#x27;POST&#x27;;
+
+    const options = {
+      method: httpMethod,
+      headers,
+      dataType: &#x27;text&#x27;,
+      data: requestBody
+    };
+
+    return new Promise((resolve, reject) =&gt; $.ajax(url, options).done((response, statusText, xhr) =&gt; {
+      const meta = getResponseMeta(xhr.getResponseHeader(&#x27;Content-Type&#x27;));
+      if (meta.contentType !== &#x27;multipart/mixed&#x27;) {
+        return reject(new DS.AdapterError(&#x27;Invalid response type.&#x27;));
+      }
+
+      const batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
+      const getResponses = batchResponses.filter(r =&gt; r.contentType === &#x27;application/http&#x27;);
+
+      const errorsChangesets = getResponses.filter(c =&gt; !this.isSuccess(c.response.meta.status));
+      if (errorsChangesets.length) {
+        return reject(errorsChangesets.map(c =&gt; new DS.AdapterError(c.body)));
+      }
+
+      const result = A();
+
+      getResponses.forEach((response, index) =&gt; {
+        const getResponse = response.response;
+        const type = queries[index].modelName;
+        const requestResult = { data: A(), included: A(), meta: store.serializerFor(type).extractMeta(store, type, getResponse.body) };
+        const records = getResponse.body.value;
+        records.forEach(record =&gt; {
+          const normalized = store.normalize(type, record);
+
+          // eslint-disable-next-line ember/jquery-ember-run
+          requestResult.data.addObject(normalized.data);
+          if (normalized.included) {
+            requestResult.included.addObjects(normalized.included);
+          }
+        });
+
+        result.addObject(requestResult);
+      });
+
+      return resolve(result);
+    }).fail(reject));
+  },
+
+  /**
     A method to generate url part from queryParams.
 
     @method _generateFunctionQueryString

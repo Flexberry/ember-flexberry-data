@@ -1473,7 +1473,7 @@
             "module": "ember-flexberry-data",
             "namespace": "OData",
             "file": "addon/stores/online-store.js",
-            "line": 10,
+            "line": 11,
             "description": "Store that used in online mode by default.",
             "extends": "<a href=\"http://emberjs.com/api/data/classes/DS.Store.html\">DS.Store</a>",
             "access": "private",
@@ -2175,6 +2175,31 @@
         {
             "file": "addon/adapters/odata.js",
             "line": 592,
+            "description": "A method to get array of models with batch request.",
+            "itemtype": "method",
+            "name": "batchSelect",
+            "params": [
+                {
+                    "name": "store",
+                    "description": "The store.",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "queries",
+                    "description": "Array of Flexberry Query objects.",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "A promise that fulfilled with an array of query responses.",
+                "type": "Promise"
+            },
+            "class": "OData",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/adapters/odata.js",
+            "line": 669,
             "description": "A method to generate url part from queryParams.",
             "itemtype": "method",
             "name": "_generateFunctionQueryString",
@@ -2201,7 +2226,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 612,
+            "line": 689,
             "description": "A method to make args object function/action call method's.",
             "itemtype": "method",
             "name": "_getODataArgs",
@@ -2233,7 +2258,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 641,
+            "line": 718,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2278,7 +2303,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 750,
+            "line": 827,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2305,7 +2330,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 790,
+            "line": 867,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2328,7 +2353,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 841,
+            "line": 918,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -2785,6 +2810,31 @@
         {
             "file": "addon/adapters/offline.js",
             "line": 452,
+            "description": "A method to get array of models.",
+            "itemtype": "method",
+            "name": "batchSelect",
+            "params": [
+                {
+                    "name": "store",
+                    "description": "The store.",
+                    "type": "DS.Store"
+                },
+                {
+                    "name": "queries",
+                    "description": "Array of Flexberry Query objects.",
+                    "type": "Query"
+                }
+            ],
+            "return": {
+                "description": "A promise that fulfilled with an array of query responses.",
+                "type": "Promise"
+            },
+            "class": "Offline",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/adapters/offline.js",
+            "line": 465,
             "description": "Stores hash for performing bulk operaion into map.",
             "itemtype": "method",
             "name": "_storeHashForBulkOperation",
@@ -2807,7 +2857,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 470,
+            "line": 483,
             "description": "Makes {{#crossLink \"Query.QueryObject\"}}{{/crossLink}} out of queries that look like this:\n {\n   <property to query>: <value to match>,\n   ...\n }.",
             "itemtype": "method",
             "name": "_makeQueryObject",
@@ -2844,7 +2894,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 521,
+            "line": 534,
             "description": "Retrieves projection from query and returns it.\nRetrieved projection removes from the query.",
             "itemtype": "method",
             "name": "_extractProjectionFromQuery",
@@ -2885,7 +2935,7 @@
         },
         {
             "file": "addon/adapters/offline.js",
-            "line": 592,
+            "line": 605,
             "description": "Forming promises for deleting current record and its details.",
             "itemtype": "method",
             "name": "_deleteDetailModels",
@@ -7033,6 +7083,32 @@
         {
             "file": "addon/stores/base-store.js",
             "line": 455,
+            "description": "A method to get array of models with batch request.",
+            "itemtype": "method",
+            "name": "batchSelect",
+            "params": [
+                {
+                    "name": "queries",
+                    "description": "Array of Flexberry Query objects.",
+                    "type": "Query"
+                },
+                {
+                    "name": "useOnlineStore",
+                    "description": "Allow to explicitly specify online or offline store using independently of global online status.",
+                    "type": "Boolean",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "A promise that fulfilled with an array of query responses.",
+                "type": "Promise"
+            },
+            "class": "Store",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/stores/base-store.js",
+            "line": 467,
             "description": "Returns an instance of the adapter for a given type.",
             "itemtype": "method",
             "name": "adapterFor",
@@ -7058,7 +7134,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 474,
+            "line": 486,
             "description": "Returns an instance of the serializer for a given type.",
             "itemtype": "method",
             "name": "serializerFor",
@@ -7084,7 +7160,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 532,
+            "line": 544,
             "description": "Detect model name by method name and arguments.",
             "itemtype": "method",
             "name": "_getModelName",
@@ -7111,7 +7187,7 @@
         },
         {
             "file": "addon/stores/base-store.js",
-            "line": 579,
+            "line": 591,
             "description": "Update all databases in accordance with actual schemas.",
             "itemtype": "method",
             "name": "_dbInit",
@@ -7365,6 +7441,26 @@
         {
             "file": "addon/stores/local-store.js",
             "line": 256,
+            "description": "A method to get array of models with batch request.",
+            "itemtype": "method",
+            "name": "batchSelect",
+            "params": [
+                {
+                    "name": "queries",
+                    "description": "Array of Flexberry Query objects.",
+                    "type": "Query"
+                }
+            ],
+            "return": {
+                "description": "A promise that fulfilled with an array of query responses.",
+                "type": "Promise"
+            },
+            "class": "LocalStore",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/stores/local-store.js",
+            "line": 267,
             "description": "Pushes into store the model that exists in backend without a request to it.",
             "params": [
                 {
@@ -7383,7 +7479,7 @@
         },
         {
             "file": "addon/stores/online-store.js",
-            "line": 20,
+            "line": 21,
             "description": "Delete all record from the current store.",
             "itemtype": "method",
             "name": "deleteRecord",
@@ -7405,7 +7501,7 @@
         },
         {
             "file": "addon/stores/online-store.js",
-            "line": 35,
+            "line": 36,
             "description": "A method to send batch update, create or delete models in single transaction.\n\nAll models saving using this method must have identifiers.\n\nThe array which fulfilled the promise may contain the following values:\n- `same model object` - for created, updated or unaltered records.\n- `null` - for deleted records.",
             "itemtype": "method",
             "name": "batchUpdate",
@@ -7426,7 +7522,28 @@
         },
         {
             "file": "addon/stores/online-store.js",
-            "line": 52,
+            "line": 53,
+            "description": "A method to get array of models.",
+            "itemtype": "method",
+            "name": "batchSelect",
+            "params": [
+                {
+                    "name": "queries",
+                    "description": "Array of Flexberry Query objects.",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "A promise that fulfilled with an array of query responses.",
+                "type": "Promise"
+            },
+            "class": "OData.OnlineStore",
+            "module": "ember-flexberry-data",
+            "namespace": "OData"
+        },
+        {
+            "file": "addon/stores/online-store.js",
+            "line": 74,
             "description": "Pushes into store the model that exists in backend without a request to it.",
             "params": [
                 {
@@ -8694,7 +8811,7 @@
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:641"
+            "line": " addon/adapters/odata.js:718"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
@@ -8930,11 +9047,11 @@
         },
         {
             "message": "Missing item type\nPushes into store the model that exists in backend without a request to it.",
-            "line": " addon/stores/local-store.js:256"
+            "line": " addon/stores/local-store.js:267"
         },
         {
             "message": "Missing item type\nPushes into store the model that exists in backend without a request to it.",
-            "line": " addon/stores/online-store.js:52"
+            "line": " addon/stores/online-store.js:74"
         },
         {
             "message": "Missing item type\nDeserializes serialized attribute value.",
