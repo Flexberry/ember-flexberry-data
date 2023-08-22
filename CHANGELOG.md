@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.10.0] - 2023-08-22
+### Changed
+- Increase version to match ember-flexberry.
+
 ## [3.9.0] - 2023-07-20
 ### Added
 - Store
