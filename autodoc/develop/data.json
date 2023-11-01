@@ -2163,6 +2163,11 @@
                     "name": "models",
                     "description": "Is array of models or single model for batch update.",
                     "type": "DS.Model[]|DS.Model"
+                },
+                {
+                    "name": "getProjections",
+                    "description": "Optional projections for updated models.",
+                    "type": "Object"
                 }
             ],
             "return": {
@@ -2174,7 +2179,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 592,
+            "line": 608,
             "description": "A method to get array of models with batch request.",
             "itemtype": "method",
             "name": "batchSelect",
@@ -2199,7 +2204,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 669,
+            "line": 685,
             "description": "A method to generate url part from queryParams.",
             "itemtype": "method",
             "name": "_generateFunctionQueryString",
@@ -2226,7 +2231,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 689,
+            "line": 705,
             "description": "A method to make args object function/action call method's.",
             "itemtype": "method",
             "name": "_getODataArgs",
@@ -2258,7 +2263,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 718,
+            "line": 734,
             "description": "A method to make ajax requests.",
             "params": [
                 {
@@ -2303,7 +2308,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 827,
+            "line": 843,
             "description": "Overloaded method from `build-url-mixin` (Ember Data), taht builds URL to OData feed.\nAppends id as `(id)` (OData specification) instead of `/id`.",
             "itemtype": "method",
             "name": "_buildURL",
@@ -2330,7 +2335,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 867,
+            "line": 883,
             "description": "Appends id to URL according to the OData specification.",
             "itemtype": "method",
             "name": "_appendIdToURL",
@@ -2353,7 +2358,7 @@
         },
         {
             "file": "addon/adapters/odata.js",
-            "line": 918,
+            "line": 934,
             "description": "Makes HTTP request for creating, updating or deleting the record.",
             "itemtype": "method",
             "name": "_sendRecord",
@@ -7510,6 +7515,11 @@
                     "name": "models",
                     "description": "Is array of models or single model for batch update.",
                     "type": "DS.Model[]|DS.Model"
+                },
+                {
+                    "name": "getProjections",
+                    "description": "Optional projections for updated models.",
+                    "type": "Object"
                 }
             ],
             "return": {
@@ -7522,7 +7532,7 @@
         },
         {
             "file": "addon/stores/online-store.js",
-            "line": 53,
+            "line": 54,
             "description": "A method to get array of models.",
             "itemtype": "method",
             "name": "batchSelect",
@@ -7543,7 +7553,7 @@
         },
         {
             "file": "addon/stores/online-store.js",
-            "line": 74,
+            "line": 75,
             "description": "Pushes into store the model that exists in backend without a request to it.",
             "params": [
                 {
@@ -8811,7 +8821,7 @@
         },
         {
             "message": "Missing item type\nA method to make ajax requests.",
-            "line": " addon/adapters/odata.js:718"
+            "line": " addon/adapters/odata.js:734"
         },
         {
             "message": "Missing item type\nField name where object identifier is kept.",
@@ -9051,7 +9061,7 @@
         },
         {
             "message": "Missing item type\nPushes into store the model that exists in backend without a request to it.",
-            "line": " addon/stores/online-store.js:74"
+            "line": " addon/stores/online-store.js:75"
         },
         {
             "message": "Missing item type\nDeserializes serialized attribute value.",
