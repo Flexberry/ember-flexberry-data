@@ -5521,7 +5521,7 @@
         },
         {
             "file": "addon/serializers/base.js",
-            "line": 197,
+            "line": 201,
             "description": "Moves metadata from one object to another.",
             "params": [
                 {
@@ -8949,7 +8949,7 @@
         },
         {
             "message": "Missing item type\nMoves metadata from one object to another.",
-            "line": " addon/serializers/base.js:197"
+            "line": " addon/serializers/base.js:201"
         },
         {
             "message": "Missing item type\nReturns key for a given relationship.",
