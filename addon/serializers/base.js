@@ -191,6 +191,10 @@ export default DS.RESTSerializer.extend({
     @return {String}
   */
   modelNameFromPayloadKey(key) {
+    if (key.startsWith('#.')) {
+        return dasherize(key.replace(/[#\.]/g, ''));
+    }
+
     return odataSingularize(dasherize(key.replace(/[#\.]/g, '')));
   },
 
