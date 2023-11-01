@@ -410,9 +410,10 @@ export default DS.RESTAdapter.extend({
     @method batchUpdate
     @param {DS.Store} store The store.
     @param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
+    @param {Object} getProjections Optional projections for updated models.
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
-  batchUpdate(store, models) {
+  batchUpdate(store, models, getProjections = {}) {
     if (isEmpty(models)) {
       return resolve(models);
     }
@@ -485,7 +486,8 @@ export default DS.RESTAdapter.extend({
 
         // Don't need to send any data for deleting.
         if (modelDirtyType !== 'deleted') {
-          const serializer = store.serializerFor(snapshot.type.modelName);
+          const modelName = snapshot.type.modelName;
+          const serializer = store.serializerFor(modelName);
           const data = {};
           serializer.serializeIntoHash(data, snapshot.type, snapshot);
           requestBody += JSON.stringify(data) + '\r\n';
@@ -495,27 +497,39 @@ export default DS.RESTAdapter.extend({
           getQuery += 'Content-Type: application/http\r\n';
           getQuery += 'Content-Transfer-Encoding: binary\r\n';
 
-          const relationships = [];
-          model.eachRelationship((name) => {
-            // If attr serializable value hadn't been set up, it'll be { serialize: 'id' } by default from DS.EmbeddedRecordsMixin.
-            let attrSerializeVal =
-              serializer && serializer.attrs && serializer.attrs[name] && serializer.attrs[name].serialize;
+          const getUrl = this._buildURL(modelName, model.get('id'));
 
-            if (attrSerializeVal !== false) {
-              relationships.push(`${name}.id`);
+          const projection = get(getProjections, modelName);
+          if (isNone(projection)) {
+            const relationships = [];
+            model.eachRelationship((name) => {
+              // If attr serializable value hadn't been set up, it'll be { serialize: 'id' } by default from DS.EmbeddedRecordsMixin.
+              let attrSerializeVal =
+                serializer && serializer.attrs && serializer.attrs[name] && serializer.attrs[name].serialize;
+  
+              if (attrSerializeVal !== false) {
+                relationships.push(`${name}.id`);
+              }
+            });
+  
+            let expand;
+            if (relationships.length) {
+              const query = new Builder(store, modelName).select(relationships.join(',')).build();
+              const queryAdapter = new ODataQueryAdapter(getUrl, store);
+              expand = queryAdapter.getODataQuery(query).$expand;
             }
-          });
 
-          const getUrl = this._buildURL(snapshot.type.modelName, model.get('id'));
-
-          let expand;
-          if (relationships.length) {
-            const query = new Builder(store, snapshot.type.modelName).select(relationships.join(',')).build();
+            getQuery += '\r\nGET ' + getUrl + (expand ? '?$expand=' + expand : '') + ' HTTP/1.1\r\n';
+          } else {
+            let query = new Builder(store, modelName);
+            query = isArray(projection) ? query.select(projection.join(',')) : query.selectByProjection(projection);
+            query = query.build();
             const queryAdapter = new ODataQueryAdapter(getUrl, store);
-            expand = queryAdapter.getODataQuery(query).$expand;
+            const fullUrl = queryAdapter.getODataFullUrl(query);
+
+            getQuery += '\r\nGET ' + fullUrl + ' HTTP/1.1\r\n';
           }
 
-          getQuery += '\r\nGET ' + getUrl + (expand ? '?$expand=' + expand : '') + ' HTTP/1.1\r\n';
           getQuery += 'Content-Type: application/json;type=entry\r\n';
           getQuery += 'Prefer: return=representation\r\n';
           getQueries.push(getQuery);
@@ -566,11 +580,13 @@ export default DS.RESTAdapter.extend({
             } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
               const { response } = getResponses.shift();
               if (this.isSuccess(response.meta.status)) {
+                const internalModel = model._internalModel;
+                internalModel.adapterWillCommit();
+                internalModel.flushChangedAttributes();
                 const modelName = model.constructor.modelName;
-                const payload = { [modelName]: response.body };
                 run(() => {
-                  store.pushPayload(modelName, payload);
-                  model.rollbackAttributes(); // forced adjustment of model state
+                  const normalized = store.normalize(modelName, response.body);
+                  store.didSaveRecord(internalModel, normalized);
                 });
               } else {
                 errors.push(new DS.AdapterError(response.body));

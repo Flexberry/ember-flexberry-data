@@ -1,6 +1,11 @@
 # Change Log
 
 ## [Unreleased]
+### Added
+- Projections parameter for batchUpdate.
+
+### Fixed
+- Update model in store after batchUpdate.
 
 ## [3.10.0] - 2023-08-22
 ### Changed

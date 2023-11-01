@@ -44,10 +44,11 @@ export default DS.Store.extend({
 
     @method batchUpdate
     @param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
+    @param {Object} getProjections Optional projections for updated models.
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
-  batchUpdate(models) {
-    return this.adapterFor('application').batchUpdate(this, models);
+  batchUpdate(models, getProjections) {
+    return this.adapterFor('application').batchUpdate(this, models, getProjections);
   },
 
   /**

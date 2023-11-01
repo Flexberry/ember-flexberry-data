@@ -449,7 +449,7 @@ export default DS.Store.extend({
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate() {
-    return this._callSuperMethod('batchUpdate', 1, arguments);
+    return this._callSuperMethod('batchUpdate', 2, arguments);
   },
 
   /**
