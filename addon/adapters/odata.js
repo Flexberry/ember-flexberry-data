@@ -410,7 +410,7 @@ export default DS.RESTAdapter.extend({
     @method batchUpdate
     @param {DS.Store} store The store.
     @param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
-        @param {Object} getProjections Optional projections for updated models.
+    @param {Object} getProjections Optional projections for updated models.
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate(store, models, getProjections = {}) {
