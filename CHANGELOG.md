@@ -1,6 +1,8 @@
 # Change Log
 
 ## [Unreleased]
+### Fixed
+- Querying models with `s` at the end.
 
 ## [3.10.0] - 2023-08-22
 ### Changed
