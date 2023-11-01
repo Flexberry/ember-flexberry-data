@@ -410,7 +410,7 @@ export default DS.RESTAdapter.extend({
     @method batchUpdate
     @param {DS.Store} store The store.
     @param {DS.Model[]|DS.Model} models Is array of models or single model for batch update.
-    @param {Object} getProjections Optional projections for updated models.
+        @param {Object} getProjections Optional projections for updated models.
     @return {Promise} A promise that fulfilled with an array of models in the new state.
   */
   batchUpdate(store, models, getProjections = {}) {
@@ -580,11 +580,11 @@ export default DS.RESTAdapter.extend({
             } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
               const { response } = getResponses.shift();
               if (this.isSuccess(response.meta.status)) {
-                const internalModel = model._internalModel;
-                internalModel.adapterWillCommit();
-                internalModel.flushChangedAttributes();
-                const modelName = model.constructor.modelName;
                 run(() => {
+                  const internalModel = model._internalModel;
+                  internalModel.adapterWillCommit();
+                  internalModel.flushChangedAttributes();
+                  const modelName = model.constructor.modelName;               
                   const normalized = store.normalize(modelName, response.body);
                   store.didSaveRecord(internalModel, normalized);
                 });
