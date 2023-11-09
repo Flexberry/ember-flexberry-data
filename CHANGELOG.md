@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [3.11.0] - 2023-11-09
 ### Added
 - Projections parameter for batchUpdate.
 
