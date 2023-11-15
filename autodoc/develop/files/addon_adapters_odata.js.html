@@ -145,7 +145,7 @@
 import { assert, debug } from &#x27;@ember/debug&#x27;;
 import { deprecate } from &#x27;@ember/application/deprecations&#x27;;
 import { isNone, isEmpty } from &#x27;@ember/utils&#x27;;
-import { get, computed } from &#x27;@ember/object&#x27;;
+import { get, set, computed } from &#x27;@ember/object&#x27;;
 import { getOwner } from &#x27;@ember/application&#x27;;
 import { Promise, all, resolve } from &#x27;rsvp&#x27;;
 import $ from &#x27;jquery&#x27;;
@@ -155,7 +155,7 @@ import { A, isArray } from &#x27;@ember/array&#x27;;
 
 import SnapshotTransform from &#x27;../utils/snapshot-transform&#x27;;
 import ODataQueryAdapter from &#x27;../query/odata-adapter&#x27;;
-import { capitalize, camelize, odataPluralize } from &#x27;../utils/string-functions&#x27;;
+import { capitalize, camelize, dasherize, odataPluralize, odataSingularize } from &#x27;../utils/string-functions&#x27;;
 import isUUID from &#x27;../utils/is-uuid&#x27;;
 import generateUniqueId from &#x27;../utils/generate-unique-id&#x27;;
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from &#x27;../utils/batch-queries&#x27;;
@@ -707,7 +707,7 @@ export default DS.RESTAdapter.extend({
           let batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
 
 
-          const getResponses = batchResponses.filter(r =&gt; r.contentType === &#x27;application/http&#x27;);
+          let getResponses = batchResponses.filter(r =&gt; r.contentType === &#x27;application/http&#x27;);
           const updateResponse = batchResponses.find(r =&gt; r.contentType === &#x27;multipart/mixed&#x27;);
 
           const errorsChangesets = updateResponse.changesets.filter(c =&gt; !this.isSuccess(c.meta.status));
@@ -717,30 +717,34 @@ export default DS.RESTAdapter.extend({
 
           const errors = [];
           const result = [];
+          getResponses = this._normalizeBatchGetResponses(store, getResponses);
+          if (errors.length) {
+            return reject(errors);
+          }
+
           models.forEach((model) =&gt; {
             const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
             if (modelDirtyType === &#x27;deleted&#x27;) {
               run(store, store.unloadRecord, model);
             } else if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27; || model.hasChangedBelongsTo()) {
-              const { response } = getResponses.shift();
-              if (this.isSuccess(response.meta.status)) {
-                run(() =&gt; {
+              run(() =&gt; {               
+                const id = model.get(&#x27;id&#x27;);
+                const normalized = getResponses[id];
+                if (!isNone(normalized)) {
                   const internalModel = model._internalModel;
                   internalModel.adapterWillCommit();
-                  internalModel.flushChangedAttributes();
-                  const modelName = model.constructor.modelName;               
-                  const normalized = store.normalize(modelName, response.body);
+                  internalModel.flushChangedAttributes();               
                   store.didSaveRecord(internalModel, normalized);
-                });
-              } else {
-                errors.push(new DS.AdapterError(response.body));
-              }
+                } else {
+                  return reject(new Error(&#x60;Can&#x27;t find model with id ${id} in batch response.&#x60;));
+                }
+              });
             }
 
             result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
           });
 
-          return errors.length ? reject(errors) : resolve(result);
+          return resolve(result);
         } catch (error) {
           // If an error is thrown then this situation is not processed and user will get not understandable result.
           return reject(new DS.AdapterError(error));
@@ -804,11 +808,11 @@ export default DS.RESTAdapter.extend({
 
       const result = A();
 
-      getResponses.forEach((response, index) =&gt; {
-        const getResponse = response.response;
-        const type = queries[index].modelName;
-        const requestResult = { data: A(), included: A(), meta: store.serializerFor(type).extractMeta(store, type, getResponse.body) };
-        const records = getResponse.body.value;
+      getResponses.forEach(({response}) =&gt; {
+        const context = response.body[&#x27;@odata.context&#x27;];
+        const type = this.getModelNameFromOdataContext(context);
+        const requestResult = { data: A(), included: A(), meta: store.serializerFor(type).extractMeta(store, type, response.body) };
+        const records = response.body.value;
         records.forEach(record =&gt; {
           const normalized = store.normalize(type, record);
 
@@ -824,6 +828,50 @@ export default DS.RESTAdapter.extend({
 
       return resolve(result);
     }).fail(reject));
+  },
+
+  /**
+    A method to get model name from odata context.
+
+    @method getModelNameFromOdataContext
+    @param {String} context OData context from get response.
+    @return {String} Model name.
+  */
+  getModelNameFromOdataContext(context) {
+    const regex = /(?&lt;=\$metadata#)\w*(?=[\(\/])/g;
+
+    return odataSingularize(dasherize(regex.exec(context)[0]));
+  },
+
+  /**
+    A method to normalize batch get responses.
+
+    @method _normalizeBatchGetResponses
+    @param {DS.Store} store
+    @param {Array} getResponses Responses array.
+    @param {Array} errors Errors array.
+    @return {Object} Normalized responses by record id.
+    @private
+  */
+  _normalizeBatchGetResponses(store, getResponses, errors) {
+    const result = {};
+    if (!isArray(getResponses)) {
+      return result;
+    }
+
+    getResponses.forEach(({ response }) =&gt; {
+      if (this.isSuccess(response.meta.status)) {
+        const context = response.body[&#x27;@odata.context&#x27;];
+        const modelName = this.getModelNameFromOdataContext(context);
+        const normalized = store.normalize(modelName, response.body);
+        const normId = get(normalized, &#x27;data.id&#x27;);
+        set(result, normId, normalized);
+      } else {
+        errors.push(new DS.AdapterError(response.body));
+      }
+    });
+
+    return result;
   },
 
   /**
