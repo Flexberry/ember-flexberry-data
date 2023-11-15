@@ -694,7 +694,7 @@ export default DS.RESTAdapter.extend({
     @return {String} Model name.
   */
   getModelNameFromOdataContext(context) {
-    const regex = /(?<=\$metadata#)\w*(?=\()/g;
+    const regex = /(?<=\$metadata#)\w*(?=\(|\/)/g;
 
     return odataSingularize(dasherize(regex.exec(context)[0]));
   },
