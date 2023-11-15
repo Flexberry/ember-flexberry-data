@@ -1,7 +1,7 @@
 import { assert, debug } from '@ember/debug';
 import { deprecate } from '@ember/application/deprecations';
 import { isNone, isEmpty } from '@ember/utils';
-import { get, computed } from '@ember/object';
+import { get, set, computed } from '@ember/object';
 import { getOwner } from '@ember/application';
 import { Promise, all, resolve } from 'rsvp';
 import $ from 'jquery';
@@ -11,7 +11,7 @@ import { A, isArray } from '@ember/array';
 
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
-import { capitalize, camelize, odataPluralize } from '../utils/string-functions';
+import { capitalize, camelize, dasherize, odataPluralize, odataSingularize } from '../utils/string-functions';
 import isUUID from '../utils/is-uuid';
 import generateUniqueId from '../utils/generate-unique-id';
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
@@ -563,7 +563,7 @@ export default DS.RESTAdapter.extend({
           let batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
 
 
-          const getResponses = batchResponses.filter(r => r.contentType === 'application/http');
+          let getResponses = batchResponses.filter(r => r.contentType === 'application/http');
           const updateResponse = batchResponses.find(r => r.contentType === 'multipart/mixed');
 
           const errorsChangesets = updateResponse.changesets.filter(c => !this.isSuccess(c.meta.status));
@@ -573,30 +573,34 @@ export default DS.RESTAdapter.extend({
 
           const errors = [];
           const result = [];
+          getResponses = this._normalizeBatchGetResponses(store, getResponses);
+          if (errors.length) {
+            return reject(errors);
+          }
+
           models.forEach((model) => {
             const modelDirtyType = model.get('dirtyType');
             if (modelDirtyType === 'deleted') {
               run(store, store.unloadRecord, model);
             } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
-              const { response } = getResponses.shift();
-              if (this.isSuccess(response.meta.status)) {
-                run(() => {
+              run(() => {               
+                const id = model.get('id');
+                const normalized = getResponses[id];
+                if (!isNone(normalized)) {
                   const internalModel = model._internalModel;
                   internalModel.adapterWillCommit();
-                  internalModel.flushChangedAttributes();
-                  const modelName = model.constructor.modelName;               
-                  const normalized = store.normalize(modelName, response.body);
+                  internalModel.flushChangedAttributes();               
                   store.didSaveRecord(internalModel, normalized);
-                });
-              } else {
-                errors.push(new DS.AdapterError(response.body));
-              }
+                } else {
+                  return reject(new Error(`Can't find model with id ${id} in batch response.`));
+                }
+              });
             }
 
             result.push(modelDirtyType === 'deleted' ? null : model);
           });
 
-          return errors.length ? reject(errors) : resolve(result);
+          return resolve(result);
         } catch (error) {
           // If an error is thrown then this situation is not processed and user will get not understandable result.
           return reject(new DS.AdapterError(error));
@@ -660,11 +664,11 @@ export default DS.RESTAdapter.extend({
 
       const result = A();
 
-      getResponses.forEach((response, index) => {
-        const getResponse = response.response;
-        const type = queries[index].modelName;
-        const requestResult = { data: A(), included: A(), meta: store.serializerFor(type).extractMeta(store, type, getResponse.body) };
-        const records = getResponse.body.value;
+      getResponses.forEach(({response}) => {
+        const context = response.body['@odata.context'];
+        const type = this.getModelNameFromOdataContext(context);
+        const requestResult = { data: A(), included: A(), meta: store.serializerFor(type).extractMeta(store, type, response.body) };
+        const records = response.body.value;
         records.forEach(record => {
           const normalized = store.normalize(type, record);
 
@@ -680,6 +684,50 @@ export default DS.RESTAdapter.extend({
 
       return resolve(result);
     }).fail(reject));
+  },
+
+  /**
+    A method to get model name from odata context.
+
+    @method getModelNameFromOdataContext
+    @param {String} context OData context from get response.
+    @return {String} Model name.
+  */
+  getModelNameFromOdataContext(context) {
+    const regex = /(?<=\$metadata#)\w*(?=[\(\/])/g;
+
+    return odataSingularize(dasherize(regex.exec(context)[0]));
+  },
+
+  /**
+    A method to normalize batch get responses.
+
+    @method _normalizeBatchGetResponses
+    @param {DS.Store} store
+    @param {Array} getResponses Responses array.
+    @param {Array} errors Errors array.
+    @return {Object} Normalized responses by record id.
+    @private
+  */
+  _normalizeBatchGetResponses(store, getResponses, errors) {
+    const result = {};
+    if (!isArray(getResponses)) {
+      return result;
+    }
+
+    getResponses.forEach(({ response }) => {
+      if (this.isSuccess(response.meta.status)) {
+        const context = response.body['@odata.context'];
+        const modelName = this.getModelNameFromOdataContext(context);
+        const normalized = store.normalize(modelName, response.body);
+        const normId = get(normalized, 'data.id');
+        set(result, normId, normalized);
+      } else {
+        errors.push(new DS.AdapterError(response.body));
+      }
+    });
+
+    return result;
   },
 
   /**
