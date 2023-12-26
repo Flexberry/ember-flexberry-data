@@ -722,15 +722,18 @@ export default DS.RESTAdapter.extend({
             return reject(errors);
           }
 
+          const normalizedForPush = A();
+
           models.forEach((model) =&gt; {
             const modelDirtyType = model.get(&#x27;dirtyType&#x27;);
             if (modelDirtyType === &#x27;deleted&#x27;) {
               run(store, store.unloadRecord, model);
             } else if (modelDirtyType === &#x27;created&#x27; || modelDirtyType === &#x27;updated&#x27; || model.hasChangedBelongsTo()) {
-              run(() =&gt; {               
+              run(() =&gt; {
                 const id = model.get(&#x27;id&#x27;);
                 const normalized = getResponses[id];
                 if (!isNone(normalized)) {
+                  normalizedForPush.addObject(normalized);
                   const internalModel = model._internalModel;
                   internalModel.adapterWillCommit();
                   internalModel.flushChangedAttributes();               
@@ -742,6 +745,12 @@ export default DS.RESTAdapter.extend({
             }
 
             result.push(modelDirtyType === &#x27;deleted&#x27; ? null : model);
+          });
+
+          run(() =&gt; {
+            normalizedForPush.forEach((record) =&gt; {
+              store.push(record);
+            });
           });
 
           return resolve(result);
