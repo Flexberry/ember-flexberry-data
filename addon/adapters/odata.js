@@ -578,15 +578,18 @@ export default DS.RESTAdapter.extend({
             return reject(errors);
           }
 
+          const normalizedForPush = A();
+
           models.forEach((model) => {
             const modelDirtyType = model.get('dirtyType');
             if (modelDirtyType === 'deleted') {
               run(store, store.unloadRecord, model);
             } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
-              run(() => {               
+              run(() => {
                 const id = model.get('id');
                 const normalized = getResponses[id];
                 if (!isNone(normalized)) {
+                  normalizedForPush.addObject(normalized);
                   const internalModel = model._internalModel;
                   internalModel.adapterWillCommit();
                   internalModel.flushChangedAttributes();               
@@ -598,6 +601,12 @@ export default DS.RESTAdapter.extend({
             }
 
             result.push(modelDirtyType === 'deleted' ? null : model);
+          });
+
+          run(() => {
+            normalizedForPush.forEach((record) => {
+              store.push(record);
+            });
           });
 
           return resolve(result);
