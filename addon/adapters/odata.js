@@ -585,7 +585,7 @@ export default DS.RESTAdapter.extend({
             if (modelDirtyType === 'deleted') {
               run(store, store.unloadRecord, model);
             } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
-              run(() => {               
+              run(() => {
                 const id = model.get('id');
                 const normalized = getResponses[id];
                 if (!isNone(normalized)) {
@@ -603,8 +603,10 @@ export default DS.RESTAdapter.extend({
             result.push(modelDirtyType === 'deleted' ? null : model);
           });
 
-          normalizedForPush.forEach((record) => {
-            store.push(record);
+          run(() => {
+            normalizedForPush.forEach((record) => {
+              store.push(record);
+            });
           });
 
           return resolve(result);
