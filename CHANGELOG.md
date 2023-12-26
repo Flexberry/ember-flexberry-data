@@ -1,5 +1,6 @@
 # Change Log
 
+## [3.11.1-beta.2] - 2023-12-26
 ### Fixed
 - Update changed models in store after batchUpdate.
 
