@@ -1,14 +1,16 @@
-import { moduleForModel, test } from 'ember-qunit';
+import { run } from '@ember/runloop';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
-moduleForModel('i-c-s-soft-s-t-o-r-m-n-e-t-security-session', 'Unit | Serializer | session', {
-  needs: [
-    'serializer:i-c-s-soft-s-t-o-r-m-n-e-t-security-session',
-    'service:syncer',
-  ],
-});
+module('Unit | Serializer | session', function(hooks) {
+  setupTest(hooks);
 
-test('it serializes records', function(assert) {
-  let record = this.subject();
-  let serializedRecord = record.serialize();
-  assert.ok(serializedRecord);
+  test('it serializes records', function(assert) {
+    run(() => {
+      let store = this.owner.lookup('service:store');
+      let record = store.createRecord('i-c-s-soft-s-t-o-r-m-n-e-t-security-session');
+      let serializedRecord = record.serialize();
+      assert.ok(serializedRecord);
+    });
+  });
 });

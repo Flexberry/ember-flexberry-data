@@ -11,8 +11,8 @@ let AppOfflineCrudTest;
 let storeOfflineCrudTest;
 const dbNameOfflineCrudTest = 'TestDbOCT';
 
-module('offline-CRUD', {
-  beforeEach: function (assert) {
+module('offline-CRUD', function(hooks) {
+  hooks.beforeEach(function (assert) {
     let done = assert.async();
     run(function () {
       AppOfflineCrudTest = startApp();
@@ -105,163 +105,163 @@ module('offline-CRUD', {
         }).finally(done);
       }).catch(done);
     });
-  },
+  });
 
-  afterEach: function () {
+  hooks.afterEach(function () {
     run(function () {
       let dexieService = AppOfflineCrudTest.__container__.lookup('service:dexie');
       dexieService.close(dbNameOfflineCrudTest);
       destroyApp(AppOfflineCrudTest);
     });
-  }
-});
-
-test('find record', function (assert) {
-  assert.expect(13);
-  let done1 = assert.async();
-  run(function () {
-    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-suggestion', 'fea5b275-cb9b-4584-ba04-26122bc8cbd3').then(function(records) {
-      assert.equal(get(records, 'address'), 'Street, 20', 'record address = Street, 20');
-      assert.equal(get(records, 'text'), 'Loooong text', 'record text = Loooong text');
-      assert.equal(get(records, 'votes'), 1, 'record votes = 1');
-      assert.equal(get(records, 'moderated'), false, '1 record was found');
-    }).finally(done1);
-  });
-  let done2 = assert.async();
-  run(function () {
-    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-suggestion-type', 'de627522-47c3-428f-99be-fdac2e8f5618').then(function(records) {
-      assert.equal(get(records, 'name'), '123', '1 record was found');
-      assert.equal(get(records, 'moderated'), false, '1 record was found');
-    }).finally(done2);
-  });
-  let done3 = assert.async();
-  run(function () {
-    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-application-user', '555a6d25-ac76-417c-bcc5-25bc260fc3ae').then(function(records) {
-      assert.equal(get(records, 'name'), 'Васиииилий', '1 record was found');
-      assert.equal(get(records, 'eMail'), 'pupkin1@mail.ru', '1 record was found');
-      assert.equal(get(records, 'activated'), true, '1 record was found');
-    }).finally(done3);
-  });
-  let done4 = assert.async();
-  run(function () {
-    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-vote', '8be0d89b-8cab-4b0b-b029-356c59809163').then(function(records) {
-      assert.equal(get(records, 'voteType'), 'Like', '1 record was found');
-    }).finally(done4);
-  });
-  let done5 = assert.async();
-  run(function () {
-    storeOfflineCrudTest.findRecord('ember-flexberry-dummy-comment', '7e5d3b63-eb5e-446e-84da-26865f87c1c5').then(function(records) {
-      assert.equal(get(records, 'text'), 'Not ok', '1 record was found');
-      assert.equal(get(records, 'votes'), 566, '1 record was found');
-      assert.equal(get(records, 'moderated'), false, '1 record was found');
-    }).finally(done5);
-  });
-});
-
-test('find all records', function (assert) {
-  assert.expect(1);
-  let done = assert.async();
-  run(function () {
-    storeOfflineCrudTest.findAll('ember-flexberry-dummy-suggestion').then(function(records) {
-      let firstRecord = records.objectAt(0);
-      assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found');
-    }).finally(done);
-  });
-});
-
-test('query record via query', function (assert) {
-  assert.expect(2);
-  let done1 = assert.async();
-  run(function () {
-    storeOfflineCrudTest.query('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(records) {
-      let firstRecord = records.objectAt(0);
-      assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found without query language');
-    }).finally(done1);
   });
 
-  let done2 = assert.async();
-  run(function () {
-    let modelName = 'ember-flexberry-dummy-suggestion';
-    let builder = new Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', FilterOperator.Eq, 'Street, 20');
-    storeOfflineCrudTest.query(modelName, builder.build()).then(function(records) {
-      let firstRecord = records.objectAt(0);
-      assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found with query language');
-    }).finally(done2);
+  test('find record', function (assert) {
+    assert.expect(13);
+    let done1 = assert.async();
+    run(function () {
+      storeOfflineCrudTest.findRecord('ember-flexberry-dummy-suggestion', 'fea5b275-cb9b-4584-ba04-26122bc8cbd3').then(function(records) {
+        assert.equal(get(records, 'address'), 'Street, 20', 'record address = Street, 20');
+        assert.equal(get(records, 'text'), 'Loooong text', 'record text = Loooong text');
+        assert.equal(get(records, 'votes'), 1, 'record votes = 1');
+        assert.equal(get(records, 'moderated'), false, '1 record was found');
+      }).finally(done1);
+    });
+    let done2 = assert.async();
+    run(function () {
+      storeOfflineCrudTest.findRecord('ember-flexberry-dummy-suggestion-type', 'de627522-47c3-428f-99be-fdac2e8f5618').then(function(records) {
+        assert.equal(get(records, 'name'), '123', '1 record was found');
+        assert.equal(get(records, 'moderated'), false, '1 record was found');
+      }).finally(done2);
+    });
+    let done3 = assert.async();
+    run(function () {
+      storeOfflineCrudTest.findRecord('ember-flexberry-dummy-application-user', '555a6d25-ac76-417c-bcc5-25bc260fc3ae').then(function(records) {
+        assert.equal(get(records, 'name'), 'Васиииилий', '1 record was found');
+        assert.equal(get(records, 'eMail'), 'pupkin1@mail.ru', '1 record was found');
+        assert.equal(get(records, 'activated'), true, '1 record was found');
+      }).finally(done3);
+    });
+    let done4 = assert.async();
+    run(function () {
+      storeOfflineCrudTest.findRecord('ember-flexberry-dummy-vote', '8be0d89b-8cab-4b0b-b029-356c59809163').then(function(records) {
+        assert.equal(get(records, 'voteType'), 'Like', '1 record was found');
+      }).finally(done4);
+    });
+    let done5 = assert.async();
+    run(function () {
+      storeOfflineCrudTest.findRecord('ember-flexberry-dummy-comment', '7e5d3b63-eb5e-446e-84da-26865f87c1c5').then(function(records) {
+        assert.equal(get(records, 'text'), 'Not ok', '1 record was found');
+        assert.equal(get(records, 'votes'), 566, '1 record was found');
+        assert.equal(get(records, 'moderated'), false, '1 record was found');
+      }).finally(done5);
+    });
   });
-});
 
-test('query record via queryRecord', function (assert) {
-  assert.expect(2);
-  let done1 = assert.async();
-  run(function () {
-    storeOfflineCrudTest.queryRecord('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(record) {
-      assert.equal(get(record, 'address'), 'Street, 20', '1 record was found without query language');
-    }).finally(done1);
+  test('find all records', function (assert) {
+    assert.expect(1);
+    let done = assert.async();
+    run(function () {
+      storeOfflineCrudTest.findAll('ember-flexberry-dummy-suggestion').then(function(records) {
+        let firstRecord = records.objectAt(0);
+        assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found');
+      }).finally(done);
+    });
   });
 
-  let done2 = assert.async();
-  run(function () {
-    let modelName = 'ember-flexberry-dummy-suggestion';
-    let builder = new Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', FilterOperator.Eq, 'Street, 20');
-    storeOfflineCrudTest.queryRecord(modelName, builder.build()).then(function(record) {
-      assert.equal(get(record, 'address'), 'Street, 20', '1 record was found with query language');
-    }).finally(done2);
-  });
-});
-
-test('create record', function(assert) {
-  assert.expect(3);
-  let done = assert.async();
-
-  run(function() {
-    let list = storeOfflineCrudTest.createRecord('ember-flexberry-dummy-application-user', {
-      name: 'чел',
-      eMail: 'pupkin1@mail.ru',
-      phone1: '+790356568933',
-      phone2: '',
-      phone3: '+790356568935',
-      activated: true,
-      vK: '',
-      facebook: '',
-      twitter: '',
-      birthday: new Date(1997, 5, 11),
-      gender: 'Male',
-      vip: true,
-      karma: 11.4
+  test('query record via query', function (assert) {
+    assert.expect(2);
+    let done1 = assert.async();
+    run(function () {
+      storeOfflineCrudTest.query('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(records) {
+        let firstRecord = records.objectAt(0);
+        assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found without query language');
+      }).finally(done1);
     });
 
-    list.save().then(function() {
-      return storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
-        name: 'чел'
-      });
-    }).then(function(records) {
-      let record = records.objectAt(0);
-      assert.equal(get(records, 'length'), 1, 'Only чел was found');
-      assert.equal(get(record, 'name'), 'чел', 'Correct name');
-      assert.equal(get(record, 'id'), list.id, 'Correct, original id');
-    }).finally(done);
+    let done2 = assert.async();
+    run(function () {
+      let modelName = 'ember-flexberry-dummy-suggestion';
+      let builder = new Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', FilterOperator.Eq, 'Street, 20');
+      storeOfflineCrudTest.query(modelName, builder.build()).then(function(records) {
+        let firstRecord = records.objectAt(0);
+        assert.equal(get(firstRecord, 'address'), 'Street, 20', '1 record was found with query language');
+      }).finally(done2);
+    });
   });
-});
 
-test('delete record', function(assert) {
-  assert.expect(2);
-  let done = assert.async();
+  test('query record via queryRecord', function (assert) {
+    assert.expect(2);
+    let done1 = assert.async();
+    run(function () {
+      storeOfflineCrudTest.queryRecord('ember-flexberry-dummy-suggestion', { address: 'Street, 20' }).then(function(record) {
+        assert.equal(get(record, 'address'), 'Street, 20', '1 record was found without query language');
+      }).finally(done1);
+    });
 
-  run(function() {
-    let AssertListIsDeleted = function() {
-      return storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
+    let done2 = assert.async();
+    run(function () {
+      let modelName = 'ember-flexberry-dummy-suggestion';
+      let builder = new Builder(storeOfflineCrudTest, modelName).selectByProjection('SuggestionL').where('address', FilterOperator.Eq, 'Street, 20');
+      storeOfflineCrudTest.queryRecord(modelName, builder.build()).then(function(record) {
+        assert.equal(get(record, 'address'), 'Street, 20', '1 record was found with query language');
+      }).finally(done2);
+    });
+  });
+
+  test('create record', function(assert) {
+    assert.expect(3);
+    let done = assert.async();
+
+    run(function() {
+      let list = storeOfflineCrudTest.createRecord('ember-flexberry-dummy-application-user', {
+        name: 'чел',
+        eMail: 'pupkin1@mail.ru',
+        phone1: '+790356568933',
+        phone2: '',
+        phone3: '+790356568935',
+        activated: true,
+        vK: '',
+        facebook: '',
+        twitter: '',
+        birthday: new Date(1997, 5, 11),
+        gender: 'Male',
+        vip: true,
+        karma: 11.4
+      });
+
+      list.save().then(function() {
+        return storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
+          name: 'чел'
+        });
+      }).then(function(records) {
+        let record = records.objectAt(0);
+        assert.equal(get(records, 'length'), 1, 'Only чел was found');
+        assert.equal(get(record, 'name'), 'чел', 'Correct name');
+        assert.equal(get(record, 'id'), list.id, 'Correct, original id');
+      }).finally(done);
+    });
+  });
+
+  test('delete record', function(assert) {
+    assert.expect(2);
+    let done = assert.async();
+
+    run(function() {
+      let AssertListIsDeleted = function() {
+        return storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
+          name: 'Васиииилий'
+        }).then(function(records) {
+          assert.equal(get(records, 'length'), 0, 'No record was found');
+        }).finally(done);
+      };
+
+      storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
         name: 'Васиииилий'
       }).then(function(records) {
-        assert.equal(get(records, 'length'), 0, 'No record was found');
-      }).finally(done);
-    };
-
-    storeOfflineCrudTest.query('ember-flexberry-dummy-application-user', {
-      name: 'Васиииилий'
-    }).then(function(records) {
-      let record = records.objectAt(0);
-      assert.equal(get(record, 'id'), '555a6d25-ac76-417c-bcc5-25bc260fc3ae', 'Item exists');
-      record.destroyRecord().then(AssertListIsDeleted);
+        let record = records.objectAt(0);
+        assert.equal(get(record, 'id'), '555a6d25-ac76-417c-bcc5-25bc260fc3ae', 'Item exists');
+        record.destroyRecord().then(AssertListIsDeleted);
+      });
     });
   });
 });

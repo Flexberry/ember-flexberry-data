@@ -1,14 +1,11 @@
-import { moduleForModel, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
-moduleForModel('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', 'Unit | Model | audit-entity', {
-  needs: [
-    'model:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field',
-    'model:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type',
-    'model:i-c-s-soft-s-t-o-r-m-n-e-t-security-agent',
-  ],
-});
+module('Unit | Model | audit-entity', function(hooks) {
+  setupTest(hooks);
 
-test('it exists', function(assert) {
-  let model = this.subject();
-  assert.ok(!!model);
+  test('it exists', function(assert) {
+    let model = this.owner.lookup('service:store').modelFor('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity');
+    assert.ok(!!model);
+  });
 });
