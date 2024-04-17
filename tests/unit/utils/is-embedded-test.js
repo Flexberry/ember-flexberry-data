@@ -16,21 +16,21 @@ const serializer = DS.Serializer.extend({
   },
 });
 
-module('Unit | Utility | is embedded', {
-  beforeEach() {
+module('Unit | Utility | is embedded', function(hooks) {
+  hooks.beforeEach(function() {
     App = startApp();
     App.register('model:model', model);
     App.register('serializer:model', serializer);
-  },
+  });
 
-  afterEach() {
+  hooks.afterEach(function() {
     run(App, 'destroy');
-  },
-});
+  });
 
-test('it really works', function(assert) {
-  let store = App.__container__.lookup('service:store');
-  assert.notOk(isEmbedded(store, store.modelFor('model'), 'attribute'));
-  assert.ok(isEmbedded(store, store.modelFor('model'), 'relationship'));
-  assert.ok(isEmbedded(store, store.modelFor('model'), 'relationships'));
+  test('isEmbedded is working', function(assert) {
+    let store = App.__container__.lookup('service:store');
+    assert.notOk(isEmbedded(store, store.modelFor('model'), 'attribute'));
+    assert.ok(isEmbedded(store, store.modelFor('model'), 'relationship'));
+    assert.ok(isEmbedded(store, store.modelFor('model'), 'relationships'));
+  });
 });

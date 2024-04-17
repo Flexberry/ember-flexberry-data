@@ -55,6 +55,7 @@ module.exports = function(environment) {
     ENV.APP.rootElement = '#ember-testing';
 
     // URL of the backend running in docker
+    // With nginx 'https://localhost/odata'
     var testODataServiceURL = 'http://localhost:80/odata';
 
     ENV.APP.testODataService = !!testODataServiceURL;

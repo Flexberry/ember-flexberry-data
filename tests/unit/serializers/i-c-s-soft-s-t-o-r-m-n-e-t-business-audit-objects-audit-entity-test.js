@@ -1,18 +1,16 @@
-import { moduleForModel, test } from 'ember-qunit';
+import { run } from '@ember/runloop';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
-moduleForModel('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity', 'Unit | Serializer | audit-entity', {
-  needs: [
-    'serializer:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity',
-    'transform:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant',
-    'transform:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation',
-    'model:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field',
-    'model:i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type',
-    'model:i-c-s-soft-s-t-o-r-m-n-e-t-security-agent',
-  ],
-});
+module('Unit | Serializer | audit-entity', function(hooks) {
+  setupTest(hooks);
 
-test('it serializes records', function(assert) {
-  let record = this.subject();
-  let serializedRecord = record.serialize();
-  assert.ok(serializedRecord);
+  test('it serializes records', function(assert) {
+    run(() => {
+      let store = this.owner.lookup('service:store');
+      let record = store.createRecord('i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity');
+      let serializedRecord = record.serialize();
+      assert.ok(serializedRecord);
+    });
+  });
 });

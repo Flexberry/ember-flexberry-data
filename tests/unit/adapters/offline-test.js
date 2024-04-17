@@ -1,15 +1,11 @@
-import { moduleFor, test } from 'ember-qunit';
+import { module, test } from 'qunit';
+import { setupTest } from 'ember-qunit';
 
-moduleFor('adapter:offline', 'Unit | Adapter | offline', {
-  needs: [
-    'service:dexie',
-  ],
-});
+module('Unit | Adapter | offline', function(hooks) {
+  setupTest(hooks);
 
-// Replace this with your real tests.
-test('it exists', function(assert) {
-  let adapter = this.subject({
-    databaseName: 'test'
+  test('it exists', function(assert) {
+    let adapter = this.owner.lookup('adapter:offline');
+    assert.ok(adapter);
   });
-  assert.ok(adapter);
 });

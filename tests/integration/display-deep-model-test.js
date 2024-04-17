@@ -8,8 +8,8 @@ let AppDisplayDeepModel;
 let storeDisplayDeepModel;
 const dbNameDisplayDeepModel = 'TestDbDDM';
 
-module('Display deep model', {
-  beforeEach: function (assert) {
+module('Display deep model', function(hooks) {
+  hooks.beforeEach(function(assert) {
     let done = assert.async();
 
     run(function () {
@@ -103,34 +103,34 @@ module('Display deep model', {
         }).finally(done);
       }).catch(done);
     });
-  },
+  });
 
-  afterEach: function () {
+  hooks.afterEach(function() {
     run(function () {
       let dexieService = AppDisplayDeepModel.__container__.lookup('service:dexie');
       dexieService.close(dbNameDisplayDeepModel);
       destroyApp(AppDisplayDeepModel);
     });
-  }
-});
+  });
 
-test('find suggestion', function (assert) {
-  assert.expect(8);
+  test('find suggestion', function (assert) {
+    assert.expect(8);
 
-  visit('/suggestion/fea5b275-cb9b-4584-ba04-26122bc8cbd3');
-  andThen(function () {
-    let done = assert.async();
-    run.later(function() {
-      assert.equal(find('div.address').text(), 'Street, 20');
-      assert.equal(find('div.votes').text(), '1');
-      assert.equal(find('div.author').text(), 'Васиииилий');
-      assert.equal(find('div.type').text(), '123');
-      assert.equal(find('div.parent-type').text(), 'Type #8');
-      assert.equal(find('div.comment').text(), 'Not ok');
-      assert.equal(find('div.comment-author').text(), 'Васиииилий');
-      assert.equal(find('div.comment-vote-type').text(), 'Dislike');
+    visit('/suggestion/fea5b275-cb9b-4584-ba04-26122bc8cbd3');
+    andThen(function () {
+      let done = assert.async();
+      run.later(function() {
+        assert.equal(find('div.address').text(), 'Street, 20');
+        assert.equal(find('div.votes').text(), '1');
+        assert.equal(find('div.author').text(), 'Васиииилий');
+        assert.equal(find('div.type').text(), '123');
+        assert.equal(find('div.parent-type').text(), 'Type #8');
+        assert.equal(find('div.comment').text(), 'Not ok');
+        assert.equal(find('div.comment-author').text(), 'Васиииилий');
+        assert.equal(find('div.comment-vote-type').text(), 'Dislike');
 
-      done();
-    }, 300);
+        done();
+      }, 300);
+    });
   });
 });
