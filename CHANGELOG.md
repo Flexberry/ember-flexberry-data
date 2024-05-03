@@ -1,6 +1,9 @@
 # Change Log
 
-## [3.11.1-beta.2] - 2023-12-26
+## [3.12.0] - 2024-05-03
+### Changed
+- Increase version to match ember-flexberry.
+
 ### Fixed
 - Update changed models in store after batchUpdate.
 
