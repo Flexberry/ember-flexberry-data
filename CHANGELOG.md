@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.13.0-beta.1] - 2024-06-03
+### Fixed
+- Model name parsing from OData name.
+
 ## [3.12.0] - 2024-05-03
 ### Changed
 - Increase version to match ember-flexberry.
