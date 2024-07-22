@@ -7,6 +7,5 @@ export function initialize(application) {
 
 export default {
   name: 'local-store',
-  before: 'offline-globals',
   initialize
 };

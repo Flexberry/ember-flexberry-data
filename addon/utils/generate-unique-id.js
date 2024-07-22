@@ -1,8 +1,8 @@
-import uuid from 'npm:node-uuid';
+import { v4 } from "ember-uuid";
 
 /**
  * @return { String } RFC4122 version 4 UUID
  */
 export default function generateUniqueId() {
-  return uuid.v4();
+  return v4();
 }

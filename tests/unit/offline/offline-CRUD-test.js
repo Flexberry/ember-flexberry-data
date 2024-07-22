@@ -3,7 +3,7 @@ import { get } from '@ember/object';
 import { module, test } from 'qunit';
 import startApp from '../../helpers/start-app';
 import destroyApp from '../../helpers/destroy-app';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 import Builder from 'ember-flexberry-data/query/builder';
 import FilterOperator from 'ember-flexberry-data/query/filter-operator';
 

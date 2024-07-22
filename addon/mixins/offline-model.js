@@ -23,6 +23,8 @@ import AuditModelMixin from './audit-model';
   @public
 */
 export default Mixin.create({
+  offlineGlobals: service(),
+
   /**
     Date and time of last sync down of model.
 

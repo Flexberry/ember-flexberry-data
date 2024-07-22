@@ -3,7 +3,7 @@
 */
 
 import RSVP from 'rsvp';
-import EmberMap from '@ember/map';
+import EmberObject from '@ember/object';
 import { getOwner } from '@ember/application';
 import { warn } from '@ember/debug';
 import FilterOperator from './filter-operator';
@@ -23,7 +23,7 @@ import BaseAdapter from './base-adapter';
 import JSAdapter from 'ember-flexberry-data/query/js-adapter';
 import Information from '../utils/information';
 import getSerializedDateValue from '../utils/get-serialized-date-value';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 import Queue from '../utils/queue';
 
 /**
@@ -88,7 +88,7 @@ export default class extends BaseAdapter {
       };
 
       let getDetailsHashMap = function(data, primaryKeyName) {
-        let ret = EmberMap.create();
+        let ret = EmberObject.create();
         let dataLength = data.length;
         for (let i = 0; i < dataLength; i++) {
           let obj = data[i];

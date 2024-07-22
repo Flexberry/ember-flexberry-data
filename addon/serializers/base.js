@@ -1,4 +1,3 @@
-import { merge } from '@ember/polyfills';
 import DS from 'ember-data';
 import { capitalize, camelize, dasherize, odataPluralize, odataSingularize } from '../utils/string-functions';
 
@@ -142,7 +141,7 @@ export default DS.RESTSerializer.extend({
     options.includeId = true;
 
     // {...} instead of {"application": {...}}
-    merge(hash, this.serialize(record, options));
+    Object.assign(hash, this.serialize(record, options));
   },
 
   /**

@@ -1,11 +1,10 @@
 import { inject as service } from '@ember/service';
 import { isNone, isEmpty } from '@ember/utils';
 import { computed } from '@ember/object';
-import { merge } from '@ember/polyfills';
 import $ from 'jquery';
 import { copy } from '@ember/object/internals';
 import { getOwner } from '@ember/application';
-import DS from 'ember-data';
+import Store from '@ember-data/store';
 import decorateAdapter from './base-store/decorate-adapter';
 import decorateAPICall from './base-store/decorate-api-call';
 import QueryObject from '../query/query-object';
@@ -19,7 +18,7 @@ import OnlineStore from './online-store';
   @class Store
   @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
 */
-export default DS.Store.extend({
+export default class extends Store {
   /**
     Store offline schemas for all databases.
 
@@ -28,34 +27,16 @@ export default DS.Store.extend({
     @private
     @default 'Schema of 1 version for internal models of addon'
   */
-  _offlineSchema: computed(function() {
+  @computed()
+  get _offlineSchema() {
     return {
       'ember-flexberry-data': {
-        1: this.get('offlineGlobals').getOfflineSchema(),
+        1: this.offlineGlobals.getOfflineSchema(),
       }
     };
-  }),
+  }
 
-  /**
-    Store that use for making requests in online mode.
-    It can be specified in application that use offline mode support.
-    If it is not specified then instance of <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
-    is set as value of this property during initialization of {{#crossLink "BaseStore"}}{{/crossLink}} class.
-
-    @property onlineStore
-    @type <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
-  */
-  onlineStore: null,
-
-  /**
-    Store that use for making requests in offline mode.
-    By default it is set to global instane of {{#crossLink "LocalStore"}}{{/crossLink}} class.
-
-    @property offlineStore
-    @type <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
-  */
-  offlineStore: null,
-  offlineGlobals: service('offline-globals'),
+  @service offlineGlobals;
 
   /**
     Set schema for your database.
@@ -92,26 +73,25 @@ export default DS.Store.extend({
     @property offlineSchema
     @type Object
   */
-  offlineSchema: computed({
-    get() {
-      return this.get('_offlineSchema');
-    },
-    set(key, value) {
-      let offlineSchema = this.get('offlineSchema');
+    @computed()
+    get offlineSchema() {
+      return this._offlineSchema;
+    }
+    set offlineSchema(value) {
+      let offlineSchema = this.offlineSchema;
       for (let db in value) {
         if (offlineSchema.hasOwnProperty(db)) {
           for (let version in value[db]) {
             let schema = offlineSchema[db][version] || {};
-            offlineSchema[db][version] = merge(schema, value[db][version]);
+            offlineSchema[db][version] = Object.assign(schema, value[db][version]);
           }
         } else {
           offlineSchema[db] = value[db];
         }
       }
 
-      return this.set('_offlineSchema', offlineSchema);
-    },
-  }),
+      return this._offlineSchema = offlineSchema;
+    }
 
   /**
     Add model names that be loaded from offline store.
@@ -130,7 +110,7 @@ export default DS.Store.extend({
     @type Object
     @default {}
   */
-  offlineModels: undefined,
+  offlineModels = {};
 
   /**
     Global instance of {{#crossLink "Syncer"}}{{/crossLink}} class that contains methods to sync model.
@@ -139,7 +119,7 @@ export default DS.Store.extend({
     @type Syncer
     @readOnly
   */
-  syncer: service('syncer'),
+  @service syncer;
 
   /**
     Instance of dexie service.
@@ -147,31 +127,28 @@ export default DS.Store.extend({
     @property dexieService
     @type Offline.DexieService
   */
-  dexieService: service('dexie'),
+  @service('dexie') dexieService;
 
   /*
     Store initialization.
   */
-  init() {
-    this._super(...arguments);
+  constructor() {
+    super(...arguments);
     let owner = getOwner(this);
 
-    // Set default value for `offlineModels` property.
-    this.set('offlineModels', {});
-
     // Set online store if it is not specified in application explicitly.
-    if (isNone(this.get('onlineStore'))) {
+    if (isNone(this.onlineStore)) {
       let onlineStore = OnlineStore.create(owner.ownerInjection());
-      this.set('onlineStore', onlineStore);
+      this.onlineStore = onlineStore;
     }
 
     // Set offline store.
     let offlineStore = owner.lookup('store:local');
-    this.set('offlineStore', offlineStore);
-    this.set('offlineStore.offlineSchema', this.get('offlineSchema'));
+    this.offlineStore = offlineStore;
+    this.offlineStore.offlineSchema = this.offlineSchema;
 
     this._dbInit();
-  },
+  }
 
   /**
     This method returns a fresh collection from the server, regardless of if there is already records
@@ -183,16 +160,16 @@ export default DS.Store.extend({
     @return {Promise} promise
   */
   findAll(modelName, options) {
-    if (this.get('offlineGlobals.isOfflineEnabled')) {
-      let offlineStore = this.get('offlineStore');
+    if (this.offlineGlobals.isOfflineEnabled) {
+      let offlineStore = this.offlineStore;
       let useOnlineStoreParam = !isEmpty(options) && !isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
       let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
       return useOnlineStoreCondition ? this._decorateMethodAndCall('all', 'findAll', arguments, 1) : offlineStore.findAll.apply(offlineStore, arguments);
     } else {
-      let onlineStore = this.get('onlineStore');
+      let onlineStore = this.onlineStore;
       return onlineStore.findAll.apply(onlineStore, arguments);
     }
-  },
+  }
 
   /**
    * This method returns a record for a given type and id combination.
@@ -206,18 +183,18 @@ export default DS.Store.extend({
     @return {Promise} promise
    */
   findRecord(modelName, id, options) {
-    if (this.get('offlineGlobals.isOfflineEnabled')) {
-      let offlineStore = this.get('offlineStore');
+    if (this.offlineGlobals.isOfflineEnabled) {
+      let offlineStore = this.offlineStore;
       let useOnlineStoreParam = !isEmpty(options) && !isEmpty(options.useOnlineStore) ? options.useOnlineStore : null;
       let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
       return useOnlineStoreCondition ?
         this._decorateMethodAndCall('single', 'findRecord', arguments, 2) :
         offlineStore.findRecord.apply(offlineStore, arguments);
     } else {
-      let onlineStore = this.get('onlineStore');
+      let onlineStore = this.onlineStore;
       return onlineStore.findRecord.apply(onlineStore, arguments);
     }
-  },
+  }
 
   /**
     Query for records that meet certain criteria. Resolves with [DS.RecordArray](http://emberjs.com/api/data/classes/DS.RecordArray.html).
@@ -232,8 +209,8 @@ export default DS.Store.extend({
     // TODO: Method `copy` bewitch `QueryObject` into `Object`.
     let _query = query instanceof QueryObject ? query : copy(query);
 
-    if (this.get('offlineGlobals.isOfflineEnabled')) {
-      let offlineStore = this.get('offlineStore');
+    if (this.offlineGlobals.isOfflineEnabled) {
+      let offlineStore = this.offlineStore;
       let useOnlineStoreParam = !isEmpty(_query) && !isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
       if (!isEmpty(_query) && !isEmpty(_query.useOnlineStore)) {
         delete _query.useOnlineStore;
@@ -244,10 +221,10 @@ export default DS.Store.extend({
         this._decorateMethodAndCall('multiple', 'query', [modelName, _query], -1) :
         offlineStore.query.apply(offlineStore, [modelName, _query]);
     } else {
-      let onlineStore = this.get('onlineStore');
+      let onlineStore = this.onlineStore;
       return onlineStore.query.apply(onlineStore, [modelName, _query]);
     }
-  },
+  }
 
   /**
     Query for record that meet certain criteria. Resolves with single record.
@@ -261,8 +238,8 @@ export default DS.Store.extend({
     // TODO: Method `copy` bewitch `QueryObject` into `Object`.
     let _query = query instanceof QueryObject ? query : copy(query);
 
-    if (this.get('offlineGlobals.isOfflineEnabled')) {
-      let offlineStore = this.get('offlineStore');
+    if (this.offlineGlobals.isOfflineEnabled) {
+      let offlineStore = this.offlineStore;
       let useOnlineStoreParam = !isEmpty(_query) && !isEmpty(_query.useOnlineStore) ? _query.useOnlineStore : null;
       if (!isEmpty(_query) && !isEmpty(_query.useOnlineStore)) {
         delete _query.useOnlineStore;
@@ -273,10 +250,10 @@ export default DS.Store.extend({
         this._decorateMethodAndCall('single', 'queryRecord', [modelName, _query], -1) :
         offlineStore.queryRecord.apply(offlineStore, [modelName, _query]);
     } else {
-      let onlineStore = this.get('onlineStore');
+      let onlineStore = this.onlineStore;
       return onlineStore.queryRecord.apply(onlineStore, [modelName, _query]);
     }
-  },
+  }
 
   /**
     Create a new record in the current store. The properties passed to this method are set on the newly created record.
@@ -288,7 +265,7 @@ export default DS.Store.extend({
   */
   createRecord() {
     return this._callSuperMethod('createRecord', 2, arguments);
-  },
+  }
 
   /**
     For symmetry, a record can be deleted via the store.
@@ -298,7 +275,7 @@ export default DS.Store.extend({
   */
   deleteRecord() {
     return this._callSuperMethod('deleteRecord', 1, arguments);
-  },
+  }
 
   /**
     Delete all record from the current store.
@@ -308,7 +285,7 @@ export default DS.Store.extend({
   */
   deleteAllRecords() {
     return this._callSuperMethod('deleteAllRecords', 2, arguments);
-  },
+  }
 
   /**
     Get the reference for the specified record.
@@ -320,7 +297,7 @@ export default DS.Store.extend({
   */
   getReference() {
     return this._callSuperMethod('getReference', 2, arguments);
-  },
+  }
 
   /**
     Returns true if a record for a given type and ID is already loaded.
@@ -332,7 +309,7 @@ export default DS.Store.extend({
   */
   hasRecordForId() {
     return this._callSuperMethod('hasRecordForId', 2, arguments);
-  },
+  }
 
   /**
     Converts a json payload into the normalized form that {{#crossLink "BaseStore/push:method"}}{{/crossLink}} expects.
@@ -344,7 +321,7 @@ export default DS.Store.extend({
   */
   normalize() {
     return this._callSuperMethod('normalize', 2, arguments);
-  },
+  }
 
   /**
     This method returns a filtered array that contains all of the known records for a given type in the store.
@@ -355,7 +332,7 @@ export default DS.Store.extend({
   */
   peekAll() {
     return this._callSuperMethod('peekAll', 1, arguments);
-  },
+  }
 
   /**
     Get a record by a given type and ID without triggering a fetch.
@@ -367,7 +344,7 @@ export default DS.Store.extend({
   */
   peekRecord() {
     return this._callSuperMethod('peekRecord', 2, arguments);
-  },
+  }
 
   /**
     Push some data for a given type into the store.
@@ -378,7 +355,7 @@ export default DS.Store.extend({
   */
   push() {
     return this._callSuperMethod('push', 1, arguments);
-  },
+  }
 
   /**
     Push some raw data into the store.
@@ -389,7 +366,7 @@ export default DS.Store.extend({
   */
   pushPayload() {
     return this._callSuperMethod('pushPayload', 2, arguments);
-  },
+  }
 
   /**
     This method returns if a certain record is already loaded in the store.
@@ -401,7 +378,7 @@ export default DS.Store.extend({
   */
   recordIsLoaded() {
     return this._callSuperMethod('recordIsLoaded', 2, arguments);
-  },
+  }
 
   /**
     This method unloads all records in the store.
@@ -411,7 +388,7 @@ export default DS.Store.extend({
   */
   unloadAll() {
     return this._callSuperMethod('unloadAll', 1, arguments);
-  },
+  }
 
   /**
     For symmetry, a record can be unloaded via the store. Only non-dirty records can be unloaded.
@@ -421,7 +398,7 @@ export default DS.Store.extend({
   */
   unloadRecord() {
     return this._callSuperMethod('unloadRecord', 1, arguments);
-  },
+  }
 
   /**
    * Pushes into store the model that exists in backend without a request to it.
@@ -432,7 +409,7 @@ export default DS.Store.extend({
    */
   createExistingRecord() {
     return this._callSuperMethod('createExistingRecord', 2, arguments);
-  },
+  }
 
   /**
     A method to send batch update, create or delete models in single transaction.
@@ -450,7 +427,7 @@ export default DS.Store.extend({
   */
   batchUpdate() {
     return this._callSuperMethod('batchUpdate', 2, arguments);
-  },
+  }
 
   /**
     A method to get array of models with batch request.
@@ -462,7 +439,7 @@ export default DS.Store.extend({
   */
   batchSelect() {
     return this._callSuperMethod('batchSelect', 2, arguments);
-  },
+  }
 
   /**
     Returns an instance of the adapter for a given type.
@@ -472,16 +449,16 @@ export default DS.Store.extend({
     @return {DS.Adapter or subclass} Adapter
   */
   adapterFor(modelName, useOnlineStore) {
-    let onlineStore = this.get('onlineStore');
-    let offlineStore = this.get('offlineStore');
+    let onlineStore = this.onlineStore;
+    let offlineStore = this.offlineStore;
     let adapter = onlineStore.adapterFor(modelName);
-    if (this.get('offlineGlobals.isOfflineEnabled')) {
+    if (this.offlineGlobals.isOfflineEnabled) {
       let useOnlineStoreCondition = this._useOnlineStore(modelName, !isNone(useOnlineStore) ? useOnlineStore : null);
       return useOnlineStoreCondition ? decorateAdapter.call(this, adapter, modelName) : offlineStore.adapterFor.call(offlineStore, modelName);
     } else {
       return adapter;
     }
-  },
+  }
 
   /**
     Returns an instance of the serializer for a given type.
@@ -491,55 +468,55 @@ export default DS.Store.extend({
     @return {DS.Serializer or subclass} Serializer
   */
   serializerFor(modelName, useOnlineStore) {
-    let onlineStore = this.get('onlineStore');
-    let offlineStore = this.get('offlineStore');
+    let onlineStore = this.onlineStore;
+    let offlineStore = this.offlineStore;
     let serializer = onlineStore.serializerFor(modelName);
-    if (this.get('offlineGlobals.isOfflineEnabled')) {
+    if (this.offlineGlobals.isOfflineEnabled) {
       let useOnlineStoreCondition = this._useOnlineStore(modelName, !isNone(useOnlineStore) ? useOnlineStore : null);
       return useOnlineStoreCondition ? onlineStore.serializerFor.call(onlineStore, modelName) : offlineStore.serializerFor.call(offlineStore, modelName);
     } else {
       return serializer;
     }
-  },
+  }
 
   /*
     Decorate specified method of online store for add extra syncing features.
   */
   _decorateMethodAndCall(finderType, originMethodName, originMethodArguments, optionsIndex) {
-    let onlineStore = this.get('onlineStore');
+    let onlineStore = this.onlineStore;
     let originMethod = onlineStore[originMethodName];
     let decoratedMethod = decorateAPICall(finderType, originMethod);
     if (optionsIndex > -1) {
       let options = originMethodArguments[optionsIndex];
-      options = this.get('offlineGlobals.isOfflineEnabled') ? options : $.extend(true, { bypass: true }, options);
+      options = this.offlineGlobals.isOfflineEnabled ? options : $.extend(true, { bypass: true }, options);
       originMethodArguments[optionsIndex] = options;
     }
 
     return decoratedMethod.apply(onlineStore, originMethodArguments);
-  },
+  }
 
   /*
     Detect global online status.
   */
   _isOnline() {
-    return this.get('offlineGlobals.isOnline');
-  },
+    return this.offlineGlobals.isOnline;
+  }
 
   /*
     Pass control flow to online or offline store depend on global online status
     and explicitly specified store to use.
   */
   _callSuperMethod(methodName, useOnlineStoreParamNum, ...args) {
-    let onlineStore = this.get('onlineStore');
-    let offlineStore = this.get('offlineStore');
+    let onlineStore = this.onlineStore;
+    let offlineStore = this.offlineStore;
     let modelName = this._getModelName(methodName, args[0]);
     let useOnlineStoreParam = (args[0].length - 1) >= useOnlineStoreParamNum ? args[0][useOnlineStoreParamNum] : null;
     let useOnlineStoreCondition = this._useOnlineStore(modelName, useOnlineStoreParam);
-    let offlineEnabled = this.get('offlineGlobals.isOfflineEnabled');
+    let offlineEnabled = this.offlineGlobals.isOfflineEnabled;
     return !offlineEnabled || (offlineEnabled && useOnlineStoreCondition) ?
       onlineStore[methodName].apply(onlineStore, args[0]) :
       offlineStore[methodName].apply(offlineStore, args[0]);
-  },
+  }
 
   /**
     Detect model name by method name and arguments.
@@ -577,16 +554,16 @@ export default DS.Store.extend({
     } else {
       return '';
     }
-  },
+  }
 
   /*
     Detect which store should be used for specified modelName.
   */
   _useOnlineStore(modelName, useOnlineStoreParam) {
-    let isOfflineModel = !isEmpty(modelName) ? this.get(`offlineModels.${modelName}`) : undefined;
+    let isOfflineModel = !isEmpty(modelName) ? this.offlineModels[modelName] : undefined;
     let useOnlineStore = useOnlineStoreParam === null ? typeof isOfflineModel === 'boolean' ? !isOfflineModel : null : useOnlineStoreParam;
-    return (useOnlineStore === true) || (useOnlineStore === null && this._isOnline());
-  },
+    return useOnlineStore || (useOnlineStore === null && this._isOnline());
+  }
 
   /**
     Update all databases in accordance with actual schemas.
@@ -595,10 +572,10 @@ export default DS.Store.extend({
     @private
   */
   _dbInit() {
-    let offlineSchema = this.get('offlineSchema');
-    let dexieService = this.get('dexieService');
+    let offlineSchema = this.offlineSchema;
+    let dexieService = this.dexieService;
     for (let dbName in offlineSchema) {
-      dexieService.dexie(dbName, this.get('offlineStore'));
+      dexieService.dexie(dbName, this.offlineStore);
     }
-  },
-});
+  }
+};

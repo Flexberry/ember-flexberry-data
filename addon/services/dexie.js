@@ -2,10 +2,9 @@
   @module ember-flexberry-data
 */
 
-import { merge } from '@ember/polyfills';
 import Evented from '@ember/object/evented';
 import Service from '@ember/service';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 import Queue from '../utils/queue';
 
 /**
@@ -98,8 +97,8 @@ export default Service.extend(Evented, {
       return dexie;
     }
 
-    let db =  new Dexie(dbName, merge({}, options));
-    let schemas = store.get('offlineSchema')[dbName];
+    let db =  new Dexie(dbName, Object.assign({}, options));
+    let schemas = store.offlineSchema[dbName];
     for (let version in schemas) {
       db.version(+version).stores(schemas[version]);
     }

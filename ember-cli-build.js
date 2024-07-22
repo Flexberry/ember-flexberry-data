@@ -16,6 +16,13 @@ module.exports = function(defaults) {
     }
   });
 
+  app.import('node_modules/dexie/dist/dexie.min.js', {
+    using: [
+      { transformation: 'amd', as: 'dexie' }
+    ]
+  });
+
+
   /*
     This build file specifies the options for the dummy test app of this
     addon, located in `/tests/dummy`
@@ -23,5 +30,12 @@ module.exports = function(defaults) {
     behave. You most likely want to be modifying `./index.js` or app's build file
   */
 
-  return app.toTree();
+    const { maybeEmbroider } = require('@embroider/test-setup');
+    return maybeEmbroider(app, {
+      skipBabel: [
+        {
+          package: 'qunit',
+        },
+      ],
+    });
 };

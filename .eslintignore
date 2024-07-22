@@ -34,7 +34,6 @@ addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-o
 addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js
 addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js
 addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js
-addon/mixins/store.js
 addon/models/model-without-validation.js
 addon/models/offline-model.js
 addon/query/builder.js
@@ -168,7 +167,6 @@ tests/unit/adapters/offline-test.js
 tests/unit/mixins/adapter-test.js
 tests/unit/mixins/audit-model-test.js
 tests/unit/mixins/offline-model-test.js
-tests/unit/mixins/store-test.js
 tests/unit/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity-test.js
 tests/unit/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field-test.js
 tests/unit/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type-test.js

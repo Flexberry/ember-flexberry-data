@@ -1,19 +1,23 @@
 import { run } from '@ember/runloop';
 import { module, test } from 'qunit';
 import startApp from '../helpers/start-app';
+import { setupApplicationTest } from 'ember-qunit';
 import destroyApp from '../helpers/destroy-app';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
+import { getApplication } from '@ember/test-helpers';
 
 let AppDisplayDeepModel;
 let storeDisplayDeepModel;
 const dbNameDisplayDeepModel = 'TestDbDDM';
 
 module('Display deep model', function(hooks) {
+  setupApplicationTest(hooks);
+  AppDisplayDeepModel = getApplication();
+
   hooks.beforeEach(function(assert) {
     let done = assert.async();
 
     run(function () {
-      AppDisplayDeepModel = startApp();
       storeDisplayDeepModel = AppDisplayDeepModel.__container__.lookup('service:store');
       storeDisplayDeepModel.set('offlineStore.dbName', dbNameDisplayDeepModel);
       let offlineSchema = {};

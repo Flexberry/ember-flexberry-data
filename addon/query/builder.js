@@ -1,6 +1,7 @@
 import { getOwner } from '@ember/application';
 import { get } from '@ember/object';
 import DS from 'ember-data';
+import Store from '@ember-data/store';
 
 import BaseBuilder from './base-builder';
 import OrderByClause from './order-by-clause';
@@ -28,7 +29,7 @@ export default class Builder extends BaseBuilder {
   constructor(store, modelName) {
     super();
 
-    if (!store || !(store instanceof DS.Store)) {
+    if (!store || !(store instanceof Store)) {
       throw new Error('Store is not specified');
     }
 

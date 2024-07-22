@@ -1,5 +1,4 @@
 import { assert, debug } from '@ember/debug';
-import { deprecate } from '@ember/application/deprecations';
 import { isNone, isEmpty } from '@ember/utils';
 import { get, set, computed } from '@ember/object';
 import { getOwner } from '@ember/application';
@@ -202,7 +201,7 @@ export default DS.RESTAdapter.extend({
    * @return {String}
    */
   generateFunctionUrl(functionName, params, url) {
-    const config = getOwner(this).factoryFor('config:environment').class;
+    const config = getOwner(this).resolveRegistration('config:environment');
     if (isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
     }
@@ -252,7 +251,7 @@ export default DS.RESTAdapter.extend({
     @return {String}
   */
   generateActionUrl(actionName, data, url) {
-    const config = getOwner(this).factoryFor('config:environment').class;
+    const config = getOwner(this).resolveRegistration('config:environment');
     if (isNone(url)) {
       url = `${config.APP.backendUrls.api}`;
     }
@@ -260,36 +259,6 @@ export default DS.RESTAdapter.extend({
     const resultUrl = `${url}/${actionName}`;
 
     return resultUrl;
-  },
-
-  /**
-    A method to call OData functions that returns model records using ajax request.
-
-    @method callEmberOdataFunction
-    @param {Object} args Method arguments.
-    @param {Object} args.functionName OData functioin name (required).
-    @param {Object} args.params OData function parameters.
-    @param {String} args.url Backend url.
-    @param {Object} args.fields Request's xhrFields.
-    @param {Object} args.store Ember's store.
-    @param {String} args.modelName Model name.
-    @param {String} args.modelProjection Model projection.
-    @param {Function} args.successCallback Success callback.
-    @param {Function} args.failCallback Fail callback.
-    @param {Function} args.alwaysCallback Always callback.
-    @return {Promise}
-  */
-  callEmberOdataFunction(args) {
-    deprecate('callEmberOdataFunction is deprecated. Use callFunction with single args argument instead.', false, {
-      id: 'adapter.odata.callEmberOdataFunction',
-      until: '3.5.0',
-    });
-
-    if (arguments.length > 1 || typeof args !== 'object') {
-      args = this._getODataArgs(arguments, true);
-    }
-
-    return this.callFunction(args);
   },
 
   /**
@@ -331,35 +300,6 @@ export default DS.RESTAdapter.extend({
     return this._callAjax(
       { url: resultUrl, method: 'GET', headers, xhrFields: args.fields ? args.fields : {} },
       args.store, args.modelName, args.successCallback, args.failCallback, args.alwaysCallback);
-  },
-
-  /**
-    A method to call OData actions that returns model records using ajax request.
-
-    @method callEmberOdataAction
-    @param {Object} args Method arguments.
-    @param {Object} args.actionName OData action name (required).
-    @param {Object} args.data OData action data.
-    @param {String} args.url Backend url.
-    @param {Object} args.fields Request's xhrFields.
-    @param {Object} args.store Ember's store.
-    @param {String} args.modelName Model name.
-    @param {Function} args.successCallback Success callback.
-    @param {Function} args.failCallback Fail callback.
-    @param {Function} args.alwaysCallback Always callback.
-    @return {Promise}
-  */
-  callEmberOdataAction(args) {
-    deprecate('callEmberOdataAction is deprecated. Use callAction with single args argument instead.', false, {
-      id: 'adapter.odata.callEmberOdataAction',
-      until: '3.5.0',
-    });
-
-    if (arguments.length > 1 || typeof args !== 'object') {
-      args = this._getODataArgs(arguments, true, true);
-    }
-
-    return this.callAction(args);
   },
 
   /**

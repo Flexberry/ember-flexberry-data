@@ -2,14 +2,13 @@
   @module ember-flexberry-data
 */
 
-import EmberMap from '@ember/map';
+import EmberObject from '@ember/object';
 import RSVP from 'rsvp';
 import $ from 'jquery';
 import { getOwner } from '@ember/application';
 import { inject as service } from '@ember/service';
 import { A } from '@ember/array';
 import { isNone, isEmpty } from '@ember/utils';
-import { merge } from '@ember/polyfills';
 import { assert, warn } from '@ember/debug';
 import DS from 'ember-data';
 import isObject from '../utils/is-object';
@@ -20,7 +19,7 @@ import QueryBuilder from '../query/builder';
 import FilterOperator from '../query/filter-operator';
 import Condition from '../query/condition';
 import { SimplePredicate, ComplexPredicate } from '../query/predicate';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 import Information from '../utils/information';
 
 /**
@@ -31,7 +30,7 @@ import Information from '../utils/information';
 */
 export default DS.Adapter.extend({
   /* Map of hashes for bulk operations */
-  _hashesToStore: EmberMap.create(),
+  _hashesToStore: EmberObject.create(),
 
   /**
     If you would like your adapter to use a custom serializer you can set the defaultSerializer property to be the name of the custom serializer.
@@ -365,7 +364,7 @@ export default DS.Adapter.extend({
             }
 
             if (needChangeRecord) {
-              merge(record, hash);
+              Object.assign(record, hash);
               _this._storeHashForBulkOperation(type.modelName, record);
             } else {
               dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - 1);
@@ -404,10 +403,10 @@ export default DS.Adapter.extend({
     let db = dexieService.dexie(this.get('dbName'), store);
     let numberOfRecordsToStore = 0;
     let bulkUpdateOrCreateOperation = (db) => new RSVP.Promise((resolve, reject) => {
-      if (_this._hashesToStore.size === 0) {
+      if (Object.keys(_this._hashesToStore).length === 0) {
         resolve();
       } else {
-        let tableNames = _this._hashesToStore._keys.toArray();
+        let tableNames = Object.keys(_this._hashesToStore);
         db.transaction('rw', tableNames, () => {
           for (let i = 0; i < tableNames.length; i++) {
             let tableName = tableNames[i];
@@ -421,7 +420,7 @@ export default DS.Adapter.extend({
           }
         }).then(() => {
           dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
-          _this._hashesToStore.clear();
+          _this._hashesToStore = EmberObject.create();
           resolve();
         }).catch((err) => {
           if (clearHashesOnTransactionFail) {
@@ -429,7 +428,7 @@ export default DS.Adapter.extend({
             false,
             { id: 'ember-flexberry-data-debug.offline.sync-down-data-loss' });
             dexieService.set('queueSyncDownWorksCount', dexieService.get('queueSyncDownWorksCount') - numberOfRecordsToStore);
-            _this._hashesToStore.clear();
+            _this._hashesToStore = EmberObject.create();
           }
 
           reject(err);
@@ -572,7 +571,7 @@ export default DS.Adapter.extend({
     if (parentModelName) {
       let information = new Information(store);
       let newHash = {};
-      merge(newHash, record);
+      Object.assign(newHash, record);
       for (let attrName in newHash) {
         if (newHash.hasOwnProperty(attrName) && !information.isExist(parentModelName, attrName)) {
           delete newHash[attrName];

@@ -1,7 +1,6 @@
 import { Promise, all } from 'rsvp';
 import Evented from '@ember/object/evented';
 import EmberObject, { computed } from '@ember/object';
-import { merge } from '@ember/polyfills';
 import { isArray } from '@ember/array';
 import { isNone } from '@ember/utils';
 import DS from 'ember-data';
@@ -83,7 +82,7 @@ let ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
     @return {Promise} A promise that will be resolved after all 'preSave' event handlers promises will be resolved
   */
   beforeSave(options) {
-    options = merge({ softSave: false, promises: [] }, options || {});
+    options = Object.assign({ softSave: false, promises: [] }, options || {});
 
     return new Promise((resolve, reject) => {
       // Trigger 'preSave' event, and  give its handlers possibility to run some 'preSave' asynchronous logic,
@@ -115,7 +114,7 @@ let ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
     @return {Promise} A promise that will be resolved after model will be successfully saved
   */
   save(options) {
-    options = merge({ softSave: false }, options || {});
+    options = Object.assign({ softSave: false }, options || {});
     this.preSaveSetId();
 
     return new Promise((resolve, reject) => {
@@ -480,9 +479,9 @@ ModelWithoutValidation.reopenClass({
         projections: EmberObject.create({ modelName }),
       });
     } else if (this.projections.get('modelName') !== modelName) {
-      let baseProjections = merge({}, this.projections);
+      let baseProjections = Object.assign({}, this.projections);
       this.reopenClass({
-        projections: EmberObject.create(merge(baseProjections, { modelName })),
+        projections: EmberObject.create(Object.assign(baseProjections, { modelName })),
       });
     }
 

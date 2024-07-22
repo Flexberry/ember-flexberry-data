@@ -185,7 +185,7 @@ export default Service.extend({
         store.findRecord(modelName, record.id, options).then(function (reloadedRecord) {
 
           // TODO: Uncomment this after fix bug with load unloaded models.
-          // store.get('onlineStore').unloadRecord(reloadedRecord);
+          // store.onlineStore.unloadRecord(reloadedRecord);
           saveRecordToLocalStore.call(_this, store, reloadedRecord, projectionName).then(() => {
             resolve(record);
           }, reject);
@@ -217,7 +217,7 @@ export default Service.extend({
     } else {
       predicate = new SimplePredicate('executionResult', 'eq', 'Unexecuted')
         .or(new SimplePredicate('executionResult', 'eq', 'Failed'));
-      builder = new Builder(store.get('offlineStore'), modelName)
+      builder = new Builder(store.offlineStore, modelName)
         .selectByProjection('AuditEntityE')
         .orderBy('operationTime')
         .where(predicate);
@@ -781,8 +781,8 @@ export default Service.extend({
         }
 
         if (!record.get('isDeleted')) {
-          if (store.get('onlineStore')) {
-            store.get('onlineStore').unloadRecord(record);
+          if (store.onlineStore) {
+            store.onlineStore.unloadRecord(record);
           } else {
             store.unloadRecord(record);
           }

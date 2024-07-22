@@ -2,7 +2,6 @@
   @module ember-flexberry-data
 */
 
-import { merge } from '@ember/polyfills';
 import { isArray } from '@ember/array';
 
 /**
@@ -20,7 +19,7 @@ export function createEnum(dictionary) {
     local = dictionary;
   }
 
-  return Object.freeze(merge(Object.create(null), local));
+  return Object.freeze(Object.assign(Object.create(null), local));
 }
 
 /**

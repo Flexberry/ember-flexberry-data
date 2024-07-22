@@ -17,7 +17,7 @@ module('Integration | Service | store', function(hooks) {
     let done = assert.async();
     run(() => {
       let store = App.__container__.lookup('service:store');
-      store.get('offlineGlobals').setOnlineAvailable(false);
+      store.offlineGlobals.setOnlineAvailable(false);
       store.createRecord('ember-flexberry-dummy-application-user', {
         name: 'Man',
         eMail: 'man@example.com',

@@ -8,7 +8,7 @@ import { isArray } from '@ember/array';
 import { assert, debug } from '@ember/debug';
 import { isNone, isBlank } from '@ember/utils';
 import RSVP from 'rsvp';
-import DS from 'ember-data';
+import Store from '@ember-data/store';
 import OfflineAdapter from '../adapters/offline';
 import QueryBuilder from '../query/builder';
 
@@ -19,7 +19,7 @@ import QueryBuilder from '../query/builder';
   @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
   @private
 */
-export default DS.Store.extend({
+export default class extends Store {
   /**
     Database name for IndexedDB.
 
@@ -27,27 +27,20 @@ export default DS.Store.extend({
     @type String
     @default 'ember-flexberry-data'
   */
-  dbName: computed({
-    get() {
-      return this.get('adapter.dbName');
-    },
-    set(key, value) {
-      return this.set('adapter.dbName', value);
-    },
-  }),
+  @computed()
+  get dbName() {
+    return this.adapter.dbName;
+  }
+  set dbName(value) {
+    return this.adapter.dbName = value;
+  }
 
-  /**
-    Initializing instance.
-    [More info](http://emberjs.com/api/data/classes/DS.Store.html#method_init).
+  constructor() {
+    super(...arguments);
 
-    @method init
-  */
-  init() {
-    this._super(...arguments);
-    let dbName = this.get('dbName');
     let owner = getOwner(this);
-    this.set('adapter', OfflineAdapter.create(owner.ownerInjection(), dbName ? { dbName } : {}));
-  },
+    this.adapter = OfflineAdapter.create(owner.ownerInjection(), {});
+  }
 
   /**
    * Returns an instance of the serializer for a given type.
@@ -57,7 +50,7 @@ export default DS.Store.extend({
    * @param {String} modelName The name of the model type.
    * @public
    */
-  serializerFor: function(modelName) {
+  serializerFor(modelName) {
     let owner = getOwner(this);
     let serializer = owner.lookup(`serializer:${modelName}-offline`);
     if (!serializer) {
@@ -68,7 +61,7 @@ export default DS.Store.extend({
     }
 
     return serializer;
-  },
+  }
 
   /**
    * Returns an instance of the adapter for a given type.
@@ -78,18 +71,18 @@ export default DS.Store.extend({
    * @param {String} modelName The name of the model type.
    * @public
    */
-  adapterFor: function(modelName) {
+  adapterFor(modelName) {
     let owner = getOwner(this);
     let adapter = owner.lookup(`adapter:${modelName}-offline`);
     if (!adapter) {
       adapter = owner.lookup(`adapter:application-offline`);
       if (!adapter) {
-        adapter = this.get('adapter');
+        adapter = this.adapter;
       }
     }
 
     return adapter;
-  },
+  }
 
   /**
    * Finds the records for the given model type.
@@ -104,7 +97,7 @@ export default DS.Store.extend({
    * @param {String} options.projection Projection name.
    * @return {DS.AdapterPopulatedRecordArray} Records promise.
    */
-  findAll: function(modelName, options) {
+  findAll(modelName, options) {
     debug(`Flexberry Local Store::findAll ${modelName}`);
 
     let builder = new QueryBuilder(this, modelName);
@@ -120,7 +113,7 @@ export default DS.Store.extend({
     // Now if projection is not specified then only 'id' field will be selected.
     queryObject.select = [];
     return this.query(modelName, queryObject);
-  },
+  }
 
   /**
    * Returns a record for a given type and id combination.
@@ -136,7 +129,7 @@ export default DS.Store.extend({
    * @param {String} options.projection Projection name.
    * @return {Promise} Record promise.
    */
-  findRecord: function(modelName, id, options) {
+  findRecord(modelName, id, options) {
     // TODO: case of options.reload === false.
     debug(`Flexberry Local Store::findRecord ${modelName}(${id})`);
 
@@ -153,7 +146,7 @@ export default DS.Store.extend({
     // Now if projection is not specified then only 'id' field will be selected.
     queryObject.select = [];
     return this.queryRecord(modelName, queryObject);
-  },
+  }
 
   /**
    * This method delegates a query to the adapter.
@@ -170,10 +163,10 @@ export default DS.Store.extend({
    *                   {{#crossLink "DS.RecordArray"}}RecordArray{{/crossLink}}
    *                   once the server returns.
    */
-  query: function(modelName, query) {
+  query(modelName, query) {
     debug(`Flexberry Local Store::query ${modelName}`, query);
 
-    let promise = this._super(...arguments);
+    let promise = super.query(...arguments);
     return new RSVP.Promise((resolve, reject) => {
       promise.then((results) => {
         if (results && isArray(results)) {
@@ -185,7 +178,7 @@ export default DS.Store.extend({
         resolve(results);
       }, reject);
     });
-  },
+  }
 
   /**
    * This method delegates a query to the adapter.
@@ -202,10 +195,10 @@ export default DS.Store.extend({
    *                   {{#crossLink "DS.RecordObject"}}RecordObject{{/crossLink}}
    *                   once the server returns.
    */
-  queryRecord: function(modelName, query) {
+  queryRecord(modelName, query) {
     debug(`Flexberry Local Store::queryRecord ${modelName}`, query);
 
-    let promise = this._super(...arguments);
+    let promise = super.queryRecord(...arguments);
     return new RSVP.Promise((resolve, reject) => {
       promise.then((result) => {
         if (result) {
@@ -215,7 +208,7 @@ export default DS.Store.extend({
         resolve(result);
       }, reject);
     });
-  },
+  }
 
   /**
     Delete all record from the current store.
@@ -223,14 +216,14 @@ export default DS.Store.extend({
     @param {String} modelName modelName
     @param {Object} filter filter
   */
-  deleteAllRecords: function(modelName, filter) {
+  deleteAllRecords(modelName, filter) {
     let adapter = this.adapterFor(modelName);
     if (isNone(adapter.deleteAllRecords)) {
       assert('Method \'deleteAllRecords\' is missing');
     }
 
     return adapter.deleteAllRecords(adapter.store, modelName, filter);
-  },
+  }
 
   /**
     Calls the `save` method on each passed model and returns a promise that is resolved by an array of saved models.
@@ -245,13 +238,13 @@ export default DS.Store.extend({
   */
   batchUpdate(models) {
     return RSVP.all(isArray(models) ? models.map((model) => {
-      if (model.get('dirtyType') === 'deleted') {
+      if (model.dirtyType === 'deleted') {
         return model.save().then(() => null);
       }
 
       return model.save();
     }) : [models.save()]);
-  },
+  }
 
   /**
     A method to get array of models with batch request.
@@ -262,7 +255,7 @@ export default DS.Store.extend({
   */
   batchSelect(queries) {
     return this.adapterFor('application').batchSelect(this, queries);
-  },
+  }
 
   /**
    * Pushes into store the model that exists in backend without a request to it.
@@ -280,4 +273,4 @@ export default DS.Store.extend({
       }
     });
   }
-});
+};

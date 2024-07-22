@@ -7,5 +7,6 @@
   */
   "disableAnalytics": false,
   "port" : 4201,
-  "live-reload-port": 49901
+  "live-reload-port": 49901,
+  "isTypeScriptProject": false
 }

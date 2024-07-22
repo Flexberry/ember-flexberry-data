@@ -1,17 +1,17 @@
 /*global wait $*/
 import { run } from '@ember/runloop';
 import { module, skip } from 'qunit';
-import DS from 'ember-data';
+import Store from '@ember-data/store';
 
 import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 
 import startApp from '../../helpers/start-app';
 
-const testStore = DS.Store.extend({
+const testStore = class extends Store {
   push(data) {
     return run(() => this._super(data));
   }
-});
+};
 
 module('Unit | Adapter | odata | ajax', function(hooks) {
   skip('ajax functions tests', function(assert) {

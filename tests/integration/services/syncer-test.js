@@ -1,7 +1,7 @@
 import { run } from '@ember/runloop';
 import RSVP from 'rsvp';
 import DS from 'ember-data';
-import Dexie from 'npm:dexie';
+import Dexie from 'dexie';
 import { module, skip, test } from 'qunit';
 import OdataAdapter from 'ember-flexberry-data/adapters/odata';
 import Builder from 'ember-flexberry-data/query/builder';
@@ -37,7 +37,7 @@ if (config.APP.testODataService) {
     test('create and sync without audit', function(assert) {
       runTest(App, 2, assert, (store, syncer, done) => {
         syncer.set('auditEnabled', false);
-        store.get('offlineGlobals').setOnlineAvailable(false);
+        store.offlineGlobals.setOnlineAvailable(false);
         store.createRecord('ember-flexberry-dummy-application-user', {
           name: 'Man',
           eMail: 'man@example.com',
@@ -45,7 +45,7 @@ if (config.APP.testODataService) {
           user.set('name', 'SuperMan');
           user.set('eMail', 'super.man@example.com');
           return user.save().then(() => {
-            store.get('offlineGlobals').setOnlineAvailable(true);
+            store.offlineGlobals.setOnlineAvailable(true);
             return syncer.syncUp().then((result) => {
               assert.equal(result, 1, 'Only one operation was executed.');
               let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
@@ -63,7 +63,7 @@ if (config.APP.testODataService) {
 
     test('create and sync with audit', function(assert) {
       runTest(App, 2, assert, (store, syncer, done) => {
-        store.get('offlineGlobals').setOnlineAvailable(false);
+        store.offlineGlobals.setOnlineAvailable(false);
         store.createRecord('ember-flexberry-dummy-application-user', {
           name: 'Man',
           eMail: 'man@example.com',
@@ -71,7 +71,7 @@ if (config.APP.testODataService) {
           user.set('name', 'SuperMan');
           user.set('eMail', 'super.man@example.com');
           return user.save().then(() => {
-            store.get('offlineGlobals').setOnlineAvailable(true);
+            store.offlineGlobals.setOnlineAvailable(true);
             return syncer.syncUp().then((result) => {
               assert.equal(result, 2, 'Two operations were executed.');
               let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
@@ -94,7 +94,7 @@ if (config.APP.testODataService) {
           name: 'Man',
           eMail: 'man@example.com',
         }).save().then(user => syncer.syncDown(user).then(() => {
-          store.get('offlineGlobals').setOnlineAvailable(false);
+          store.offlineGlobals.setOnlineAvailable(false);
           let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
             .selectByProjection('ApplicationUserE')
             .byId(user.get('id'));
@@ -103,7 +103,7 @@ if (config.APP.testODataService) {
             return offlineRecord.save().then((offlineRecord) => {
               offlineRecord.set('eMail', 'super.man@example.com');
               return offlineRecord.save().then(() => {
-                store.get('offlineGlobals').setOnlineAvailable(true);
+                store.offlineGlobals.setOnlineAvailable(true);
                 return syncer.syncUp().then((result) => {
                   assert.equal(result, 1, 'Only one operation was executed.');
                   let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
@@ -128,7 +128,7 @@ if (config.APP.testODataService) {
           name: 'Man',
           eMail: 'man@example.com',
         }).save().then(user => syncer.syncDown(user).then(() => {
-          store.get('offlineGlobals').setOnlineAvailable(false);
+          store.offlineGlobals.setOnlineAvailable(false);
           let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
             .selectByProjection('ApplicationUserE')
             .byId(user.get('id'));
@@ -137,7 +137,7 @@ if (config.APP.testODataService) {
             return offlineRecord.save().then((offlineRecord) => {
               offlineRecord.set('eMail', 'super.man@example.com');
               return offlineRecord.save().then(() => {
-                store.get('offlineGlobals').setOnlineAvailable(true);
+                store.offlineGlobals.setOnlineAvailable(true);
                 return syncer.syncUp().then((result) => {
                   assert.equal(result, 2, 'Two operations were executed.');
                   let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
@@ -163,7 +163,7 @@ if (config.APP.testODataService) {
           name: 'Man',
           eMail: 'man@example.com',
         }).save().then(user => syncer.syncDown(user).then(() => {
-          store.get('offlineGlobals').setOnlineAvailable(false);
+          store.offlineGlobals.setOnlineAvailable(false);
           let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
             .selectByProjection('ApplicationUserE')
             .byId(user.get('id'));
@@ -171,7 +171,7 @@ if (config.APP.testODataService) {
             offlineRecord.set('name', 'SuperMan');
             offlineRecord.set('eMail', 'super.man@example.com');
             return offlineRecord.save().then(offlineRecord => offlineRecord.destroyRecord().then(() => {
-              store.get('offlineGlobals').setOnlineAvailable(true);
+              store.offlineGlobals.setOnlineAvailable(true);
               return syncer.syncUp().then((result) => {
                 assert.equal(result, 1, 'Only one operation was executed.');
                 let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
@@ -193,7 +193,7 @@ if (config.APP.testODataService) {
           name: 'Man',
           eMail: 'man@example.com',
         }).save().then(user => syncer.syncDown(user).then(() => {
-          store.get('offlineGlobals').setOnlineAvailable(false);
+          store.offlineGlobals.setOnlineAvailable(false);
           let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
             .selectByProjection('ApplicationUserE')
             .byId(user.get('id'));
@@ -201,7 +201,7 @@ if (config.APP.testODataService) {
             offlineRecord.set('name', 'SuperMan');
             offlineRecord.set('eMail', 'super.man@example.com');
             return offlineRecord.save().then(offlineRecord => offlineRecord.destroyRecord().then(() => {
-              store.get('offlineGlobals').setOnlineAvailable(true);
+              store.offlineGlobals.setOnlineAvailable(true);
               return syncer.syncUp().then((result) => {
                 assert.equal(result, 2, 'Two operations were executed.');
                 let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
@@ -220,7 +220,7 @@ if (config.APP.testODataService) {
     test('sync without data to sync', function(assert) {
       runTest(App, 1, assert, (store, syncer, done) => {
         syncer.get('auditEnabled', false);
-        store.get('offlineGlobals').setOnlineAvailable(true);
+        store.offlineGlobals.setOnlineAvailable(true);
         return syncer.syncUp().then((result) => {
           assert.equal(result, undefined, 'No operation was executed and promise was resolved.');
         }).finally(done);;
@@ -234,13 +234,13 @@ if (config.APP.testODataService) {
           vip: DS.attr('string'),
         });
 
-        store.get('offlineGlobals').setOnlineAvailable(false);
+        store.offlineGlobals.setOnlineAvailable(false);
         return store.createRecord('ember-flexberry-dummy-application-user', {
           name: 'SuperMan',
           eMail: 'super.man@example.com',
           vip: 'invalid',
         }).save().then((user) => {
-          store.get('offlineGlobals').setOnlineAvailable(true);
+          store.offlineGlobals.setOnlineAvailable(true);
           return syncer.syncUp().catch((rejectedJob) => {
             assert.equal(rejectedJob.get('executionResult'), 'Ошибка', 'Job not executed.');
             let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
@@ -262,7 +262,7 @@ if (config.APP.testODataService) {
         }).save().then((user) => {
           let id = user.get('id');
           return syncer.syncDown(user).then(() => {
-            store.get('offlineGlobals').setOnlineAvailable(false);
+            store.offlineGlobals.setOnlineAvailable(false);
             let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
               .selectByProjection('ApplicationUserE')
               .byId(id);
@@ -270,7 +270,7 @@ if (config.APP.testODataService) {
               offlineRecord.set('name', 'SuperMan');
               offlineRecord.set('eMail', 'super.man@example.com');
               return offlineRecord.save().then(() => {
-                store.get('offlineGlobals').setOnlineAvailable(true);
+                store.offlineGlobals.setOnlineAvailable(true);
                 let builder = new Builder(store, 'ember-flexberry-dummy-application-user')
                   .selectByProjection('ApplicationUserE')
                   .byId(id);
@@ -324,7 +324,7 @@ if (config.APP.testODataService) {
 */
 function runTest(app, expect, assert, test) {
   let store = app.__container__.lookup('service:store');
-  let syncer = store.get('syncer');
+  let syncer = store.syncer;
   let done = assert.async();
   assert.expect(expect);
   run(null, test, store, syncer, done);
