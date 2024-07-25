@@ -2,27 +2,28 @@
 
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
   parserOptions: {
-    ecmaVersion: 2018,
+    ecmaVersion: 'latest',
     sourceType: 'module',
     ecmaFeatures: {
       legacyDecorators: true
-    }
+    },
+    requireConfigFile: false,
+    babelOptions: {
+      plugins: [
+        ['@babel/plugin-proposal-decorators', { decoratorsBeforeExport: true }],
+      ],
+    },
   },
-  plugins: [
-    'ember',
-    'jsdoc',
-    'qunit'
-  ],
+  plugins: ['ember'],
   extends: [
     'eslint:recommended',
     'plugin:ember/recommended',
-    'plugin:jsdoc/recommended',
-    'plugin:qunit/two'
+    'plugin:prettier/recommended',
   ],
   env: {
-    browser: true
+    browser: true,
   },
   rules: {
     'ember/new-module-imports': 'off',
@@ -33,19 +34,20 @@ module.exports = {
     'ember/no-observers': 'warn',
     'ember/use-ember-data-rfc-395-imports': 'off'
   },
-  reportUnusedDisableDirectives: true,
   overrides: [
     // node files
     {
       files: [
-        '.eslintrc.js',
-        '.template-lintrc.js',
-        'ember-cli-build.js',
-        'index.js',
-        'testem.js',
-        'blueprints/**/*.js',
-        'config/**/*.js',
-        'tests/dummy/config/**/*.js'
+        './.eslintrc.js',
+        './.prettierrc.js',
+        './.stylelintrc.js',
+        './.template-lintrc.js',
+        './ember-cli-build.js',
+        './index.js',
+        './testem.js',
+        './blueprints/**/*.js',
+        './config/**/*.js',
+        './tests/dummy/config/**/*.js',
       ],
       excludedFiles: [
         'addon/**',
@@ -54,14 +56,18 @@ module.exports = {
         'tests/dummy/app/**'
       ],
       parserOptions: {
-        sourceType: 'script'
+        sourceType: 'script',
       },
       env: {
         browser: false,
-        node: true
+        node: true,
       },
-      plugins: ['node'],
-      extends: ['plugin:node/recommended']
-    }
-  ]
+      extends: ['plugin:n/recommended'],
+    },
+    {
+      // test files
+      files: ['tests/**/*-test.{js,ts}'],
+      extends: ['plugin:qunit/recommended'],
+    },
+  ],
 };

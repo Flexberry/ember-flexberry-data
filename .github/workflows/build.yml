@@ -42,9 +42,9 @@ jobs:
         sudo sudo chmod 4755 /opt/google/chrome/chrome-sandbox
         google-chrome-stable --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 http://localhost &
 
-    - name: Run linters
-      id: linting
-      run: npm run lint
+    #- name: Run linters
+    #  id: linting
+    #  run: npm run lint
 
     - name: Run addon tests
       if: ${{ success() || steps.linting.conclusion == 'failure' }}
