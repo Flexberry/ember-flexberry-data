@@ -1,72 +1,72 @@
-import Ember from 'ember';
+import RSVP from 'rsvp';
+import { A } from '@ember/array';
+import { get, set } from '@ember/object';
 import DS from 'ember-data';
 
 export default function batchUpdateWithFail(store, assert) {
   assert.expect(1);
   let done = assert.async();
 
-  Ember.run(() => {
-    initTestData(store)
+  initTestData(store)
 
-    // Without relationships.
-    .then((records) => {
-      const userId = records.people;
-      const sugTypeId = records.type;
-      const suggestionId = records.suggestion;
-      const commentId = records.comment;
+  // Without relationships.
+  .then((records) => {
+    const userId = records.people;
+    const sugTypeId = records.type;
+    const suggestionId = records.suggestion;
+    const commentId = records.comment;
 
-      return Ember.RSVP.Promise.all([
-        store.findRecord('ember-flexberry-dummy-application-user', userId)
-          .then((returned1Record) => {
-            Ember.set(returned1Record, 'name', 'Updated value');
-            return returned1Record;
-          }),
-        store.findRecord('ember-flexberry-dummy-suggestion-type', sugTypeId)
-          .then((returned2Record) => {
-            Ember.set(returned2Record, 'name', 'Updated value');
-            return returned2Record;
-          }),
-        store.findRecord('ember-flexberry-dummy-comment', commentId)
-          .then((returned3Record) => {
-            Ember.set(returned3Record, 'text', 'Test 11111111-1111-1111-1111-111111111111');
-            return returned3Record;
-          }),
-        store.findRecord('ember-flexberry-dummy-suggestion', suggestionId)
-          .then((returned4Record) => {
-            return returned4Record;
-          })
-      ])
-      .then((recordsForBatch) => {
-        const recordUser = recordsForBatch[0];
-        const recordType = recordsForBatch[1];
-        const recordComment = recordsForBatch[2];
-        const recordSuggestion = recordsForBatch[3];
-
-        let done2 = assert.async();
-        return store.batchUpdate(Ember.A([recordUser, recordSuggestion, recordComment, recordType]))
-        .then(() => {
-          // There should be an error on batch update.
-          console.log("There should be an error on batch update. This update should not be executed.");
-        },
-        (rejectResult) => {
-          if (rejectResult instanceof DS.AdapterError) {
-            assert.ok(true, "Reject was executed as expected.");
-            console.log("Reject was executed as expected. " + Ember.get(rejectResult, "errors"));
-          } 
+    return RSVP.Promise.all([
+      store.findRecord('ember-flexberry-dummy-application-user', userId)
+        .then((returned1Record) => {
+          set(returned1Record, 'name', 'Updated value');
+          return returned1Record;
+        }),
+      store.findRecord('ember-flexberry-dummy-suggestion-type', sugTypeId)
+        .then((returned2Record) => {
+          set(returned2Record, 'name', 'Updated value');
+          return returned2Record;
+        }),
+      store.findRecord('ember-flexberry-dummy-comment', commentId)
+        .then((returned3Record) => {
+          set(returned3Record, 'text', 'Test 11111111-1111-1111-1111-111111111111');
+          return returned3Record;
+        }),
+      store.findRecord('ember-flexberry-dummy-suggestion', suggestionId)
+        .then((returned4Record) => {
+          return returned4Record;
         })
-        .catch((e2) => {
-          console.log(e2, "Batch update should be rejected, not catched. " + e2.message);
-          recordSuggestion.destroyRecord();
-          throw e2;
-        })
-        .finally(done2);
-      })  
-    })
-    .catch((e) => {
-      console.log(e, "Global error." + e.message);
-    })
-    .finally(done);
-  });
+    ])
+    .then((recordsForBatch) => {
+      const recordUser = recordsForBatch[0];
+      const recordType = recordsForBatch[1];
+      const recordComment = recordsForBatch[2];
+      const recordSuggestion = recordsForBatch[3];
+
+      let done2 = assert.async();
+      return store.batchUpdate(A([recordUser, recordSuggestion, recordComment, recordType]))
+      .then(() => {
+        // There should be an error on batch update.
+        console.log("There should be an error on batch update. This update should not be executed.");
+      },
+      (rejectResult) => {
+        if (rejectResult instanceof DS.AdapterError) {
+          assert.ok(true, "Reject was executed as expected.");
+          console.log("Reject was executed as expected. " + get(rejectResult, "errors"));
+        } 
+      })
+      .catch((e2) => {
+        console.log(e2, "Batch update should be rejected, not catched. " + e2.message);
+        recordSuggestion.destroyRecord();
+        throw e2;
+      })
+      .finally(done2);
+    })  
+  })
+  .catch((e) => {
+    console.log(e, "Global error." + e.message);
+  })
+  .finally(done);
 }
 
 function initTestData(store) {
@@ -78,7 +78,7 @@ function initTestData(store) {
 
   // Attrs for creating suggestion.
   .then((parentType) =>
-    Ember.RSVP.Promise.all([
+    RSVP.Promise.all([
       store.createRecord('ember-flexberry-dummy-application-user', {
         name: 'Vasya',
         eMail: '1@mail.ru',
@@ -93,7 +93,7 @@ function initTestData(store) {
 
   // Сreating suggestion.
   .then((sugAttrs) =>
-    Ember.RSVP.Promise.all([
+    RSVP.Promise.all([
       store.createRecord('ember-flexberry-dummy-suggestion', {
         type: sugAttrs[1],
         author: sugAttrs[0],
@@ -116,16 +116,16 @@ function initTestData(store) {
       }).save()
 
       // It is necessary to fill 'detail' at 'master' in offline.
-      .then((commentItem) => store._isOnline() ? Ember.RSVP.resolve(commentItem) : sug.save().then(() => Ember.RSVP.resolve(commentItem)))
+      .then((commentItem) => store._isOnline() ? RSVP.resolve(commentItem) : sug.save().then(() => RSVP.resolve(commentItem)))
 
       // Returns.
       .then((commentItem) =>
-        new Ember.RSVP.Promise(resolve =>
+        new RSVP.Promise(resolve =>
           resolve({
-            people: Ember.get(sugAttrs[0], 'id'),
-            type: Ember.get(sugAttrs[1], 'id'),
-            suggestion: Ember.get(sug[0], 'id'),
-            comment: Ember.get(commentItem, 'id')
+            people: get(sugAttrs[0], 'id'),
+            type: get(sugAttrs[1], 'id'),
+            suggestion: get(sug[0], 'id'),
+            comment: get(commentItem, 'id')
           })
         )
       )

@@ -11,6 +11,7 @@ import RSVP from 'rsvp';
 import Store from '@ember-data/store';
 import OfflineAdapter from '../adapters/offline';
 import QueryBuilder from '../query/builder';
+import { cleanup } from '../utils/store-functions';
 
 /**
   Store that used in offline mode by default.
@@ -175,7 +176,7 @@ export default class extends Store {
           });
         }
 
-        resolve(results);
+        resolve(results.toArray());
       }, reject);
     });
   }
@@ -272,5 +273,10 @@ export default class extends Store {
         type: modelName
       }
     });
+  }
+
+  destroy() {
+    cleanup.call(this);
+    super.destroy();
   }
 };

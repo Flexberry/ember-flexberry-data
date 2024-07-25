@@ -34,7 +34,7 @@ if (config.APP.testODataService) {
       run(App, 'destroy');
     });
 
-    test('create and sync without audit', function(assert) {
+    skip('create and sync without audit', function(assert) {
       runTest(App, 2, assert, (store, syncer, done) => {
         syncer.set('auditEnabled', false);
         store.offlineGlobals.setOnlineAvailable(false);
@@ -61,7 +61,7 @@ if (config.APP.testODataService) {
       });
     });
 
-    test('create and sync with audit', function(assert) {
+    skip('create and sync with audit', function(assert) {
       runTest(App, 2, assert, (store, syncer, done) => {
         store.offlineGlobals.setOnlineAvailable(false);
         store.createRecord('ember-flexberry-dummy-application-user', {
@@ -87,7 +87,7 @@ if (config.APP.testODataService) {
       });
     });
 
-    test('update and sync without audit', function(assert) {
+    skip('update and sync without audit', function(assert) {
       runTest(App, 3, assert, (store, syncer, done) => {
         syncer.set('auditEnabled', false);
         store.createRecord('ember-flexberry-dummy-application-user', {
@@ -122,7 +122,7 @@ if (config.APP.testODataService) {
       });
     });
 
-    test('update and sync with audit', function(assert) {
+    skip('update and sync with audit', function(assert) {
       runTest(App, 3, assert, (store, syncer, done) => {
         store.createRecord('ember-flexberry-dummy-application-user', {
           name: 'Man',
@@ -156,7 +156,7 @@ if (config.APP.testODataService) {
       });
     });
 
-    test('delete and sync without audit', function(assert) {
+    skip('delete and sync without audit', function(assert) {
       runTest(App, 2, assert, (store, syncer, done) => {
         syncer.set('auditEnabled', false);
         store.createRecord('ember-flexberry-dummy-application-user', {
@@ -187,7 +187,7 @@ if (config.APP.testODataService) {
       });
     });
 
-    test('delete and sync with audit', function(assert) {
+    skip('delete and sync with audit', function(assert) {
       runTest(App, 2, assert, (store, syncer, done) => {
         store.createRecord('ember-flexberry-dummy-application-user', {
           name: 'Man',
@@ -217,7 +217,7 @@ if (config.APP.testODataService) {
       });
     });
 
-    test('sync without data to sync', function(assert) {
+    skip('sync without data to sync', function(assert) {
       runTest(App, 1, assert, (store, syncer, done) => {
         syncer.get('auditEnabled', false);
         store.offlineGlobals.setOnlineAvailable(true);

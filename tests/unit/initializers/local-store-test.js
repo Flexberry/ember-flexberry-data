@@ -1,22 +1,36 @@
-import { run } from '@ember/runloop';
 import Application from '@ember/application';
-import LocalStoreInitializer from 'ember-flexberry-data/initializers/local-store';
+
+import config from 'dummy/config/environment';
+import { initialize } from 'ember-flexberry-data/initializers/local-store';
 import { module, test } from 'qunit';
+import Resolver from 'ember-resolver';
+import { run } from '@ember/runloop';
 
-let application;
+module('Unit | Initializer | local store', function (hooks) {
+  hooks.beforeEach(function () {
+    this.TestApplication = class TestApplication extends Application {
+      modulePrefix = config.modulePrefix;
+      podModulePrefix = config.podModulePrefix;
+      Resolver = Resolver;
+    };
 
-module('Unit | Initializer | local store', function(hooks) {
-  hooks.beforeEach(function() {
-    run(function() {
-      application = Application.create();
-      application.deferReadiness();
+    this.TestApplication.initializer({
+      name: 'local-store',
+      initialize,
+    });
+
+    this.application = this.TestApplication.create({
+      autoboot: false,
     });
   });
 
-  test('it works', function(assert) {
-    LocalStoreInitializer.initialize(application);
+  hooks.afterEach(function () {
+    run(this.application, 'destroy');
+  });
 
-    // you would normally confirm the results of the initializer here
+  test('it works', async function (assert) {
+    await this.application.boot();
+
     assert.ok(true);
   });
 });

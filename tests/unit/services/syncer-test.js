@@ -52,7 +52,7 @@ module('Unit | Service | syncer', function(hooks) {
     assert.expect(2);
     let done = assert.async();
     let syncer = this.owner.lookup('service:syncer');
-    syncer.set('offlineStore', this.owner.lookup('service:store').get('offlineStore'));
+    syncer.offlineStore = this.owner.lookup('service:store').offlineStore;
     run(() => {
       syncer._getObjectType('ember-flexberry-dummy-application-user').then((newObjectType) => {
         let id = newObjectType.get('id');

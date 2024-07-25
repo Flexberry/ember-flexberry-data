@@ -135,7 +135,7 @@ export default DS.RESTSerializer.extend({
    * @param record Record itself.
    * @param options Serialization options.
    */
-  serializeIntoHash(hash, type, record, options) {
+  serializeIntoHash(hash, record, options) {
     // OData requires id in request body.
     options = options || {};
     options.includeId = true;

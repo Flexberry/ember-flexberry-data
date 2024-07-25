@@ -3,7 +3,7 @@
 */
 
 import { isEmpty } from '@ember/utils';
-import NumberTransform from 'ember-data/transforms/number';
+import { NumberTransform } from '@ember-data/serializer/transform';
 
 /**
   Transformation for model's attributes defined as <a href="http://emberjs.com/api/data/#method_attr">DS.attr</a> with type 'decimal'.
@@ -20,19 +20,21 @@ import NumberTransform from 'ember-data/transforms/number';
   });
   ```
 */
-export default NumberTransform.extend({
+export default class extends NumberTransform {
 
   /**
     Deserializes serialized attribute value.
    */
   deserialize(serialized) {
-    return isEmpty(serialized) ? null : this._super(serialized.toString().replace(',', '.'));
-  },
+    var des = isEmpty(serialized) ? null : super.deserialize(serialized.toString().replace(',', '.'));
+    return des;
+  }
 
   /**
     Serializes deserialized attribute value.
    */
   serialize(deserialized) {
-    return isEmpty(deserialized) ? null : this._super(deserialized.toString().replace(',', '.'));
+    let ser = isEmpty(deserialized) ? null : super.serialize(deserialized.toString().replace(',', '.'));
+    return ser;
   }
-});
+};

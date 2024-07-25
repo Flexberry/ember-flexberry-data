@@ -41,7 +41,7 @@ export default function updating(store, assert) {
 
       return store.query('ember-flexberry-dummy-comment', builder.build())
       .then((comments) => {
-        let comment = comments.get('firstObject');
+        let comment = comments[0];
         return store.findRecord('ember-flexberry-dummy-application-user', userId)
         .then((user) => {
           comment.set('author', user);
@@ -53,7 +53,7 @@ export default function updating(store, assert) {
         store.unloadAll();
         return store.query('ember-flexberry-dummy-comment', builder.build())
         .then((comments) =>
-          assert.equal(comments.get('firstObject.author.id'), userId, 'With master relationship')
+          assert.equal(comments.get('0.author.id'), userId, 'With master relationship')
         );
       })
       .then(() => records);

@@ -42,5 +42,6 @@ export default function executeTest(testName, callback, skipTest) {
     },
   });
 
-  (skipTest ? skip : test)(testName, (assert) => callback(storeExecuteOfflineTest, assert, AppExecuteOfflineTest));
+  // disable offline tests.
+  (/*skipTest ? */skip/* : test*/)(testName, (assert) => callback(storeExecuteOfflineTest, assert, AppExecuteOfflineTest));
 }

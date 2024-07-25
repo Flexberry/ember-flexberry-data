@@ -191,11 +191,9 @@ let ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
     let changedHasMany = {};
     this.eachRelationship((key, { kind }) => {
       if (kind === 'hasMany') {
-        if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
-          changedHasMany[key] = [
-            this.get(`${key}.canonicalState`).map(internalModel => internalModel ? internalModel.getRecord() : undefined),
-            this.get(`${key}.currentState`).map(internalModel => internalModel ? internalModel.getRecord() : undefined),
-          ];
+        const changedHasManyRecords = this[key].filterBy('hasDirtyAttributes', true);
+        if (changedHasManyRecords.length > 0) {
+          changedHasMany[key] = changedHasManyRecords;
         }
       }
     });
@@ -223,15 +221,10 @@ let ModelWithoutValidation = DS.Model.extend(Evented, Copyable, {
   rollbackHasMany(forOnlyKey) {
     this.eachRelationship((key, { kind }) => {
       if (kind === 'hasMany' && (!forOnlyKey || forOnlyKey === key)) {
-        if (this.get(key).filterBy('hasDirtyAttributes', true).length) {
-          [this.get(`${key}.canonicalState`), this.get(`${key}.currentState`)].forEach((state, i) => {
-            let records = state.map(internalModel => internalModel.getRecord());
-            records.forEach((record) => {
-              record.rollbackAll();
-            });
-            if (i === 0) {
-              this.set(key, records);
-            }
+        const changedHasManyRecords = this[key].filterBy('hasDirtyAttributes', true);
+        if (changedHasManyRecords.length > 0) {
+          changedHasManyRecords.forEach((record) => {
+            record.rollbackAll();
           });
         }
       }

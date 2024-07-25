@@ -23,8 +23,8 @@ module('Unit | Model | model', function(hooks) {
 
       //Diff `hasMany` relationships.
       assert.deepEqual(suggestion.changedHasMany(), {
-        userVotes: [[], [vote1, vote2]],
-        comments: [[], [comment1, comment2]],
+        userVotes: [vote1, vote2],
+        comments: [comment1, comment2],
       }, `Results 'changedHasMany' function as expected.`);
 
       //Rollback `hasMany` for only `userVotes` relationship.

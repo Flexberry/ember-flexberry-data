@@ -56,7 +56,7 @@ export default function deleting(store, assert) {
         .selectByProjection('CommentE');
       return store.query('ember-flexberry-dummy-comment', builder.build())
       .then((comments) => {
-        let comment = comments.get('firstObject');
+        let comment = comments[0];
         let vote = comment.get('userVotes').find(item => item.get('id') === records.votes[1]);
         vote.deleteRecord();
 
@@ -69,7 +69,7 @@ export default function deleting(store, assert) {
         return store.query('ember-flexberry-dummy-comment', builder.build());
       })
       .then((comments) => {
-        let votes = comments.get('firstObject.userVotes');
+        let votes = comments.get('0.userVotes');
         assert.equal(votes.get('length'), 1, 'With 1st level detail relationship');
       })
 
@@ -88,7 +88,7 @@ export default function deleting(store, assert) {
       return store.query('ember-flexberry-dummy-suggestion', builder.build())
 
       .then((sugs) => {
-        let comment = sugs.get('firstObject.comments.firstObject');
+        let comment = sugs.get('0.comments.0');
 
         builder = new QueryBuilder(store)
           .from('ember-flexberry-dummy-comment')
@@ -98,11 +98,11 @@ export default function deleting(store, assert) {
       })
 
       .then((comments) => {
-        let vote = comments.get('firstObject.userVotes.firstObject');
+        let vote = comments.get('0.userVotes.0');
         vote.deleteRecord();
 
         // In offline when delete 'detail' need to update 'master'.
-        return store._isOnline() ? vote.save() : RSVP.all([comments.get('firstObject').save(), vote.save()]);
+        return store._isOnline() ? vote.save() : RSVP.all([comments[0].save(), vote.save()]);
       })
 
       .then(() => {
@@ -110,7 +110,7 @@ export default function deleting(store, assert) {
         return store.query('ember-flexberry-dummy-comment', builder.build());
       })
       .then((comments) => {
-        let votes = comments.get('firstObject.userVotes');
+        let votes = comments.get('0.userVotes');
         assert.equal(votes.get('length'), 0, 'With 2nd level detail relationship');
       })
 

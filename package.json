@@ -1,6 +1,6 @@
 {
   "name": "ember-flexberry-data",
-  "version": "3.12.0",
+  "version": "5.0.0-beta.1",
   "description": "Support of database projections, JavaScript Query Language and working with several kinds of backends",
   "keywords": [
     "ember-addon",
@@ -38,7 +38,8 @@
   "dependencies": {
     "@babel/core": "^7.24.7",
     "ember-cli-babel": "^8.2.0",
-    "ember-cli-htmlbars": "^6.3.0"
+    "ember-cli-htmlbars": "^6.3.0",
+    "ember-data": "^5.3.4"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.24.7",
@@ -59,7 +60,6 @@
     "ember-cli-inject-live-reload": "^2.1.0",
     "ember-cli-sri": "^2.1.1",
     "ember-cli-terser": "^4.0.2",
-    "ember-data": "^5.3.4",
     "ember-load-initializers": "^2.1.2",
     "ember-moment": "^9.0.1",
     "ember-page-title": "^8.2.3",

@@ -3,7 +3,7 @@
 */
 
 import { isNone } from '@ember/utils';
-import DS from 'ember-data';
+import Transform from '@ember-data/serializer/transform';
 import { inverseEnum, enumCaptions } from '../utils/enum-functions';
 
 /**
@@ -13,7 +13,7 @@ import { inverseEnum, enumCaptions } from '../utils/enum-functions';
   @class FlexberryEnumTransform
   @extends <a href="http://emberjs.com/api/data/classes/DS.Transform.html">DS.Transform</a>
 */
-let FlexberryEnum = DS.Transform.extend({
+export default class FlexberryEnum extends Transform {
 
   /**
     Object that contains enum values and corresponding captions.
@@ -47,7 +47,7 @@ let FlexberryEnum = DS.Transform.extend({
     @property enum
     @type Object
   */
-  enum: undefined,
+  enum = undefined
 
   /**
     Object with inversed enum, value from enum property will be is property here.
@@ -56,7 +56,7 @@ let FlexberryEnum = DS.Transform.extend({
     @type Object
     @readOnly
   */
-  inverse: undefined,
+  inverse = undefined
 
   /**
     Array that contains all values of enum properties.
@@ -65,21 +65,42 @@ let FlexberryEnum = DS.Transform.extend({
     @type Array
     @readOnly
   */
-  captions: undefined,
+  captions = undefined
+
+  /**
+    Flag: indicates whether class represents enumeration.
+    It is useful in cases when we need to determine that the model attribute type is an enumeration.
+
+    @property isEnum
+    @type Boolean
+    @default true
+  */
+  isEnum = true
+
+  /**
+    Source type name from the backend.
+
+    @for FlexberryEnumTransform
+    @property sourceType
+    @type String
+    @default null
+   */
+  sourceType = null
 
   /**
     An overridable method called when objects are instantiated.
     For more information see [init](http://emberjs.com/api/classes/Ember.View.html#method_init) method of [Ember.View](http://emberjs.com/api/classes/Ember.View.html).
   */
-  init() {
-    let enumDictionary = this.get('enum');
+  constructor(enumDictionary) {
+    super();
+    this.enum = enumDictionary;
     if (isNone(enumDictionary)) {
       throw new Error('Enum property is undefined');
     }
 
-    this.set('inverse', inverseEnum(enumDictionary));
-    this.set('captions', enumCaptions(enumDictionary));
-  },
+    this.inverse = inverseEnum(enumDictionary);
+    this.captions = enumCaptions(enumDictionary);
+  }
 
   /**
     Returns deserialized enumeration field.
@@ -90,18 +111,18 @@ let FlexberryEnum = DS.Transform.extend({
     @return {String} Deserialized enumeration field
   */
   deserialize(serialized) {
-    if (serialized === null || serialized === undefined) {
+    if (isNone(serialized)) {
       return serialized;
     }
 
-    let deserialize = this.get('enum')[serialized];
+    let deserialize = this.enum[serialized];
 
     if (isNone(deserialize)) {
       throw new Error(`Unable to find serialized enumeration field: '${serialized}'.`);
     }
 
     return deserialize;
-  },
+  }
 
   /**
     Returns serialized enumeration field.
@@ -112,41 +133,15 @@ let FlexberryEnum = DS.Transform.extend({
     @return {String|Number} Serialized enumeration field
   */
   serialize(deserialized) {
-    if (deserialized === null || deserialized === undefined) {
+    if (isNone(deserialized)) {
       return deserialized;
     }
 
-    let serialized = this.get('inverse')[deserialized];
+    let serialized = this.inverse[deserialized];
     if (isNone(serialized)) {
       throw new Error(`Unable to find deserialized enumeration field: '${deserialized}.'`);
     }
 
     return serialized;
   }
-});
-
-FlexberryEnum.reopenClass({
-  /**
-    Flag: indicates whether class represents enumeration.
-    It is useful in cases when we need to determine that the model attribute type is an enumeration.
-
-    @static
-    @for FlexberryEnumTransform
-    @property isEnum
-    @type Boolean
-    @default true
-  */
-  isEnum: true,
-
-  /**
-    Source type name from the backend.
-
-    @for FlexberryEnumTransform
-    @property sourceType
-    @type String
-    @default null
-   */
-  sourceType: null
-});
-
-export default FlexberryEnum;
+};

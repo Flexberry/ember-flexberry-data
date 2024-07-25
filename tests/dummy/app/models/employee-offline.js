@@ -11,7 +11,10 @@ let EmployeeOffline = OfflineModel.extend({
   Surname: DS.attr('string'),
   CountryName: DS.attr('string'),
   Price: DS.attr('decimal'),
-  manager: DS.belongsTo('employee-offline'),
+  manager: DS.belongsTo('employee-offline', {
+    inverse: null,
+    async: false
+  }),
   externalId: DS.attr('guid')
 });
 

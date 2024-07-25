@@ -1,6 +1,6 @@
 import { getOwner } from '@ember/application';
 import { get } from '@ember/object';
-import DS from 'ember-data';
+import Store from '@ember-data/store';
 
 import FlexberryEnum from '../transforms/flexberry-enum';
 
@@ -15,7 +15,7 @@ import FlexberryEnum from '../transforms/flexberry-enum';
  */
 class Information {
   constructor(store) {
-    if (!store || !(store instanceof DS.Store)) {
+    if (!store || !(store instanceof Store)) {
       throw new Error('Store is required.');
     }
 
@@ -169,7 +169,7 @@ class Information {
             isKey: false,
             isEnum: transform instanceof FlexberryEnum,
             isOrdered: ordered || false,
-            sourceType: transform.get('sourceType'),
+            sourceType: transform.sourceType,
             type: attribute.type
           };
         }

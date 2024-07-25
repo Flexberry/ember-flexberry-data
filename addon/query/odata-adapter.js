@@ -1,6 +1,6 @@
 import { warn } from '@ember/debug';
 import { get } from '@ember/object';
-import DS from 'ember-data';
+import Store from '@ember-data/store';
 
 import BaseAdapter from './base-adapter';
 import {
@@ -43,7 +43,7 @@ export default class ODataAdapter extends BaseAdapter {
       throw new Error('Base URL for OData feed is required');
     }
 
-    if (!store || !(store instanceof DS.Store)) {
+    if (!store || !(store instanceof Store)) {
       throw new Error('Store is required');
     }
 

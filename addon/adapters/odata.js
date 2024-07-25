@@ -283,6 +283,10 @@ export default DS.RESTAdapter.extend({
       args = this._getODataArgs(arguments);
     }
 
+    if (args.store && !args.modelName || !args.store && args.modelName) {
+      throw new Error(`store and modelName both should be undefined or have value`);
+    }
+
     if (args.modelProjection && args.modelName && args.store) {
       const builder = new Builder(args.store, args.modelName).selectByProjection(args.modelProjection);
       args.queryParams = builder.build();
@@ -321,6 +325,10 @@ export default DS.RESTAdapter.extend({
   callAction(args) {
     if (arguments.length > 1 || typeof args !== 'object') {
       args = this._getODataArgs(arguments, false, true);
+    }
+
+    if (args.store && !args.modelName || !args.store && args.modelName) {
+      throw new Error(`store and modelName both should be undefined or have value`);
     }
 
     const resultUrl = this.generateActionUrl(args.actionName, args.data, args.url);
@@ -418,7 +426,7 @@ export default DS.RESTAdapter.extend({
           this.store = store;
         }
 
-        const modelUrl =  this._buildURL(snapshot.type.modelName, modelDirtyType === 'created' ? undefined : model.get('id'));
+        const modelUrl =  this._buildURL(snapshot.modelName, modelDirtyType === 'created' ? undefined : model.get('id'));
 
         requestBody += modelHttpMethod + ' ' + modelUrl + ' HTTP/1.1\r\n';
         requestBody += 'Content-Type: application/json;type=entry\r\n';
@@ -426,10 +434,10 @@ export default DS.RESTAdapter.extend({
 
         // Don't need to send any data for deleting.
         if (modelDirtyType !== 'deleted') {
-          const modelName = snapshot.type.modelName;
+          const modelName = snapshot.modelName;
           const serializer = store.serializerFor(modelName);
           const data = {};
-          serializer.serializeIntoHash(data, snapshot.type, snapshot);
+          serializer.serializeIntoHash(data, snapshot);
           requestBody += JSON.stringify(data) + '\r\n';
 
           // Add a GET request for created or updated models.
@@ -530,10 +538,6 @@ export default DS.RESTAdapter.extend({
                 const normalized = getResponses[id];
                 if (!isNone(normalized)) {
                   normalizedForPush.addObject(normalized);
-                  const internalModel = model._internalModel;
-                  internalModel.adapterWillCommit();
-                  internalModel.flushChangedAttributes();               
-                  store.didSaveRecord(internalModel, normalized);
                 } else {
                   return reject(new Error(`Can't find model with id ${id} in batch response.`));
                 }
@@ -755,7 +759,8 @@ export default DS.RESTAdapter.extend({
               normalizedRecords.included.addObjects(normalized.included);
             }
           });
-          run.join(() => { msg = store.push(normalizedRecords); });
+
+           msg = store.push(normalizedRecords);
         }
 
         if (!isNone(successCallback)) {
@@ -966,7 +971,7 @@ export default DS.RESTAdapter.extend({
     if (requestType !== 'deleteRecord') {
       let serializer = store.serializerFor(type.modelName);
       data = {};
-      serializer.serializeIntoHash(data, type, snapshot);
+      serializer.serializeIntoHash(data, snapshot);
     }
 
     return this.ajax(url, httpMethod, { data: data }).then(function (response) {

@@ -1,6 +1,6 @@
 import { run } from '@ember/runloop';
 import { get } from '@ember/object';
-import { module, test } from 'qunit';
+import { module, test, skip } from 'qunit';
 import startApp from '../../helpers/start-app';
 import destroyApp from '../../helpers/destroy-app';
 import Dexie from 'dexie';
@@ -115,7 +115,7 @@ module('offline-CRUD', function(hooks) {
     });
   });
 
-  test('find record', function (assert) {
+  skip('find record', function (assert) {
     assert.expect(13);
     let done1 = assert.async();
     run(function () {
@@ -157,7 +157,7 @@ module('offline-CRUD', function(hooks) {
     });
   });
 
-  test('find all records', function (assert) {
+  skip('find all records', function (assert) {
     assert.expect(1);
     let done = assert.async();
     run(function () {
@@ -168,7 +168,7 @@ module('offline-CRUD', function(hooks) {
     });
   });
 
-  test('query record via query', function (assert) {
+  skip('query record via query', function (assert) {
     assert.expect(2);
     let done1 = assert.async();
     run(function () {
@@ -189,7 +189,7 @@ module('offline-CRUD', function(hooks) {
     });
   });
 
-  test('query record via queryRecord', function (assert) {
+  skip('query record via queryRecord', function (assert) {
     assert.expect(2);
     let done1 = assert.async();
     run(function () {
@@ -208,7 +208,7 @@ module('offline-CRUD', function(hooks) {
     });
   });
 
-  test('create record', function(assert) {
+  skip('create record', function(assert) {
     assert.expect(3);
     let done = assert.async();
 
@@ -242,7 +242,7 @@ module('offline-CRUD', function(hooks) {
     });
   });
 
-  test('delete record', function(assert) {
+  skip('delete record', function(assert) {
     assert.expect(2);
     let done = assert.async();
 

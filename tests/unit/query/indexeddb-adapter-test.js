@@ -1540,7 +1540,7 @@ function executeTest(data, query, assert, callback) {
   };
 
   let queryTempDb = () => {
-    storeIndexedbAdapterTest.set('offlineSchema', schemaIndexedbAdapterTest(dbName));
+    storeIndexedbAdapterTest.offlineSchema = schemaIndexedbAdapterTest(dbName);
     let db = dexieIndexedbAdapterTest.dexie(dbName, storeIndexedbAdapterTest);
     db.open().then((db) => {
       let startExecTime = window.performance.now();
@@ -1578,7 +1578,7 @@ function deleteTempDb(dbName) {
  * @returns {Dexie.Promise}
  */
 function createTempDb(dbName, data) {
-  storeIndexedbAdapterTest.set('offlineSchema', schemaIndexedbAdapterTest(dbName));
+  storeIndexedbAdapterTest.offlineSchema = schemaIndexedbAdapterTest(dbName);
   let db = dexieIndexedbAdapterTest.dexie(dbName, storeIndexedbAdapterTest);
   return db.open().then((db) => {
     let promises = [];

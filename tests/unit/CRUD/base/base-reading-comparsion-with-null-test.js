@@ -83,7 +83,7 @@ export default function readingComparsionWithNull(store, assert) {
       return store.query('ember-flexberry-dummy-comment', builder.build())
       .then((data) => {
         assert.equal(data.get('length'), 1, 'Eq null for master field | Length');
-        assert.ok(data.get('firstObject.author.name') === 'Andrey', 'Eq null for master field | Data');
+        assert.ok(data.get('0.author.name') === 'Andrey', 'Eq null for master field | Data');
       });
     })
 

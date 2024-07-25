@@ -30,6 +30,8 @@ export default function batchUpdating(store, assert) {
           store.findRecord('ember-flexberry-dummy-application-user', user2Id)
             .then((returned2Record) => {
               returned2Record.set('name', 'User 2');
+              returned2Record.set('birthday', new Date());
+              returned2Record.set('phone1', 'test');
               return returned2Record;
             }),
           store.findRecord('ember-flexberry-dummy-application-user', user3Id)

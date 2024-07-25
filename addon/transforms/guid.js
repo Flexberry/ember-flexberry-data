@@ -3,7 +3,7 @@
 */
 
 import { isEmpty } from '@ember/utils';
-import StringTransform from 'ember-data/transforms/string';
+import StringTransform from '@ember-data/serializer/transform';
 
 /**
   Transformation for model's attributes defined as <a href="http://emberjs.com/api/data/#method_attr">DS.attr</a> with type 'guid'.
@@ -19,13 +19,13 @@ import StringTransform from 'ember-data/transforms/string';
   });
   ```
 */
-export default StringTransform.extend({
+export default class extends StringTransform {
   /**
     Deserializes serialized attribute value.
    */
   deserialize(serialized) {
     return isEmpty(serialized) ? null : serialized;
-  },
+  }
 
   /**
     Serializes deserialized attribute value.
@@ -33,4 +33,4 @@ export default StringTransform.extend({
   serialize(deserialized) {
     return isEmpty(deserialized) ? null : deserialized;
   }
-});
+};

@@ -2,7 +2,6 @@ import { inject as service } from '@ember/service';
 import { isNone, isEmpty } from '@ember/utils';
 import { computed } from '@ember/object';
 import $ from 'jquery';
-import { copy } from '@ember/object/internals';
 import { getOwner } from '@ember/application';
 import Store from '@ember-data/store';
 import decorateAdapter from './base-store/decorate-adapter';
@@ -27,14 +26,11 @@ export default class extends Store {
     @private
     @default 'Schema of 1 version for internal models of addon'
   */
-  @computed()
-  get _offlineSchema() {
-    return {
-      'ember-flexberry-data': {
-        1: this.offlineGlobals.getOfflineSchema(),
-      }
-    };
-  }
+  _offlineSchema = {
+    'ember-flexberry-data': {
+      1: this.offlineGlobals.getOfflineSchema(),
+    }
+  };
 
   @service offlineGlobals;
 
@@ -146,8 +142,6 @@ export default class extends Store {
     let offlineStore = owner.lookup('store:local');
     this.offlineStore = offlineStore;
     this.offlineStore.offlineSchema = this.offlineSchema;
-
-    this._dbInit();
   }
 
   /**
@@ -207,7 +201,7 @@ export default class extends Store {
   */
   query(modelName, query) {
     // TODO: Method `copy` bewitch `QueryObject` into `Object`.
-    let _query = query instanceof QueryObject ? query : copy(query);
+    let _query = query instanceof QueryObject ? query : Object.assign({}, query);
 
     if (this.offlineGlobals.isOfflineEnabled) {
       let offlineStore = this.offlineStore;
@@ -236,7 +230,7 @@ export default class extends Store {
   */
   queryRecord(modelName, query) {
     // TODO: Method `copy` bewitch `QueryObject` into `Object`.
-    let _query = query instanceof QueryObject ? query : copy(query);
+    let _query = query instanceof QueryObject ? query : Object.assign({}, query);
 
     if (this.offlineGlobals.isOfflineEnabled) {
       let offlineStore = this.offlineStore;
@@ -387,7 +381,9 @@ export default class extends Store {
     @param {Boolean} [useOnlineStore] Allow to explicitly specify online or offline store using independently of global online status
   */
   unloadAll() {
-    return this._callSuperMethod('unloadAll', 1, arguments);
+    if (!this.isDestroying) {
+      return this._callSuperMethod('unloadAll', 1, arguments);
+    }
   }
 
   /**

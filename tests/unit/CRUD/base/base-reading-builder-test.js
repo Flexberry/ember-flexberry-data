@@ -1,4 +1,5 @@
 import { run } from '@ember/runloop';
+import { isNone } from '@ember/utils';
 import RSVP from 'rsvp';
 import QueryBuilder from 'ember-flexberry-data/query/builder';
 
@@ -64,7 +65,7 @@ export default function readingBuilderFunctions(store, assert) {
         .orderBy('karma')
         .skip(1);
       return runTest(store, builder, (data) => {
-        assert.equal(data.get('firstObject.karma'), 4, 'skip | Data');
+        assert.equal(data.get('0.karma'), 4, 'skip | Data');
         assert.equal(data.get('length'), 2, 'skip | Length');
       });
     })
@@ -86,9 +87,11 @@ export default function readingBuilderFunctions(store, assert) {
 
       store.unloadAll('ember-flexberry-dummy-application-user');
 
-      return runTest(store, builder, (data) =>
-        assert.ok(data.every(item => Object.keys(item.get('data')).join() === 'name,karma'), 'select')
-      );
+      return runTest(store, builder, (data) => {
+        assert.ok(data.every(item => {
+          return !isNone(item.name) && isNone(item.eMail);
+        }), 'select');
+      });
     })
 
     // selectByProjection
@@ -99,9 +102,11 @@ export default function readingBuilderFunctions(store, assert) {
 
       store.unloadAll('ember-flexberry-dummy-application-user');
 
-      return runTest(store, builder, (data) =>
-        assert.ok(data.every(item => Object.keys(item.get('data')).join() === 'name,eMail,activated,birthday,gender,karma'), 'selectByProjection')
-      );
+      return runTest(store, builder, (data) => {
+        assert.ok(data.every(item => {
+          return !isNone(item.name) && !isNone(item.eMail) && item.karma < 10;
+        }), 'selectByProjection');
+      });
 
     })
     .catch((e) => {

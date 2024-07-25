@@ -19,9 +19,9 @@ export default function baseCreatingTest(store, assert) {
       return store.query('ember-flexberry-dummy-suggestion', builder.build())
 
       .then((sug) => {
-        let comments = sug.get('firstObject.comments');
-        assert.equal(sug.get('firstObject.author.id'), records.user, 'With master relationship');
-        assert.equal(comments.get('firstObject.id'), records.comment, 'With 1st level detail relationship | Data');
+        let comments = sug.get('0.comments');
+        assert.equal(sug.get('0.author.id'), records.user, 'With master relationship');
+        assert.equal(comments.get('0.id'), records.comment, 'With 1st level detail relationship | Data');
         assert.equal(comments.get('length'), 1, 'With 1st level detail relationship | Length');
 
         builder = new QueryBuilder(store)
@@ -30,7 +30,7 @@ export default function baseCreatingTest(store, assert) {
           .selectByProjection('CommentVoteE');
         return store.query('ember-flexberry-dummy-comment-vote', builder.build())
         .then((votes) => {
-          assert.equal(votes.get('firstObject.applicationUser.id'), records.user, 'With 2nd level detail relationship | Data');
+          assert.equal(votes.get('0.applicationUser.id'), records.user, 'With 2nd level detail relationship | Data');
           assert.equal(votes.get('length'), 1, 'With 2nd level detail relationship | Length');
         });
       });
