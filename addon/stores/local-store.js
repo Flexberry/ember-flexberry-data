@@ -6,12 +6,12 @@ import { computed } from '@ember/object';
 import { getOwner } from '@ember/application';
 import { isArray } from '@ember/array';
 import { assert, debug } from '@ember/debug';
+import { cleanup } from '@ember-data/legacy-compat';
+import Store from '@ember-data/store';
 import { isNone, isBlank } from '@ember/utils';
 import RSVP from 'rsvp';
-import Store from '@ember-data/store';
 import OfflineAdapter from '../adapters/offline';
 import QueryBuilder from '../query/builder';
-import { cleanup } from '../utils/store-functions';
 
 /**
   Store that used in offline mode by default.

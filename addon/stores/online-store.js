@@ -5,12 +5,11 @@
 import { assert, debug } from '@ember/debug';
 import { isNone, isBlank } from '@ember/utils';
 import { A } from '@ember/array';
+import { cleanup } from '@ember-data/legacy-compat';
+import Store from '@ember-data/store';
 import RSVP from 'rsvp';
 import { isArray } from '@ember/array';
 import QueryBuilder from '../query/builder';
-import { cleanup } from '../utils/store-functions';
-
-import Store from '@ember-data/store';
 
 /**
   Store that used in online mode by default.

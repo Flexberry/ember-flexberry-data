@@ -1,10 +1,9 @@
-/*import Store from '@ember-data/store';
+import Store from '@ember-data/store';
 import { CacheHandler } from '@ember-data/store';
 import RequestManager from '@ember-data/request';
 import Fetch from '@ember-data/request/fetch';
 import {
   adapterFor,
-  cleanup,
   LegacyNetworkHandler,
   normalize,
   pushPayload,
@@ -15,21 +14,23 @@ import JSONAPICache from '@ember-data/json-api';
 import { buildSchema, instantiateRecord, modelFor, teardownRecord } from '@ember-data/model/hooks';
 
 export default class extends Store {
-  adapterFor = adapterFor;
-  serializerFor = serializerFor;
-  pushPayload = pushPayload;
-  normalize = normalize;
-  serializeRecord = serializeRecord;
-
-  constructor() {
-    super(...arguments);
-
-    if (!this.requestManager) {
-      this.requestManager = new RequestManager();
-      this.requestManager.use([LegacyNetworkHandler, Fetch]);
+  fixLegacyStore(store) {
+    store.adapterFor ??= adapterFor;
+    store.serializerFor ??= serializerFor;
+    store.pushPayload ??= pushPayload;
+    store.normalize ??= normalize;
+    store.serializeRecord ??= serializeRecord;
+    store.createSchemaService ??= this.createSchemaService;
+    store.createCache ??= this.createCache;
+    store.instantiateRecord = this.instantiateRecord;
+    store.teardownRecord = this.teardownRecord;
+    store.modelFor = this.modelFor;
+    if (!store.requestManager) {
+      store.requestManager = new RequestManager();
+      store.requestManager.use([LegacyNetworkHandler, Fetch]);
     }
 
-    this.requestManager.useCache(CacheHandler);
+    store.requestManager.useCache(CacheHandler);
   }
 
   createSchemaService() {
@@ -51,9 +52,4 @@ export default class extends Store {
   modelFor(type) {
     return (modelFor.call(this, type)) || super.modelFor(type);
   }
-
-  destroy() {
-    cleanup.call(this);
-    super.destroy();
-  }
-}*/
+}
