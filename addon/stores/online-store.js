@@ -10,6 +10,7 @@ import Store from '@ember-data/store';
 import RSVP from 'rsvp';
 import { isArray } from '@ember/array';
 import QueryBuilder from '../query/builder';
+import fixLegacyStore from '../utils/compatible-store-fix';
 
 /**
   Store that used in online mode by default.
@@ -20,6 +21,12 @@ import QueryBuilder from '../query/builder';
   @private
 */
 export default class extends Store {
+  constructor() {
+    super(...arguments);
+
+    fixLegacyStore(this);
+  }
+
   /**
    *
    * @method query

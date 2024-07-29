@@ -12,6 +12,7 @@ import { isNone, isBlank } from '@ember/utils';
 import RSVP from 'rsvp';
 import OfflineAdapter from '../adapters/offline';
 import QueryBuilder from '../query/builder';
+import fixLegacyStore from '../utils/compatible-store-fix';
 
 /**
   Store that used in offline mode by default.
@@ -41,6 +42,8 @@ export default class extends Store {
 
     let owner = getOwner(this);
     this.adapter = OfflineAdapter.create(owner.ownerInjection(), {});
+
+    fixLegacyStore(this);
   }
 
   /**

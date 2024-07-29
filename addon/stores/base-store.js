@@ -3,12 +3,13 @@ import { isNone, isEmpty } from '@ember/utils';
 import { computed } from '@ember/object';
 import $ from 'jquery';
 import { getOwner } from '@ember/application';
+import Store from '@ember-data/store';
 import decorateAdapter from './base-store/decorate-adapter';
 import decorateAPICall from './base-store/decorate-api-call';
 import QueryObject from '../query/query-object';
 import isObject from '../utils/is-object';
 import OnlineStore from './online-store';
-import CompatibleStore from './compatible-store';
+import fixLegacyStore from '../utils/compatible-store-fix';
 
 /**
   Base class for application store.
@@ -17,7 +18,7 @@ import CompatibleStore from './compatible-store';
   @class Store
   @extends <a href="http://emberjs.com/api/data/classes/DS.Store.html">DS.Store</a>
 */
-export default class extends CompatibleStore {
+export default class extends Store {
   /**
     Store offline schemas for all databases.
 
@@ -136,14 +137,14 @@ export default class extends CompatibleStore {
     if (isNone(this.onlineStore)) {
       let onlineStore = OnlineStore.create(owner.ownerInjection());
       this.onlineStore = onlineStore;
-      this.fixLegacyStore(this.onlineStore);
     }
 
     // Set offline store.
     let offlineStore = owner.lookup('store:local');
     this.offlineStore = offlineStore;
-    this.fixLegacyStore(this.offlineStore);
     this.offlineStore.offlineSchema = this.offlineSchema;
+
+    fixLegacyStore(this);
   }
 
   /**
