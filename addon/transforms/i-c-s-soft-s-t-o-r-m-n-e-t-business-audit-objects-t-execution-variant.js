@@ -2,7 +2,7 @@ import FlexberryEnum from 'ember-flexberry-data/transforms/flexberry-enum';
 import tExecutionVariantEnum from '../enums/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant';
 
 export default class extends FlexberryEnum {
-  constructor() {
-    super(tExecutionVariantEnum);
+  get enum() {
+    return tExecutionVariantEnum;
   }
 };

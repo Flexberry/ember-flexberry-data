@@ -47,7 +47,9 @@ export default class FlexberryEnum extends Transform {
     @property enum
     @type Object
   */
-  enum = undefined
+  get enum() {
+    return undefined;
+  }
 
   /**
     Object with inversed enum, value from enum property will be is property here.
@@ -85,21 +87,22 @@ export default class FlexberryEnum extends Transform {
     @type String
     @default null
    */
-  sourceType = null
+  get sourceType() {
+    return undefined;
+  }
 
   /**
     An overridable method called when objects are instantiated.
     For more information see [init](http://emberjs.com/api/classes/Ember.View.html#method_init) method of [Ember.View](http://emberjs.com/api/classes/Ember.View.html).
   */
-  constructor(enumDictionary) {
+  constructor() {
     super();
-    this.enum = enumDictionary;
-    if (isNone(enumDictionary)) {
+    if (isNone(this.enum)) {
       throw new Error('Enum property is undefined');
     }
 
-    this.inverse = inverseEnum(enumDictionary);
-    this.captions = enumCaptions(enumDictionary);
+    this.inverse = inverseEnum(this.enum);
+    this.captions = enumCaptions(this.enum);
   }
 
   /**

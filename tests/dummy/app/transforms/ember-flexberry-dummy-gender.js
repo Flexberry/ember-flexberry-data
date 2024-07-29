@@ -2,9 +2,11 @@ import FlexberryEnum from 'ember-flexberry-data/transforms/flexberry-enum';
 import GenderEnum from '../enums/ember-flexberry-dummy-gender';
 
 export default class extends FlexberryEnum {
-  constructor() {
-    super(GenderEnum);
+  get enum() {
+    return GenderEnum;
   }
 
-  sourceType = 'EmberFlexberryDummy.Gender'
+  get sourceType() {
+    return 'EmberFlexberryDummy.Gender';
+  }
 };
