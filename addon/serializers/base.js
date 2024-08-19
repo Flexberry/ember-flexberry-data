@@ -1,6 +1,6 @@
 import { merge } from '@ember/polyfills';
 import DS from 'ember-data';
-import { capitalize, camelize, dasherize, odataPluralize, odataSingularize } from '../utils/string-functions';
+import { capitalize, camelize, odataDasherize, odataPluralize, odataSingularize } from '../utils/string-functions';
 
 /**
  * Base serializer class.
@@ -192,10 +192,10 @@ export default DS.RESTSerializer.extend({
   */
   modelNameFromPayloadKey(key) {
     if (key.startsWith('#.')) {
-        return dasherize(key.replace(/[#\.]/g, ''));
+        return odataDasherize(key.replace(/[#\.]/g, ''));
     }
 
-    return odataSingularize(dasherize(key.replace(/[#\.]/g, '')));
+    return odataSingularize(odataDasherize(key.replace(/[#\.]/g, '')));
   },
 
   /**

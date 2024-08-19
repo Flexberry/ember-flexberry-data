@@ -18,6 +18,7 @@ const STRING_UNDERSCORE_REGEXP_2 = (/\-|\s+/g);
 const STRING_CAPITALIZE_REGEXP = (/(^|\/)([a-zа-яё])/g);
 
 const STRING_DECAMELIZE_REGEXP = (/([a-zа-яё\d])([A-ZА-ЯЁ])/g);
+const ODATA_DECAMELIZE_REGEXP = (/([A-ZА-ЯЁa-zа-яё\d])(?=[A-ZА-ЯЁ])/g);
 /* eslint-enable no-useless-escape */
 
 /**
@@ -161,6 +162,18 @@ function odataPluralize(str) {
   return str + 's';
 }
 
+/**
+  Returns the dasheraized form of a string for parsing OData to model name
+
+  @method odataDasherize
+  @param {String} str The string to dasherize.
+  @return {String} The dasherized string.
+*/
+function odataDasherize(str) {
+  let decamelizedStr = str.replace(ODATA_DECAMELIZE_REGEXP, '$1_').toLowerCase();
+  return decamelizedStr.replace(STRING_DASHERIZE_REGEXP, '-');
+}
+
 export {
   decamelize,
   dasherize,
@@ -169,5 +182,6 @@ export {
   underscore,
   capitalize,
   odataSingularize,
-  odataPluralize
+  odataPluralize,
+  odataDasherize
 };

@@ -11,7 +11,7 @@ import { A, isArray } from '@ember/array';
 
 import SnapshotTransform from '../utils/snapshot-transform';
 import ODataQueryAdapter from '../query/odata-adapter';
-import { capitalize, camelize, dasherize, odataPluralize, odataSingularize } from '../utils/string-functions';
+import { capitalize, camelize, odataDasherize, odataPluralize, odataSingularize } from '../utils/string-functions';
 import isUUID from '../utils/is-uuid';
 import generateUniqueId from '../utils/generate-unique-id';
 import { getResponseMeta, getBatchResponses, parseBatchResponse } from '../utils/batch-queries';
@@ -705,7 +705,7 @@ export default DS.RESTAdapter.extend({
   getModelNameFromOdataContext(context) {
     const regex = /(?<=\$metadata#)\w*(?=[\(\/])/g;
 
-    return odataSingularize(dasherize(regex.exec(context)[0]));
+    return odataSingularize(odataDasherize(regex.exec(context)[0]));
   },
 
   /**
