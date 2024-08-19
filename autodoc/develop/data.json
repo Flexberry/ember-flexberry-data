@@ -8559,7 +8559,7 @@
         },
         {
             "file": "addon/utils/string-functions.js",
-            "line": 23,
+            "line": 24,
             "description": "Converts a camelized string into all lower case separated by underscores.\n```javascript\n'innerHTML'.decamelize();           // 'inner_html'\n'action_name'.decamelize();        // 'action_name'\n'css-class-name'.decamelize();     // 'css-class-name'\n'my favorite items'.decamelize();  // 'my favorite items'\n```",
             "itemtype": "method",
             "name": "decamelize",
@@ -8579,7 +8579,7 @@
         },
         {
             "file": "addon/utils/string-functions.js",
-            "line": 39,
+            "line": 40,
             "description": "Replaces underscores, spaces, or camelCase with dashes.\n```javascript\n'innerHTML'.dasherize();          // 'inner-html'\n'action_name'.dasherize();        // 'action-name'\n'css-class-name'.dasherize();     // 'css-class-name'\n'my favorite items'.dasherize();  // 'my-favorite-items'\n'privateDocs/ownerInvoice'.dasherize(); // 'private-docs/owner-invoice'\n```",
             "itemtype": "method",
             "name": "dasherize",
@@ -8599,7 +8599,7 @@
         },
         {
             "file": "addon/utils/string-functions.js",
-            "line": 56,
+            "line": 57,
             "description": "Returns the lowerCamelCase form of a string.\n```javascript\n'innerHTML'.camelize();          // 'innerHTML'\n'action_name'.camelize();        // 'actionName'\n'css-class-name'.camelize();     // 'cssClassName'\n'my favorite items'.camelize();  // 'myFavoriteItems'\n'My Favorite Items'.camelize();  // 'myFavoriteItems'\n'private-docs/owner-invoice'.camelize(); // 'privateDocs/ownerInvoice'\n```",
             "itemtype": "method",
             "name": "camelize",
@@ -8619,7 +8619,7 @@
         },
         {
             "file": "addon/utils/string-functions.js",
-            "line": 77,
+            "line": 78,
             "description": "Returns the UpperCamelCase form of a string.\n```javascript\n'innerHTML'.classify();          // 'InnerHTML'\n'action_name'.classify();        // 'ActionName'\n'css-class-name'.classify();     // 'CssClassName'\n'my favorite items'.classify();  // 'MyFavoriteItems'\n'private-docs/owner-invoice'.classify(); // 'PrivateDocs/OwnerInvoice'\n```",
             "itemtype": "method",
             "name": "classify",
@@ -8639,7 +8639,7 @@
         },
         {
             "file": "addon/utils/string-functions.js",
-            "line": 105,
+            "line": 106,
             "description": "More general than decamelize. Returns the lower\\_case\\_and\\_underscored\nform of a string.\n```javascript\n'innerHTML'.underscore();          // 'inner_html'\n'action_name'.underscore();        // 'action_name'\n'css-class-name'.underscore();     // 'css_class_name'\n'my favorite items'.underscore();  // 'my_favorite_items'\n'privateDocs/ownerInvoice'.underscore(); // 'private_docs/owner_invoice'\n```",
             "itemtype": "method",
             "name": "underscore",
@@ -8659,7 +8659,7 @@
         },
         {
             "file": "addon/utils/string-functions.js",
-            "line": 123,
+            "line": 124,
             "description": "Returns the Capitalized form of a string\n```javascript\n'innerHTML'.capitalize()         // 'InnerHTML'\n'action_name'.capitalize()       // 'Action_name'\n'css-class-name'.capitalize()    // 'Css-class-name'\n'my favorite items'.capitalize() // 'My favorite items'\n'privateDocs/ownerInvoice'.capitalize(); // 'PrivateDocs/ownerInvoice'\n```",
             "itemtype": "method",
             "name": "capitalize",
@@ -8679,7 +8679,7 @@
         },
         {
             "file": "addon/utils/string-functions.js",
-            "line": 142,
+            "line": 143,
             "description": "Returns the singularized form of a string for OData",
             "itemtype": "method",
             "name": "odataSingularize",
@@ -8699,7 +8699,7 @@
         },
         {
             "file": "addon/utils/string-functions.js",
-            "line": 153,
+            "line": 154,
             "description": "Returns the pluralized form of a string for OData",
             "itemtype": "method",
             "name": "odataPluralize",
@@ -8712,6 +8712,26 @@
             ],
             "return": {
                 "description": "The pluralized string.",
+                "type": "String"
+            },
+            "class": "",
+            "module": "ember-flexberry-data"
+        },
+        {
+            "file": "addon/utils/string-functions.js",
+            "line": 165,
+            "description": "Returns the dasheraized form of a string for parsing OData to model name",
+            "itemtype": "method",
+            "name": "odataDasherize",
+            "params": [
+                {
+                    "name": "str",
+                    "description": "The string to dasherize.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The dasherized string.",
                 "type": "String"
             },
             "class": "",

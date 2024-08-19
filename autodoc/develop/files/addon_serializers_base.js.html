@@ -144,7 +144,7 @@
     <pre class="prettyprint linenums">
 import { merge } from &#x27;@ember/polyfills&#x27;;
 import DS from &#x27;ember-data&#x27;;
-import { capitalize, camelize, dasherize, odataPluralize, odataSingularize } from &#x27;../utils/string-functions&#x27;;
+import { capitalize, camelize, odataDasherize, odataPluralize, odataSingularize } from &#x27;../utils/string-functions&#x27;;
 
 /**
  * Base serializer class.
@@ -336,10 +336,10 @@ export default DS.RESTSerializer.extend({
   */
   modelNameFromPayloadKey(key) {
     if (key.startsWith(&#x27;#.&#x27;)) {
-        return dasherize(key.replace(/[#\.]/g, &#x27;&#x27;));
+        return odataDasherize(key.replace(/[#\.]/g, &#x27;&#x27;));
     }
 
-    return odataSingularize(dasherize(key.replace(/[#\.]/g, &#x27;&#x27;)));
+    return odataSingularize(odataDasherize(key.replace(/[#\.]/g, &#x27;&#x27;)));
   },
 
   /**
