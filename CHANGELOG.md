@@ -1,6 +1,6 @@
 # Change Log
 
-## [3.13.0-beta.1] - 2024-06-03
+## [3.13.0] - 2024-08-26
 ### Fixed
 - Model name parsing from OData name.
 
