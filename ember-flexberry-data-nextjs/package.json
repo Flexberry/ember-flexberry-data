@@ -1,0 +1,35 @@
+{
+  "name": "ember-flexberry-data-nextjs",
+  "version": "1.0.0",
+  "description": "NextJS version of ember-flexberry-data addon",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "jest"
+  },
+  "keywords": [
+    "nextjs",
+    "ember",
+    "flexberry",
+    "data",
+    "orm"
+  ],
+  "author": "Flexberry Team",
+  "license": "MIT",
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.4.0",
+    "idb": "^7.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  }
+}
