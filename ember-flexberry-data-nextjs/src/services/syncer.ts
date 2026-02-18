@@ -1,95 +1,174 @@
+import { BaseStore } from '../stores/base-store';
+import { LocalStore } from '../stores/local-store';
+import { OnlineStore } from '../stores/online-store';
+import { QueryObject } from '../query/query-object';
+
 /**
- * Сервис синхронизации данных между онлайн и оффлайн режимами
+ * Тип операции для аудита.
+ */
+export type SyncOperationType = 'INSERT' | 'UPDATE' | 'DELETE';
+
+/**
+ * Упрощённая запись аудита синхронизации.
+ */
+export interface SyncAuditEntry {
+  modelName: string;
+  operation: SyncOperationType;
+  id: string | null;
+  timestamp: Date;
+  payload?: any;
+  error?: unknown;
+}
+
+/**
+ * Сервис синхронизации данных между онлайн и оффлайн режимами.
+ * Не зависит от Ember и ориентирован на использование в Next/React.
  */
 export class SyncerService {
-  /**
-   * Ссылка на онлайн хранилище
-   */
-  private onlineStore: any;
+  private onlineStore: OnlineStore | BaseStore;
+  private offlineStore: LocalStore | BaseStore;
 
   /**
-   * Ссылка на оффлайн хранилище
+   * Журнал последних операций синхронизации (в памяти).
+   * Можно использовать для отладки или отображения статуса в UI.
    */
-  private offlineStore: any;
+  private auditLog: SyncAuditEntry[] = [];
 
-  /**
-   * Конструктор сервиса синхронизации
-   * @param onlineStore - Онлайн хранилище
-   * @param offlineStore - Оффлайн хранилище
-   */
-  constructor(onlineStore: any, offlineStore: any) {
+  constructor(onlineStore: OnlineStore | BaseStore, offlineStore: LocalStore | BaseStore) {
     this.onlineStore = onlineStore;
     this.offlineStore = offlineStore;
   }
 
   /**
-   * Синхронизирует данные из онлайн в оффлайн
-   * @param modelName - Название модели
-   * @param query - Запрос для получения данных
+   * Синхронизирует данные из онлайн в оффлайн (down).
+   * По умолчанию перезаписывает записи в оффлайне.
    */
-  async syncToOffline(modelName: string, query?: any): Promise<void> {
+  async syncToOffline(modelName: string, query?: QueryObject, options?: { clearBefore?: boolean }): Promise<void> {
     try {
-      // Получаем данные из онлайн-хранилища
-      const data = await this.onlineStore.findRecords(modelName, query);
-
-      // Сохраняем данные в оффлайн-хранилище
-      for (const record of data) {
-        await this.offlineStore.createRecord(modelName, record);
+      if (options?.clearBefore && 'deleteAllRecords' in this.offlineStore) {
+        await (this.offlineStore as any).deleteAllRecords(modelName);
       }
 
-      console.log(`Синхронизация данных модели ${modelName} в оффлайн режим`);
+      const data = await (this.onlineStore as any).findRecords(modelName, query);
+
+      for (const record of data) {
+        const id = (record as any)?.id ?? null;
+
+        if (id && 'updateRecord' in this.offlineStore) {
+          await (this.offlineStore as any).updateRecord(modelName, id, record);
+          this.addAuditEntry({ modelName, operation: 'UPDATE', id, payload: record });
+        } else {
+          const created = await (this.offlineStore as any).createRecord(modelName, record);
+          const createdId = (created as any)?.id ?? id;
+          this.addAuditEntry({ modelName, operation: 'INSERT', id: createdId, payload: created });
+        }
+      }
     } catch (error) {
-      console.error('Ошибка синхронизации данных в оффлайн:', error);
+      this.addAuditEntry({
+        modelName,
+        operation: 'INSERT',
+        id: null,
+        payload: null,
+        error,
+      });
       throw error;
     }
   }
 
   /**
-   * Синхронизирует данные из оффлайн в онлайн
-   * @param modelName - Название модели
+   * Синхронизирует данные из оффлайн в онлайн (up).
+   * Простая стратегия:
+   * - если есть id — пытаемся обновить запись онлайн;
+   * - если id нет — создаём новую запись онлайн.
    */
   async syncToOnline(modelName: string): Promise<void> {
     try {
-      // Получаем данные из оффлайн-хранилища
-      const offlineData = await this.offlineStore.findAllRecords(modelName);
+      const offlineData = await (this.offlineStore as any).findAllRecords(modelName);
 
-      // Отправляем данные в онлайн-хранилище
       for (const record of offlineData) {
-        if (record.id) {
-          await this.onlineStore.updateRecord(modelName, record.id, record);
-        } else {
-          await this.onlineStore.createRecord(modelName, record);
+        const id = (record as any)?.id ?? null;
+
+        try {
+          let result;
+          if (id) {
+            result = await (this.onlineStore as any).updateRecord(modelName, id, record);
+            this.addAuditEntry({ modelName, operation: 'UPDATE', id, payload: result });
+          } else {
+            result = await (this.onlineStore as any).createRecord(modelName, record);
+            const createdId = (result as any)?.id ?? null;
+            this.addAuditEntry({ modelName, operation: 'INSERT', id: createdId, payload: result });
+          }
+        } catch (e) {
+          this.addAuditEntry({
+            modelName,
+            operation: id ? 'UPDATE' : 'INSERT',
+            id,
+            payload: record,
+            error: e,
+          });
         }
       }
-
-      console.log(`Синхронизация данных модели ${modelName} в онлайн режим`);
     } catch (error) {
-      console.error('Ошибка синхронизации данных в онлайн:', error);
+      this.addAuditEntry({
+        modelName,
+        operation: 'UPDATE',
+        id: null,
+        payload: null,
+        error,
+      });
       throw error;
     }
   }
 
   /**
-   * Проверяет наличие соединения с сервером
+   * Простейшая проверка доступности сервера.
+   * Можно переопределить и использовать свой health‑endpoint.
    */
-  async isOnline(): Promise<boolean> {
+  async isOnline(healthUrl = '/api/health'): Promise<boolean> {
+    if (typeof fetch === 'undefined') {
+      // В среде без fetch (например, старый Node) считаем, что offline.
+      return false;
+    }
+
     try {
-      // Проверка наличия соединения с сервером
-      // В реальной реализации здесь будет проверка доступности сервера
-      // Например, через ping или запрос к health endpoint
-      const response = await fetch('/api/health', { method: 'GET' });
+      const response = await fetch(healthUrl, { method: 'GET' });
       return response.ok;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
 
   /**
-   * Проверяет, есть ли изменения для синхронизации
+   * Наивная проверка того, что в оффлайне есть данные, которые можно попытаться синхронизировать.
+   * В реальном приложении вы можете реализовать более сложный механизм меток изменений.
    */
-  async hasChanges(): Promise<boolean> {
-    // Проверка наличия изменений в оффлайн-хранилище
-    // В реальной реализации здесь будет проверка статуса изменений
-    return false;
+  async hasChanges(modelName: string): Promise<boolean> {
+    if (!('findAllRecords' in this.offlineStore)) {
+      return false;
+    }
+
+    const offlineData = await (this.offlineStore as any).findAllRecords(modelName);
+    return Array.isArray(offlineData) && offlineData.length > 0;
+  }
+
+  /**
+   * Возвращает копию журнала аудита.
+   */
+  getAuditLog(): SyncAuditEntry[] {
+    return [...this.auditLog];
+  }
+
+  /**
+   * Очищает журнал аудита.
+   */
+  clearAuditLog(): void {
+    this.auditLog = [];
+  }
+
+  private addAuditEntry(entry: Omit<SyncAuditEntry, 'timestamp'>): void {
+    this.auditLog.push({
+      ...entry,
+      timestamp: new Date(),
+    });
   }
 }

@@ -46,6 +46,13 @@ export class OfflineAdapter extends BaseAdapter {
    * @returns Promise с объектом базы данных
    */
   private async initDB(): Promise<IDBDatabase> {
+    // Адаптер рассчитан только на браузерную среду.
+    // В среде Node/SSR IndexedDB недоступен, поэтому явно сообщаем об этом,
+    // чтобы потребитель библиотеки не получал неочевидный ReferenceError.
+    if (typeof indexedDB === 'undefined') {
+      throw new Error('IndexedDB is not available in the current environment. OfflineAdapter can be used only in the browser.');
+    }
+
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.dbVersion);
 

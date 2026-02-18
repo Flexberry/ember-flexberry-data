@@ -2,7 +2,7 @@ import { BaseStore } from './base-store';
 import { OfflineAdapter } from '../adapters/offline';
 import { OfflineSerializer } from '../serializers/offline';
 import { QueryObject } from '../query/query-object';
-import { SimplePredicate, ComplexPredicate } from '../query/predicate';
+import { SimplePredicate, ComplexPredicate, StringPredicate, BasePredicate } from '../query/predicate';
 
 /**
  * Локальное хранилище
@@ -94,10 +94,135 @@ export class LocalStore extends BaseStore {
    * @param predicate - Предикат
    * @returns Отфильтрованные данные
    */
-  private applyPredicateFilter(data: any[], predicate: any): any[] {
-    // В реальной реализации здесь будет логика фильтрации данных по предикату
-    // Для упрощения возвращаем все данные
-    return data;
+  private applyPredicateFilter(data: any[], predicate: BasePredicate): any[] {
+    return data.filter((item) => this.matchesPredicate(item, predicate));
+  }
+
+  /**
+   * Проверяет, удовлетворяет ли запись предикату
+   * Поддерживаются:
+   * - SimplePredicate (Eq, Neq, Ge, Gt, Le, Lt)
+   * - StringPredicate (contains, регистронезависимо)
+   * - ComplexPredicate (AND/OR)
+   */
+  private matchesPredicate(record: any, predicate: BasePredicate): boolean {
+    if (predicate instanceof SimplePredicate) {
+      const { attributePath, operator, value } = predicate;
+      const actual = this.getByPath(record, attributePath);
+
+      switch (operator) {
+        case 'eq':
+        case '==':
+          return actual === value;
+        case 'ne':
+        case 'neq':
+        case '!=':
+          return actual !== value;
+        case 'gt':
+        case 'ge':
+        case 'lt':
+        case 'le':
+          if (actual == null || value == null) {
+            return false;
+          }
+          // Приводим к числу/дате, если это возможно
+          const left = this.normalizeComparable(actual);
+          const right = this.normalizeComparable(value);
+          switch (operator) {
+            case 'gt':
+              return left > right;
+            case 'ge':
+              return left >= right;
+            case 'lt':
+              return left < right;
+            case 'le':
+              return left <= right;
+            default:
+              return false;
+          }
+        default:
+          return false;
+      }
+    }
+
+    if (predicate instanceof StringPredicate) {
+      const { attributePath, containsValue } = predicate;
+      const actual = this.getByPath(record, attributePath);
+
+      if (actual == null) {
+        return false;
+      }
+
+      const haystack = String(actual).toLowerCase();
+      const needle = String(containsValue || '').toLowerCase();
+
+      if (!needle) {
+        return true;
+      }
+
+      return haystack.includes(needle);
+    }
+
+    if (predicate instanceof ComplexPredicate) {
+      const { condition, predicates } = predicate;
+      if (!predicates || predicates.length === 0) {
+        return true;
+      }
+
+      if (condition.toUpperCase() === 'AND') {
+        return predicates.every((p) => this.matchesPredicate(record, p));
+      }
+
+      if (condition.toUpperCase() === 'OR') {
+        return predicates.some((p) => this.matchesPredicate(record, p));
+      }
+
+      return false;
+    }
+
+    // Для неподдерживаемых предикатов по умолчанию отдаём true,
+    // чтобы они не исключали записи неожиданно.
+    return true;
+  }
+
+  /**
+   * Безопасно получает вложенное свойство по пути вида "a.b.c".
+   */
+  private getByPath(obj: any, path: string): any {
+    if (!path) {
+      return undefined;
+    }
+
+    return path.split('.').reduce((acc: any, key: string) => {
+      if (acc == null) {
+        return undefined;
+      }
+
+      return acc[key];
+    }, obj);
+  }
+
+  /**
+   * Нормализует значение для сравнения: дата, число или исходное значение.
+   */
+  private normalizeComparable(value: any): any {
+    if (value instanceof Date) {
+      return value.getTime();
+    }
+
+    if (typeof value === 'string') {
+      const asNumber = Number(value);
+      if (!Number.isNaN(asNumber)) {
+        return asNumber;
+      }
+
+      const asDate = Date.parse(value);
+      if (!Number.isNaN(asDate)) {
+        return asDate;
+      }
+    }
+
+    return value;
   }
 
   /**
@@ -125,7 +250,10 @@ export class LocalStore extends BaseStore {
    */
   async updateRecord(modelName: string, id: string, data: any): Promise<any> {
     try {
-      const serializedData = this.serializer.serialize(data);
+      // Гарантируем, что идентификатор присутствует в данных,
+      // чтобы IndexedDB могла корректно обновить запись по ключу.
+      const withId = data && data.id == null ? { ...data, id } : data;
+      const serializedData = this.serializer.serialize(withId);
       const result = await this.adapter.updateRecord(modelName, serializedData);
       return this.serializer.deserialize(result);
     } catch (error) {

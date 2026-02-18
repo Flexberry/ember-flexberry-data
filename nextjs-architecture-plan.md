@@ -38,45 +38,45 @@ ember-flexberry-data-nextjs/
 │   │   ├── attributes.ts
 │   │   ├── backup.ts
 │   │   ├── batch-queries.ts
-│   │   ├── create.ts
-│   │   ├── enum-functions.ts
-│   │   ├── first-load-offline-objects.ts
+│   │   ├── create.ts - ✅
+│   │   ├── enum-functions.ts - ✅
+│   │   ├── first-load-offline-objects.ts - ✅
 │   │   ├── generate-unique-id.ts - ✅
-│   │   ├── get-serialized-date-value.ts
-│   │   ├── information.ts
-│   │   ├── is-async.ts
-│   │   ├── is-embedded.ts
-│   │   ├── is-model-instance.ts
-│   │   ├── is-object.ts
+│   │   ├── get-serialized-date-value.ts - ✅
+│   │   ├── information.ts - ✅
+│   │   ├── is-async.ts - ✅
+│   │   ├── is-embedded.ts - ✅
+│   │   ├── is-model-instance.ts - ✅
+│   │   ├── is-object.ts - ✅
 │   │   ├── is-uuid.ts - ✅
-│   │   ├── model-functions.ts
-│   │   ├── queue.ts
-│   │   ├── reload-local-records.ts
-│   │   ├── snapshot-transform.ts
-│   │   └── string-functions.ts
+│   │   ├── model-functions.ts - ✅
+│   │   ├── queue.ts - ✅
+│   │   ├── reload-local-records.ts - ✅
+│   │   ├── snapshot-transform.ts - ✅
+│   │   └── string-functions.ts - ✅
 │   ├── query/
 │   │   ├── base-adapter.ts - ✅
-│   │   ├── base-builder.ts
+│   │   ├── base-builder.ts - ✅
 │   │   ├── builder.ts - ✅
-│   │   ├── condition.ts
+│   │   ├── condition.ts - ✅
 │   │   ├── filter-operator.ts - ✅
-│   │   ├── indexeddb-adapter.ts
-│   │   ├── js-adapter.ts
-│   │   ├── odata-adapter.ts
-│   │   ├── order-by-clause.ts
+│   │   ├── indexeddb-adapter.ts - ✅
+│   │   ├── js-adapter.ts - ✅
+│   │   ├── odata-adapter.ts - ✅
+│   │   ├── order-by-clause.ts - ✅
 │   │   ├── parameter.ts - ✅
 │   │   ├── predicate.ts - ✅
-│   │   └── query-object.ts
+│   │   └── query-object.ts - ✅
 │   ├── stores/
 │   │   ├── base-store.ts - ✅
 │   │   ├── local-store.ts - ✅
 │   │   └── online-store.ts - ✅
 │   ├── transforms/
-│   │   ├── decimal.ts
-│   │   ├── file.ts
-│   │   ├── flexberry-enum.ts
-│   │   ├── guid.ts
-│   │   └── generated/
+│   │   ├── decimal.ts - ✅
+│   │   ├── file.ts - ✅
+│   │   ├── flexberry-enum.ts - ✅
+│   │   ├── guid.ts - ✅
+│   │   └── generated/ - ✅
 │   └── types/
 │       └── index.d.ts
 ├── package.json
@@ -97,8 +97,8 @@ ember-flexberry-data-nextjs/
 
 #### Модели данных
 - **Базовая модель**: Класс для всех моделей данных - ✅
-- **Модели сгенерированные автоматически**: Для каждого типа данных
-- **Модели для оффлайн-режима**: Специальные модели для работы с локальным хранилищем
+- **Модели сгенерированные автоматически**: Для каждого типа данных - ✅
+- **Модели для оффлайн-режима**: Специальные модели для работы с локальным хранилищем - ✅
 
 #### Сервисы
 - **Syncer service**: Сервис синхронизации данных между онлайн и оффлайн режимами - ✅

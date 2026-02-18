@@ -4,8 +4,20 @@
 export enum FilterOperator {
   Eq = 'eq',
   Neq = 'ne',
-  Le = 'le',
+  /**
+   * Strictly "less than".
+   */
+  Le = 'lt',
+  /**
+   * "Less than or equal".
+   */
   Leq = 'le',
-  Ge = 'ge',
+  /**
+   * Strictly "greater than".
+   */
+  Ge = 'gt',
+  /**
+   * "Greater than or equal".
+   */
   Geq = 'ge'
 }

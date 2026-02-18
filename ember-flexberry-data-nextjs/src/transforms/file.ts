@@ -1,27 +1,24 @@
 /**
- * Трансформер для файлов
+ * Трансформер для работы с файлами
  */
 export class FileTransform {
   /**
-   * Преобразует значение в файл
-   * @param value - Значение для преобразования
-   * @returns Файл
+   * Преобразует значение при чтении из источника данных
+   * @param value Значение для преобразования
+   * @returns Преобразованное значение
    */
-  static serialize(value: any): any {
-    // Для файлов обычно ничего не преобразуем, просто возвращаем как есть
+  static deserialize(value: any): any {
+    // Реализация десериализации файла
     return value;
   }
 
   /**
-   * Преобразует файл в строку
-   * @param value - Файл
-   * @returns Строковое представление файла
+   * Преобразует значение при записи в источник данных
+   * @param value Значение для преобразования
+   * @returns Преобразованное значение
    */
-  static deserialize(value: any): string {
-    // Для файлов обычно возвращаем строковое представление
-    if (value && typeof value === 'object' && value.name) {
-      return value.name;
-    }
-    return String(value);
+  static serialize(value: any): any {
+    // Реализация сериализации файла
+    return value;
   }
 }
