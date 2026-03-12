@@ -1,0 +1,208 @@
+{
+  "projectName": "ember-flexberry-data2GenModules",
+  "migrationVersion": "1.0",
+  "migrationDate": "2026-03-11",
+  "totalModules": 13,
+  "summary": {
+    "highPriority": 3,
+    "mediumPriority": 8,
+    "lowPriority": 2,
+    "totalEstimatedTime": 118
+  },
+  "modules": [
+    {
+      "name": "core-models",
+      "type": "models",
+      "priority": "high",
+      "estimatedTime": 2,
+      "dependencies": [],
+      "description": "Базовые модели данных и их расширения",
+      "batch": 1
+    },
+    {
+      "name": "utils",
+      "type": "utils",
+      "priority": "high",
+      "estimatedTime": 1,
+      "dependencies": [],
+      "description": "Утилитарные функции для работы с моделями",
+      "batch": 1
+    },
+    {
+      "name": "transforms",
+      "type": "transforms",
+      "priority": "high",
+      "estimatedTime": 2,
+      "dependencies": ["utils"],
+      "description": "Преобразования типов данных Ember Data",
+      "batch": 2
+    },
+    {
+      "name": "odata-query",
+      "type": "query",
+      "priority": "high",
+      "estimatedTime": 2,
+      "dependencies": ["utils"],
+      "description": "Система построения запросов OData",
+      "batch": 2
+    },
+    {
+      "name": "audit",
+      "type": "models",
+      "priority": "medium",
+      "estimatedTime": 5,
+      "dependencies": ["transforms", "core-models"],
+      "description": "Модель аудита и изменения",
+      "batch": 3
+    },
+    {
+      "name": "generated-models",
+      "type": "models",
+      "priority": "medium",
+      "estimatedTime": 5,
+      "dependencies": ["core-models", "audit"],
+      "description": "Автогенерированные модели для бизнес-сущностей",
+      "batch": 4
+    },
+    {
+      "name": "regenerated-mixins",
+      "type": "mixins",
+      "priority": "medium",
+      "estimatedTime": 7,
+      "dependencies": ["core-models", "generated-models"],
+      "description": "Миксины с автогенерированными атрибутами и проекциями для моделей",
+      "batch": 5
+    },
+    {
+      "name": "offline",
+      "type": "offline",
+      "priority": "medium",
+      "estimatedTime": 8,
+      "dependencies": ["core-models", "offline-store", "utils"],
+      "description": "Поддержка автономного режима работы (Offline Mode)",
+      "batch": 6
+    },
+    {
+      "name": "odata",
+      "type": "adapters",
+      "priority": "medium",
+      "estimatedTime": 12,
+      "dependencies": ["core-models", "offline", "odata-query"],
+      "description": "Адаптер и сериализатор для OData backend",
+      "batch": 7
+    },
+    {
+      "name": "offline-store",
+      "type": "stores",
+      "priority": "medium",
+      "estimatedTime": 6,
+      "dependencies": ["core-models", "offline", "utils"],
+      "description": "Локальное хранилище данных (IndexedDB)",
+      "batch": 6
+    },
+    {
+      "name": "serializers-base",
+      "type": "serializers",
+      "priority": "medium",
+      "estimatedTime": 7,
+      "dependencies": ["core-models", "offline", "odata"],
+      "description": "Базовый сериализатор и его адаптации",
+      "batch": 8
+    },
+    {
+      "name": "services",
+      "type": "services",
+      "priority": "medium",
+      "estimatedTime": 6,
+      "dependencies": ["core-models", "offline", "offline-store", "utils"],
+      "description": "Ember-сервисы",
+      "batch": 9
+    },
+    {
+      "name": "initializers",
+      "type": "initializers",
+      "priority": "medium",
+      "estimatedTime": 3,
+      "dependencies": ["core-models", "offline-store", "services"],
+      "description": "Инициализаторы приложения",
+      "batch": 10
+    },
+    {
+      "name": "instance-initializers",
+      "type": "initializers",
+      "priority": "medium",
+      "estimatedTime": 2,
+      "dependencies": ["services"],
+      "description": "Instance-инициализаторы приложения",
+      "batch": 11
+    }
+  ],
+  "batches": [
+    {
+      "batchNumber": 1,
+      "modules": ["core-models", "utils"],
+      "estimatedTime": 3,
+      "description": "Базовые модули: без зависимостей"
+    },
+    {
+      "batchNumber": 2,
+      "modules": ["transforms", "odata-query"],
+      "estimatedTime": 4,
+      "description": "Зависят только от базовых модулей"
+    },
+    {
+      "batchNumber": 3,
+      "modules": ["audit"],
+      "estimatedTime": 5,
+      "description": "Модель аудита"
+    },
+    {
+      "batchNumber": 4,
+      "modules": ["generated-models"],
+      "estimatedTime": 5,
+      "description": "Автогенерированные модели"
+    },
+    {
+      "batchNumber": 5,
+      "modules": ["regenerated-mixins"],
+      "estimatedTime": 7,
+      "description": "Миксины с автогенерированными атрибутами"
+    },
+    {
+      "batchNumber": 6,
+      "modules": ["offline", "offline-store"],
+      "estimatedTime": 14,
+      "description": "Offline режим и хранилище"
+    },
+    {
+      "batchNumber": 7,
+      "modules": ["odata"],
+      "estimatedTime": 12,
+      "description": "OData адаптер"
+    },
+    {
+      "batchNumber": 8,
+      "modules": ["serializers-base"],
+      "estimatedTime": 7,
+      "description": "Базовый сериализатор"
+    },
+    {
+      "batchNumber": 9,
+      "modules": ["services"],
+      "estimatedTime": 6,
+      "description": "Ember сервисы"
+    },
+    {
+      "batchNumber": 10,
+      "modules": ["initializers"],
+      "estimatedTime": 3,
+      "description": "Инициализаторы приложения"
+    },
+    {
+      "batchNumber": 11,
+      "modules": ["instance-initializers"],
+      "estimatedTime": 2,
+      "description": "Instance-инициализаторы"
+    }
+  ]
+}

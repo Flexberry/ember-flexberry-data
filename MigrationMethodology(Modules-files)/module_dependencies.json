@@ -1,0 +1,129 @@
+{
+  "dependencies": [
+    {
+      "from": "serializers",
+      "to": "models",
+      "type": "imports"
+    },
+    {
+      "from": "serializers",
+      "to": "mixins",
+      "type": "imports"
+    },
+    {
+      "from": "serializers",
+      "to": "utils",
+      "type": "imports"
+    },
+    {
+      "from": "models",
+      "to": "transforms",
+      "type": "imports"
+    },
+    {
+      "from": "models",
+      "to": "utils",
+      "type": "imports"
+    },
+    {
+      "from": "mixins",
+      "to": "models",
+      "type": "inherits"
+    },
+    {
+      "from": "mixins",
+      "to": "utils",
+      "type": "imports"
+    },
+    {
+      "from": "services",
+      "to": "stores",
+      "type": "imports"
+    },
+    {
+      "from": "services",
+      "to": "utils",
+      "type": "imports"
+    },
+    {
+      "from": "offline-globals-initializer",
+      "to": "services",
+      "type": "imports"
+    },
+    {
+      "from": "local-store-initializer",
+      "to": "stores",
+      "type": "imports"
+    },
+    {
+      "from": "flexberry-enum-initializer",
+      "to": "transforms",
+      "type": "imports"
+    },
+    {
+      "from": "instance-initializers",
+      "to": "services",
+      "type": "imports"
+    },
+    {
+      "from": "query-builder",
+      "to": "serializers",
+      "type": "imports"
+    },
+    {
+      "from": "query-builder",
+      "to": "utils",
+      "type": "imports"
+    },
+    {
+      "from": "stores",
+      "to": "adapters",
+      "type": "imports"
+    },
+    {
+      "from": "stores",
+      "to": "serializers",
+      "type": "imports"
+    },
+    {
+      "from": "stores",
+      "to": "mixins",
+      "type": "imports"
+    },
+    {
+      "from": "stores",
+      "to": "query-builder",
+      "type": "imports"
+    },
+    {
+      "from": "adapters",
+      "to": "query-builder",
+      "type": "imports"
+    },
+    {
+      "from": "adapters",
+      "to": "serializers",
+      "type": "imports"
+    },
+    {
+      "from": "adapters",
+      "to": "utils",
+      "type": "imports"
+    },
+    {
+      "from": "utils",
+      "to": "create",
+      "type": "uses"
+    },
+    {
+      "from": "utils",
+      "to": "information",
+      "type": "uses"
+    },
+    {
+      "from": "enum-functions",
+      "to": "utils",
+      "type": "uses"
+    }
+  ]
+}

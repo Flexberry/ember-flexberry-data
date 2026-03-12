@@ -1,0 +1,257 @@
+{
+  "projectName": "ember-flexberry-data2GenModules",
+  "scanDate": "2026-03-11",
+  "totalFiles": 364,
+  "modules": [
+    {
+      "name": "core-models",
+      "description": "Базовые модели данных и их расширения",
+      "files": [
+        "addon/models/model.js",
+        "addon/models/model-without-validation.js",
+        "addon/models/offline-model.js",
+        "app/models/model.js",
+        "app/models/model-without-validation.js",
+        "app/models/offline-model.js"
+      ],
+      "mainFile": "addon/models/model.js",
+      "type": "models"
+    },
+    {
+      "name": "generated-models",
+      "description": "Автогенерированные модели для бизнес-сущностей",
+      "files": [
+        "addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+        "addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js",
+        "addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js",
+        "addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js",
+        "addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js",
+        "addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js",
+        "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+        "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js",
+        "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js",
+        "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js",
+        "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js",
+        "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js"
+      ],
+      "mainFile": "addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+      "type": "models"
+    },
+    {
+      "name": "regenerated-mixins",
+      "description": "Миксины с автогенерированными атрибутами и проекциями для моделей",
+      "files": [
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js"
+      ],
+      "mainFile": "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+      "type": "mixins"
+    },
+    {
+      "name": "audit",
+      "description": "Модель аудита и изменения",
+      "files": [
+        "addon/mixins/audit-model.js",
+        "app/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js",
+        "app/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js",
+        "addon/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js",
+        "addon/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js",
+        "addon/enums/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js",
+        "addon/enums/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js",
+        "app/enums/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js",
+        "app/enums/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js"
+      ],
+      "mainFile": "addon/mixins/audit-model.js",
+      "type": "models"
+    },
+    {
+      "name": "offline",
+      "description": "Поддержка автономного режима работы (Offline Mode)",
+      "files": [
+        "addon/mixins/offline-model.js",
+        "addon/adapters/offline.js",
+        "addon/serializers/offline.js",
+        "addon/services/dexie.js",
+        "app/adapters/offline.js",
+        "app/serializers/offline.js",
+        "app/services/dexie.js",
+        "app/utils/backup.js",
+        "addon/utils/backup.js",
+        "app/models/offline-model.js"
+      ],
+      "mainFile": "addon/mixins/offline-model.js",
+      "type": "offline"
+    },
+    {
+      "name": "odata",
+      "description": "Адаптер и сериализатор для OData backend",
+      "files": [
+        "addon/adapters/odata.js",
+        "addon/serializers/odata.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js",
+        "app/adapters/odata.js",
+        "app/serializers/odata.js",
+        "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+        "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js",
+        "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js",
+        "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js",
+        "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js",
+        "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js"
+      ],
+      "mainFile": "addon/adapters/odata.js",
+      "type": "adapters"
+    },
+    {
+      "name": "odata-query",
+      "description": "Система построения запросов OData",
+      "files": [
+        "addon/query/base-adapter.js",
+        "addon/query/builder.js",
+        "addon/query/indexeddb-adapter.js",
+        "addon/query/js-adapter.js",
+        "addon/query/odata-adapter.js",
+        "addon/query/condition.js",
+        "addon/query/filter-operator.js",
+        "addon/query/order-by-clause.js",
+        "addon/query/parameter.js",
+        "addon/query/predicate.js",
+        "addon/query/query-object.js",
+        "addon/utils/string-functions.js"
+      ],
+      "mainFile": "addon/query/builder.js",
+      "type": "query"
+    },
+    {
+      "name": "offline-store",
+      "description": "Локальное хранилище данных (IndexedDB)",
+      "files": [
+        "addon/stores/base-store.js",
+        "addon/stores/base-store/decorate-adapter.js",
+        "addon/stores/base-store/decorate-api-call.js",
+        "addon/stores/local-store.js",
+        "addon/stores/online-store.js"
+      ],
+      "mainFile": "addon/stores/local-store.js",
+      "type": "stores"
+    },
+    {
+      "name": "services",
+      "description": "Ember-сервисы",
+      "files": [
+        "addon/services/syncer.js",
+        "addon/services/offline-globals.js",
+        "addon/services/user.js",
+        "app/services/syncer.js",
+        "app/services/offline-globals.js",
+        "app/services/user.js",
+        "app/services/dexie.js",
+        "app/services/offline-globals.js"
+      ],
+      "mainFile": "addon/services/syncer.js",
+      "type": "services"
+    },
+    {
+      "name": "serializers-base",
+      "description": "Базовый сериализатор и его адаптации",
+      "files": [
+        "addon/serializers/base.js",
+        "app/serializers/base.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent-offline.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group-offline.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session-offline.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type-offline.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field-offline.js",
+        "addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity-offline.js"
+      ],
+      "mainFile": "addon/serializers/base.js",
+      "type": "serializers"
+    },
+    {
+      "name": "transforms",
+      "description": "Преобразования типов данных Ember Data",
+      "files": [
+        "addon/transforms/decimal.js",
+        "addon/transforms/file.js",
+        "addon/transforms/flexberry-enum.js",
+        "addon/transforms/guid.js",
+        "app/transforms/decimal.js",
+        "app/transforms/file.js",
+        "app/transforms/flexberry-enum.js",
+        "app/transforms/guid.js",
+        "app/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js",
+        "app/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js",
+        "addon/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js",
+        "addon/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js"
+      ],
+      "mainFile": "addon/transforms/guid.js",
+      "type": "transforms"
+    },
+    {
+      "name": "initializers",
+      "description": "Инициализаторы приложения",
+      "files": [
+        "addon/initializers/flexberry-enum.js",
+        "addon/initializers/local-store.js",
+        "addon/initializers/offline-globals.js",
+        "app/initializers/flexberry-enum.js",
+        "app/initializers/local-store.js",
+        "app/initializers/offline-globals.js"
+      ],
+      "mainFile": "Addon/initializers/flexberry-enum.js",
+      "type": "initializers"
+    },
+    {
+      "name": "instance-initializers",
+      "description": "Instance-инициализаторы приложения",
+      "files": [
+        "addon/instance-initializers/set-singletons.js",
+        "app/instance-initializers/set-singletons.js"
+      ],
+      "mainFile": "addon/instance-initializers/set-singletons.js",
+      "type": "initializers"
+    },
+    {
+      "name": "utils",
+      "description": "Утилитарные функции для работы с моделями",
+      "files": [
+        "addon/utils/attributes.js",
+        "addon/utils/backup.js",
+        "addon/utils/batch-queries.js",
+        "addon/utils/create.js",
+        "addon/utils/enum-functions.js",
+        "addon/utils/first-load-offline-objects.js",
+        "addon/utils/generate-unique-id.js",
+        "addon/utils/get-serialized-date-value.js",
+        "addon/utils/information.js",
+        "addon/utils/is-async.js",
+        "addon/utils/is-embedded.js",
+        "addon/utils/is-model-instance.js",
+        "addon/utils/is-object.js",
+        "addon/utils/is-uuid.js",
+        "addon/utils/model-functions.js",
+        "addon/utils/queue.js",
+        "addon/utils/reload-local-records.js",
+        "addon/utils/snapshot-transform.js",
+        "addon/utils/string-functions.js",
+        "app/utils/batch-queries.js"
+      ],
+      "mainFile": "addon/utils/string-functions.js",
+      "type": "utils"
+    }
+  ]
+}
