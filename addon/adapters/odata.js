@@ -535,7 +535,7 @@ export default DS.RESTAdapter.extend({
           }
 
           let batchResponses = getBatchResponses(response, meta.boundary).map(parseBatchResponse);
-          
+
 
           const getResponses = batchResponses.filter(r => r.contentType === 'application/http');
           const updateResponse = batchResponses.find(r => r.contentType === 'multipart/mixed');
@@ -642,7 +642,7 @@ export default DS.RESTAdapter.extend({
     Ember.assert('Params must be Object!', typeof params === 'object');
     Ember.assert('params.method or params.url is not defined.', !(Ember.isNone(params.method) || Ember.isNone(params.url)));
 
-    return new Ember.RSVP.Promise(function (resolve, reject) {
+    return new Ember.RSVP.Promise((resolve, reject) => {
       Ember.$.ajax(params).done((msg) => {
         if (!Ember.isNone(store) && !Ember.isNone(modelname)) {
           const normalizedRecords = { data: Ember.A(), included: Ember.A() };
@@ -653,7 +653,17 @@ export default DS.RESTAdapter.extend({
               normalizedRecords.included.addObjects(normalized.included);
             }
           });
-          Ember.run.join(() => { msg = store.push(normalizedRecords); });
+          Ember.run.join(() => {
+            const sortedIncluded = this._topologicalSort(normalizedRecords.included.toArray());
+
+            sortedIncluded.forEach(record => {
+              store.push({ data: record });
+            });
+
+            if (normalizedRecords.data && normalizedRecords.data.length > 0) {
+              msg = store.push({ data: normalizedRecords.data });
+            }
+          });
         }
 
         if (!Ember.isNone(successCallback)) {
@@ -733,6 +743,72 @@ export default DS.RESTAdapter.extend({
         }
       });
     });
+  },
+
+  /**
+   * Topological sort for Ember Data records.
+   * Ensures dependencies are pushed to store before dependent records.
+   * @param {Array} records
+   * @returns {Array} Sorted records
+   */
+  _topologicalSort(records) {
+    if (!records || records.length === 0) {
+      return records;
+    }
+
+    const recordMap = new Map();
+    const graph = new Map();
+    const inDegree = new Map();
+
+    records.forEach(record => {
+      const key = `${record.type}:${record.id}`;
+      recordMap.set(key, record);
+      graph.set(key, []);
+      inDegree.set(key, 0);
+    });
+
+    recordMap.forEach((record, key) => {
+      if (record.relationships) {
+        Object.values(record.relationships).forEach(rel => {
+          if (rel.data) {
+            const relData = Array.isArray(rel.data) ? rel.data : [rel.data];
+            relData.forEach(relDatum => {
+              const depKey = `${relDatum.type}:${relDatum.id}`;
+              if (recordMap.has(depKey)) {
+                graph.get(depKey).push(key);
+                inDegree.set(key, inDegree.get(key) + 1);
+              }
+            });
+          }
+        });
+      }
+    });
+
+    const queue = [];
+    inDegree.forEach((degree, key) => {
+      if (degree === 0) {
+        queue.push(key);
+      }
+    });
+
+    const sorted = [];
+    while (queue.length > 0) {
+      const key = queue.shift();
+      sorted.push(recordMap.get(key));
+
+      graph.get(key).forEach(dependent => {
+        inDegree.set(dependent, inDegree.get(dependent) - 1);
+        if (inDegree.get(dependent) === 0) {
+          queue.push(dependent);
+        }
+      });
+    }
+
+    if (sorted.length !== records.length) {
+      console.warn('Cyclic dependencies were found in the records:', records);
+    }
+
+    return sorted;
   },
 
   /**
