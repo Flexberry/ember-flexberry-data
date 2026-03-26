@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.8.1] - 2026-03-26
+### Fixed
+- Fix sort for Ember Data records.
+
 ## [2.8.0] - 2023-03-13
 ### Fixed
 - Audit fields creator and editor set.
