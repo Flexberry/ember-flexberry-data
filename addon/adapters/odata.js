@@ -656,13 +656,7 @@ export default DS.RESTAdapter.extend({
           Ember.run.join(() => {
             const sortedIncluded = this._topologicalSort(normalizedRecords.included.toArray());
 
-            sortedIncluded.forEach(record => {
-              store.push({ data: record });
-            });
-
-            if (normalizedRecords.data && normalizedRecords.data.length > 0) {
-              msg = store.push({ data: normalizedRecords.data });
-            }
+            msg = store.push({ data: normalizedRecords.data, included: sortedIncluded });
           });
         }
 

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.8.2] - 2026-03-27
+### Fixed
+- Fix remark by sort for Ember Data records.
+
 ## [2.8.1] - 2026-03-26
 ### Fixed
 - Fix sort for Ember Data records.
