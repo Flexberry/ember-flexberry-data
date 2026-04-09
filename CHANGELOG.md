@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.13.0-beta.1] - 2026-04-09
+### Fixed
+- Fix security-link-group model.
+
 ## [3.13.0] - 2024-08-26
 ### Fixed
 - Model name parsing from OData name.
