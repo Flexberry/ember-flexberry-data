@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [3.10.0-beta.1] - 2026-04-09
+### Changed
+- Fix security-link-group model.
+
 ## [3.10.0] - 2023-08-22
 ### Changed
 - Increase version to match ember-flexberry.
