@@ -70,10 +70,10 @@ export let defineProjections = function (model) {
   model.defineProjection('Sec_LinkGroupL', 'i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group', {
     user: belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', 'Юзер', {
       name: attr('Юзер')
-    }),
+    }, { displayMemberPath: 'name' }),
     group: belongsTo('i-c-s-soft-s-t-o-r-m-n-e-t-security-agent', 'Группа', {
       name: attr('Группа')
-    }),
+    }, { displayMemberPath: 'name' }),
     createTime: attr('Дата создания'),
     creator: attr('Создатель'),
     editTime: attr('Дата изменения'),
