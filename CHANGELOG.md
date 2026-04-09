@@ -1,6 +1,6 @@
 # Change Log
 
-## [3.13.0-beta.1] - 2026-04-09
+## [3.13.1-beta.1] - 2026-04-09
 ### Fixed
 - Fix security-link-group model.
 
