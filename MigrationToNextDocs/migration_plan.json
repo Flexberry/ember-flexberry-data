@@ -1,0 +1,830 @@
+{
+  "version": "1.0",
+  "generated_at": "2026-03-05T09:30:00Z",
+  "project_path": "/app/ember-flexberry-data",
+  "modules": [
+    {
+      "module_id": "attributes-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/utils/attributes.js"]
+    },
+    {
+      "module_id": "information-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/utils/information.js"]
+    },
+    {
+      "module_id": "is-async-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/utils/is-async.js"]
+    },
+    {
+      "module_id": "is-object-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/utils/is-object.js"]
+    },
+    {
+      "module_id": "is-model-instance-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/utils/is-model-instance.js"]
+    },
+    {
+      "module_id": "is-embedded-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/utils/is-embedded.js"]
+    },
+    {
+      "module_id": "is-uuid-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/utils/is-uuid.js"]
+    },
+    {
+      "module_id": "create-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/utils/create.js"]
+    },
+    {
+      "module_id": "enum-functions-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": ["information-utils"],
+      "order": 2,
+      "files": ["addon/utils/enum-functions.js"]
+    },
+    {
+      "module_id": "string-functions-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": ["information-utils"],
+      "order": 2,
+      "files": ["addon/utils/string-functions.js"]
+    },
+    {
+      "module_id": "model-functions-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": ["information-utils"],
+      "order": 2,
+      "files": ["addon/utils/model-functions.js"]
+    },
+    {
+      "module_id": "snapshot-transform-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": ["information-utils"],
+      "order": 2,
+      "files": ["addon/utils/snapshot-transform.js"]
+    },
+    {
+      "module_id": "batch-queries-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": ["information-utils"],
+      "order": 2,
+      "files": ["addon/utils/batch-queries.js", "app/utils/batch-queries.js"]
+    },
+    {
+      "module_id": "generation-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": [
+        "addon/utils/generate-unique-id.js",
+        "addon/utils/get-serialized-date-value.js"
+      ]
+    },
+    {
+      "module_id": "queue-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": ["information-utils"],
+      "order": 2,
+      "files": ["addon/utils/queue.js"]
+    },
+    {
+      "module_id": "reload-local-records-utils",
+      "type": "utils",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["batch-queries-utils", "information-utils"],
+      "order": 3,
+      "files": ["addon/utils/reload-local-records.js"]
+    },
+    {
+      "module_id": "first-load-offline-objects-utils",
+      "type": "utils",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["batch-queries-utils", "reload-local-records-utils"],
+      "order": 4,
+      "files": ["addon/utils/first-load-offline-objects.js"]
+    },
+    {
+      "module_id": "backup-utils",
+      "type": "utils",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["information-utils"],
+      "order": 2,
+      "files": ["addon/utils/backup.js"]
+    },
+    {
+      "module_id": "offline-globals-service",
+      "type": "service",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/services/offline-globals.js", "app/services/offline-globals.js"]
+    },
+    {
+      "module_id": "user-service",
+      "type": "service",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/services/user.js", "app/services/user.js"]
+    },
+    {
+      "module_id": "dexie-service",
+      "type": "service",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["queue-utils"],
+      "order": 3,
+      "files": ["addon/services/dexie.js", "app/services/dexie.js"]
+    },
+    {
+      "module_id": "syncer-service",
+      "type": "service",
+      "estimated_effort": "high",
+      "priority": "high",
+      "dependencies": ["offline-globals-service", "dexie-service"],
+      "order": 4,
+      "files": ["addon/services/syncer.js", "app/services/syncer.js"]
+    },
+    {
+      "module_id": "local-store-initializer",
+      "type": "initializer",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": ["offline-globals-service"],
+      "order": 2,
+      "files": ["addon/initializers/local-store.js", "app/initializers/local-store.js"]
+    },
+    {
+      "module_id": "offline-globals-initializer",
+      "type": "initializer",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": ["offline-globals-service"],
+      "order": 2,
+      "files": ["addon/initializers/offline-globals.js", "app/initializers/offline-globals.js"]
+    },
+    {
+      "module_id": "flexberry-enum-initializer",
+      "type": "initializer",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": ["offline-globals-service"],
+      "order": 2,
+      "files": ["addon/initializers/flexberry-enum.js", "app/initializers/flexberry-enum.js"]
+    },
+    {
+      "module_id": "set-singletons-instance-initializer",
+      "type": "instance-initializer",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": ["offline-globals-service"],
+      "order": 2,
+      "files": ["addon/instance-initializers/set-singletons.js", "app/instance-initializers/set-singletons.js"]
+    },
+    {
+      "module_id": "offline-globals-mixin",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": ["offline-globals-service"],
+      "order": 2,
+      "files": []
+    },
+    {
+      "module_id": "offline-model-mixin",
+      "type": "mixin",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["offline-globals-service", "snapshot-transform-utils"],
+      "order": 4,
+      "files": ["addon/mixins/offline-model.js"]
+    },
+    {
+      "module_id": "audit-model-mixin",
+      "type": "mixin",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["offline-globals-service"],
+      "order": 2,
+      "files": ["addon/mixins/audit-model.js"]
+    },
+    {
+      "module_id": "copyable-mixin",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/mixins/copyable.js"]
+    },
+    {
+      "module_id": "adapter-mixin",
+      "type": "mixin",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["offline-adapter", "odata-adapter"],
+      "order": 5,
+      "files": ["addon/mixins/adapter.js"]
+    },
+    {
+      "module_id": "store-mixin",
+      "type": "mixin",
+      "estimated_effort": "high",
+      "priority": "high",
+      "dependencies": ["offline-globals-service", "offline-adapter", "odata-adapter"],
+      "order": 5,
+      "files": ["addon/mixins/store.js"]
+    },
+    {
+      "module_id": "regenerated-serializers-mixins",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": [],
+      "order": 1,
+      "files": [
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js",
+        "addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js"
+      ]
+    },
+    {
+      "module_id": "regenerated-models-mixins",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": [],
+      "order": 1,
+      "files": [
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js",
+        "addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js"
+      ]
+    },
+    {
+      "module_id": "offline-model",
+      "type": "model",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["model", "offline-model-mixin", "attributes-utils"],
+      "order": 5,
+      "files": ["addon/models/offline-model.js", "app/models/offline-model.js"]
+    },
+    {
+      "module_id": "model",
+      "type": "model",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": ["model-without-validation"],
+      "order": 2,
+      "files": ["addon/models/model.js", "app/models/model.js"]
+    },
+    {
+      "module_id": "model-without-validation",
+      "type": "model",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/models/model-without-validation.js", "app/models/model-without-validation.js"]
+    },
+    {
+      "module_id": "session-model",
+      "type": "model",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["offline-model"],
+      "order": 6,
+      "files": ["addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js", "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js"]
+    },
+    {
+      "module_id": "agent-model",
+      "type": "model",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["offline-model"],
+      "order": 6,
+      "files": ["addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js", "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js"]
+    },
+    {
+      "module_id": "link-group-model",
+      "type": "model",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["offline-model"],
+      "order": 6,
+      "files": ["addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js", "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js"]
+    },
+    {
+      "module_id": "audit-entity-model",
+      "type": "model",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["offline-model"],
+      "order": 6,
+      "files": ["addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js", "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js"]
+    },
+    {
+      "module_id": "audit-field-model",
+      "type": "model",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["offline-model"],
+      "order": 6,
+      "files": ["addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js", "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js"]
+    },
+    {
+      "module_id": "audit-object-type-model",
+      "type": "model",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["offline-model"],
+      "order": 6,
+      "files": ["addon/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js", "app/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js"]
+    },
+    {
+      "module_id": "session-model-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["session-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js"]
+    },
+    {
+      "module_id": "agent-model-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["agent-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js"]
+    },
+    {
+      "module_id": "link-group-model-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["link-group-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js"]
+    },
+    {
+      "module_id": "audit-entity-model-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["audit-entity-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js"]
+    },
+    {
+      "module_id": "audit-field-model-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["audit-field-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js"]
+    },
+    {
+      "module_id": "audit-object-type-model-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["audit-object-type-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/models/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js"]
+    },
+    {
+      "module_id": "session-serializer-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["session-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js"]
+    },
+    {
+      "module_id": "agent-serializer-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["agent-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js"]
+    },
+    {
+      "module_id": "link-group-serializer-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["link-group-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js"]
+    },
+    {
+      "module_id": "audit-entity-serializer-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["audit-entity-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js"]
+    },
+    {
+      "module_id": "audit-field-serializer-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["audit-field-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js"]
+    },
+    {
+      "module_id": "audit-object-type-serializer-regenerated",
+      "type": "mixin",
+      "estimated_effort": "low",
+      "priority": "low",
+      "dependencies": ["audit-object-type-model"],
+      "order": 7,
+      "files": ["addon/mixins/regenerated/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js"]
+    },
+    {
+      "module_id": "guid-transform",
+      "type": "transform",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/transforms/guid.js", "app/transforms/guid.js"]
+    },
+    {
+      "module_id": "decimal-transform",
+      "type": "transform",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/transforms/decimal.js", "app/transforms/decimal.js"]
+    },
+    {
+      "module_id": "file-transform",
+      "type": "transform",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/transforms/file.js", "app/transforms/file.js"]
+    },
+    {
+      "module_id": "flexberry-enum-transform",
+      "type": "transform",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/transforms/flexberry-enum.js", "app/transforms/flexberry-enum.js"]
+    },
+    {
+      "module_id": "audit-operation-type-transform",
+      "type": "transform",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js", "app/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js"]
+    },
+    {
+      "module_id": "audit-execution-variant-transform",
+      "type": "transform",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js", "app/transforms/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js"]
+    },
+    {
+      "module_id": "enums",
+      "type": "enums",
+      "estimated_effort": "low",
+      "priority": "medium",
+      "dependencies": [],
+      "order": 1,
+      "files": [
+        "addon/enums/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js",
+        "addon/enums/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js",
+        "app/enums/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-execution-variant.js",
+        "app/enums/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-t-type-of-audit-operation.js"
+      ]
+    },
+    {
+      "module_id": "offline-adapter",
+      "type": "adapter",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/adapters/offline.js", "app/adapters/offline.js"]
+    },
+    {
+      "module_id": "odata-adapter",
+      "type": "adapter",
+      "estimated_effort": "high",
+      "priority": "high",
+      "dependencies": [
+        "snapshot-transform-utils", "odata-adapter-query", "string-functions-utils",
+        "is-uuid-utils", "generate-unique-id-utils", "batch-queries-utils", "builder",
+        "offline-adapter"
+      ],
+      "order": 6,
+      "files": ["addon/adapters/odata.js", "app/adapters/odata.js"]
+    },
+    {
+      "module_id": "odata-adapter-query",
+      "type": "query",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["base-adapter"],
+      "order": 3,
+      "files": ["addon/query/odata-adapter.js"]
+    },
+    {
+      "module_id": "base-adapter",
+      "type": "query",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/query/base-adapter.js"]
+    },
+    {
+      "module_id": "js-adapter-query",
+      "type": "query",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["base-adapter"],
+      "order": 3,
+      "files": ["addon/query/js-adapter.js"]
+    },
+    {
+      "module_id": "indexeddb-adapter-query",
+      "type": "query",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["base-adapter"],
+      "order": 3,
+      "files": ["addon/query/indexeddb-adapter.js"]
+    },
+    {
+      "module_id": "builder",
+      "type": "query",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["base-builder"],
+      "order": 3,
+      "files": ["addon/query/builder.js", "addon/query/base-builder.js"]
+    },
+    {
+      "module_id": "base-builder",
+      "type": "query",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": []
+    },
+    {
+      "module_id": "query-object",
+      "type": "query",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/query/query-object.js"]
+    },
+    {
+      "module_id": "predicate",
+      "type": "query",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/query/predicate.js"]
+    },
+    {
+      "module_id": "parameter",
+      "type": "query",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/query/parameter.js"]
+    },
+    {
+      "module_id": "order-by-clause",
+      "type": "query",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/query/order-by-clause.js"]
+    },
+    {
+      "module_id": "condition",
+      "type": "query",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/query/condition.js"]
+    },
+    {
+      "module_id": "filter-operator",
+      "type": "query",
+      "estimated_effort": "low",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/query/filter-operator.js"]
+    },
+    {
+      "module_id": "base-serializer",
+      "type": "serializer",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": [],
+      "order": 1,
+      "files": ["addon/serializers/base.js", "app/serializers/base.js"]
+    },
+    {
+      "module_id": "offline-serializer",
+      "type": "serializer",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["base-serializer"],
+      "order": 2,
+      "files": ["addon/serializers/offline.js", "app/serializers/offline.js"]
+    },
+    {
+      "module_id": "odata-serializer",
+      "type": "serializer",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["base-serializer", "string-functions-utils"],
+      "order": 2,
+      "files": ["addon/serializers/odata.js", "app/serializers/odata.js"]
+    },
+    {
+      "module_id": "session-serializer",
+      "type": "serializer",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["odata-serializer"],
+      "order": 3,
+      "files": ["addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js", "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-session.js"]
+    },
+    {
+      "module_id": "agent-serializer",
+      "type": "serializer",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["odata-serializer"],
+      "order": 3,
+      "files": ["addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js", "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-agent.js"]
+    },
+    {
+      "module_id": "link-group-serializer",
+      "type": "serializer",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["odata-serializer"],
+      "order": 3,
+      "files": ["addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js", "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-security-link-group.js"]
+    },
+    {
+      "module_id": "audit-entity-serializer",
+      "type": "serializer",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["odata-serializer"],
+      "order": 3,
+      "files": ["addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js", "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-entity.js"]
+    },
+    {
+      "module_id": "audit-field-serializer",
+      "type": "serializer",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["odata-serializer"],
+      "order": 3,
+      "files": ["addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js", "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-audit-field.js"]
+    },
+    {
+      "module_id": "audit-object-type-serializer",
+      "type": "serializer",
+      "estimated_effort": "medium",
+      "priority": "high",
+      "dependencies": ["odata-serializer"],
+      "order": 3,
+      "files": ["addon/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js", "app/serializers/i-c-s-soft-s-t-o-r-m-n-e-t-business-audit-objects-object-type.js"]
+    },
+    {
+      "module_id": "base-store",
+      "type": "store",
+      "estimated_effort": "high",
+      "priority": "high",
+      "dependencies": [
+        "offline-globals-service", "user-service", "offline-adapter", "odata-adapter",
+        "offline-serializer", "odata-serializer", "dexie-service"
+      ],
+      "order": 7,
+      "files": ["addon/stores/base-store.js", "addon/stores/base-store/decorate-api-call.js", "addon/stores/base-store/decorate-adapter.js"]
+    },
+    {
+      "module_id": "local-store",
+      "type": "store",
+      "estimated_effort": "high",
+      "priority": "high",
+      "dependencies": ["base-store"],
+      "order": 8,
+      "files": ["addon/stores/local-store.js"]
+    },
+    {
+      "module_id": "online-store",
+      "type": "store",
+      "estimated_effort": "high",
+      "priority": "high",
+      "dependencies": ["base-store"],
+      "order": 8,
+      "files": ["addon/stores/online-store.js"]
+    }
+  ],
+  "total_modules": 81,
+  "estimated_total_time": "80-120 часов"
+}

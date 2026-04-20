@@ -1,0 +1,152 @@
+{
+  "project": "ember-flexberry-data5",
+  "modules": [
+    {
+      "name": "transforms",
+      "type": "transform",
+      "priority": "High",
+      "estimatedTime": 3,
+      "dependencies": [],
+      "notes": "Базовый модуль преобразователей"
+    },
+    {
+      "name": "enums",
+      "type": "enum",
+      "priority": "High",
+      "estimatedTime": 1,
+      "dependencies": [],
+      "notes": "Перечисления без зависимостей"
+    },
+    {
+      "name": "utils",
+      "type": "utils",
+      "priority": "High",
+      "estimatedTime": 2,
+      "dependencies": ["create", "information"],
+      "notes": "Базовые утилиты"
+    },
+    {
+      "name": "regenerated-serializers",
+      "type": "serializer",
+      "priority": "High",
+      "estimatedTime": 8,
+      "dependencies": [],
+      "notes": "Сгенерированные сериализаторы без зависимостей"
+    },
+    {
+      "name": "models",
+      "type": "model",
+      "priority": "High",
+      "estimatedTime": 5,
+      "dependencies": ["transforms", "utils"],
+      "notes": "Модели без внешних зависимостей"
+    },
+    {
+      "name": "mixins",
+      "type": "mixin",
+      "priority": "High",
+      "estimatedTime": 6,
+      "dependencies": ["models", "utils"],
+      "notes": "Миксины без внешних зависимостей"
+    },
+    {
+      "name": "serializers",
+      "type": "serializer",
+      "priority": "High",
+      "estimatedTime": 8,
+      "dependencies": ["models", "mixins", "utils"],
+      "notes": "Сериализаторы базовые для проекта"
+    },
+    {
+      "name": "query-builder",
+      "type": "query",
+      "priority": "High",
+      "estimatedTime": 2,
+      "dependencies": ["serializers", "utils"],
+      "notes": "Query builder без внешних зависимостей"
+    },
+    {
+      "name": "adapters",
+      "type": "adapter",
+      "priority": "High",
+      "estimatedTime": 12,
+      "dependencies": ["query-builder", "serializers", "utils"],
+      "notes": "Адаптеры без внешних зависимостей внутри ember-flexberry-data5"
+    },
+    {
+      "name": "stores",
+      "type": "store",
+      "priority": "High",
+      "estimatedTime": 6,
+      "dependencies": ["adapters", "serializers", "mixins", "query-builder"],
+      "notes": "Stores без внешних зависимостей"
+    },
+    {
+      "name": "services",
+      "type": "service",
+      "priority": "High",
+      "estimatedTime": 6,
+      "dependencies": ["stores", "utils"],
+      "notes": "Сервисы без внешних зависимостей"
+    },
+    {
+      "name": "flexberry-enum-initializer",
+      "type": "initializer",
+      "priority": "Medium",
+      "estimatedTime": 3.5,
+      "dependencies": ["transforms"],
+      "notes": "Инициализатор flexberry-enum"
+    },
+    {
+      "name": "offline-globals-initializer",
+      "type": "initializer",
+      "priority": "Medium",
+      "estimatedTime": 3.5,
+      "dependencies": ["services"],
+      "notes": "Инициализатор offline-globals"
+    },
+    {
+      "name": "local-store-initializer",
+      "type": "initializer",
+      "priority": "Medium",
+      "estimatedTime": 3.5,
+      "dependencies": ["stores"],
+      "notes": "Инициализатор local-store"
+    },
+    {
+      "name": "instance-initializers",
+      "type": "instance-initializer",
+      "priority": "Medium",
+      "estimatedTime": 2.5,
+      "dependencies": ["services"],
+      "notes": "Instance initializers зависят от services"
+    },
+    {
+      "name": "initializers",
+      "type": "initializer",
+      "priority": "Medium",
+      "estimatedTime": 3.5,
+      "dependencies": ["stores"],
+      "notes": "Инициализаторы (базовые)"
+    }
+  ],
+  "prioritySummary": {
+    "High": {"count": 11, "totalHours": 59},
+    "Medium": {"count": 5, "totalHours": 16.5},
+    "Low": {"count": 0, "totalHours": 0}
+  },
+  "typeSummary": {
+    "adapter": {"count": 1, "totalHours": 12},
+    "serializer": {"count": 2, "totalHours": 16},
+    "model": {"count": 1, "totalHours": 5},
+    "mixin": {"count": 1, "totalHours": 6},
+    "transform": {"count": 1, "totalHours": 3},
+    "utils": {"count": 1, "totalHours": 2},
+    "service": {"count": 1, "totalHours": 6},
+    "initializer": {"count": 5, "totalHours": 16.5},
+    "instance-initializer": {"count": 1, "totalHours": 2.5},
+    "query": {"count": 1, "totalHours": 2},
+    "store": {"count": 1, "totalHours": 6},
+    "enum": {"count": 1, "totalHours": 1}
+  }
+}

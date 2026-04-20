@@ -1,0 +1,100 @@
+{
+  "modules": [
+    {
+      "name": "core-models",
+      "dependencies": []
+    },
+    {
+      "name": "generated-models",
+      "dependencies": [
+        "core-models",
+        "audit"
+      ]
+    },
+    {
+      "name": "regenerated-mixins",
+      "dependencies": [
+        "core-models",
+        "generated-models"
+      ]
+    },
+    {
+      "name": "audit",
+      "dependencies": [
+        "transforms",
+        "core-models"
+      ]
+    },
+    {
+      "name": "offline",
+      "dependencies": [
+        "core-models",
+        "offline-store",
+        "utils"
+      ]
+    },
+    {
+      "name": "odata",
+      "dependencies": [
+        "core-models",
+        "offline",
+        "odata-query"
+      ]
+    },
+    {
+      "name": "odata-query",
+      "dependencies": [
+        "utils"
+      ]
+    },
+    {
+      "name": "offline-store",
+      "dependencies": [
+        "core-models",
+        "offline",
+        "utils"
+      ]
+    },
+    {
+      "name": "services",
+      "dependencies": [
+        "core-models",
+        "offline",
+        "offline-store",
+        "utils"
+      ]
+    },
+    {
+      "name": "serializers-base",
+      "dependencies": [
+        "core-models",
+        "offline",
+        "odata"
+      ]
+    },
+    {
+      "name": "transforms",
+      "dependencies": [
+        "utils"
+      ]
+    },
+    {
+      "name": "initializers",
+      "dependencies": [
+        "core-models",
+        "offline-store",
+        "services"
+      ]
+    },
+    {
+      "name": "instance-initializers",
+      "dependencies": [
+        "services"
+      ]
+    },
+    {
+      "name": "utils",
+      "dependencies": []
+    }
+  ]
+}
