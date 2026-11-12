@@ -547,28 +547,51 @@ export default DS.RESTAdapter.extend({
 
           const errors = [];
           const result = [];
+          const batchParsePromises = [];
+
           models.forEach((model) => {
             const modelDirtyType = model.get('dirtyType');
+            let modelResult = model;
+
             if (modelDirtyType === 'deleted') {
               Ember.run(store, store.unloadRecord, model);
+              modelResult = null;
             } else if (modelDirtyType === 'created' || modelDirtyType === 'updated' || model.hasChangedBelongsTo()) {
               const { response } = getResponses.shift();
               if (this.isSuccess(response.meta.status)) {
                 const modelName = model.constructor.modelName;
                 const payload = { [modelName]: response.body };
-                Ember.run(() => {
-                  store.pushPayload(modelName, payload);
-                  model.rollbackAttributes(); // forced adjustment of model state
-                });
+                batchParsePromises.push(new Ember.RSVP.Promise((resolveParse, rejectParse) => {
+                  Ember.run(() => {
+                    try {
+                      store.pushPayload(modelName, payload);
+                      model.rollbackAttributes();
+                      resolveParse();
+                    } catch (error) {
+                      rejectParse(new DS.AdapterError(error));
+                    }
+                  });
+                }));
               } else {
                 errors.push(new DS.AdapterError(response.body));
               }
             }
 
-            result.push(modelDirtyType === 'deleted' ? null : model);
+            result.push(modelResult);
           });
 
-          return errors.length ? reject(errors) : resolve(result);
+          return Ember.RSVP.all(batchParsePromises).then(
+            () => {
+              if (errors.length) {
+                reject(errors);
+              } else {
+                resolve(result);
+              }
+            },
+            (error) => {
+              reject(new DS.AdapterError(error));
+            }
+          );
         } catch (error) {
           // If an error is thrown then this situation is not processed and user will get not understandable result.
           return reject(new DS.AdapterError(error));

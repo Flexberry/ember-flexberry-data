@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [2.8.3] - 2026-11-12
+### Fixed
+- Fix batchUpdate.
+
 ## [2.8.2] - 2026-03-27
 ### Fixed
 - Fix remark by sort for Ember Data records.
