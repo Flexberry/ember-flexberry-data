@@ -549,11 +549,6 @@ export default DS.RESTAdapter.extend({
           const result = [];
           const batchParsePromises = [];
 
-          // Для каждой сохраняемой модели создаём отдельный промис: намазывание ответа
-          // батча (pushPayload + rollbackAttributes) должно завершиться ДО резолва всего
-          // batchUpdate. Иначе к моменту исполнения следующих обработчиков (.then) ответ
-          // может быть ещё не применён к модели, и повторный batchUpdate из rollback-сценариев
-          // уйдёт с «грязным» состоянием либо вообще не будет отправлен (разрыв promise-цепочки).
           models.forEach((model) => {
             const modelDirtyType = model.get('dirtyType');
             let modelResult = model;
@@ -570,11 +565,9 @@ export default DS.RESTAdapter.extend({
                   Ember.run(() => {
                     try {
                       store.pushPayload(modelName, payload);
-                      model.rollbackAttributes(); // forced adjustment of model state
+                      model.rollbackAttributes();
                       resolveParse();
                     } catch (error) {
-                      // Если намазывание упало (например, некорректный payload) — не залипаем,
-                      // а отклоняем весь батч с понятной ошибкой.
                       rejectParse(new DS.AdapterError(error));
                     }
                   });
@@ -587,8 +580,6 @@ export default DS.RESTAdapter.extend({
             result.push(modelResult);
           });
 
-          // Дожидаемся применения ответа по всем сохраняемым моделям, и только затем
-          // резолвим/отклоняем batchUpdate (целостность promise-цепочки).
           return Ember.RSVP.all(batchParsePromises).then(
             () => {
               if (errors.length) {
